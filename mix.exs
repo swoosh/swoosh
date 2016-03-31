@@ -11,6 +11,7 @@ defmodule Swoosh.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps,
+     aliases: aliases,
 
      # Hex
      description: description,
@@ -42,6 +43,23 @@ defmodule Swoosh.Mixfile do
      {:ex_doc, "~> 0.10", only: :docs},
      {:earmark, "~> 0.1", only: :docs},
      {:inch_ex, ">= 0.0.0", only: :docs}]
+  end
+
+  defp aliases do
+    ["test.ci": &test_ci/1]
+  end
+
+  defp test_ci(args) do
+    args = if IO.ANSI.enabled?, do: ["--color"|args], else: ["--no-color"|args]
+    args = if System.get_env("TRAVIS_SECURE_ENV_VARS") == "true", do: ["--include=integration"|args], else: args
+
+    {_, res} = System.cmd "mix", ["test"|args],
+			  into: IO.binstream(:stdio, :line),
+			  env: [{"MIX_ENV", "test"}]
+
+    if res > 0 do
+      System.at_exit(fn _ -> exit({:shutdown, 1}) end)
+    end
   end
 
   defp description do
