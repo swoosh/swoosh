@@ -31,7 +31,7 @@ defmodule Swoosh.InMemoryMailbox do
 
   ## Examples
 
-      iex> email = %Swoosh.Email{} |> from("tony@stark.com")
+      iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> InMemoryMailbox.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
@@ -45,7 +45,7 @@ defmodule Swoosh.InMemoryMailbox do
 
   ## Examples
 
-      iex> email = %Swoosh.Email{} |> from("tony@stark.com")
+      iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> InMemoryMailbox.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
@@ -65,7 +65,7 @@ defmodule Swoosh.InMemoryMailbox do
 
   ## Examples
 
-      iex> email = %Swoosh.Email{} |> from("tony@stark.com")
+      iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> InMemoryMailbox.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
@@ -81,7 +81,7 @@ defmodule Swoosh.InMemoryMailbox do
 
   ## Examples
 
-      iex> email = %Swoosh.Email{} |> from("tony@stark.com")
+      iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> InMemoryMailbox.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
@@ -97,7 +97,7 @@ defmodule Swoosh.InMemoryMailbox do
 
   ## Examples
 
-      iex> email = %Swoosh.Email{} |> from("tony@stark.com")
+      iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> InMemoryMailbox.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}

@@ -6,12 +6,12 @@ defmodule Swoosh.Adapters.SMTPTest do
 
   setup_all do
     valid_email =
-    %Swoosh.Email{}
-    |> from("tony@stark.com")
-    |> to("steve@rogers.com")
-    |> subject("Hello, Avengers!")
-    |> html_body("<h1>Hello</h1>")
-    |> text_body("Hello")
+      new
+      |> from("tony@stark.com")
+      |> to("steve@rogers.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
 
     {:ok, valid_email: valid_email}
   end

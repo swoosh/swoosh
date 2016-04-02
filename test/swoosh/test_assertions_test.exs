@@ -6,7 +6,7 @@ defmodule Swoosh.TestAssertionsTest do
 
   setup do
     email =
-      %Swoosh.Email{}
+      new
       |> from("tony@stark.com")
       |> to("steve@rogers.com")
       |> subject("Hello, Avengers!")
@@ -20,7 +20,7 @@ defmodule Swoosh.TestAssertionsTest do
 
   test "assert email sent with wrong email" do
     try do
-      wrong_email = %Swoosh.Email{} |> subject("Wrong, Avengers!")
+      wrong_email = new |> subject("Wrong, Avengers!")
       assert_email_sent wrong_email
     rescue
       error in [ExUnit.AssertionError] ->
@@ -34,7 +34,7 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email not sent with unexpected email" do
-    unexpected_email = %Swoosh.Email{} |> subject("Testing Avenger")
+    unexpected_email = new |> subject("Testing Avenger")
     assert_email_not_sent unexpected_email
   end
 

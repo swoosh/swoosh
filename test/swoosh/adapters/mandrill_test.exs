@@ -32,7 +32,7 @@ defmodule Swoosh.Adapters.MandrillTest do
               api_key: "jarvis"]
 
     valid_email =
-      %Swoosh.Email{}
+      new
       |> from({"T Stark", "tony@stark.com"})
       |> to("steve@rogers.com")
       |> cc({"Bruce Banner", "hulk@smash.com"})
@@ -65,7 +65,7 @@ defmodule Swoosh.Adapters.MandrillTest do
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
-      %Swoosh.Email{}
+      new
       |> from({"T Stark", "tony@stark.com"})
       |> to({"Steve Rogers", "steve@rogers.com"})
       |> to("wasp@avengers.com")

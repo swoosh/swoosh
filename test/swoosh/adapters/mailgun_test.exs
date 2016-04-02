@@ -17,7 +17,7 @@ defmodule Swoosh.Adapters.MailgunTest do
               domain: "/avengers.com"]
 
     valid_email =
-      %Swoosh.Email{}
+      new
       |> from("tony@stark.com")
       |> to("steve@rogers.com")
       |> subject("Hello, Avengers!")
@@ -46,7 +46,7 @@ defmodule Swoosh.Adapters.MailgunTest do
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
-      %Swoosh.Email{}
+      new
       |> from({"T Stark", "tony@stark.com"})
       |> to({"Steve Rogers", "steve@rogers.com"})
       |> to("wasp@avengers.com")

@@ -16,7 +16,7 @@ defmodule Swoosh.Adapters.SendgridTest do
     config = [base_url: "http://localhost:#{bypass.port}"]
 
     valid_email =
-      %Swoosh.Email{}
+      new
       |> from("tony@stark.com")
       |> to("steve@rogers.com")
       |> subject("Hello, Avengers!")
@@ -44,7 +44,7 @@ defmodule Swoosh.Adapters.SendgridTest do
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
-      %Swoosh.Email{}
+      new
       |> from({"T Stark", "tony@stark.com"})
       |> to({"Steve Rogers", "steve@rogers.com"})
       |> reply_to("hulk@smash.com")
@@ -98,4 +98,3 @@ defmodule Swoosh.Adapters.SendgridTest do
            {:error, %{"errors" => ["Internal server error"], "message" => "error"}}
   end
 end
-
