@@ -52,6 +52,8 @@ defmodule Swoosh.Email do
       email = new(from: "tony@stark.com", to: "steve@rogers.com", subject: "Hello, Avengers!")
   """
 
+  import Swoosh.EmailHelpers
+
   defstruct subject: "", from: nil, to: [], cc: [], bcc: [], text_body: nil,
             html_body: nil, attachments: nil, reply_to: nil, headers: %{},
             private: %{}, assigns: %{}, provider_options: %{}
@@ -464,22 +466,5 @@ defmodule Swoosh.Email do
   @spec assign(t, atom, any) :: t
   def assign(%__MODULE__{assigns: assigns} = email, key, value) when is_atom(key) do
     %{email | assigns: Map.put(assigns, key, value)}
-  end
-
-  defp format_recipient({name, address} = recipient) when is_binary(name) and is_binary(address) and recipient != "" do
-    recipient
-  end
-  defp format_recipient(recipient) when is_binary(recipient) and recipient != "" do
-    {"", recipient}
-  end
-  defp format_recipient(invalid) do
-    raise ArgumentError, message:
-    """
-    The recipient `#{inspect invalid}` is invalid.
-
-    Recipients must be a string representing an email address like
-    `foo@bar.com` or a two-element tuple `{name, address}`, where
-    name and address are strings.
-    """
   end
 end

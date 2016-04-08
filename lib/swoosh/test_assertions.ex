@@ -8,13 +8,74 @@ defmodule Swoosh.TestAssertions do
   """
 
   import ExUnit.Assertions
+  import Swoosh.EmailHelpers
+
+  alias Swoosh.Email
 
   @doc ~S"""
   Asserts `email` was sent.
+
+  You pass a keyword list to match on specific params.
+
+  ## Examples
+
+      iex> alias Swoosh.Email
+      iex> import Swoosh.TestAssertions
+
+      iex> email = Email.new(subject: "Hello, Avengers!")
+      iex> Swoosh.Adapters.Test.deliver(email, [])
+
+      # assert a specific email was sent
+      iex> assert_email_sent email
+
+      # assert an email with specific field(s) was sent
+      iex> assert_email_sent subject: "Hello, Avengers!"
   """
-  def assert_email_sent(email) do
+  def assert_email_sent(%Email{} = email) do
     assert_received {:email, ^email}
   end
+  def assert_email_sent(params) when is_list(params) do
+    assert_received {:email, email}
+    try do
+      Enum.each params, fn param -> assert_equal(email, param) end
+    rescue
+      error ->
+	stacktrace = System.stacktrace
+	name = error.__struct__
+	field =
+	  case elem(error.expr, 0) do
+	    :== ->
+	      {_, _, [{{_, _, [_, field]}, _, _},_]} = error.expr
+	      field
+	    :in ->
+	      {_, _, [{_, _, _}, {{_, _, [_, field]}, _, _}]} = error.expr
+	      field
+	  end
+
+	cond do
+	  name == ExUnit.AssertionError ->
+	    message = "Email `#{to_string(field)}` does not match\n" <>
+		      "email: #{inspect email}\n" <>
+		      "lhs: #{inspect error.left}\n" <>
+		      "rhs: #{inspect error.right}"
+	    reraise ExUnit.AssertionError, [message: message], stacktrace
+	  true ->
+	    reraise(error, stacktrace)
+	end
+    end
+  end
+
+  def assert_equal(email, {:subject, value}), do: assert email.subject == value
+  def assert_equal(email, {:from, value}), do: assert email.from == format_recipient(value)
+  def assert_equal(email, {:reply_to, value}), do: assert email.reply_to == format_recipient(value)
+  def assert_equal(email, {:to, value}) when is_list(value), do: assert email.to == Enum.map(value, &format_recipient/1)
+  def assert_equal(email, {:to, value}), do: assert format_recipient(value) in email.to
+  def assert_equal(email, {:cc, value}) when is_list(value), do: assert email.cc == Enum.map(value, &format_recipient/1)
+  def assert_equal(email, {:cc, value}), do: assert format_recipient(value) in email.cc
+  def assert_equal(email, {:bcc, value}) when is_list(value), do: assert email.bcc == Enum.map(value, &format_recipient/1)
+  def assert_equal(email, {:bcc, value}), do: assert format_recipient(value) in email.bcc
+  def assert_equal(email, {:text_body, value}), do: assert email.text_body == value
+  def assert_equal(email, {:html_body, value}), do: assert email.html_body == value
 
   @doc ~S"""
   Asserts `email` was not sent.
