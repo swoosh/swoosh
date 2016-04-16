@@ -102,8 +102,8 @@
                 <% id = email.headers["Message-ID"] %>
                 <a href="<%= to_absolute_url(@conn, id) %>"
                    class="list-group-item<%= if @email && @email.headers["Message-ID"] == id, do: " active" %>">
-                  <h6 class="list-group-item-heading"><%= inspect(email.from) %></h6>
-                  <p class="list-group-item-text"><%= inspect(email.subject) %></p>
+		  <h6 class="list-group-item-heading"><%= format_recipient(email.from) %></h6>
+		  <p class="list-group-item-text"><%= email.subject %></p>
                 </a>
               <% end %>
             <% end %>
@@ -116,26 +116,26 @@
               <div class="header-content">
                 <dl class="dl-horizontal headers">
                   <dt class="col-sm-2">Subject</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.subject) %></dd>
+		  <dd class="col-sm-10"><%= @email.subject %></dd>
 
                   <dt class="col-sm-2">From</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.from) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient(@email.from) %></dd>
 
                   <dt class="col-sm-2">To</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.to) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient_list(@email.to) %></dd>
 
                   <dt class="col-sm-2">Cc</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.cc) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient_list(@email.cc) %></dd>
 
                   <dt class="col-sm-2">Bcc</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.bcc) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient_list(@email.bcc) %></dd>
 
                   <dt class="col-sm-2">Reply-to</dt>
-                  <dd class="col-sm-10"><%= inspect(@email.reply_to) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient(@email.reply_to) %></dd>
 
                   <%= for {name, value} <- @email.headers do %>
                     <dt class="col-sm-2"><%= name %></dt>
-                    <dd class="col-sm-10"><%= inspect(value) %></dd>
+		    <dd class="col-sm-10"><%= value %></dd>
                   <% end %>
                 </dl>
               </div>

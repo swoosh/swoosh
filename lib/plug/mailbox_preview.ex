@@ -64,5 +64,13 @@ if Code.ensure_loaded?(Plug) do
     defp to_absolute_url(conn, path) do
       URI.parse("#{conn.assigns.base_path}/#{path}").path
     end
+
+    defp format_recipient(nil), do: "n/a"
+    defp format_recipient({nil, address}), do: address
+    defp format_recipient({"", address}), do: address
+    defp format_recipient({name, address}), do: "#{name} &lt;#{address}&gt;"
+
+    defp format_recipient_list([]), do: "n/a"
+    defp format_recipient_list(list), do: Enum.map(list, &format_recipient/1) |> Enum.join(", ")
   end
 end
