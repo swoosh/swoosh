@@ -27,15 +27,19 @@ defmodule Swoosh.Adapters.SMTP do
   @behaviour Swoosh.Adapter
 
   def deliver(%Swoosh.Email{} = email, config) do
-    {_from_name, from_address} = email.from
+    mail_from = mail_from(email)
     recipients = all_recipients(email)
     {type, subtype, headers, parts} = prepare_message(email)
     body = :mimemail.encode({type, subtype, headers, [], parts})
-    case :gen_smtp_client.send_blocking({from_address, recipients, body}, config) do
+    case :gen_smtp_client.send_blocking({mail_from, recipients, body}, config) do
       receipt when is_binary(receipt) -> {:ok, receipt}
       {:error, type, message} -> {:error, {type, message}}
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  defp mail_from(email) do
+    email.headers["Sender"] || elem(email.from, 1)
   end
 
   defp all_recipients(email) do
