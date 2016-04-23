@@ -13,7 +13,16 @@ defmodule Swoosh.Adapters.SMTPTest do
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
 
-    {:ok, valid_email: valid_email}
+    valid_config = [
+      adapter: Swoosh.Adapters.SMTP,
+      relay: "localhost",
+      dkim: [s: "default", d: "example.com",
+      private_key: {:pem_plain,                                                                                                                                                                                                                 "-----BEGIN RSA PRIVATE KEY-----
+      #{String.duplicate("abcdefghijklmnopqrstuvwxyz\n", 13)}
+      -----END RSA PRIVATE KEY-----\n"}]
+    ]
+
+    {:ok, valid_email: valid_email, valid_config: valid_config}
   end
 
   test "simple email", %{valid_email: email} do
@@ -119,4 +128,13 @@ defmodule Swoosh.Adapters.SMTPTest do
           {"disposition-params", []}],
         "<h1>Hello</h1>"}]}
   end
+
+  test "no dkim in config", %{} do
+    assert SMTP.prepare_options([]) == []
+  end
+
+  test "dkim in config", %{valid_config: config} do
+    assert SMTP.prepare_options(config) == [{:dkim, config[:dkim]}]
+  end
+
 end

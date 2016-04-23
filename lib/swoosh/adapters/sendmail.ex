@@ -23,8 +23,7 @@ defmodule Swoosh.Adapters.Sendmail do
   @behaviour Swoosh.Adapter
 
   def deliver(%Email{} = email, config) do
-    {type, subtype, headers, parts} = SMTP.prepare_message(email)
-    body = :mimemail.encode({type, subtype, headers, [], parts})
+    body = SMTP.encode_message(email, config)
     port = Port.open({:spawn, cmd(email, config)}, [:binary])
     Port.command(port, body)
     Port.close(port)

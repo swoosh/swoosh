@@ -14,7 +14,11 @@ defmodule Swoosh.Adapters.SMTP do
         username: "tonystark",
         password: "ilovepepperpotts",
         tls: :always,
-        auth: :always
+        auth: :always,
+        dkim: [
+          s: "default", d: "domain.com",
+          private_key: {:pem_plain, File.read!("priv/keys/domain.private")}
+        ]
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -29,8 +33,7 @@ defmodule Swoosh.Adapters.SMTP do
   def deliver(%Email{} = email, config) do
     mail_from = mail_from(email)
     recipients = all_recipients(email)
-    {type, subtype, headers, parts} = prepare_message(email)
-    body = :mimemail.encode({type, subtype, headers, [], parts})
+    body = encode_message(email, config)
     case :gen_smtp_client.send_blocking({mail_from, recipients, body}, config) do
       receipt when is_binary(receipt) -> {:ok, receipt}
       {:error, type, message} -> {:error, {type, message}}
@@ -50,10 +53,25 @@ defmodule Swoosh.Adapters.SMTP do
   end
 
   @doc false
+  def encode_message(email, config) do
+    {type, subtype, headers, parts} = prepare_message(email)
+    options = prepare_options(config)
+    :mimemail.encode({type, subtype, headers, [], parts}, options)
+  end
+
+  @doc false
   def prepare_message(email) do
     email
     |> prepare_headers()
     |> prepare_parts(email)
+  end
+
+  @doc false
+  def prepare_options(config) do
+    case config[:dkim] do
+      nil -> []
+      dkim -> [dkim: dkim]
+    end
   end
 
   defp prepare_headers(%Email{} = email) do
