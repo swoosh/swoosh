@@ -26,7 +26,7 @@ defmodule Swoosh.Adapters.SMTP do
 
   @behaviour Swoosh.Adapter
 
-  def deliver(%Swoosh.Email{} = email, config) do
+  def deliver(%Email{} = email, config) do
     mail_from = mail_from(email)
     recipients = all_recipients(email)
     {type, subtype, headers, parts} = prepare_message(email)
@@ -38,7 +38,7 @@ defmodule Swoosh.Adapters.SMTP do
     end
   end
 
-  defp mail_from(email) do
+  def mail_from(email) do
     email.headers["Sender"] || elem(email.from, 1)
   end
 
