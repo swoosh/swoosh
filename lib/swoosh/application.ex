@@ -15,8 +15,8 @@ defmodule Swoosh.Application do
         Application.ensure_all_started(:cowboy)
         Application.ensure_all_started(:plug)
 
-        Logger.info("Running Swoosh mailbox preview server with Cowboy using http on port 4000")
-        port = Application.get_env(:swoosh, :preview_port, 4000)
+	port = Application.get_env(:swoosh, :preview_port, 4000)
+        Logger.info("Running Swoosh mailbox preview server with Cowboy using http on port #{port}")
         [Plug.Adapters.Cowboy.child_spec(:http, Plug.Swoosh.MailboxPreview, [], port: port) | children]
       else
         children
