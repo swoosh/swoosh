@@ -1,6 +1,6 @@
-defmodule Swoosh.InMemoryMailbox do
+defmodule Swoosh.Adapters.Local.Storage.Memory do
   @moduledoc ~S"""
-  In-memory mailbox used by the
+  In-memory storage driver used by the
   [Swoosh.Adapters.Local](Swoosh.Adapters.Local.html) module.
 
   The emails in this mailbox are stored in memory and won't persist once your
@@ -10,14 +10,14 @@ defmodule Swoosh.InMemoryMailbox do
   use GenServer
 
   @doc """
-  Starts the InMemoryMailbox server
+  Starts the server
   """
   def start_link() do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @doc """
-  Stops the InMemoryMailbox server
+  Stops the server
   """
   def stop() do
     GenServer.stop(__MODULE__)
@@ -33,7 +33,7 @@ defmodule Swoosh.InMemoryMailbox do
 
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
-      iex> InMemoryMailbox.push(email)
+      iex> Memory.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
   """
   def push(email) do
@@ -47,13 +47,13 @@ defmodule Swoosh.InMemoryMailbox do
 
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
-      iex> InMemoryMailbox.push(email)
+      iex> Memory.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
-      iex> InMemoryMailbox.all() |> Enum.count()
+      iex> Memory.all() |> Enum.count()
       1
-      iex> InMemoryMailbox.pop()
+      iex> Memory.pop()
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
-      iex> InMemoryMailbox.all() |> Enun.count()
+      iex> Memory.all() |> Enun.count()
       0
   """
   def pop() do
@@ -67,9 +67,9 @@ defmodule Swoosh.InMemoryMailbox do
 
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
-      iex> InMemoryMailbox.push(email)
+      iex> Memory.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
-      iex> InMemoryMailbox.get("A1B2C3")
+      iex> Memory.get("A1B2C3")
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
   """
   def get(id) do
@@ -83,9 +83,9 @@ defmodule Swoosh.InMemoryMailbox do
 
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
-      iex> InMemoryMailbox.push(email)
+      iex> Memory.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
-      iex> InMemoryMailbox.all()
+      iex> Memory.all()
       [%Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}]
   """
   def all() do
@@ -99,11 +99,11 @@ defmodule Swoosh.InMemoryMailbox do
 
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
-      iex> InMemoryMailbox.push(email)
+      iex> Memory.push(email)
       %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
-      iex> InMemoryMailbox.delete_all()
+      iex> Memory.delete_all()
       :ok
-      iex> InMemoryMailbox.list()
+      iex> Memory.list()
       []
   """
   def delete_all() do

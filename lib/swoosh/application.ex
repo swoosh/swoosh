@@ -7,7 +7,7 @@ defmodule Swoosh.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(Swoosh.InMemoryMailbox, []),
+      worker(Swoosh.Adapters.Local.Storage.Memory, []),
     ]
 
     children =
@@ -15,7 +15,7 @@ defmodule Swoosh.Application do
         Application.ensure_all_started(:cowboy)
         Application.ensure_all_started(:plug)
 
-	port = Application.get_env(:swoosh, :preview_port, 4000)
+        port = Application.get_env(:swoosh, :preview_port, 4000)
         Logger.info("Running Swoosh mailbox preview server with Cowboy using http on port #{port}")
         [Plug.Adapters.Cowboy.child_spec(:http, Plug.Swoosh.MailboxPreview, [], port: port) | children]
       else
