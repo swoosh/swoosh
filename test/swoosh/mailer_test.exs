@@ -64,12 +64,12 @@ defmodule Swoosh.MailerTest do
   end
 
   test "config from environment variables", %{valid_email: email} do
-    System.put_env("SMTP_USERNAME", "userenv")
-    System.put_env("SMTP_PASSWORD", "passwordenv")
+    System.put_env("MAILER_TEST_SMTP_USERNAME", "userenv")
+    System.put_env("MAILER_TEST_SMTP_PASSWORD", "passwordenv")
 
     Application.put_env(:swoosh, Swoosh.MailerTest.EnvMailer,
-      [username: {:system, "SMTP_USERNAME"},
-       password: {:system, "SMTP_PASSWORD"},
+      [username: {:system, "MAILER_TEST_SMTP_USERNAME"},
+       password: {:system, "MAILER_TEST_SMTP_PASSWORD"},
        relay: "smtp.sendgrid.net",
        tls: :always])
 
