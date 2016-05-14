@@ -122,13 +122,13 @@
 		  <dd class="col-sm-10"><%= format_recipient(@email.from) %></dd>
 
                   <dt class="col-sm-2">To</dt>
-		  <dd class="col-sm-10"><%= format_recipient_list(@email.to) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient(@email.to) %></dd>
 
                   <dt class="col-sm-2">Cc</dt>
-		  <dd class="col-sm-10"><%= format_recipient_list(@email.cc) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient(@email.cc) %></dd>
 
                   <dt class="col-sm-2">Bcc</dt>
-		  <dd class="col-sm-10"><%= format_recipient_list(@email.bcc) %></dd>
+		  <dd class="col-sm-10"><%= format_recipient(@email.bcc) %></dd>
 
                   <dt class="col-sm-2">Reply-to</dt>
 		  <dd class="col-sm-10"><%= format_recipient(@email.reply_to) %></dd>
