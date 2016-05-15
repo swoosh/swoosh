@@ -25,4 +25,17 @@ defmodule Swoosh.Integration.Adapters.MailgunTest do
 
     assert {:ok, _response} = Swoosh.Adapters.Mailgun.deliver(email, config)
   end
+
+  test ":error with wrong api key", %{config: config} do
+    config = Keyword.put(config, :api_key, "bad_key")
+
+    email =
+      new
+      |> from({"Swoosh Mailgun", "swoosh@#{config[:domain]}"})
+      |> to("swoosh+to@elixirhq.com")
+      |> subject("Swoosh - Mailgun integration test")
+      |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
+
+    assert {:error, "Forbidden"} = Swoosh.Adapters.Mailgun.deliver(email, config)
+  end
 end

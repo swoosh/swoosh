@@ -83,10 +83,10 @@ defmodule Swoosh.Adapters.MailgunTest do
 
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
-      Plug.Conn.resp(conn, 401, "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}")
+      Plug.Conn.resp(conn, 401, "Forbidden")
     end
 
-    assert Mailgun.deliver(email, config) == {:error, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}
+    assert Mailgun.deliver(email, config) == {:error, "Forbidden"}
   end
 
   test "deliver/1 with 5xx response", %{bypass: bypass, valid_email: email, config: config} do
