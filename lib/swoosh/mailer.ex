@@ -66,39 +66,40 @@ defmodule Swoosh.Mailer do
       def __adapter__, do: @adapter
 
       def deliver(email, config \\ [])
-      def deliver(%Swoosh.Email{from: nil}, _config) do
-        raise ArgumentError, "expected \"from\" to be set"
-      end
-      def deliver(%Swoosh.Email{from: {_name, nil}}, _config) do
-        raise ArgumentError, "expected \"from\" address to be set"
-      end
-      def deliver(%Swoosh.Email{to: nil}, _config) do
-        raise ArgumentError, "expected \"to\" to be set"
-      end
-      def deliver(%Swoosh.Email{to: []}, _config) do
-        raise ArgumentError, "expected \"to\" not to be empty"
-      end
-      def deliver(%Swoosh.Email{subject: nil}, _config) do
-        raise ArgumentError, "expected \"subject\" to be set"
-      end
-      def deliver(%Swoosh.Email{html_body: nil, text_body: nil}, _config) do
-        raise ArgumentError, "expected \"html_body\" or \"text_body\" to be set"
-      end
-      def deliver(%Swoosh.Email{} = email, config) do
-        config =
-          @config
-          |> Keyword.merge(config)
-          |> Swoosh.Mailer.parse_runtime_config()
-
-        case @adapter.validate_config(config) do
-          {:ok} -> @adapter.deliver(email, config)
-          {:error, message} -> {:error, message}
-        end
-      end
-      def deliver(email, _config) do
-        raise ArgumentError, "expected %Swoosh.Email{}, got #{inspect email}"
+      def deliver(email, config) do
+        Swoosh.Mailer.deliver(@adapter, email, Keyword.merge(@config, config))
       end
     end
+  end
+
+  def deliver(_adapter, %Swoosh.Email{from: nil}, _config) do
+    raise ArgumentError, "expected \"from\" to be set"
+  end
+  def deliver(_adapter, %Swoosh.Email{from: {_name, nil}}, _config) do
+    raise ArgumentError, "expected \"from\" address to be set"
+  end
+  def deliver(_adapter, %Swoosh.Email{to: nil}, _config) do
+    raise ArgumentError, "expected \"to\" to be set"
+  end
+  def deliver(_adapter, %Swoosh.Email{to: []}, _config) do
+    raise ArgumentError, "expected \"to\" not to be empty"
+  end
+  def deliver(_adapter, %Swoosh.Email{subject: nil}, _config) do
+    raise ArgumentError, "expected \"subject\" to be set"
+  end
+  def deliver(_adapter, %Swoosh.Email{html_body: nil, text_body: nil}, _config) do
+    raise ArgumentError, "expected \"html_body\" or \"text_body\" to be set"
+  end
+  def deliver(adapter, %Swoosh.Email{} = email, config) do
+    config = config |> Swoosh.Mailer.parse_runtime_config()
+
+    case adapter.validate_config(config) do
+      {:ok} -> adapter.deliver(email, config)
+      {:error, message} -> {:error, message}
+    end
+  end
+  def deliver(_adapter, email, _config) do
+    raise ArgumentError, "expected %Swoosh.Email{}, got #{inspect email}"
   end
 
   @doc """
