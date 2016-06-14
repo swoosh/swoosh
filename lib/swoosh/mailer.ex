@@ -93,10 +93,8 @@ defmodule Swoosh.Mailer do
   def deliver(adapter, %Swoosh.Email{} = email, config) do
     config = config |> Swoosh.Mailer.parse_runtime_config()
 
-    case adapter.validate_config(config) do
-      {:ok} -> adapter.deliver(email, config)
-      {:error, message} -> {:error, message}
-    end
+    :ok = adapter.validate_config(config)
+    adapter.deliver(email, config)
   end
   def deliver(_adapter, email, _config) do
     raise ArgumentError, "expected %Swoosh.Email{}, got #{inspect email}"

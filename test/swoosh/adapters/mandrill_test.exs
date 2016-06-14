@@ -132,4 +132,16 @@ defmodule Swoosh.Adapters.MandrillTest do
 
     assert Mandrill.deliver(email, config) == {:error, %{"code" => -1, "message" => "Invalid API key", "name" => "Invalid_Key", "status" => "error"}}
   end
+
+  test "validate_config/1 with valid config", %{config: config} do
+    assert Mandrill.validate_config(config) == :ok
+  end
+
+  test "validate_config/1 with invalid config" do
+    assert_raise ArgumentError, """
+    expected [:api_key] to be set, got: []
+    """, fn ->
+      Mandrill.validate_config([])
+    end
+  end
 end

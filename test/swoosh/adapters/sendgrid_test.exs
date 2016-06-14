@@ -13,7 +13,7 @@ defmodule Swoosh.Adapters.SendgridTest do
 
   setup_all do
     bypass = Bypass.open
-    config = [base_url: "http://localhost:#{bypass.port}"]
+    config = [api_key: "123", base_url: "http://localhost:#{bypass.port}"]
 
     valid_email =
       new
@@ -96,5 +96,18 @@ defmodule Swoosh.Adapters.SendgridTest do
     end
     assert Sendgrid.deliver(email, config) ==
            {:error, %{"errors" => ["Internal server error"], "message" => "error"}}
+  end
+
+
+  test "validate_config/1 with valid config", %{config: config} do
+    assert Sendgrid.validate_config(config) == :ok
+  end
+
+  test "validate_config/1 with invalid config" do
+    assert_raise ArgumentError, """
+    expected [:api_key] to be set, got: []
+    """, fn ->
+      Sendgrid.validate_config([])
+    end
   end
 end

@@ -44,5 +44,4 @@ defmodule Swoosh.Adapters.SendmailTest do
     cmd = "#{config[:cmd_path]} -f'tony@stark.com' -oi -t #{config[:cmd_args]}"
     assert Sendmail.cmd(email, config) == cmd
   end
-
 end

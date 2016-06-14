@@ -97,7 +97,15 @@ defmodule Swoosh.Adapters.MailgunTest do
     assert Mailgun.deliver(email, config) == {:error, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}
   end
 
-  test "validate_config/1", %{config: config} do
-    assert Mailgun.validate_config(config) == {:ok}
+  test "validate_config/1 with valid config", %{config: config} do
+    assert Mailgun.validate_config(config) == :ok
+  end
+
+  test "validate_config/1 with invalid config" do
+    assert_raise ArgumentError, """
+    expected [:domain, :api_key] to be set, got: []
+    """, fn ->
+      Mailgun.validate_config([])
+    end
   end
 end

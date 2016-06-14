@@ -17,12 +17,10 @@ defmodule Swoosh.Adapters.Sendmail do
       end
   """
 
+  use Swoosh.Adapter
+
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP
-
-  @behaviour Swoosh.Adapter
-
-  def validate_config(_config), do: {:ok}
 
   def deliver(%Email{} = email, config) do
     body = SMTP.encode_message(email, config)
@@ -59,5 +57,4 @@ defmodule Swoosh.Adapters.Sendmail do
   def shell_escape(s) do
     "'" <> String.replace(s, "'", "'\\''") <> "'"
   end
-
 end

@@ -17,15 +17,13 @@ defmodule Swoosh.Adapters.Sendgrid do
       end
   """
 
+  use Swoosh.Adapter, required_config: [:api_key]
+
   alias HTTPoison.Response
   alias Swoosh.Email
 
-  @behaviour Swoosh.Adapter
-
   @base_url "https://api.sendgrid.com/api"
   @api_endpoint "/mail.send.json"
-
-  def validate_config(_config), do: {:ok}
 
   def deliver(%Email{} = email, config \\ []) do
     headers = [{"Content-Type", "application/x-www-form-urlencoded"},

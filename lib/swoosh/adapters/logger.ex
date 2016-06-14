@@ -12,21 +12,19 @@ defmodule Swoosh.Adapters.Logger do
 
       # config/config.exs
       config :sample, Sample.Mailer,
-	adapter: Swoosh.Adapters.Logger,
-	level: :debug
+        adapter: Swoosh.Adapters.Logger,
+        level: :debug
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
-	use Swoosh.Mailer, otp_app: :sample
+        use Swoosh.Mailer, otp_app: :sample
       end
   """
 
+  use Swoosh.Adapter
+
   require Logger
   import Swoosh.Email.Format
-
-  @behaviour Swoosh.Adapter
-
-  def validate_config(_config), do: {:ok}
 
   def deliver(%Swoosh.Email{} = email, config) do
     rendered_email = render(config[:log_full_email] || false, email)

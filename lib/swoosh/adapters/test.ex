@@ -17,9 +17,7 @@ defmodule Swoosh.Adapters.Test do
       end
   """
 
-  @behaviour Swoosh.Adapter
-
-  def validate_config(_config), do: {:ok}
+  use Swoosh.Adapter
 
   def deliver(email, _config) do
     send(self(), {:email, email})

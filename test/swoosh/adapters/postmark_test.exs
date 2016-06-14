@@ -17,7 +17,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
   setup_all do
     bypass = Bypass.open
     config = [base_url: "http://localhost:#{bypass.port}",
-              domain: "/avengers.com",
               api_key: "jarvis"]
 
     valid_email =
@@ -98,5 +97,17 @@ defmodule Swoosh.Adapters.PostmarkTest do
     end
 
     assert Postmark.deliver(email, config) == {:error, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}
+  end
+
+  test "validate_config/1 with valid config", %{config: config} do
+    assert Postmark.validate_config(config) == :ok
+  end
+
+  test "validate_config/1 with invalid config" do
+    assert_raise ArgumentError, """
+    expected [:api_key] to be set, got: []
+    """, fn ->
+      Postmark.validate_config([])
+    end
   end
 end

@@ -14,7 +14,6 @@ defmodule Swoosh.Adapters.SMTPTest do
       |> text_body("Hello")
 
     valid_config = [
-      adapter: Swoosh.Adapters.SMTP,
       relay: "localhost",
       dkim: [s: "default", d: "example.com",
       private_key: {:pem_plain,                                                                                                                                                                                                                 "-----BEGIN RSA PRIVATE KEY-----
@@ -137,4 +136,15 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert SMTP.prepare_options(config) == [{:dkim, config[:dkim]}]
   end
 
+  test "validate_config/1 with valid config", %{valid_config: config} do
+    assert SMTP.validate_config(config) == :ok
+  end
+
+  test "validate_config/1 with invalid config" do
+    assert_raise ArgumentError, """
+    expected [:relay] to be set, got: []
+    """, fn ->
+      SMTP.validate_config([])
+    end
+  end
 end

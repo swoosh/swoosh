@@ -26,21 +26,9 @@ defmodule Swoosh.Adapters.SMTP do
       end
   """
 
+  use Swoosh.Adapter, required_config: [:relay]
+
   alias Swoosh.Email
-
-  @behaviour Swoosh.Adapter
-
-  def validate_config(config) do
-    required = MapSet.new [:relay, :password, :username]
-    actual   = MapSet.new(Keyword.keys(config))
-
-    case MapSet.difference(required, actual) do
-      [] -> {:ok}
-      missing ->
-        {:error, "Swoosh.Adapters.SMTP is missing " +
-                 "config keys: #{Enum.join(missing, ", ")}"}
-    end
-  end
 
   def deliver(%Email{} = email, config) do
     mail_from = mail_from(email)
