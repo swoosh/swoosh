@@ -32,8 +32,8 @@ defmodule Swoosh.Adapters.Mandrill do
     case HTTPoison.post(base_url(config) <> @api_endpoint, body, @headers) do
       {:ok, %Response{status_code: 200, body: body}} ->
         interpret_response(body)
-      {:ok, %Response{status_code: code, body: body}} when code != 200 ->
-        {:error, Poison.decode!(body)}
+      {:ok, %Response{status_code: code, body: body}} when code > 399 ->
+        {:error, {code, Poison.decode!(body)}}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end

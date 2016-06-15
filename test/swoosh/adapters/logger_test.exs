@@ -8,10 +8,12 @@ defmodule Swoosh.Adapters.LoggerTest do
   end
 
   setup_all do
-    email = Swoosh.Email.new(from: "tony@stark.com",
-			     to: "steve@rogers.com",
-			     subject: "Hello, Avengers!",
-			     text_body: "Hello!")
+    email = Swoosh.Email.new(
+      from: "tony@stark.com",
+      to: "steve@rogers.com",
+      subject: "Hello, Avengers!",
+      text_body: "Hello!"
+    )
     {:ok, email: email}
   end
 

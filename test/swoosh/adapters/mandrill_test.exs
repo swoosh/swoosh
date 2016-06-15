@@ -130,7 +130,7 @@ defmodule Swoosh.Adapters.MandrillTest do
       Plug.Conn.resp(conn, 500, "{\"status\":\"error\",\"code\":-1,\"name\":\"Invalid_Key\",\"message\":\"Invalid API key\"}")
     end
 
-    assert Mandrill.deliver(email, config) == {:error, %{"code" => -1, "message" => "Invalid API key", "name" => "Invalid_Key", "status" => "error"}}
+    assert Mandrill.deliver(email, config) == {:error, {500, %{"code" => -1, "message" => "Invalid API key", "name" => "Invalid_Key", "status" => "error"}}}
   end
 
   test "validate_config/1 with valid config", %{config: config} do

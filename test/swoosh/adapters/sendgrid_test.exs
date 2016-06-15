@@ -4,9 +4,16 @@ defmodule Swoosh.Adapters.SendgridTest do
   import Swoosh.Email
   alias Swoosh.Adapters.Sendgrid
 
-  @error_response """
+  @error_response_401 """
     {
       "errors": ["The provided authorization grant is invalid, expired."],
+      "message": "error"
+    }
+  """
+
+  @error_response_500 """
+    {
+      "errors": ["Internal server error"],
       "message": "error"
     }
   """
@@ -82,20 +89,20 @@ defmodule Swoosh.Adapters.SendgridTest do
     Bypass.expect bypass, fn conn ->
       assert "/mail.send.json" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 401, @error_response)
+      Plug.Conn.resp(conn, 401, @error_response_401)
     end
     assert Sendgrid.deliver(email, config) ==
-           {:error, %{"errors" => ["The provided authorization grant is invalid, expired."], "message" => "error"}}
+      {:error, {401, %{"errors" => ["The provided authorization grant is invalid, expired."], "message" => "error"}}}
   end
 
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       assert "/mail.send.json" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 500, "{\"errors\":[\"Internal server error\"], \"message\":\"error\"}")
+      Plug.Conn.resp(conn, 500, @error_response_500)
     end
     assert Sendgrid.deliver(email, config) ==
-           {:error, %{"errors" => ["Internal server error"], "message" => "error"}}
+      {:error, {500, %{"errors" => ["Internal server error"], "message" => "error"}}}
   end
 
 

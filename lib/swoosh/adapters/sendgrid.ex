@@ -32,12 +32,10 @@ defmodule Swoosh.Adapters.Sendgrid do
     body = email |> prepare_body() |> Plug.Conn.Query.encode
 
     case HTTPoison.post(base_url(config) <> @api_endpoint, body, headers) do
-      {:ok, %Response{status_code: code}} when code >= 200 and code <= 299 ->
+      {:ok, %Response{status_code: code}} when code >= 200 and code <= 399 ->
         {:ok, %{}}
-      {:ok, %Response{status_code: code, body: body}} when code >= 400 and code <= 499 ->
-        {:error, Poison.decode!(body)}
-      {:ok, %Response{status_code: code, body: body}} when code >= 500 and code <= 599 ->
-        {:error, Poison.decode!(body)}
+      {:ok, %Response{status_code: code, body: body}} when code > 399 ->
+        {:error, {code, Poison.decode!(body)}}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end

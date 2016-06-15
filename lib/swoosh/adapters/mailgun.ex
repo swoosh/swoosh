@@ -31,14 +31,12 @@ defmodule Swoosh.Adapters.Mailgun do
     params = email |> prepare_body |> Plug.Conn.Query.encode
 
     case HTTPoison.post(base_url(config) <> "/" <> config[:domain] <> @api_endpoint, params, headers) do
-      {:ok, %Response{status_code: code, body: body}} when code >= 200 and code <= 299 ->
+      {:ok, %Response{status_code: 200, body: body}} ->
         {:ok, %{id: Poison.decode!(body)["id"]}}
-      {:ok, %Response{status_code: code, body: body}} when code == 401 ->
-        {:error, body}
-      {:ok, %Response{status_code: code, body: body}} when code >= 400 and code <= 499 ->
-        {:error, Poison.decode!(body)}
-      {:ok, %Response{status_code: code, body: body}} when code >= 500 and code <= 599 ->
-        {:error, Poison.decode!(body)}
+      {:ok, %Response{status_code: 401, body: body}} ->
+        {:error, {401, body}}
+      {:ok, %Response{status_code: code, body: body}} when code > 399->
+        {:error, {code, Poison.decode!(body)}}
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end

@@ -40,28 +40,29 @@ defmodule Swoosh.TestAssertions do
       Enum.each params, fn param -> assert_equal(email, param) end
     rescue
       error ->
-	stacktrace = System.stacktrace
-	name = error.__struct__
-	field =
-	  case elem(error.expr, 0) do
-	    :== ->
-	      {_, _, [{{_, _, [_, field]}, _, _},_]} = error.expr
-	      field
-	    :in ->
-	      {_, _, [{_, _, _}, {{_, _, [_, field]}, _, _}]} = error.expr
-	      field
-	  end
+        stacktrace = System.stacktrace
+        name = error.__struct__
+        field =
+          case elem(error.expr, 0) do
+            :== ->
+              {_, _, [{{_, _, [_, field]}, _, _},_]} = error.expr
+              field
+            :in ->
+              {_, _, [{_, _, _}, {{_, _, [_, field]}, _, _}]} = error.expr
+              field
+          end
 
-	cond do
-	  name == ExUnit.AssertionError ->
-	    message = "Email `#{to_string(field)}` does not match\n" <>
-		      "email: #{inspect email}\n" <>
-		      "lhs: #{inspect error.left}\n" <>
-		      "rhs: #{inspect error.right}"
-	    reraise ExUnit.AssertionError, [message: message], stacktrace
-	  true ->
-	    reraise(error, stacktrace)
-	end
+        cond do
+          name == ExUnit.AssertionError ->
+            message =
+              "Email `#{to_string(field)}` does not match\n" <>
+              "email: #{inspect email}\n" <>
+              "lhs: #{inspect error.left}\n" <>
+              "rhs: #{inspect error.right}"
+            reraise ExUnit.AssertionError, [message: message], stacktrace
+          true ->
+            reraise(error, stacktrace)
+        end
     end
   end
 

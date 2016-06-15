@@ -56,6 +56,8 @@ defmodule Swoosh.Mailer do
       :ok
   """
 
+  alias Swoosh.DeliveryError
+
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       {otp_app, adapter, config} = Swoosh.Mailer.parse_config(__MODULE__, opts)
@@ -69,35 +71,29 @@ defmodule Swoosh.Mailer do
       def deliver(email, config) do
         Swoosh.Mailer.deliver(@adapter, email, Keyword.merge(@config, config))
       end
+
+      def deliver!(email, config \\ [])
+      def deliver!(email, config) do
+        case deliver(email, config) do
+          {:ok, result} -> result
+          {:error, reason} -> raise DeliveryError, reason: reason
+          {:error, reason, payload} -> raise DeliveryError, reason: reason, payload: payload
+        end
+      end
     end
   end
 
   def deliver(_adapter, %Swoosh.Email{from: nil}, _config) do
-    raise ArgumentError, "expected \"from\" to be set"
+    {:error, :from_not_set}
   end
-  def deliver(_adapter, %Swoosh.Email{from: {_name, nil}}, _config) do
-    raise ArgumentError, "expected \"from\" address to be set"
-  end
-  def deliver(_adapter, %Swoosh.Email{to: nil}, _config) do
-    raise ArgumentError, "expected \"to\" to be set"
-  end
-  def deliver(_adapter, %Swoosh.Email{to: []}, _config) do
-    raise ArgumentError, "expected \"to\" not to be empty"
-  end
-  def deliver(_adapter, %Swoosh.Email{subject: nil}, _config) do
-    raise ArgumentError, "expected \"subject\" to be set"
-  end
-  def deliver(_adapter, %Swoosh.Email{html_body: nil, text_body: nil}, _config) do
-    raise ArgumentError, "expected \"html_body\" or \"text_body\" to be set"
+  def deliver(_adapter, %Swoosh.Email{from: {_name, address}}, _config) when address in ["", nil] do
+    {:error, :from_not_set}
   end
   def deliver(adapter, %Swoosh.Email{} = email, config) do
     config = config |> Swoosh.Mailer.parse_runtime_config()
 
     :ok = adapter.validate_config(config)
     adapter.deliver(email, config)
-  end
-  def deliver(_adapter, email, _config) do
-    raise ArgumentError, "expected %Swoosh.Email{}, got #{inspect email}"
   end
 
   @doc """

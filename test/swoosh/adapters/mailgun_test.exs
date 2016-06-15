@@ -86,7 +86,7 @@ defmodule Swoosh.Adapters.MailgunTest do
       Plug.Conn.resp(conn, 401, "Forbidden")
     end
 
-    assert Mailgun.deliver(email, config) == {:error, "Forbidden"}
+    assert Mailgun.deliver(email, config) == {:error, {401, "Forbidden"}}
   end
 
   test "deliver/1 with 5xx response", %{bypass: bypass, valid_email: email, config: config} do
@@ -94,7 +94,7 @@ defmodule Swoosh.Adapters.MailgunTest do
       Plug.Conn.resp(conn, 500, "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}")
     end
 
-    assert Mailgun.deliver(email, config) == {:error, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}
+    assert Mailgun.deliver(email, config) == {:error, {500, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}}
   end
 
   test "validate_config/1 with valid config", %{config: config} do
