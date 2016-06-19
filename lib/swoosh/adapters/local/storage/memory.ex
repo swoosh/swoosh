@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> Memory.push(email)
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
   """
   def push(email) do
     GenServer.call(__MODULE__, {:push, email})
@@ -48,11 +48,11 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> Memory.push(email)
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.all() |> Enum.count()
       1
       iex> Memory.pop()
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.all() |> Enun.count()
       0
   """
@@ -68,9 +68,9 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> Memory.push(email)
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.get("A1B2C3")
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
   """
   def get(id) do
     GenServer.call(__MODULE__, {:get, id})
@@ -84,9 +84,9 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> Memory.push(email)
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.all()
-      [%Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}]
+      [%Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}]
   """
   def all() do
     GenServer.call(__MODULE__, :all)
@@ -100,7 +100,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       iex> email = new |> from("tony@stark.com")
       %Swoosh.Email{from: {"", "tony@stark.com"}, [...]}
       iex> Memory.push(email)
-      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "A1B2C3"}, [...]}
+      %Swoosh.Email{from: {"", "tony@stark.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.delete_all()
       :ok
       iex> Memory.list()
@@ -117,7 +117,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   end
 
   def handle_call({:push, email}, _from, state) do
-    id = :crypto.rand_bytes(16) |> Base.encode16
+    id = :crypto.rand_bytes(16) |> Base.encode16 |> String.downcase
     email = email |> Swoosh.Email.header("Message-ID", id)
     {:reply, email, [email] ++ state}
   end
@@ -127,7 +127,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   end
 
   def handle_call({:get, id}, _from, state) do
-    email = Enum.find(state, nil, fn %Swoosh.Email{headers: %{"Message-ID" => mid}} -> mid == id end)
+    email = Enum.find(state, nil, fn %Swoosh.Email{headers: %{"Message-ID" => mid}} -> mid == String.downcase(id) end)
     {:reply, email, state}
   end
 
