@@ -75,7 +75,7 @@ end
 
     ```elixir
     def application do
-      [applications: [:swoosh, :gen_stmp]]
+      [applications: [:swoosh, :gen_smtp]]
     end
     ```
 
