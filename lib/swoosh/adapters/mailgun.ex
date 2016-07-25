@@ -20,7 +20,6 @@ defmodule Swoosh.Adapters.Mailgun do
 
   use Swoosh.Adapter, required_config: [:api_key, :domain]
 
-  alias HTTPoison.Response
   alias Swoosh.Email
 
   @base_url     "https://api.mailgun.net/v3"
@@ -29,15 +28,16 @@ defmodule Swoosh.Adapters.Mailgun do
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
     params = email |> prepare_body |> Plug.Conn.Query.encode
+    url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    case HTTPoison.post(base_url(config) <> "/" <> config[:domain] <> @api_endpoint, params, headers) do
-      {:ok, %Response{status_code: 200, body: body}} ->
+    case :hackney.post(url, headers, params, [:with_body]) do
+      {:ok, 200, _headers, body} ->
         {:ok, %{id: Poison.decode!(body)["id"]}}
-      {:ok, %Response{status_code: 401, body: body}} ->
+      {:ok, 401, _headers, body} ->
         {:error, {401, body}}
-      {:ok, %Response{status_code: code, body: body}} when code > 399->
+      {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, Poison.decode!(body)}}
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         {:error, reason}
     end
   end

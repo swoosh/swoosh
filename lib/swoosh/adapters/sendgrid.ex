@@ -19,7 +19,6 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   use Swoosh.Adapter, required_config: [:api_key]
 
-  alias HTTPoison.Response
   alias Swoosh.Email
 
   @base_url "https://api.sendgrid.com/api"
@@ -30,13 +29,14 @@ defmodule Swoosh.Adapters.Sendgrid do
                {"User-Agent", "swoosh/#{Swoosh.version}"},
                {"Authorization", "Bearer #{config[:api_key]}"}]
     body = email |> prepare_body() |> Plug.Conn.Query.encode
+    url = [base_url(config), @api_endpoint]
 
-    case HTTPoison.post(base_url(config) <> @api_endpoint, body, headers) do
-      {:ok, %Response{status_code: code}} when code >= 200 and code <= 399 ->
+    case :hackney.post(url, headers, body, [:with_body]) do
+      {:ok, code, _headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{}}
-      {:ok, %Response{status_code: code, body: body}} when code > 399 ->
+      {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, Poison.decode!(body)}}
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         {:error, reason}
     end
   end

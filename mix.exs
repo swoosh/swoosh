@@ -25,7 +25,7 @@ defmodule Swoosh.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :poison, :httpoison],
+    [applications: [:logger, :poison, :hackney],
      mod: {Swoosh.Application, []}]
   end
 
@@ -33,7 +33,7 @@ defmodule Swoosh.Mixfile do
   defp elixirc_paths(_),     do: ["lib"]
 
   defp deps do
-    [{:httpoison, "~> 0.8"},
+    [{:hackney, "~> 1.6"},
      {:poison, "~> 1.5 or ~> 2.0"},
      {:gen_smtp, "~> 0.11"},
      {:cowboy, "~> 1.0.0", optional: true},
