@@ -1,7 +1,7 @@
 defmodule Swoosh.EmailHelpers do
   @moduledoc false
 
-  def format_recipient({name, address} = recipient) when is_binary(name) and is_binary(address) and recipient != "" do
+  def format_recipient({name, address} = recipient) when is_binary(name) and is_binary(address) do
     recipient
   end
   def format_recipient(recipient) when is_binary(recipient) and recipient != "" do
