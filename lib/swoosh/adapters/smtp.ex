@@ -36,10 +36,10 @@ if Code.ensure_loaded?(:gen_smtp_client) do
     alias Swoosh.Email
 
     def deliver(%Email{} = email, config) do
-      mail_from = mail_from(email)
+      sender = mail_from(email)
       recipients = all_recipients(email)
       body = encode_message(email, config)
-      case :gen_smtp_client.send_blocking({mail_from, recipients, body}, config) do
+      case :gen_smtp_client.send_blocking({sender, recipients, body}, config) do
         receipt when is_binary(receipt) -> {:ok, receipt}
         {:error, type, message} -> {:error, {type, message}}
         {:error, reason} -> {:error, reason}
