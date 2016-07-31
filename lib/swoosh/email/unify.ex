@@ -1,13 +1,13 @@
-defmodule Swoosh.EmailHelpers do
+defmodule Swoosh.Email.Unify do
   @moduledoc false
 
-  def format_recipient({name, address} = recipient) when is_binary(name) and is_binary(address) do
+  def unify_recipient({name, address} = recipient) when is_binary(name) and is_binary(address) do
     recipient
   end
-  def format_recipient(recipient) when is_binary(recipient) and recipient != "" do
+  def unify_recipient(recipient) when is_binary(recipient) and recipient != "" do
     {"", recipient}
   end
-  def format_recipient(invalid) do
+  def unify_recipient(invalid) do
     raise ArgumentError, message:
     """
     The recipient `#{inspect invalid}` is invalid.

@@ -52,7 +52,7 @@ defmodule Swoosh.Email do
       email = new(from: "tony.stark@example.com", to: "steve.rogers@example.com", subject: "Hello, Avengers!")
   """
 
-  import Swoosh.EmailHelpers
+  import Swoosh.Email.Unify
 
   defstruct subject: "", from: nil, to: [], cc: [], bcc: [], text_body: nil,
             html_body: nil, attachments: nil, reply_to: nil, headers: %{},
@@ -183,7 +183,7 @@ defmodule Swoosh.Email do
   """
   @spec from(t, mailbox | address) :: t
   def from(%__MODULE__{} = email, from) do
-    from = format_recipient(from)
+    from = unify_recipient(from)
     %{email | from: from}
   end
 
@@ -207,7 +207,7 @@ defmodule Swoosh.Email do
   """
   @spec reply_to(t, mailbox | address) :: t
   def reply_to(%__MODULE__{} = email, reply_to) do
-    reply_to = format_recipient(reply_to)
+    reply_to = unify_recipient(reply_to)
     %{email | reply_to: reply_to}
   end
 
@@ -275,7 +275,7 @@ defmodule Swoosh.Email do
   def bcc(%__MODULE__{bcc: bcc} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
       |> Enum.concat(bcc)
     %{email | bcc: recipients}
   end
@@ -292,7 +292,7 @@ defmodule Swoosh.Email do
   def put_bcc(%__MODULE__{} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
     %{email | bcc: recipients}
   end
   def put_bcc(%__MODULE__{} = email, recipient) do
@@ -317,7 +317,7 @@ defmodule Swoosh.Email do
   def cc(%__MODULE__{cc: cc} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
       |> Enum.concat(cc)
     %{email | cc: recipients}
   end
@@ -334,7 +334,7 @@ defmodule Swoosh.Email do
   def put_cc(%__MODULE__{} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
     %{email | cc: recipients}
   end
   def put_cc(%__MODULE__{} = email, recipient) do
@@ -359,7 +359,7 @@ defmodule Swoosh.Email do
   def to(%__MODULE__{to: to} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
       |> Enum.concat(to)
     %{email | to: recipients}
   end
@@ -376,7 +376,7 @@ defmodule Swoosh.Email do
   def put_to(%__MODULE__{} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
-      |> Enum.map(&format_recipient(&1))
+      |> Enum.map(&unify_recipient(&1))
     %{email | to: recipients}
   end
   def put_to(%__MODULE__{} = email, recipient) do
