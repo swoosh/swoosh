@@ -34,6 +34,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
     use Swoosh.Adapter, required_config: [:relay]
 
     alias Swoosh.Email
+    import Swoosh.Email.Format
 
     def deliver(%Email{} = email, config) do
       sender = mail_from(email)
@@ -93,31 +94,21 @@ if Code.ensure_loaded?(:gen_smtp_client) do
 
     defp prepare_subject(headers, %Email{subject: subject}), do: [{"Subject", subject} | headers]
 
-    defp prepare_from(headers, %Email{from: from}), do: [{"From", prepare_recipient(from)} | headers]
+    defp prepare_from(headers, %Email{from: from}), do: [{"From", format_recipient(from)} | headers]
 
-    defp prepare_to(headers, %Email{to: to}), do: [{"To", "#{prepare_recipients(to)}"} | headers]
+    defp prepare_to(headers, %Email{to: to}), do: [{"To", format_recipient(to)} | headers]
 
     defp prepare_cc(headers, %Email{cc: []}), do: headers
-    defp prepare_cc(headers, %Email{cc: cc}), do: [{"Cc", "#{prepare_recipients(cc)}"} | headers]
+    defp prepare_cc(headers, %Email{cc: cc}), do: [{"Cc", format_recipient(cc)} | headers]
 
     defp prepare_reply_to(headers, %Email{reply_to: nil}), do: headers
-    defp prepare_reply_to(headers, %Email{reply_to: reply_to}), do: [{"Reply-To", prepare_recipient(reply_to)} | headers]
+    defp prepare_reply_to(headers, %Email{reply_to: reply_to}), do: [{"Reply-To", format_recipient(reply_to)} | headers]
 
     defp prepare_mime_version(headers), do: [{"Mime-Version", "1.0"} | headers]
 
     defp prepare_additional_headers(headers, %Email{headers: additional_headers}) do
       Map.to_list(additional_headers) ++ headers
     end
-
-    defp prepare_recipients(recipients) do
-      recipients
-      |> Enum.map(&prepare_recipient(&1))
-      |> Enum.join(", ")
-    end
-
-    defp prepare_recipient({nil, address}), do: address
-    defp prepare_recipient({"", address}), do: address
-    defp prepare_recipient({name, address}), do: "#{name} <#{address}>"
 
     defp prepare_parts(headers, %Email{html_body: nil, text_body: text_body}) do
       headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
