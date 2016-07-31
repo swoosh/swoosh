@@ -7,7 +7,8 @@ defmodule Swoosh.Email.Format do
   def format_recipient({name, address}), do: "#{name} <#{address}>"
   def format_recipient([]), do: ""
   def format_recipient(list) when is_list(list) do
-    Enum.map(list, &format_recipient/1)
+    list
+    |> Enum.map(&format_recipient/1)
     |> Enum.join(", ")
   end
 end
