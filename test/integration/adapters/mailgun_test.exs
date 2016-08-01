@@ -18,9 +18,9 @@ defmodule Swoosh.Integration.Adapters.MailgunTest do
       new
       |> from({"Swoosh Mailgun", "swoosh@#{config[:domain]}"})
       |> reply_to("swoosh+replyto@#{config[:domain]}")
-      |> to("swoosh+to@elixirhq.com")
-      |> cc("swoosh+cc@elixirhq.com")
-      |> bcc("swoosh+bcc@elixirhq.com")
+      |> to("swoosh+to@#{config[:domain]}")
+      |> cc("swoosh+cc@#{config[:domain]}")
+      |> bcc("swoosh+bcc@#{config[:domain]}")
       |> subject("Swoosh - Mailgun integration test")
       |> text_body("This email was sent by the Swoosh library automation testing")
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
@@ -34,7 +34,7 @@ defmodule Swoosh.Integration.Adapters.MailgunTest do
     email =
       new
       |> from({"Swoosh Mailgun", "swoosh@#{config[:domain]}"})
-      |> to("swoosh+to@elixirhq.com")
+      |> to("swoosh+to@#{config[:domain]}")
       |> subject("Swoosh - Mailgun integration test")
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
 

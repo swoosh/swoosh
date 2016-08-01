@@ -10,6 +10,7 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
       relay: System.get_env("SMTP_RELAY"),
       username: System.get_env("SMTP_USERNAME"),
       password: System.get_env("SMTP_PASSWORD"),
+      domain: System.get_env("SMTP_DOMAIN"),
       tls: :always,
       auth: :always
     ]
@@ -19,11 +20,11 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
   test "simple deliver", %{config: config} do
     email =
       new
-      |> from({"Swoosh SMTP", "swoosh+smtp@elixirhq.com"})
-      |> reply_to("swoosh+replyto@elixirhq.com")
-      |> to("swoosh+to@elixirhq.com")
-      |> cc("swoosh+cc@elixirhq.com")
-      |> bcc("swoosh+bcc@elixirhq.com")
+      |> from({"Swoosh SMTP", "swoosh+smtp#{config[:domain]}"})
+      |> reply_to("swoosh+replyto#{config[:domain]}")
+      |> to("swoosh+to#{config[:domain]}")
+      |> cc("swoosh+cc#{config[:domain]}")
+      |> bcc("swoosh+bcc#{config[:domain]}")
       |> subject("Swoosh - SMTP integration test")
       |> text_body("This email was sent by the Swoosh library automation testing")
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")

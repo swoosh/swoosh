@@ -6,18 +6,18 @@ defmodule Swoosh.Integration.Adapters.SendgridTest do
   @moduletag integration: true
 
   setup_all do
-    config = [api_key: System.get_env("SENDGRID_API_KEY")]
+    config = [api_key: System.get_env("SENDGRID_API_KEY"), domain: Sytem.get_env("SENDGRID_DOMAIN")]
     {:ok, config: config}
   end
 
   test "simple deliver", %{config: config} do
     email =
       new
-      |> from({"Swoosh Sendgrid", "swoosh+sendgrid@elixirhq.com"})
-      |> reply_to("swoosh+replyto@elixirhq.com")
-      |> to("swoosh+to@elixirhq.com")
-      |> cc("swoosh+cc@elixirhq.com")
-      |> bcc("swoosh+bcc@elixirhq.com")
+      |> from({"Swoosh Sendgrid", "swoosh+sendgrid#{config[:domain]}"})
+      |> reply_to("swoosh+replyto#{config[:domain]}")
+      |> to("swoosh+to#{config[:domain]}")
+      |> cc("swoosh+cc#{config[:domain]}")
+      |> bcc("swoosh+bcc#{config[:domain]}")
       |> subject("Swoosh - Sendgrid integration test")
       |> text_body("This email was sent by the Swoosh library automation testing")
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
