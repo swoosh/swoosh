@@ -41,8 +41,8 @@ defmodule Swoosh.Mailer do
   Once configured you can use your mailer like this:
 
       # in an IEx console
-      iex> email = new |> from("tony@stark.com") |> to("steve@rogers.com")
-      %Swoosh.Email{from: {"", "tony@stark.com"}, ...}
+      iex> email = new |> from("tony.stark@example.com") |> to("steve.rogers@example.com")
+      %Swoosh.Email{from: {"", "tony.stark@example.com"}, ...}
       iex> Mailer.deliver(email)
       :ok
 
@@ -50,8 +50,8 @@ defmodule Swoosh.Mailer do
   with your Mailer's config:
 
       # in an IEx console
-      iex> email = new |> from("tony@stark.com") |> to("steve@rogers.com")
-      %Swoosh.Email{from: {"", "tony@stark.com"}, ...}
+      iex> email = new |> from("tony.stark@example.com") |> to("steve.rogers@example.com")
+      %Swoosh.Email{from: {"", "tony.stark@example.com"}, ...}
       iex> Mailer.deliver(email, domain: "jarvis.com")
       :ok
   """

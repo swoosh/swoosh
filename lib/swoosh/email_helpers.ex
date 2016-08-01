@@ -13,8 +13,10 @@ defmodule Swoosh.EmailHelpers do
     The recipient `#{inspect invalid}` is invalid.
 
     Recipients must be a string representing an email address like
-    `foo@bar.com` or a two-element tuple `{name, address}`, where
+    `foo.bar@example.com` or a two-element tuple `{name, address}`, where
     name and address are strings.
     """
   end
+
+
 end

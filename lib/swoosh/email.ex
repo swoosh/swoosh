@@ -7,14 +7,14 @@ defmodule Swoosh.Email do
 
   ## Email fields
 
-  * `from` - the email address of the sender, example: `{"Tony Stark", "tony@stark.com"}`
-  * `to` - the email address for the recipient(s), example: `[{"Steve Rogers", "steve@rogers.com"}]`
+  * `from` - the email address of the sender, example: `{"Tony Stark", "tony.stark@example.com"}`
+  * `to` - the email address for the recipient(s), example: `[{"Steve Rogers", "steve.rogers@example.com"}]`
   * `subject` - the subject of the email, example: `"Hello, Avengers!"`
-  * `cc` - the intended carbon copy recipient(s) of the email, example: `[{"Bruce Banner", "hulk@smash.com"}]`
-  * `bcc` - the intended blind carbon copy recipient(s) of the email, example: `[{"Janet Pym", "wasp@avengers.com"}]`
+  * `cc` - the intended carbon copy recipient(s) of the email, example: `[{"Bruce Banner", "hulk.smash@example.com"}]`
+  * `bcc` - the intended blind carbon copy recipient(s) of the email, example: `[{"Janet Pym", "wasp.avengers@example.com"}]`
   * `text_body` - the content of the email in plaintext, example: `"Hello"`
   * `html_body` - the content of the email in HTML, example: `"<h1>Hello</h1>"`
-  * `reply_to` - the email address that should receive replies, example: `{"Clints Barton", "hawk@eye.com"}`
+  * `reply_to` - the email address that should receive replies, example: `{"Clints Barton", "hawk.eye@example.com"}`
   * `headers` - a map of headers that should be included in the email, example: `%{"X-Accept-Language" => "en-us, en"}`
   * `assigns` - a map of values that correspond with any template variables, example: `%{"first_name" => "Bruce"}`
 
@@ -34,22 +34,22 @@ defmodule Swoosh.Email do
 
       email =
         new
-        |> to("tony@stark.com")
-        |> from("bruce@banner.com")
+        |> to("tony.stark@example.com")
+        |> from("bruce.banner@example.com")
         |> text_body("Welcome to the Avengers")
 
   The composable nature makes it very easy to continue expanding upon a given Email.
 
       email =
         email
-        |> cc({"Steve Rogers", "steve@rogers.com"})
-        |> cc("wasp@avengers.com")
-        |> bcc(["thor@odinson.com", {"Henry McCoy", "beast@avengers.com"}])
+        |> cc({"Steve Rogers", "steve.rogers@example.com"})
+        |> cc("wasp.avengers@example.com")
+        |> bcc(["thor.odinson@example.com", {"Henry McCoy", "beast.avengers@example.com"}])
         |> html_body("<h1>Special Welcome</h1>")
 
   You can also directly pass arguments to the `new/1` function.
 
-      email = new(from: "tony@stark.com", to: "steve@rogers.com", subject: "Hello, Avengers!")
+      email = new(from: "tony.stark@example.com", to: "steve.rogers@example.com", subject: "Hello, Avengers!")
   """
 
   import Swoosh.EmailHelpers
@@ -92,31 +92,31 @@ defmodule Swoosh.Email do
       iex> new(subject: "Hello, Avengers!")
       %Swoosh.Email{subject: "Hello, Avengers!"}
 
-      iex> new(from: "tony@stark.com")
-      %Swoosh.Email{from: {"", "tony@stark.com"}}
-      iex> new(from: {"Tony Stark", "tony@stark.com"})
-      %Swoosh.Email{from: {"Tony Stark", "tony@stark.com"}}
+      iex> new(from: "tony.stark@example.com")
+      %Swoosh.Email{from: {"", "tony.stark@example.com"}}
+      iex> new(from: {"Tony Stark", "tony.stark@example.com"})
+      %Swoosh.Email{from: {"Tony Stark", "tony.stark@example.com"}}
 
-      iex> new(to: "steve@rogers.com")
-      %Swoosh.Email{to: [{"", "steve@rogers.com"}]}
-      iex> new(to: {"Steve Rogers", "steve@rogers.com"})
-      %Swoosh.Email{to: [{"Steve Rogers", "steve@rogers.com"}]}
-      iex> new(to: [{"Bruce Banner", "bruce@banner.com"}, "thor@odinson.com"])
-      %Swoosh.Email{to: [{"Bruce Banner", "bruce@banner.com"}, {"", "thor@odinson.com"}]}
+      iex> new(to: "steve.rogers@example.com")
+      %Swoosh.Email{to: [{"", "steve.rogers@example.com"}]}
+      iex> new(to: {"Steve Rogers", "steve.rogers@example.com"})
+      %Swoosh.Email{to: [{"Steve Rogers", "steve.rogers@example.com"}]}
+      iex> new(to: [{"Bruce Banner", "bruce.banner@example.com"}, "thor.odinson@example.com"])
+      %Swoosh.Email{to: [{"Bruce Banner", "bruce.banner@example.com"}, {"", "thor.odinson@example.com"}]}
 
-      iex> new(cc: "steve@rogers.com")
-      %Swoosh.Email{cc: [{"", "steve@rogers.com"}]}
-      iex> new(cc: {"Steve Rogers", "steve@rogers.com"})
-      %Swoosh.Email{cc: [{"Steve Rogers", "steve@rogers.com"}]}
-      iex> new(cc: [{"Bruce Banner", "bruce@banner.com"}, "thor@odinson.com"])
-      %Swoosh.Email{cc: [{"Bruce Banner", "bruce@banner.com"}, {"", "thor@odinson.com"}]}
+      iex> new(cc: "steve.rogers@example.com")
+      %Swoosh.Email{cc: [{"", "steve.rogers@example.com"}]}
+      iex> new(cc: {"Steve Rogers", "steve.rogers@example.com"})
+      %Swoosh.Email{cc: [{"Steve Rogers", "steve.rogers@example.com"}]}
+      iex> new(cc: [{"Bruce Banner", "bruce.banner@example.com"}, "thor.odinson@example.com"])
+      %Swoosh.Email{cc: [{"Bruce Banner", "bruce.banner@example.com"}, {"", "thor.odinson@example.com"}]}
 
-      iex> new(bcc: "steve@rogers.com")
-      %Swoosh.Email{bcc: [{"", "steve@rogers.com"}]}
-      iex> new(bcc: {"Steve Rogers", "steve@rogers.com"})
-      %Swoosh.Email{bcc: [{"Steve Rogers", "steve@rogers.com"}]}
-      iex> new(bcc: [{"Bruce Banner", "bruce@banner.com"}, "thor@odinson.com"])
-      %Swoosh.Email{bcc: [{"Bruce Banner", "bruce@banner.com"}, {"", "thor@odinson.com"}]}
+      iex> new(bcc: "steve.rogers@example.com")
+      %Swoosh.Email{bcc: [{"", "steve.rogers@example.com"}]}
+      iex> new(bcc: {"Steve Rogers", "steve.rogers@example.com"})
+      %Swoosh.Email{bcc: [{"Steve Rogers", "steve.rogers@example.com"}]}
+      iex> new(bcc: [{"Bruce Banner", "bruce.banner@example.com"}, "thor.odinson@example.com"])
+      %Swoosh.Email{bcc: [{"Bruce Banner", "bruce.banner@example.com"}, {"", "thor.odinson@example.com"}]}
 
       iex> new(html_body: "<h1>Welcome, Avengers</h1>")
       %Swoosh.Email{html_body: "<h1>Welcome, Avengers</h1>"}
@@ -124,10 +124,10 @@ defmodule Swoosh.Email do
       iex> new(text_body: "Welcome, Avengers")
       %Swoosh.Email{text_body: "Welcome, Avengers"}
 
-      iex> new(reply_to: "edwin@jarvis.com")
-      %Swoosh.Email{reply_to: {"", "edwin@jarvis.com"}}
-      iex> new(reply_to: {"Edwin Jarvis", "edwin@jarvis.com"})
-      %Swoosh.Email{reply_to: {"Edwin Jarvis", "edwin@jarvis.com"}}
+      iex> new(reply_to: "edwin.jarvis@example.com")
+      %Swoosh.Email{reply_to: {"", "edwin.jarvis@example.com"}}
+      iex> new(reply_to: {"Edwin Jarvis", "edwin.jarvis@example.com"})
+      %Swoosh.Email{reply_to: {"Edwin Jarvis", "edwin.jarvis@example.com"}}
 
       iex> new(headers: %{"X-Accept-Language" => "en"})
       %Swoosh.Email{headers: %{"X-Accept-Language" => "en"}}
@@ -140,8 +140,8 @@ defmodule Swoosh.Email do
 
   You can obviously combine these arguments together:
 
-      iex> new(to: "steve@rogers.com", subject: "Hello, Avengers!")
-      %Swoosh.Email{to: [{"", "steve@rogers.com"}], subject: "Hello, Avengers!"}
+      iex> new(to: "steve.rogers@example.com", subject: "Hello, Avengers!")
+      %Swoosh.Email{to: [{"", "steve.rogers@example.com"}], subject: "Hello, Avengers!"}
   """
   @spec new(none | Enum.t) :: t
   def new(opts \\ []) do
@@ -171,13 +171,13 @@ defmodule Swoosh.Email do
 
   ## Examples
 
-      iex> new |> from({"Steve Rogers", "steve@rogers.com"})
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"Steve Rogers", "steve@rogers.com"},
+      iex> new |> from({"Steve Rogers", "steve.rogers@example.com"})
+      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"Steve Rogers", "steve.rogers@example.com"},
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: []}
 
-      iex> new |> from("steve@rogers.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"", "steve@rogers.com"},
+      iex> new |> from("steve.rogers@example.com")
+      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"", "steve.rogers@example.com"},
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: []}
   """
@@ -195,15 +195,15 @@ defmodule Swoosh.Email do
 
   ## Examples
 
-      iex> new |> reply_to({"Steve Rogers", "steve@rogers.com"})
+      iex> new |> reply_to({"Steve Rogers", "steve.rogers@example.com"})
       %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
-       reply_to: {"Steve Rogers", "steve@rogers.com"}, subject: "", text_body: nil, to: []}
+       reply_to: {"Steve Rogers", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
 
-      iex> new |> reply_to("steve@rogers.com")
+      iex> new |> reply_to("steve.rogers@example.com")
       %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
-       reply_to: {"", "steve@rogers.com"}, subject: "", text_body: nil, to: []}
+       reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
   """
   @spec reply_to(t, mailbox | address) :: t
   def reply_to(%__MODULE__{} = email, reply_to) do
@@ -265,8 +265,8 @@ defmodule Swoosh.Email do
   The recipient must be; a tuple specifying the name and address of the recipient; a string specifying the
   address of the recipient; or an array comprised of a combination of either.
 
-      iex> new |> bcc("steve@rogers.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [{"", "steve@rogers.com"}],
+      iex> new |> bcc("steve.rogers@example.com")
+      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [{"", "steve.rogers@example.com"}],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
@@ -307,9 +307,9 @@ defmodule Swoosh.Email do
 
   ## Examples
 
-      iex> new |> cc("steve@rogers.com")
+      iex> new |> cc("steve.rogers@example.com")
       %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
-       cc: [{"", "steve@rogers.com"}], from: nil, headers: %{}, html_body: nil,
+       cc: [{"", "steve.rogers@example.com"}], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
   """
@@ -349,11 +349,11 @@ defmodule Swoosh.Email do
 
   ## Examples
 
-      iex> new |> to("steve@rogers.com")
+      iex> new |> to("steve.rogers@example.com")
       %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
-       text_body: nil, to: [{"", "steve@rogers.com"}]}
+       text_body: nil, to: [{"", "steve.rogers@example.com"}]}
   """
   @spec to(t, mailbox | address | [mailbox|address]) :: t
   def to(%__MODULE__{to: to} = email, recipients) when is_list(recipients) do

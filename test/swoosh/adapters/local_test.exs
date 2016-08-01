@@ -6,8 +6,8 @@ defmodule Swoosh.Adapters.LocalTest do
   end
 
   test "deliver/1" do
-    email = Swoosh.Email.new(from: "tony@stark.com",
-                             to: "steve@rogers.com",
+    email = Swoosh.Email.new(from: "tony.stark@example.com",
+                             to: "steve.rogers@example.com",
                              subject: "Hello, Avengers!",
                              text_body: "Hello!")
     {status, _} = LocalMailer.deliver(email)

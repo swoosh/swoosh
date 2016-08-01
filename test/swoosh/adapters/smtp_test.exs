@@ -7,8 +7,8 @@ defmodule Swoosh.Adapters.SMTPTest do
   setup_all do
     valid_email =
       new
-      |> from("tony@stark.com")
-      |> to("steve@rogers.com")
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
@@ -29,8 +29,8 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert SMTP.prepare_message(email) ==
      {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
-        {"From", "tony@stark.com"},
-        {"To", "steve@rogers.com"},
+        {"From", "tony.stark@example.com"},
+        {"To", "steve.rogers@example.com"},
         {"Subject", "Hello, Avengers!"},
         {"Mime-Version", "1.0"}],
       "Hello"}
@@ -40,23 +40,23 @@ defmodule Swoosh.Adapters.SMTPTest do
     email =
       email
       |> html_body(nil)
-      |> to({"Janet Pym", "wasp@avengers.com"})
-      |> cc({"Bruce Banner", "hulk@smash.com"})
-      |> cc("thor@odinson.com")
-      |> bcc({"Clinton Francis Barton", "hawk@eye.com"})
-      |> bcc("beast@avengers.com")
-      |> reply_to("black@widow.com")
+      |> to({"Janet Pym", "wasp.avengers@example.com"})
+      |> cc({"Bruce Banner", "hulk.smash@example.com"})
+      |> cc("thor.odinson@example.com")
+      |> bcc({"Clinton Francis Barton", "hawk.eye@example.com"})
+      |> bcc("beast.avengers@example.com")
+      |> reply_to("black.widow@example.com")
       |> header("X-Custom-ID", "4f034001")
       |> header("X-Feedback-ID", "403f4983b02a")
 
     assert SMTP.prepare_message(email) ==
     {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
-        {"From", "tony@stark.com"},
-        {"To", "Janet Pym <wasp@avengers.com>, steve@rogers.com"},
-        {"Cc", "thor@odinson.com, Bruce Banner <hulk@smash.com>"},
+        {"From", "tony.stark@example.com"},
+        {"To", "Janet Pym <wasp.avengers@example.com>, steve.rogers@example.com"},
+        {"Cc", "thor.odinson@example.com, Bruce Banner <hulk.smash@example.com>"},
         {"Subject", "Hello, Avengers!"},
-        {"Reply-To", "black@widow.com"},
+        {"Reply-To", "black.widow@example.com"},
         {"Mime-Version", "1.0"},
         {"X-Custom-ID", "4f034001"},
         {"X-Feedback-ID", "403f4983b02a"}],
@@ -64,12 +64,12 @@ defmodule Swoosh.Adapters.SMTPTest do
   end
 
   test "simple email with multiple recipients", %{valid_email: email} do
-    email = email |> html_body(nil) |> to({"Bruce Banner", "bruce@banner.com"})
+    email = email |> html_body(nil) |> to({"Bruce Banner", "bruce.banner@example.com"})
     assert SMTP.prepare_message(email) ==
     {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
-        {"From", "tony@stark.com"},
-        {"To", "Bruce Banner <bruce@banner.com>, steve@rogers.com"},
+        {"From", "tony.stark@example.com"},
+        {"To", "Bruce Banner <bruce.banner@example.com>, steve.rogers@example.com"},
         {"Subject", "Hello, Avengers!"},
         {"Mime-Version", "1.0"}],
       "Hello"}
@@ -79,15 +79,15 @@ defmodule Swoosh.Adapters.SMTPTest do
     email =
     email
     |> html_body(nil)
-    |> to({"Bruce Banner", "bruce@banner.com"})
-    |> cc("thor@odinson.com")
+    |> to({"Bruce Banner", "bruce.banner@example.com"})
+    |> cc("thor.odinson@example.com")
 
     assert SMTP.prepare_message(email) ==
       {"text", "plain",
        [{"Content-Type", "text/plain; charset=\"utf-8\""},
-        {"From", "tony@stark.com"},
-        {"To", "Bruce Banner <bruce@banner.com>, steve@rogers.com"},
-        {"Cc", "thor@odinson.com"},
+        {"From", "tony.stark@example.com"},
+        {"To", "Bruce Banner <bruce.banner@example.com>, steve.rogers@example.com"},
+        {"Cc", "thor.odinson@example.com"},
         {"Subject", "Hello, Avengers!"},
         {"Mime-Version", "1.0"}],
        "Hello"}
@@ -98,8 +98,8 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert SMTP.prepare_message(email) ==
       {"text", "html",
        [{"Content-Type", "text/html; charset=\"utf-8\""},
-        {"From", "tony@stark.com"},
-        {"To", "steve@rogers.com"},
+        {"From", "tony.stark@example.com"},
+        {"To", "steve.rogers@example.com"},
         {"Subject", "Hello, Avengers!"},
         {"Mime-Version", "1.0"}],
       "<h1>Hello</h1>"}
@@ -108,8 +108,8 @@ defmodule Swoosh.Adapters.SMTPTest do
   test "multipart/alternative email", %{valid_email: email} do
     assert SMTP.prepare_message(email) ==
       {"multipart", "alternative",
-       [{"From", "tony@stark.com"},
-        {"To", "steve@rogers.com"},
+       [{"From", "tony.stark@example.com"},
+        {"To", "steve.rogers@example.com"},
         {"Subject", "Hello, Avengers!"},
         {"Mime-Version", "1.0"}],
        [{"text", "plain",

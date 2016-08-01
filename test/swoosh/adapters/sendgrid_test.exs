@@ -24,8 +24,8 @@ defmodule Swoosh.Adapters.SendgridTest do
 
     valid_email =
       new
-      |> from("tony@stark.com")
-      |> to("steve@rogers.com")
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
@@ -36,8 +36,8 @@ defmodule Swoosh.Adapters.SendgridTest do
   test "successful delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
-      body_params = %{"from" => "tony@stark.com",
-                      "to" => ["steve@rogers.com"],
+      body_params = %{"from" => "tony.stark@example.com",
+                      "to" => ["steve.rogers@example.com"],
                       "html" => "<h1>Hello</h1>",
                       "subject" => "Hello, Avengers!",
                       "text" => "Hello"}
@@ -52,27 +52,27 @@ defmodule Swoosh.Adapters.SendgridTest do
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new
-      |> from({"T Stark", "tony@stark.com"})
-      |> to({"Steve Rogers", "steve@rogers.com"})
-      |> reply_to("hulk@smash.com")
-      |> cc("hulk@smash.com")
-      |> cc({"Janet Pym", "wasp@avengers.com"})
-      |> bcc("thor@odinson.com")
-      |> bcc({"Henry McCoy", "beast@avengers.com"})
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> reply_to("hulk.smash@example.com")
+      |> cc("hulk.smash@example.com")
+      |> cc({"Janet Pym", "wasp.avengers@example.com"})
+      |> bcc("thor.odinson@example.com")
+      |> bcc({"Henry McCoy", "beast.avengers@example.com"})
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
-      body_params = %{"from" => "tony@stark.com",
+      body_params = %{"from" => "tony.stark@example.com",
                       "fromname" => "T Stark",
-                      "to" => ["steve@rogers.com"],
+                      "to" => ["steve.rogers@example.com"],
                       "toname" => ["Steve Rogers"],
-                      "replyto" => "hulk@smash.com",
-                      "cc" => ["wasp@avengers.com", "hulk@smash.com"],
+                      "replyto" => "hulk.smash@example.com",
+                      "cc" => ["wasp.avengers@example.com", "hulk.smash@example.com"],
                       "ccname" => ["Janet Pym", ""],
-                      "bcc" => ["beast@avengers.com", "thor@odinson.com"],
+                      "bcc" => ["beast.avengers@example.com", "thor.odinson@example.com"],
                       "bccname" => ["Henry McCoy", ""],
                       "html" => "<h1>Hello</h1>",
                       "subject" => "Hello, Avengers!",

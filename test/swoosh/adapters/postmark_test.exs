@@ -10,7 +10,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       "Message": "OK",
       "MessageID": "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
       "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
-      "To": "tony@stark.com"
+      "To": "tony.stark@example.com"
     }
   """
 
@@ -21,8 +21,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
     valid_email =
       new
-      |> from("steve@rogers.com")
-      |> to("tony@stark.com")
+      |> from("steve.rogers@example.com")
+      |> to("tony.stark@example.com")
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
 
@@ -33,8 +33,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
-                      "To" => "tony@stark.com",
-                      "From" => "steve@rogers.com",
+                      "To" => "tony.stark@example.com",
+                      "From" => "steve.rogers@example.com",
                       "HtmlBody" => "<h1>Hello</h1>"}
       assert body_params == conn.body_params
       assert "/email" == conn.request_path
@@ -49,27 +49,27 @@ defmodule Swoosh.Adapters.PostmarkTest do
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new
-      |> from({"T Stark", "tony@stark.com"})
-      |> to("wasp@avengers.com")
-      |> to({"Steve Rogers", "steve@rogers.com"})
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to("wasp.avengers@example.com")
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
-      |> cc({"Bruce Banner", "hulk@smash.com"})
-      |> cc("thor@odinson.com")
-      |> bcc({"Clinton Francis Barton", "hawk@eye.com"})
-      |> bcc("beast@avengers.com")
-      |> reply_to("iron@stark.com")
+      |> cc({"Bruce Banner", "hulk.smash@example.com"})
+      |> cc("thor.odinson@example.com")
+      |> bcc({"Clinton Francis Barton", "hawk.eye@example.com"})
+      |> bcc("beast.avengers@example.com")
+      |> reply_to("iron.stark@example.com")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
-                      "To" => "\"Steve Rogers\" <steve@rogers.com>,wasp@avengers.com",
-                      "From" => "tony@stark.com",
-                      "Cc" => "thor@odinson.com,\"Bruce Banner\" <hulk@smash.com>",
-                      "Bcc" => "beast@avengers.com,\"Clinton Francis Barton\" <hawk@eye.com>",
-                      "ReplyTo" => "iron@stark.com",
+                      "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
+                      "From" => "tony.stark@example.com",
+                      "Cc" => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
+                      "Bcc" => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
+                      "ReplyTo" => "iron.stark@example.com",
                       "TextBody" => "Hello",
                       "HtmlBody" => "<h1>Hello</h1>"}
 

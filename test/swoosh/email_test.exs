@@ -21,17 +21,17 @@ defmodule Swoosh.EmailTest do
   end
 
   test "from/2" do
-    email = new |> from("tony@stark.com")
-    assert email == %Email{from: {"", "tony@stark.com"}}
+    email = new |> from("tony.stark@example.com")
+    assert email == %Email{from: {"", "tony.stark@example.com"}}
 
-    email = email |> from({"Steve Rogers", "steve@rogers.com"})
-    assert email == %Email{from: {"Steve Rogers", "steve@rogers.com"}}
+    email = email |> from({"Steve Rogers", "steve.rogers@example.com"})
+    assert email == %Email{from: {"Steve Rogers", "steve.rogers@example.com"}}
   end
 
   test "from/2 should raise if from value is invalid" do
     assert_raise ArgumentError, fn -> new |> from(nil) end
     assert_raise ArgumentError, fn -> new |> from("") end
-    assert_raise ArgumentError, fn -> new |> from({nil, "tony@stark.com"}) end
+    assert_raise ArgumentError, fn -> new |> from({nil, "tony.stark@example.com"}) end
     assert_raise ArgumentError, fn -> new |> from({nil, ""}) end
   end
 
@@ -60,145 +60,145 @@ defmodule Swoosh.EmailTest do
   end
 
   test "reply_to/2" do
-    email = new |> reply_to("welcome@avengers.com")
-    assert email == %Email{reply_to: {"", "welcome@avengers.com"}}
+    email = new |> reply_to("welcome.avengers@example.com")
+    assert email == %Email{reply_to: {"", "welcome.avengers@example.com"}}
 
-    email = email |> reply_to({"Jarvis Assist", "help@jarvis.com"})
-    assert email == %Email{reply_to: {"Jarvis Assist", "help@jarvis.com"}}
+    email = email |> reply_to({"Jarvis Assist", "help.jarvis@example.com"})
+    assert email == %Email{reply_to: {"Jarvis Assist", "help.jarvis@example.com"}}
   end
 
   test "to/2 add new recipient(s) to \"to\"" do
-    email = new |> to("tony@stark.com")
-    assert email == %Email{to: [{"", "tony@stark.com"}]}
+    email = new |> to("tony.stark@example.com")
+    assert email == %Email{to: [{"", "tony.stark@example.com"}]}
 
-    email = email |> to({"Steve Rogers", "steve@rogers.com"})
-    assert email == %Email{to: [{"Steve Rogers", "steve@rogers.com"}, {"", "tony@stark.com"}]}
+    email = email |> to({"Steve Rogers", "steve.rogers@example.com"})
+    assert email == %Email{to: [{"Steve Rogers", "steve.rogers@example.com"}, {"", "tony.stark@example.com"}]}
 
-    email = email |> to(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{to: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"},
-                                {"Steve Rogers", "steve@rogers.com"}, {"", "tony@stark.com"}]}
+    email = email |> to(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{to: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"},
+                                {"Steve Rogers", "steve.rogers@example.com"}, {"", "tony.stark@example.com"}]}
   end
 
   test "to/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> to(nil) end
     assert_raise ArgumentError, fn -> new |> to("") end
-    assert_raise ArgumentError, fn -> new |> to({nil, "tony@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> to([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> to({nil, "tony.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> to([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> to([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> to([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
   test "put_to/2 replace new recipient(s) in \"to\"" do
-    email = new |> to("foo@bar.com")
+    email = new |> to("foo.bar@example.com")
 
-    email = email |> put_to("tony@stark.com")
-    assert email == %Email{to: [{"", "tony@stark.com"}]}
+    email = email |> put_to("tony.stark@example.com")
+    assert email == %Email{to: [{"", "tony.stark@example.com"}]}
 
-    email = email |> put_to({"Steve Rogers","steve@rogers.com"})
-    assert email == %Email{to: [{"Steve Rogers", "steve@rogers.com"}]}
+    email = email |> put_to({"Steve Rogers","steve.rogers@example.com"})
+    assert email == %Email{to: [{"Steve Rogers", "steve.rogers@example.com"}]}
 
-    email = email |> put_to(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{to: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"}]}
+    email = email |> put_to(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{to: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"}]}
   end
 
   test "put_to/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> put_to(nil) end
     assert_raise ArgumentError, fn -> new |> put_to("") end
-    assert_raise ArgumentError, fn -> new |> put_to({nil, "tony@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> put_to([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> put_to({nil, "tony.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> put_to([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> put_to([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> put_to([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
   test "cc/2 add new recipient(s) to \"cc\"" do
-    email = new |> cc("ccny@stark.com")
-    assert email == %Email{cc: [{"", "ccny@stark.com"}]}
+    email = new |> cc("ccny.stark@example.com")
+    assert email == %Email{cc: [{"", "ccny.stark@example.com"}]}
 
-    email = email |> cc({"Steve Rogers", "steve@rogers.com"})
-    assert email == %Email{cc: [{"Steve Rogers", "steve@rogers.com"}, {"", "ccny@stark.com"}]}
+    email = email |> cc({"Steve Rogers", "steve.rogers@example.com"})
+    assert email == %Email{cc: [{"Steve Rogers", "steve.rogers@example.com"}, {"", "ccny.stark@example.com"}]}
 
-    email = email |> cc(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{cc: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"},
-                               {"Steve Rogers", "steve@rogers.com"}, {"", "ccny@stark.com"}]}
+    email = email |> cc(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{cc: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"},
+                               {"Steve Rogers", "steve.rogers@example.com"}, {"", "ccny.stark@example.com"}]}
   end
 
   test "cc/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> cc(nil) end
     assert_raise ArgumentError, fn -> new |> cc("") end
-    assert_raise ArgumentError, fn -> new |> cc({nil, "ccny@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> cc([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> cc({nil, "ccny.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> cc([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> cc([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> cc([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
   test "put_cc/2 replace new recipient(s) in \"cc\"" do
-    email = new |> cc("foo@bar.com")
+    email = new |> cc("foo.bar@example.com")
 
-    email = email |> put_cc("ccny@stark.com")
-    assert email == %Email{cc: [{"", "ccny@stark.com"}]}
+    email = email |> put_cc("ccny.stark@example.com")
+    assert email == %Email{cc: [{"", "ccny.stark@example.com"}]}
 
-    email = email |> put_cc({"Steve Rogers","steve@rogers.com"})
-    assert email == %Email{cc: [{"Steve Rogers", "steve@rogers.com"}]}
+    email = email |> put_cc({"Steve Rogers","steve.rogers@example.com"})
+    assert email == %Email{cc: [{"Steve Rogers", "steve.rogers@example.com"}]}
 
-    email = email |> put_cc(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{cc: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"}]}
+    email = email |> put_cc(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{cc: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"}]}
   end
 
   test "put_cc/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> put_cc(nil) end
     assert_raise ArgumentError, fn -> new |> put_cc("") end
-    assert_raise ArgumentError, fn -> new |> put_cc({nil, "ccny@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> put_cc([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> put_cc({nil, "ccny.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> put_cc([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> put_cc([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> put_cc([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
   test "bcc/2 add new recipient(s) to \"bcc\"" do
-    email = new |> bcc("bccny@stark.com")
-    assert email == %Email{bcc: [{"", "bccny@stark.com"}]}
+    email = new |> bcc("bccny.stark@example.com")
+    assert email == %Email{bcc: [{"", "bccny.stark@example.com"}]}
 
-    email = email |> bcc({"Steve Rogers", "steve@rogers.com"})
-    assert email == %Email{bcc: [{"Steve Rogers", "steve@rogers.com"}, {"", "bccny@stark.com"}]}
+    email = email |> bcc({"Steve Rogers", "steve.rogers@example.com"})
+    assert email == %Email{bcc: [{"Steve Rogers", "steve.rogers@example.com"}, {"", "bccny.stark@example.com"}]}
 
-    email = email |> bcc(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{bcc: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"},
-                               {"Steve Rogers", "steve@rogers.com"}, {"", "bccny@stark.com"}]}
+    email = email |> bcc(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{bcc: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"},
+                               {"Steve Rogers", "steve.rogers@example.com"}, {"", "bccny.stark@example.com"}]}
   end
 
   test "bcc/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> bcc(nil) end
     assert_raise ArgumentError, fn -> new |> bcc("") end
-    assert_raise ArgumentError, fn -> new |> bcc({nil, "bccny@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> bcc([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> bcc({nil, "bccny.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> bcc([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> bcc([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> bcc([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
   test "put_bcc/2 replace new recipient(s) in \"bcc\"" do
-    email = new |> bcc("foo@bar.com")
+    email = new |> bcc("foo.bar@example.com")
 
-    email = email |> put_bcc("bccny@stark.com")
-    assert email == %Email{bcc: [{"", "bccny@stark.com"}]}
+    email = email |> put_bcc("bccny.stark@example.com")
+    assert email == %Email{bcc: [{"", "bccny.stark@example.com"}]}
 
-    email = email |> put_bcc({"Steve Rogers","steve@rogers.com"})
-    assert email == %Email{bcc: [{"Steve Rogers", "steve@rogers.com"}]}
+    email = email |> put_bcc({"Steve Rogers","steve.rogers@example.com"})
+    assert email == %Email{bcc: [{"Steve Rogers", "steve.rogers@example.com"}]}
 
-    email = email |> put_bcc(["bruce@banner.com", {"Thor Odinson", "thor@odinson.com"}])
-    assert email == %Email{bcc: [{"", "bruce@banner.com"}, {"Thor Odinson", "thor@odinson.com"}]}
+    email = email |> put_bcc(["bruce.banner@example.com", {"Thor Odinson", "thor.odinson@example.com"}])
+    assert email == %Email{bcc: [{"", "bruce.banner@example.com"}, {"Thor Odinson", "thor.odinson@example.com"}]}
   end
 
   test "put_bcc/2 should raise if recipient(s) are invalid" do
     assert_raise ArgumentError, fn -> new |> put_bcc(nil) end
     assert_raise ArgumentError, fn -> new |> put_bcc("") end
-    assert_raise ArgumentError, fn -> new |> put_bcc({nil, "bccny@stark.com"}) end
-    assert_raise ArgumentError, fn -> new |> put_bcc([nil, "thor@odinson.com"]) end
+    assert_raise ArgumentError, fn -> new |> put_bcc({nil, "bccny.stark@example.com"}) end
+    assert_raise ArgumentError, fn -> new |> put_bcc([nil, "thor.odinson@example.com"]) end
     assert_raise ArgumentError, fn ->
-      new |> put_bcc([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> put_bcc([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 
@@ -244,7 +244,7 @@ defmodule Swoosh.EmailTest do
       The recipient `nil` is invalid.
 
       Recipients must be a string representing an email address like
-      `foo@bar.com` or a two-element tuple `{name, address}`, where
+      `foo.bar@example.com` or a two-element tuple `{name, address}`, where
       name and address are strings.
       """, fn ->
       new |> to(nil)
@@ -252,13 +252,13 @@ defmodule Swoosh.EmailTest do
 
     assert_raise ArgumentError,
       """
-      The recipient `{nil, "tony@stark.com"}` is invalid.
+      The recipient `{nil, "tony.stark@example.com"}` is invalid.
 
       Recipients must be a string representing an email address like
-      `foo@bar.com` or a two-element tuple `{name, address}`, where
+      `foo.bar@example.com` or a two-element tuple `{name, address}`, where
       name and address are strings.
       """, fn ->
-      new |> to({nil, "tony@stark.com"})
+      new |> to({nil, "tony.stark@example.com"})
     end
 
     assert_raise ArgumentError,
@@ -266,10 +266,10 @@ defmodule Swoosh.EmailTest do
       The recipient `nil` is invalid.
 
       Recipients must be a string representing an email address like
-      `foo@bar.com` or a two-element tuple `{name, address}`, where
+      `foo.bar@example.com` or a two-element tuple `{name, address}`, where
       name and address are strings.
       """, fn ->
-      new |> to([nil, "thor@odinson.com"])
+      new |> to([nil, "thor.odinson@example.com"])
     end
 
     assert_raise ArgumentError,
@@ -277,10 +277,10 @@ defmodule Swoosh.EmailTest do
       The recipient `{"Bruce Banner", nil}` is invalid.
 
       Recipients must be a string representing an email address like
-      `foo@bar.com` or a two-element tuple `{name, address}`, where
+      `foo.bar@example.com` or a two-element tuple `{name, address}`, where
       name and address are strings.
       """, fn ->
-      new |> to([{"Bruce Banner", nil}, "thor@odinson.com"])
+      new |> to([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
   end
 end

@@ -7,8 +7,8 @@ defmodule Swoosh.TestAssertionsTest do
   setup do
     email =
       new
-      |> from("tony@stark.com")
-      |> to("steve@rogers.com")
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
     Swoosh.Adapters.Test.deliver(email, nil)
     {:ok, email: email}
@@ -19,11 +19,11 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email sent with specific params" do
-    assert_email_sent [subject: "Hello, Avengers!", to: "steve@rogers.com"]
+    assert_email_sent [subject: "Hello, Avengers!", to: "steve.rogers@example.com"]
   end
 
   test "assert email sent with specific to (list)" do
-    assert_email_sent [to: ["steve@rogers.com"]]
+    assert_email_sent [to: ["steve.rogers@example.com"]]
   end
 
   test "assert email sent with wrong subject" do
@@ -32,7 +32,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `subject` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: \"Hello, Avengers!\"\n" <>
         "rhs: \"Hello, X-Men!\"" = error.message
     end
@@ -40,60 +40,60 @@ defmodule Swoosh.TestAssertionsTest do
 
   test "assert email sent with wrong from" do
     try do
-      assert_email_sent [from: "thor@odinson.com"]
+      assert_email_sent [from: "thor.odinson@example.com"]
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `from` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
-        "lhs: {\"\", \"tony@stark.com\"}\n" <>
-        "rhs: {\"\", \"thor@odinson.com\"}" = error.message
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "lhs: {\"\", \"tony.stark@example.com\"}\n" <>
+        "rhs: {\"\", \"thor.odinson@example.com\"}" = error.message
     end
   end
 
   test "assert email sent with wrong to" do
     try do
-      assert_email_sent [to: "bruce@banner.com"]
+      assert_email_sent [to: "bruce.banner@example.com"]
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce@banner.com\"}\n" <>
-        "rhs: [{\"\", \"steve@rogers.com\"}]" = error.message
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
+        "rhs: [{\"\", \"steve.rogers@example.com\"}]" = error.message
     end
   end
 
   test "assert email sent with wrong to (list)" do
     try do
-      assert_email_sent [to: ["bruce@banner.com"]]
+      assert_email_sent [to: ["bruce.banner@example.com"]]
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
-        "lhs: [{\"\", \"steve@rogers.com\"}]\n" <>
-        "rhs: [{\"\", \"bruce@banner.com\"}]" = error.message
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "lhs: [{\"\", \"steve.rogers@example.com\"}]\n" <>
+        "rhs: [{\"\", \"bruce.banner@example.com\"}]" = error.message
     end
   end
 
   test "assert email sent with wrong cc" do
     try do
-      assert_email_sent [cc: "bruce@banner.com"]
+      assert_email_sent [cc: "bruce.banner@example.com"]
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `cc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce@banner.com\"}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
         "rhs: []" = error.message
     end
   end
 
   test "assert email sent with wrong bcc" do
     try do
-      assert_email_sent [bcc: "bruce@banner.com"]
+      assert_email_sent [bcc: "bruce.banner@example.com"]
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `bcc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce@banner.com\"}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
         "rhs: []" = error.message
     end
   end
@@ -108,7 +108,7 @@ defmodule Swoosh.TestAssertionsTest do
         "The following variables were pinned:\n" <>
         "  email = %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Wrong, Avengers!\", text_body: nil, to: []}\n" <>
         "Process mailbox:\n" <>
-        "  {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}}"
+        "  {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}}"
         = error.message
     end
   end
@@ -123,7 +123,7 @@ defmodule Swoosh.TestAssertionsTest do
       assert_email_not_sent email
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}} " <>
+        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
         "(which matched {:email, ^email})" = error.message
     end
   end
@@ -140,7 +140,7 @@ defmodule Swoosh.TestAssertionsTest do
       assert_no_email_sent
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony@stark.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve@rogers.com\"}]}} " <>
+        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
         "(which matched {:email, _})" = error.message
     end
   end

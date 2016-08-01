@@ -18,8 +18,8 @@ defmodule Swoosh.MailerTest do
   end
 
   setup_all do
-    valid_email = Swoosh.Email.new(from: "tony@stark.com",
-                                   to: "steve@rogers.com",
+    valid_email = Swoosh.Email.new(from: "tony.stark@example.com",
+                                   to: "steve.rogers@example.com",
                                    subject: "Hello, Avengers!",
                                    html_body: "<h1>Hello</h1>",
                                    text_body: "Hello")

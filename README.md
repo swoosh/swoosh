@@ -31,7 +31,7 @@ defmodule Sample.UserEmail do
   def welcome(user) do
     new
     |> to({user.name, user.email})
-    |> from({"Dr B Banner", "hulk@smash.com"})
+    |> from({"Dr B Banner", "hulk.smash@example.com"})
     |> subject("Hello, Avengers!")
     |> html_body("<h1>Hello #{user.name}</h1>")
     |> text_body("Hello #{user.name}\n")
@@ -39,7 +39,7 @@ defmodule Sample.UserEmail do
 end
 
 # In an IEx session
-Sample.UserEmail.welcome(%{name: "Tony Stark", email: "tony@stark.com"}) |> Sample.Mailer.deliver
+Sample.UserEmail.welcome(%{name: "Tony Stark", email: "tony.stark@example.com"}) |> Sample.Mailer.deliver
 
 # Or in a Phoenix controller
 defmodule Sample.UserController do
@@ -134,7 +134,7 @@ defmodule Sample.UserEmail do
   def welcome(user) do
     new
     |> to({user.name, user.email})
-    |> from({"Dr B Banner", "hulk@smash.com"})
+    |> from({"Dr B Banner", "hulk.smash@example.com"})
     |> subject("Hello, Avengers!")
     |> render_body("welcome.html", %{username: user.username})
   end
@@ -156,7 +156,7 @@ defmodule Sample.UserTest do
 
   test "send email on user signup" do
     # Assuming `create_user` creates a new user then sends out a `Sample.UserEmail.welcome` email
-    user = create_user(%{username: "ironman", email: "tony@stark.com"})
+    user = create_user(%{username: "ironman", email: "tony.stark@example.com"})
     assert_email_sent Sample.UserEmail.welcome(user)
   end
 end
