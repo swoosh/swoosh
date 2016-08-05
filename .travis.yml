@@ -12,4 +12,4 @@ after_script:
   - MIX_ENV=docs mix inch.report
 notifications:
   recipients:
-    - steve@stevedomin.com 
+    - steve@stevedomin.com
