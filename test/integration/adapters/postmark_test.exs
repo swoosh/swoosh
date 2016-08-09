@@ -6,7 +6,7 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
   @moduletag integration: true
 
   setup_all do
-    config = [api_key: System.get_env("POSTMARK_API_KEY"), config: System.get_env("POSTMARK_DOMAIN")]
+    config = [api_key: System.get_env("POSTMARK_API_KEY"), domain: System.get_env("POSTMARK_DOMAIN")]
     {:ok, config: config}
   end
 
