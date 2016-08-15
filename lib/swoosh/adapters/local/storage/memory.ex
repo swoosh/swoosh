@@ -117,7 +117,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   end
 
   def handle_call({:push, email}, _from, state) do
-    id = :crypto.rand_bytes(16) |> Base.encode16 |> String.downcase
+    id = :crypto.strong_rand_bytes(16) |> Base.encode16 |> String.downcase
     email = email |> Swoosh.Email.header("Message-ID", id)
     {:reply, email, [email] ++ state}
   end
