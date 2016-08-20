@@ -5,7 +5,7 @@ defmodule Swoosh.Email.SMTP do
 
   alias Swoosh.Email
 
-  import Swoosh.Email.Format
+  import Swoosh.Email.Render
 
   @doc false
   def sender(%Email{} = email) do
@@ -47,15 +47,15 @@ defmodule Swoosh.Email.SMTP do
 
   defp prepare_subject(headers, %Email{subject: subject}), do: [{"Subject", subject} | headers]
 
-  defp prepare_from(headers, %Email{from: from}), do: [{"From", format_recipient(from)} | headers]
+  defp prepare_from(headers, %Email{from: from}), do: [{"From", render_recipient(from)} | headers]
 
-  defp prepare_to(headers, %Email{to: to}), do: [{"To", format_recipient(to)} | headers]
+  defp prepare_to(headers, %Email{to: to}), do: [{"To", render_recipient(to)} | headers]
 
   defp prepare_cc(headers, %Email{cc: []}), do: headers
-  defp prepare_cc(headers, %Email{cc: cc}), do: [{"Cc", format_recipient(cc)} | headers]
+  defp prepare_cc(headers, %Email{cc: cc}), do: [{"Cc", render_recipient(cc)} | headers]
 
   defp prepare_reply_to(headers, %Email{reply_to: nil}), do: headers
-  defp prepare_reply_to(headers, %Email{reply_to: reply_to}), do: [{"Reply-To", format_recipient(reply_to)} | headers]
+  defp prepare_reply_to(headers, %Email{reply_to: reply_to}), do: [{"Reply-To", render_recipient(reply_to)} | headers]
 
   defp prepare_mime_version(headers), do: [{"Mime-Version", "1.0"} | headers]
 

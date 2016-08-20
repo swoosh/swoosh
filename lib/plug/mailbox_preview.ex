@@ -22,7 +22,7 @@ if Code.ensure_loaded?(Plug) do
     use Plug.Router
     use Plug.ErrorHandler
 
-    alias Swoosh.Email.Format
+    alias Swoosh.Email.Render
     alias Swoosh.Adapters.Local.Storage.Memory
 
     require EEx
@@ -69,8 +69,8 @@ if Code.ensure_loaded?(Plug) do
       URI.parse("#{conn.assigns.base_path}/#{path}").path
     end
 
-    defp format_recipient(recipient) do
-      case Format.format_recipient(recipient) do
+    defp render_recipient(recipient) do
+      case Render.render_recipient(recipient) do
         "" -> "n/a"
         recipient -> Plug.HTML.html_escape(recipient)
       end

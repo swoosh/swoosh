@@ -24,7 +24,7 @@ defmodule Swoosh.Adapters.Logger do
   use Swoosh.Adapter
 
   require Logger
-  import Swoosh.Email.Format
+  import Swoosh.Email.Render
 
   def deliver(%Swoosh.Email{} = email, config) do
     rendered_email = render(config[:log_full_email] || false, email)
@@ -33,7 +33,7 @@ defmodule Swoosh.Adapters.Logger do
   end
 
   defp render(false, email) do
-    "New email delivered to #{format_recipient(email.to)}"
+    "New email delivered to #{render_recipient(email.to)}"
   end
 
   defp render(true, email) do
@@ -59,7 +59,7 @@ defmodule Swoosh.Adapters.Logger do
       {_key, value} when is_list(value) -> !Enum.empty?(value)
       {_key, value} -> value
     end)
-    |> Enum.map(fn {key, value} -> String.capitalize(key) <> ": " <> format_recipient(value) end)
+    |> Enum.map(fn {key, value} -> String.capitalize(key) <> ": " <> render_recipient(value) end)
     |> Enum.join("\n")
   end
 

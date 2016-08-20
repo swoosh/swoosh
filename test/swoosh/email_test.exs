@@ -238,7 +238,7 @@ defmodule Swoosh.EmailTest do
     assert email == %Email{private: %{phoenix_layout: false}}
   end
 
-  test "unify_recipient/1 error messages" do
+  test "format_recipient/1 error messages" do
     assert_raise ArgumentError,
       """
       The recipient `nil` is invalid.
