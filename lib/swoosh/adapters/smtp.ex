@@ -34,11 +34,12 @@ if Code.ensure_loaded?(:gen_smtp_client) do
     use Swoosh.Adapter, required_config: [:relay]
 
     alias Swoosh.Email
+    alias Swoosh.Adapters.SMTP.Helpers
 
     def deliver(%Email{} = email, config) do
-      sender = Email.SMTP.sender(email)
+      sender = Helpers.sender(email)
       recipients = all_recipients(email)
-      body = Email.SMTP.body(email, config)
+      body = Helpers.body(email, config)
       case :gen_smtp_client.send_blocking({sender, recipients, body}, config) do
         receipt when is_binary(receipt) -> {:ok, receipt}
         {:error, type, message} -> {:error, {type, message}}

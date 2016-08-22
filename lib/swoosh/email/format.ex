@@ -18,5 +18,4 @@ defmodule Swoosh.Email.Format do
     """
   end
 
-
 end

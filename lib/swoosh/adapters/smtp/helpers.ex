@@ -1,4 +1,4 @@
-defmodule Swoosh.Email.SMTP do
+defmodule Swoosh.Adapters.SMTP.Helpers do
   @moduledoc '''
   Prepares a %Swoosh.Email{} for SMTP use
   '''

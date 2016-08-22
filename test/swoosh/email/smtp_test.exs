@@ -1,7 +1,7 @@
 defmodule Swoosh.Email.SMTPTest do
   use ExUnit.Case, async: true
 
-  alias Swoosh.Email.SMTP
+  alias Swoosh.Adapters.SMTP.Helpers
 
   import Swoosh.Email
 
@@ -32,7 +32,7 @@ defmodule Swoosh.Email.SMTPTest do
 
   test "simple email", %{valid_email: email} do
     email = email |> html_body(nil)
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
      {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
         {"From", "tony@stark.com"},
@@ -55,7 +55,7 @@ defmodule Swoosh.Email.SMTPTest do
       |> header("X-Custom-ID", "4f034001")
       |> header("X-Feedback-ID", "403f4983b02a")
 
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
     {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
         {"From", "tony@stark.com"},
@@ -71,7 +71,7 @@ defmodule Swoosh.Email.SMTPTest do
 
   test "simple email with multiple recipients", %{valid_email: email} do
     email = email |> html_body(nil) |> to({"Bruce Banner", "bruce@banner.com"})
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
     {"text", "plain",
       [{"Content-Type", "text/plain; charset=\"utf-8\""},
         {"From", "tony@stark.com"},
@@ -88,7 +88,7 @@ defmodule Swoosh.Email.SMTPTest do
     |> to({"Bruce Banner", "bruce@banner.com"})
     |> cc("thor@odinson.com")
 
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
       {"text", "plain",
        [{"Content-Type", "text/plain; charset=\"utf-8\""},
         {"From", "tony@stark.com"},
@@ -101,7 +101,7 @@ defmodule Swoosh.Email.SMTPTest do
 
   test "simple html email", %{valid_email: email} do
     email = email |> text_body(nil)
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
       {"text", "html",
        [{"Content-Type", "text/html; charset=\"utf-8\""},
         {"From", "tony@stark.com"},
@@ -112,7 +112,7 @@ defmodule Swoosh.Email.SMTPTest do
   end
 
   test "multipart/alternative email", %{valid_email: email} do
-    assert SMTP.prepare_message(email) ==
+    assert Helpers.prepare_message(email) ==
       {"multipart", "alternative",
        [{"From", "tony@stark.com"},
         {"To", "steve@rogers.com"},
@@ -135,10 +135,10 @@ defmodule Swoosh.Email.SMTPTest do
   end
 
   test "no dkim in config", %{} do
-    assert SMTP.prepare_options([]) == []
+    assert Helpers.prepare_options([]) == []
   end
 
   test "dkim in config", %{valid_config: config} do
-    assert SMTP.prepare_options(config) == [{:dkim, config[:dkim]}]
+    assert Helpers.prepare_options(config) == [{:dkim, config[:dkim]}]
   end
 end
