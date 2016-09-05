@@ -53,7 +53,18 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_html_body(email)
     |> prepare_text_body(email)
     |> prepare_reply_to(email)
+    |> prepare_custom_vars(email)
   end
+
+  # example custom_vars
+  # 
+  # %{"my_var" => %{"my_message_id": 123}, 
+  #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
+  defp prepare_custom_vars(body, %Email{provider_options: %{unique_args: my_vars}}) do
+    my_vars 
+    |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "v:#{k}", Poison.encode!(v)) end)
+  end   
+  defp prepare_custom_vars(body, _email), do: body
 
   defp prepare_from(body, %Email{from: {"", address}}), do: Map.put(body, :from, address)
   defp prepare_from(body, %Email{from: {name, address}}) do
