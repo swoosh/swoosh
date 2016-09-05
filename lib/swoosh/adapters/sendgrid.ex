@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Sendgrid do
   @moduledoc ~S"""
   An adapter that sends email using the Sendgrid API.
 
-  For reference: [Sendgrid API docs](https://sendgrid.com/docs/API_Reference/Web_API/mail.htm://sendgrid.com/docs/API_Reference/Web_API/mail.html)
+  For reference: [Sendgrid API docs](https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html)
 
   ## Example
 
@@ -21,8 +21,8 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   alias Swoosh.Email
 
-  @base_url "https://api.sendgrid.com/api"
-  @api_endpoint "/mail.send.json"
+  @base_url "https://api.sendgrid.com/v3"
+  @api_endpoint "/mail.send"
 
   def deliver(%Email{} = email, config \\ []) do
     headers = [{"Content-Type", "application/x-www-form-urlencoded"},
@@ -50,8 +50,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_subject(email)
-    |> prepare_html_body(email)
-    |> prepare_text_body(email)
+    |> prepare_content(email)
     |> prepare_reply_to(email)
     |> prepare_custom_vars(email)
   end
@@ -60,60 +59,31 @@ defmodule Swoosh.Adapters.Sendgrid do
   # 
   # %{"my_var" => %{"my_message_id": 123}, 
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
-  defp prepare_custom_vars(body, %Email{provider_options: %{unique_args: my_vars}}) do
-    my_vars 
-    |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "v:#{k}", Poison.encode!(v)) end)
+  defp prepare_custom_vars(body, %Email{provider_options: %{custom_args: my_vars}}) do
+    Map.put(body, :custom_args, my_vars |> Poison.encode!)
   end   
   defp prepare_custom_vars(body, _email), do: body
 
-  defp prepare_from(body, %Email{from: {"", address}}), do: Map.put(body, :from, address)
-  defp prepare_from(body, %Email{from: {name, address}}) do
-    body
-    |> Map.put(:from, address)
-    |> Map.put(:fromname, name)
-  end
+  defp email_item({"", email}), do: %{email: email}
+  defp email_item({name, email}), do: %{email: email, name: name}
+  defp email_item(email), do: %{email: email}
 
-  defp prepare_to(body, %Email{to: to}) do
-    {names, addresses} = Enum.unzip(to)
-    body
-    |> prepare_addresses(:to, addresses)
-    |> prepare_names(:toname, names)
-  end
+  defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, from |> email_item |> Poison.encode!)
+
+  defp prepare_to(body, %Email{to: to}), do: Map.put(body, :to, to |> Enum.map(&(&1 |> email_item)) |> Poison.encode!)
 
   defp prepare_cc(body, %Email{cc: []}), do: body
-  defp prepare_cc(body, %Email{cc: cc}) do
-    {names, addresses} = Enum.unzip(cc)
-    body
-    |> prepare_addresses(:cc, addresses)
-    |> prepare_names(:ccname, names)
-  end
+  defp prepare_cc(body, %Email{cc: cc}), do: Map.put(body, :cc, cc |> Enum.map(&(&1 |> email_item)) |> Poison.encode!)
 
   defp prepare_bcc(body, %Email{bcc: []}), do: body
-  defp prepare_bcc(body, %Email{bcc: bcc}) do
-    {names, addresses} = Enum.unzip(bcc)
-    body
-    |> prepare_addresses(:bcc, addresses)
-    |> prepare_names(:bccname, names)
-  end
+  defp prepare_bcc(body, %Email{bcc: bcc}), do: Map.put(body, :bcc, bcc |> Enum.map(&(&1 |> email_item)) |> Poison.encode!)
 
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
 
-  defp prepare_html_body(body, %Email{html_body: nil}), do: body
-  defp prepare_html_body(body, %Email{html_body: html_body}), do: Map.put(body, :html, html_body)
-
-  defp prepare_text_body(body, %Email{text_body: nil}), do: body
-  defp prepare_text_body(body, %Email{text_body: text_body}), do: Map.put(body, :text, text_body)
+  defp prepare_content(body, %Email{html_body: html, text_body: text}), do: Map.put(body, :content, [%{"text/html" => html, "text/plain": text}] |> Poison.encode!)
+  defp prepare_content(body, %Email{html_body: html}), do: Map.put(body, :content, [%{"text/html" => html}] |> Poison.encode!)
+  defp prepare_content(body, %Email{text_body: text}), do: Map.put(body, :content, [%{"text/plain": text}] |> Poison.encode!)
 
   defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %Email{reply_to: {_name, address}}), do: Map.put(body, :replyto, address)
-
-  defp prepare_addresses(body, field, addresses), do: Map.put(body, field, addresses)
-  defp prepare_names(body, field, names) do
-    if list_empty?(names), do: body, else: Map.put(body, field, names)
-  end
-
-  defp list_empty?([]), do: true
-  defp list_empty?(list) do
-    Enum.all?(list, fn(el) -> el == "" || el == nil end)
-  end
+  defp prepare_reply_to(body, %Email{reply_to: reply_to}), do: Map.put(body, :reply_to, reply_to |> email_item |> Poison.encode!)
 end
