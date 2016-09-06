@@ -87,10 +87,12 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
 
   defp prepare_content(body, %Email{html_body: html, text_body: text}) do
-    Map.put(body, :content, [
-      %{type: "text/plain", value: text},
-      %{type: "text/html", value: html}]
-    )
+    content = cond do
+      html && text -> [%{type: "text/plain", value: text}, %{type: "text/html", value: html}]
+      html -> [%{type: "text/html", value: html}]
+      text -> [%{type: "text/plain", value: text}]
+    end
+    Map.put(body, :content, content)
   end
   defp prepare_content(body, %Email{html_body: html}), do: Map.put(body, :content, [%{type: "text/html", value: html}])
   defp prepare_content(body, %Email{text_body: text}), do: Map.put(body, :content, [%{type: "text/plain", type: text}])

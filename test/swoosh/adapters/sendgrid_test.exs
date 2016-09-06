@@ -36,6 +36,54 @@ defmodule Swoosh.Adapters.SendgridTest do
     assert Sendgrid.deliver(email, config) == {:ok, %{}}
   end
 
+  test "text-only delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
+    email =
+      new
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> text_body("Hello")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"email" => "tony.stark@example.com"},
+                      "personalizations" => [%{"to" => [%{"email" => "steve.rogers@example.com"}]
+                      }],
+                      "content" => [%{"type" => "text/plain", "value" => "Hello"}],
+                      "subject" => "Hello, Avengers!"
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+    end
+    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+  end
+
+  test "html-only delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
+    email =
+      new
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"email" => "tony.stark@example.com"},
+                      "personalizations" => [%{"to" => [%{"email" => "steve.rogers@example.com"}]
+                      }],
+                      "content" => [%{"type" => "text/html", "value" => "<h1>Hello</h1>"}],
+                      "subject" => "Hello, Avengers!"
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+    end
+    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+  end
+
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new
