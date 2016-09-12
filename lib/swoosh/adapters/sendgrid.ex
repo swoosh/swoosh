@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Sendgrid do
   @moduledoc ~S"""
   An adapter that sends email using the Sendgrid API.
 
-  For reference: [Sendgrid API docs](https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html)
+  For reference: [Sendgrid API docs](https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/index.html)
 
   ## Example
 
@@ -28,7 +28,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     headers = [{"Content-Type", "application/json"},
                {"User-Agent", "swoosh/#{Swoosh.version}"},
                {"Authorization", "Bearer #{config[:api_key]}"}]
-    body = email |> prepare_body()
+    body = email |> prepare_body() |> Poison.encode!
     url = [base_url(config), @api_endpoint]
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, code, _headers, _body} when code >= 200 and code <= 399 ->
@@ -49,7 +49,6 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_subject(email)
     |> prepare_content(email)
     |> prepare_reply_to(email)
-    |> Poison.encode!
   end
 
   defp email_item({"", email}), do: %{email: email}
