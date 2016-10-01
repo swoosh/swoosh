@@ -55,7 +55,7 @@ defmodule Swoosh.Adapters.Postmark do
     do: @api_endpoint
 
   defp prepare_body(email) do
-    %{}
+    Map.new()
     |> prepare_from(email)
     |> prepare_to(email)
     |> prepare_subject(email)
