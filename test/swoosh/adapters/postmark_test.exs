@@ -2,6 +2,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
   use AdapterCase, async: true
 
   import Swoosh.Email
+
   alias Swoosh.Adapters.Postmark
 
   @success_response """
@@ -15,9 +16,11 @@ defmodule Swoosh.Adapters.PostmarkTest do
   """
 
   setup_all do
-    bypass = Bypass.open
-    config = [base_url: "http://localhost:#{bypass.port}",
-              api_key: "jarvis"]
+    bypass = Bypass.open()
+    config = [
+      base_url: "http://localhost:#{bypass.port}",
+      api_key:  "jarvis",
+    ]
 
     valid_email =
       new
@@ -31,14 +34,17 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
-      conn = parse(conn)
-      body_params = %{"Subject" => "Hello, Avengers!",
-                      "To" => "tony.stark@example.com",
-                      "From" => "steve.rogers@example.com",
-                      "HtmlBody" => "<h1>Hello</h1>"}
+      conn        = parse(conn)
+      body_params = %{
+        "Subject"  => "Hello, Avengers!",
+        "To"       => "tony.stark@example.com",
+        "From"     => "steve.rogers@example.com",
+        "HtmlBody" => "<h1>Hello</h1>"
+      }
+
       assert body_params == conn.body_params
-      assert "/email" == conn.request_path
-      assert "POST" == conn.method
+      assert "/email"    == conn.request_path
+      assert "POST"      == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
     end
@@ -63,19 +69,21 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> text_body("Hello")
 
     Bypass.expect bypass, fn conn ->
-      conn = parse(conn)
-      body_params = %{"Subject" => "Hello, Avengers!",
-                      "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
-                      "From" => "tony.stark@example.com",
-                      "Cc" => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
-                      "Bcc" => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
-                      "ReplyTo" => "iron.stark@example.com",
-                      "TextBody" => "Hello",
-                      "HtmlBody" => "<h1>Hello</h1>"}
+      conn        = parse(conn)
+      body_params = %{
+        "Subject"  => "Hello, Avengers!",
+        "To"       => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
+        "From"     => "tony.stark@example.com",
+        "Cc"       => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
+        "Bcc"      => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
+        "ReplyTo"  => "iron.stark@example.com",
+        "TextBody" => "Hello",
+        "HtmlBody" => "<h1>Hello</h1>"
+      }
 
       assert body_params == conn.body_params
-      assert "/email" == conn.request_path
-      assert "POST" == conn.method
+      assert "/email"    == conn.request_path
+      assert "POST"      == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
     end
@@ -84,19 +92,23 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
-    Bypass.expect bypass, fn conn ->
-      Plug.Conn.resp(conn, 422, "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}")
-    end
+    errors = "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}"
 
-    assert Postmark.deliver(email, config) == {:error, {422, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}}
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 422, errors))
+
+    response = {:error, {422, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}}
+
+    assert Postmark.deliver(email, config) == response
   end
 
   test "deliver/1 with 5xx response", %{bypass: bypass, valid_email: email, config: config} do
-    Bypass.expect bypass, fn conn ->
-      Plug.Conn.resp(conn, 500, "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}")
-    end
+    errors = "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}"
 
-    assert Postmark.deliver(email, config) == {:error, {500, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}}
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 500, errors))
+
+    response = {:error, {500, %{"errors" => ["The provided authorization grant is invalid, expired, or revoked"], "message" => "error"}}}
+
+    assert Postmark.deliver(email, config) == response
   end
 
   test "validate_config/1 with valid config", %{config: config} do
@@ -104,10 +116,12 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "validate_config/1 with invalid config" do
-    assert_raise ArgumentError, """
-    expected [:api_key] to be set, got: []
-    """, fn ->
-      Postmark.validate_config([])
-    end
+    assert_raise(
+      ArgumentError,
+      "expected [:api_key] to be set, got: []\n",
+      fn ->
+        Postmark.validate_config([])
+      end
+    )
   end
 end
