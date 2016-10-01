@@ -93,11 +93,11 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, "Subject", subject)
 
-  defp prepare_text(body, %{text_body: nil}),       do: body
-  defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, "TextBody", text_body)
+  defp prepare_text(body, %Email{text_body: nil}),       do: body
+  defp prepare_text(body, %Email{text_body: text_body}), do: Map.put(body, "TextBody", text_body)
 
-  defp prepare_html(body, %{html_body: nil}),       do: body
-  defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
+  defp prepare_html(body, %Email{html_body: nil}),       do: body
+  defp prepare_html(body, %Email{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
 
   defp prepare_template_id(body, %{template_id: nil}),         do: body
   defp prepare_template_id(body, %{template_id: template_id}), do: Map.put(body, "TemplateId", template_id)
