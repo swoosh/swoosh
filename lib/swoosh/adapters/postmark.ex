@@ -41,11 +41,17 @@ defmodule Swoosh.Adapters.Postmark do
     ]
   end
 
-  defp prepare_url(config) do
-    [base_url(config), @api_endpoint]
-  end
+  defp prepare_url(config),
+    do: [base_url(config), api_endpoint(config)]
 
-  defp base_url(config), do: config[:base_url] || @base_url
+  defp base_url(config),
+    do: config[:base_url] || @base_url
+
+  defp api_endpoint([template: template])
+  when not is_nil(template),
+    do: @api_endpoint <>  "/withTemplate"
+  defp api_endpoint(_config),
+    do: @api_endpoint
 
   defp prepare_body(email) do
     %{}
