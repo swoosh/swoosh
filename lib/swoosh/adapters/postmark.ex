@@ -109,10 +109,10 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp make_request(url, headers, params) do
     case :hackney.post(url, headers, params, [:with_body]) do
-      {:ok, 200, _headers, body} ->
-        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, Poison.decode!(body)}}
+      {:ok, 200, _headers, body} ->
+        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
       {:error, reason} ->
         {:error, reason}
     end
