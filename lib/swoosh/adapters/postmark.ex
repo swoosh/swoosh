@@ -8,8 +8,9 @@ defmodule Swoosh.Adapters.Postmark do
 
       # config/config.exs
       config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.Postmark,
-        api_key: "my-api-key"
+        adapter:  Swoosh.Adapters.Postmark,
+        api_key:  "my-api-key",
+        template: true # optional
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
