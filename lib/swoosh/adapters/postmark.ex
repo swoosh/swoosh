@@ -63,6 +63,8 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
+    |> prepare_template_id(email)
+    |> prepare_template_model(email)
     |> Poison.encode!()
   end
 
@@ -95,6 +97,14 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_html(body, %{html_body: nil}),       do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
+
+  defp prepare_template_id(body, %{template_id: nil}),         do: body
+  defp prepare_template_id(body, %{template_id: template_id}), do: Map.put(body, "TemplateId", template_id)
+  defp prepare_template_id(body, _email),                      do: body
+
+  defp prepare_template_model(body, %{template_model: nil}),            do: body
+  defp prepare_template_model(body, %{template_model: template_model}), do: Map.put(body, "TemplateModel", template_model)
+  defp prepare_template_model(body, _email),                            do: body
 
   defp make_request(url, headers, params) do
     case :hackney.post(url, headers, params, [:with_body]) do
