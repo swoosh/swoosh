@@ -26,20 +26,11 @@ defmodule Swoosh.Adapters.Postmark do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params  = email |> prepare_body() |> Poison.encode!()
-    url     = [base_url(config), @api_endpoint]
+    url     = prepare_url(config)
+    params  = prepare_body(email)
 
-    case :hackney.post(url, headers, params, [:with_body]) do
-      {:ok, 200, _headers, body} ->
-        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
-      {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
-      {:error, reason} ->
-        {:error, reason}
-    end
+    make_request(url, headers, params)
   end
-
-  defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_headers(config) do
     [
@@ -49,6 +40,12 @@ defmodule Swoosh.Adapters.Postmark do
       {"Accept",                  "application/json"}
     ]
   end
+
+  defp prepare_url(config) do
+    [base_url(config), @api_endpoint]
+  end
+
+  defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_body(email) do
     %{}
@@ -60,6 +57,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
+    |> Poison.encode!()
   end
 
   defp prepare_from(body, %Email{from: {_name, address}}), do: Map.put(body, "From", address)
@@ -77,7 +75,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_recipients(recipients) do
     recipients
-    |> Enum.map(&prepare_recipient(&1))
+    |> Enum.map(&prepare_recipient/1)
     |> Enum.join(",")
   end
 
@@ -91,4 +89,15 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_html(body, %{html_body: nil}),       do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
+
+  defp make_request(url, headers, params) do
+    case :hackney.post(url, headers, params, [:with_body]) do
+      {:ok, 200, _headers, body} ->
+        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
+      {:ok, code, _headers, body} when code > 399 ->
+        {:error, {code, Poison.decode!(body)}}
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
 end
