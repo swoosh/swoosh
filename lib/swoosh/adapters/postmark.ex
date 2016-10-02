@@ -90,6 +90,7 @@ defmodule Swoosh.Adapters.Postmark do
   defp prepare_recipient({"",   address}), do: address
   defp prepare_recipient({name, address}), do: "\"#{name}\" <#{address}>"
 
+  defp prepare_subject(body, %Email{subject: ""}),      do: body
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, "Subject", subject)
 
   defp prepare_text(body, %Email{text_body: nil}),       do: body
