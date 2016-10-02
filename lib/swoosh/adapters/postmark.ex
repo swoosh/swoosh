@@ -64,8 +64,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
-    |> prepare_template_id(email)
-    |> prepare_template_model(email)
+    |> prepare_custom_vars(email)
     |> Poison.encode!()
   end
 
@@ -99,13 +98,21 @@ defmodule Swoosh.Adapters.Postmark do
   defp prepare_html(body, %Email{html_body: nil}),       do: body
   defp prepare_html(body, %Email{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
 
-  defp prepare_template_id(body, %{template_id: nil}),         do: body
-  defp prepare_template_id(body, %{template_id: template_id}), do: Map.put(body, "TemplateId", template_id)
-  defp prepare_template_id(body, _email),                      do: body
+  # example custom vars
+  #
+  # %{
+  #   "template_id"    => 123,
+  #   "template_model" => %{"name": 1, "company": 2}
+  # }
+  defp prepare_custom_vars(body, %Email{provider_options: provider_options}),
+    do: Enum.reduce(provider_options, body, &put_in_body/2)
+  defp prepare_custom_vars(body, _email), do: body
 
-  defp prepare_template_model(body, %{template_model: nil}),            do: body
-  defp prepare_template_model(body, %{template_model: template_model}), do: Map.put(body, "TemplateModel", template_model)
-  defp prepare_template_model(body, _email),                            do: body
+  defp put_in_body({key, value}, body_acc) do
+    key = key |> to_string() |> Macro.camelize()
+    val = Poison.encode!(value)
+    Map.put(body_acc, key, val)
+  end
 
   defp make_request(url, headers, params) do
     case :hackney.post(url, headers, params, [:with_body]) do
