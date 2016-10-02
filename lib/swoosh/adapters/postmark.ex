@@ -109,9 +109,8 @@ defmodule Swoosh.Adapters.Postmark do
     do: Enum.reduce(provider_options, body, &put_in_body/2)
   defp prepare_custom_vars(body, _email), do: body
 
-  defp put_in_body({key, value}, body_acc) do
+  defp put_in_body({key, val}, body_acc) do
     key = key |> to_string() |> Macro.camelize()
-    val = Poison.encode!(value)
     Map.put(body_acc, key, val)
   end
 
