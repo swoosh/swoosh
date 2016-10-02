@@ -91,6 +91,41 @@ defmodule Swoosh.Adapters.PostmarkTest do
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
+  test "delivery/1 with all fields for template returns :ok", %{bypass: bypass, config: config} do
+    config         = Keyword.put_new(config, :template, true)
+    template_model = %{
+      name:    "Tony Stark",
+      company: "Avengers",
+    }
+    email =
+      new
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to("avengers@example.com")
+      |> put_provider_option(:template_id,    1)
+      |> put_provider_option(:template_model, template_model)
+
+    Bypass.expect bypass, fn conn ->
+      conn        = parse(conn)
+      body_params = %{
+        "To"            => "avengers@example.com",
+        "From"          => "tony.stark@example.com",
+        "TemplateId"    => 1,
+        "TemplateModel" => %{
+          "company" => "Avengers",
+          "name"    => "Tony Stark",
+        }
+      }
+
+      assert body_params           == conn.body_params
+      assert "/email/withTemplate" == conn.request_path
+      assert "POST"                == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     errors = "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}"
 
@@ -112,7 +147,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "validate_config/1 with valid config", %{config: config} do
-    assert Postmark.validate_config(config) == :ok
+    assert :ok = config |> Postmark.validate_config()
+    assert :ok = config |> Keyword.put_new(:template, true) |> Postmark.validate_config()
   end
 
   test "validate_config/1 with invalid config" do
