@@ -48,7 +48,7 @@ defmodule Swoosh.Adapters.Postmark do
   defp base_url(config),
     do: config[:base_url] || @base_url
 
-  defp api_endpoint([template: template])
+  defp api_endpoint([{:template, template} | _])
   when not is_nil(template),
     do: @api_endpoint <>  "/withTemplate"
   defp api_endpoint(_config),
