@@ -92,7 +92,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "delivery/1 with all fields for template returns :ok", %{bypass: bypass, config: config} do
-    config         = Keyword.put_new(config, :template, true)
+    config         = Keyword.merge(config, template: true)
     template_model = %{
       name:    "Tony Stark",
       company: "Avengers",
