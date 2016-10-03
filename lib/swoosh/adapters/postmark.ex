@@ -27,9 +27,16 @@ defmodule Swoosh.Adapters.Postmark do
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     url     = prepare_url(config)
-    params  = prepare_body(email)
+    params  = prepare_body(email) |> Poison.encode!
 
-    make_request(url, headers, params)
+    case :hackney.post(url, headers, params, [:with_body]) do
+      {:ok, code, _headers, body} when code > 399 ->
+        {:error, {code, Poison.decode!(body)}}
+      {:ok, 200, _headers, body} ->
+        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp prepare_headers(config) do
@@ -64,7 +71,6 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
     |> prepare_template(email)
-    |> Poison.encode!()
   end
 
   defp prepare_from(body, %Email{from: {_name, address}}), do: Map.put(body, "From", address)
@@ -113,15 +119,4 @@ defmodule Swoosh.Adapters.Postmark do
   defp put_in_body({:template_id, val}, body_acc),
     do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body(_, body_acc), do: body_acc
-
-  defp make_request(url, headers, params) do
-    case :hackney.post(url, headers, params, [:with_body]) do
-      {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
-      {:ok, 200, _headers, body} ->
-        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
 end
