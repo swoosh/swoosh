@@ -63,7 +63,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
-    |> prepare_custom_vars(email)
+    |> prepare_template(email)
     |> Poison.encode!()
   end
 
@@ -104,14 +104,15 @@ defmodule Swoosh.Adapters.Postmark do
   #   "template_id"    => 123,
   #   "template_model" => %{"name": 1, "company": 2}
   # }
-  defp prepare_custom_vars(body, %Email{provider_options: provider_options}),
+  defp prepare_template(body, %Email{provider_options: provider_options}),
     do: Enum.reduce(provider_options, body, &put_in_body/2)
-  defp prepare_custom_vars(body, _email), do: body
+  defp prepare_template(body, _email), do: body
 
-  defp put_in_body({key, val}, body_acc) do
-    key = key |> to_string() |> Macro.camelize()
-    Map.put(body_acc, key, val)
-  end
+  defp put_in_body({:template_model, val}, body_acc),
+    do: Map.put(body_acc, "TemplateModel", val)
+  defp put_in_body({:template_id, val}, body_acc),
+    do: Map.put(body_acc, "TemplateId", val)
+  defp put_in_body(_, body_acc), do: body_acc
 
   defp make_request(url, headers, params) do
     case :hackney.post(url, headers, params, [:with_body]) do
