@@ -16,7 +16,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
   """
 
   setup_all do
-    bypass = Bypass.open()
+    bypass = Bypass.open
     config = [
       base_url: "http://localhost:#{bypass.port}",
       api_key:  "jarvis",
@@ -43,8 +43,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
       }
 
       assert body_params == conn.body_params
-      assert "/email"    == conn.request_path
-      assert "POST"      == conn.method
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
     end
@@ -116,9 +116,9 @@ defmodule Swoosh.Adapters.PostmarkTest do
         }
       }
 
-      assert body_params           == conn.body_params
+      assert body_params == conn.body_params
       assert "/email/withTemplate" == conn.request_path
-      assert "POST"                == conn.method
+      assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
     end

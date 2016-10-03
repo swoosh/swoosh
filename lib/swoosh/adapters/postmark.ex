@@ -34,10 +34,10 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_headers(config) do
     [
-      {"User-Agent",              "swoosh/#{Swoosh.version}"},
+      {"User-Agent", "swoosh/#{Swoosh.version}"},
       {"X-Postmark-Server-Token", config[:api_key]},
-      {"Content-Type",            "application/json"},
-      {"Accept",                  "application/json"}
+      {"Content-Type", "application/json"},
+      {"Accept", "application/json"}
     ]
   end
 
@@ -49,12 +49,12 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp api_endpoint([{:template, template} | _])
   when not is_nil(template),
-    do: @api_endpoint <>  "/withTemplate"
+    do: @api_endpoint <> "/withTemplate"
   defp api_endpoint(_config),
     do: @api_endpoint
 
   defp prepare_body(email) do
-    Map.new()
+    %{}
     |> prepare_from(email)
     |> prepare_to(email)
     |> prepare_subject(email)
@@ -74,10 +74,10 @@ defmodule Swoosh.Adapters.Postmark do
   defp prepare_cc(body, %Email{cc: []}), do: body
   defp prepare_cc(body, %Email{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
 
-  defp prepare_bcc(body, %Email{bcc: []}),  do: body
+  defp prepare_bcc(body, %Email{bcc: []}), do: body
   defp prepare_bcc(body, %Email{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
 
-  defp prepare_reply_to(body, %Email{reply_to: nil}),              do: body
+  defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
   defp prepare_reply_to(body, %Email{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
 
   defp prepare_recipients(recipients) do
@@ -86,16 +86,16 @@ defmodule Swoosh.Adapters.Postmark do
     |> Enum.join(",")
   end
 
-  defp prepare_recipient({"",   address}), do: address
+  defp prepare_recipient({"", address}), do: address
   defp prepare_recipient({name, address}), do: "\"#{name}\" <#{address}>"
 
-  defp prepare_subject(body, %Email{subject: ""}),      do: body
+  defp prepare_subject(body, %Email{subject: ""}), do: body
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, "Subject", subject)
 
-  defp prepare_text(body, %Email{text_body: nil}),       do: body
+  defp prepare_text(body, %Email{text_body: nil}), do: body
   defp prepare_text(body, %Email{text_body: text_body}), do: Map.put(body, "TextBody", text_body)
 
-  defp prepare_html(body, %Email{html_body: nil}),       do: body
+  defp prepare_html(body, %Email{html_body: nil}), do: body
   defp prepare_html(body, %Email{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
 
   # example custom vars
