@@ -9,7 +9,8 @@ defmodule Swoosh.Adapters.Postmark do
       # config/config.exs
       config :sample, Sample.Mailer,
         adapter:  Swoosh.Adapters.Postmark,
-        api_key:  "my-api-key"
+        api_key:  "my-api-key",
+        template: true # optional
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -54,8 +55,7 @@ defmodule Swoosh.Adapters.Postmark do
   defp base_url(config),
     do: config[:base_url] || @base_url
 
-  defp api_endpoint([{:template, template} | _])
-  when not is_nil(template),
+  defp api_endpoint([{:template, true} | _]),
     do: @api_endpoint <> "/withTemplate"
   defp api_endpoint(_config),
     do: @api_endpoint
