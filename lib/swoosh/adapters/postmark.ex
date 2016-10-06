@@ -8,9 +8,8 @@ defmodule Swoosh.Adapters.Postmark do
 
       # config/config.exs
       config :sample, Sample.Mailer,
-        adapter:  Swoosh.Adapters.Postmark,
-        api_key:  "my-api-key",
-        template: true # optional
+        adapter: Swoosh.Adapters.Postmark,
+        api_key: "my-api-key"
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -27,8 +26,9 @@ defmodule Swoosh.Adapters.Postmark do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    url     = prepare_url(config)
-    params  = prepare_body(email) |> Poison.encode!
+    email   = prepare_body(email)
+    url     = prepare_url(config, email)
+    params  = Poison.encode!(email)
 
     case :hackney.post(url, headers, params, [:with_body]) do
       {:ok, code, _headers, body} when code > 399 ->
@@ -49,14 +49,16 @@ defmodule Swoosh.Adapters.Postmark do
     ]
   end
 
-  defp prepare_url(config),
-    do: [base_url(config), api_endpoint(config)]
+  defp prepare_url(config, email),
+    do: [base_url(config), api_endpoint(email)]
 
   defp base_url(config),
     do: config[:base_url] || @base_url
 
-  defp api_endpoint(config),
-    do: @api_endpoint <> if config[:template], do: "/withTemplate", else: ""
+  defp api_endpoint(%{"TemplateModel" => _, "TemplateId" => _}),
+    do: @api_endpoint <> "/withTemplate"
+  defp api_endpoint(_email),
+    do: @api_endpoint
 
   defp prepare_body(email) do
     %{}
