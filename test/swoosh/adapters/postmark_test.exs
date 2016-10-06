@@ -31,12 +31,11 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
-      conn        = parse(conn)
+      conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
                       "To" => "tony.stark@example.com",
                       "From" => "steve.rogers@example.com",
                       "HtmlBody" => "<h1>Hello</h1>"}
-
       assert body_params == conn.body_params
       assert "/email" == conn.request_path
       assert "POST" == conn.method
@@ -64,7 +63,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> text_body("Hello")
 
     Bypass.expect bypass, fn conn ->
-      conn        = parse(conn)
+      conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
                       "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
                       "From" => "tony.stark@example.com",
@@ -98,7 +97,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> put_provider_option(:template_model, template_model)
 
     Bypass.expect bypass, fn conn ->
-      conn        = parse(conn)
+      conn = parse(conn)
       body_params = %{
         "To"            => "avengers@example.com",
         "From"          => "tony.stark@example.com",

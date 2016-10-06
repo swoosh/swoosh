@@ -6,10 +6,7 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
   @moduletag integration: true
 
   setup_all do
-    config = [
-      api_key: System.get_env("POSTMARK_API_KEY"),
-      domain:  System.get_env("POSTMARK_DOMAIN"),
-    ]
+    config = [api_key: System.get_env("POSTMARK_API_KEY"), domain: System.get_env("POSTMARK_DOMAIN")]
     valid_email =
       new
       |> from({"Swoosh Postmark", "swoosh@#{config[:domain]}"})
@@ -32,14 +29,14 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
   end
 
   test "template deliver", %{valid_email: valid_email, config: config} do
-    config         = Keyword.put_new(config, :template, true)
+    config = Keyword.put_new(config, :template, true)
     template_model = %{
-      name:    "Swoosh",
+      name: "Swoosh",
       action_url: "Postmark",
     }
     email =
       valid_email
-      |> put_provider_option(:template_id,    968101)
+      |> put_provider_option(:template_id, 968101)
       |> put_provider_option(:template_model, template_model)
 
     assert_ok_response(email, config)
