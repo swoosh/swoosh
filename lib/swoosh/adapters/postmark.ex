@@ -26,8 +26,8 @@ defmodule Swoosh.Adapters.Postmark do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params  = email |> prepare_body |> Poison.encode!
-    url     = prepare_url(config, email)
+    params = email |> prepare_body |> Poison.encode!
+    url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, headers, params, [:with_body]) do
       {:ok, 200, _headers, body} ->
@@ -39,18 +39,14 @@ defmodule Swoosh.Adapters.Postmark do
     end
   end
 
+  defp base_url(config), do: config[:base_url] || @base_url
+
   defp prepare_headers(config) do
     [{"User-Agent", "swoosh/#{Swoosh.version}"},
      {"X-Postmark-Server-Token", config[:api_key]},
      {"Content-Type", "application/json"},
      {"Accept", "application/json"}]
   end
-
-  defp prepare_url(config, email),
-    do: [base_url(config), api_endpoint(email)]
-
-  defp base_url(config),
-    do: config[:base_url] || @base_url
 
   defp api_endpoint(%Email{provider_options: %{template_id: _, template_model: _}}),
     do: @api_endpoint <> "/withTemplate"
