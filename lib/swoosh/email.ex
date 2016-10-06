@@ -65,7 +65,7 @@ defmodule Swoosh.Email do
   @type text_body :: String.t
   @type html_body :: String.t
 
-  @type t :: %__MODULE__{subject: subject,
+  @type t :: %__MODULE__{subject: String.t,
                          from: mailbox | nil,
                          to: [mailbox],
                          cc: [mailbox] | [],

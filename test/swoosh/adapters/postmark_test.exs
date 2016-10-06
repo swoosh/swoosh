@@ -2,7 +2,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
   use AdapterCase, async: true
 
   import Swoosh.Email
-
   alias Swoosh.Adapters.Postmark
 
   @success_response """
@@ -17,10 +16,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
   setup_all do
     bypass = Bypass.open
-    config = [
-      base_url: "http://localhost:#{bypass.port}",
-      api_key:  "jarvis",
-    ]
+    config = [base_url: "http://localhost:#{bypass.port}",
+              api_key: "jarvis"]
 
     valid_email =
       new
@@ -35,12 +32,10 @@ defmodule Swoosh.Adapters.PostmarkTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       conn        = parse(conn)
-      body_params = %{
-        "Subject"  => "Hello, Avengers!",
-        "To"       => "tony.stark@example.com",
-        "From"     => "steve.rogers@example.com",
-        "HtmlBody" => "<h1>Hello</h1>"
-      }
+      body_params = %{"Subject" => "Hello, Avengers!",
+                      "To" => "tony.stark@example.com",
+                      "From" => "steve.rogers@example.com",
+                      "HtmlBody" => "<h1>Hello</h1>"}
 
       assert body_params == conn.body_params
       assert "/email" == conn.request_path
@@ -70,20 +65,18 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
     Bypass.expect bypass, fn conn ->
       conn        = parse(conn)
-      body_params = %{
-        "Subject"  => "Hello, Avengers!",
-        "To"       => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
-        "From"     => "tony.stark@example.com",
-        "Cc"       => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
-        "Bcc"      => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
-        "ReplyTo"  => "iron.stark@example.com",
-        "TextBody" => "Hello",
-        "HtmlBody" => "<h1>Hello</h1>"
-      }
+      body_params = %{"Subject" => "Hello, Avengers!",
+                      "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
+                      "From" => "tony.stark@example.com",
+                      "Cc" => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
+                      "Bcc" => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
+                      "ReplyTo" => "iron.stark@example.com",
+                      "TextBody" => "Hello",
+                      "HtmlBody" => "<h1>Hello</h1>"}
 
       assert body_params == conn.body_params
-      assert "/email"    == conn.request_path
-      assert "POST"      == conn.method
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
     end

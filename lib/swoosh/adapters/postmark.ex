@@ -31,22 +31,20 @@ defmodule Swoosh.Adapters.Postmark do
     params  = Poison.encode!(email)
 
     case :hackney.post(url, headers, params, [:with_body]) do
-      {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Poison.decode!(body)["MessageID"]}}
+      {:ok, code, _headers, body} when code > 399 ->
+        {:error, {code, Poison.decode!(body)}}
       {:error, reason} ->
         {:error, reason}
     end
   end
 
   defp prepare_headers(config) do
-    [
-      {"User-Agent", "swoosh/#{Swoosh.version}"},
-      {"X-Postmark-Server-Token", config[:api_key]},
-      {"Content-Type", "application/json"},
-      {"Accept", "application/json"}
-    ]
+    [{"User-Agent", "swoosh/#{Swoosh.version}"},
+     {"X-Postmark-Server-Token", config[:api_key]},
+     {"Content-Type", "application/json"},
+     {"Accept", "application/json"}]
   end
 
   defp prepare_url(config, email),
@@ -88,7 +86,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_recipients(recipients) do
     recipients
-    |> Enum.map(&prepare_recipient/1)
+    |> Enum.map(&prepare_recipient(&1))
     |> Enum.join(",")
   end
 
