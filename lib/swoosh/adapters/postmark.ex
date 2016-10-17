@@ -66,7 +66,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_template(email)
   end
 
-  defp prepare_from(body, %Email{from: {_name, address}}), do: Map.put(body, "From", address)
+  defp prepare_from(body, %Email{from: from}), do: Map.put(body, "From", prepare_recipient(from))
 
   defp prepare_to(body, %Email{to: to}), do: Map.put(body, "To", prepare_recipients(to))
 

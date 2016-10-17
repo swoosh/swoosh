@@ -66,7 +66,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
                       "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
-                      "From" => "tony.stark@example.com",
+                      "From" => "\"T Stark\" <tony.stark@example.com>",
                       "Cc" => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
                       "Bcc" => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
                       "ReplyTo" => "iron.stark@example.com",
@@ -100,7 +100,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       conn = parse(conn)
       body_params = %{
         "To"            => "avengers@example.com",
-        "From"          => "tony.stark@example.com",
+        "From"          => "\"T Stark\" <tony.stark@example.com>",
         "TemplateId"    => 1,
         "TemplateModel" => %{
           "company" => "Avengers",
