@@ -49,6 +49,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_subject(email)
     |> prepare_content(email)
     |> prepare_reply_to(email)
+    |> prepare_template_id(email)
   end
 
   defp email_item({"", email}), do: %{email: email}
@@ -98,4 +99,9 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
   defp prepare_reply_to(body, %Email{reply_to: reply_to}), do: Map.put(body, :reply_to, reply_to |> email_item)
+
+  defp prepare_template_id(body, %Email{provider_options: %{template_id: template_id}}) do
+    Map.put(body, :template_id, template_id)
+  end
+  defp prepare_template_id(body, _email), do: body
 end
