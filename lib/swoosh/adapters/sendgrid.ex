@@ -64,6 +64,7 @@ defmodule Swoosh.Adapters.Sendgrid do
       |> prepare_cc(email)
       |> prepare_bcc(email)
       |> prepare_custom_vars(email)
+      |> prepare_substitutions(email)
 
     Map.put(body, :personalizations, [personalizations])
   end
@@ -83,6 +84,11 @@ defmodule Swoosh.Adapters.Sendgrid do
     Map.put(personalizations, :custom_args, my_vars)
   end   
   defp prepare_custom_vars(personalizations, _email), do: personalizations
+
+  defp prepare_substitutions(personalizations, %Email{provider_options: %{substitutions: substitutions}}) do
+    Map.put(personalizations, :substitutions, substitutions)
+  end
+  defp prepare_substitutions(personalizations, _email), do: personalizations
 
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
 
