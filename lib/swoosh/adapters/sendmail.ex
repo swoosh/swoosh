@@ -9,7 +9,7 @@ if Code.ensure_loaded?(:mimemail) do
         config :sample, Sample.Mailer,
           adapter: Swoosh.Adapters.Sendmail,
           cmd_path: "/usr/bin/sendmail",
-          cmd_args: "-N delay,failure,success"
+          cmd_args: "-N delay,failure,success",
           qmail: true # Default false
 
         # lib/sample/mailer.ex
