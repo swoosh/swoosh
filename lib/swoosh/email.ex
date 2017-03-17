@@ -16,6 +16,7 @@ defmodule Swoosh.Email do
   * `html_body` - the content of the email in HTML, example: `"<h1>Hello</h1>"`
   * `reply_to` - the email address that should receive replies, example: `{"Clints Barton", "hawk.eye@example.com"}`
   * `headers` - a map of headers that should be included in the email, example: `%{"X-Accept-Language" => "en-us, en"}`
+  * `attachments` - a list of attachments that should be included in the email, example: `[%{path: "/data/uuid-random", filename: "att.zip", content_type: "application/zip"}]`
   * `assigns` - a map of values that correspond with any template variables, example: `%{"first_name" => "Bruce"}`
 
   ## Private
@@ -55,7 +56,7 @@ defmodule Swoosh.Email do
   import Swoosh.Email.Format
 
   defstruct subject: "", from: nil, to: [], cc: [], bcc: [], text_body: nil,
-            html_body: nil, attachments: nil, reply_to: nil, headers: %{},
+            html_body: nil, attachments: [], reply_to: nil, headers: %{},
             private: %{}, assigns: %{}, provider_options: %{}
 
   @type name :: String.t
@@ -76,6 +77,7 @@ defmodule Swoosh.Email do
                          headers: map,
                          private: map,
                          assigns: map,
+                         attachments: [Swoosh.Attachment.t],
                          provider_options: map}
 
   @doc ~S"""
@@ -172,12 +174,12 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> from({"Steve Rogers", "steve.rogers@example.com"})
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"Steve Rogers", "steve.rogers@example.com"},
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {"Steve Rogers", "steve.rogers@example.com"},
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: []}
 
       iex> new() |> from("steve.rogers@example.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {"", "steve.rogers@example.com"},
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {"", "steve.rogers@example.com"},
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: []}
   """
@@ -196,12 +198,12 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> reply_to({"Steve Rogers", "steve.rogers@example.com"})
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"Steve Rogers", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
 
       iex> new() |> reply_to("steve.rogers@example.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
   """
@@ -219,7 +221,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> subject("Hello, Avengers!")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "Hello, Avengers!",
        text_body: nil, to: []}
@@ -235,7 +237,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> text_body("Hello")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: "Hello", to: []}
@@ -251,7 +253,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> html_body("<h1>Hello</h1>")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [],
        cc: [], from: nil, headers: %{}, html_body: "<h1>Hello</h1>",
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
@@ -266,7 +268,7 @@ defmodule Swoosh.Email do
   address of the recipient; or an array comprised of a combination of either.
 
       iex> new() |> bcc("steve.rogers@example.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [{"", "steve.rogers@example.com"}],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [{"", "steve.rogers@example.com"}],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
@@ -308,7 +310,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> cc("steve.rogers@example.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [],
        cc: [{"", "steve.rogers@example.com"}], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
@@ -350,7 +352,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> to("steve.rogers@example.com")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: [{"", "steve.rogers@example.com"}]}
@@ -391,7 +393,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> header("X-Magic-Number", "7")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{"X-Magic-Number" => "7"}, html_body: nil, private: %{},
        provider_options: %{}, reply_to: nil, subject: "", text_body: nil, to: []}
   """
@@ -420,7 +422,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> put_private(:phoenix_template, "welcome.html")
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{phoenix_template: "welcome.html"},
        provider_options: %{}, reply_to: nil, subject: "", text_body: nil, to: []}
   """
@@ -438,7 +440,7 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> put_provider_option(:async, true)
-      %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil,
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{async: true},
        reply_to: nil, subject: "", text_body: nil, to: []}
   """
@@ -456,12 +458,46 @@ defmodule Swoosh.Email do
   ## Examples
 
       iex> new() |> assign(:username, "ironman")
-      %Swoosh.Email{assigns: %{username: "ironman"}, attachments: nil, bcc: [],
+      %Swoosh.Email{assigns: %{username: "ironman"}, attachments: [], bcc: [],
        cc: [], from: nil, headers: %{}, html_body: nil, private: %{},
        provider_options: %{}, reply_to: nil, subject: "", text_body: nil, to: []}
   """
   @spec assign(t, atom, any) :: t
   def assign(%__MODULE__{assigns: assigns} = email, key, value) when is_atom(key) do
     %{email | assigns: Map.put(assigns, key, value)}
+  end
+
+  @doc ~S"""
+  Add a new attachment in the email.
+
+  ## Examples
+
+      iex> new() |> attachment("/data/att.zip")
+      %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: nil, subject: "", text_body: nil, to: [],
+       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip"}]}
+      iex> new() |> attachment(Swoosh.Attachment.new("/data/att.zip"))
+      %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: nil, subject: "", text_body: nil, to: [],
+       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip"}]}
+      iex> new() |> attachment(%Plug.Upload{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"})
+      %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: nil, subject: "", text_body: nil, to: [],
+       attachments: [%Swoosh.Attachment{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"}]}
+  """
+  @spec attachment(t, binary | Swoosh.Attachment.t) :: t
+  def attachment(%__MODULE__{attachments: attachments} = email, <<path::binary>>) do
+    %{email | attachments: [Swoosh.Attachment.new(path) | attachments]}
+  end
+  def attachment(%__MODULE__{attachments: attachments} = email, %Swoosh.Attachment{} = attachment) do
+    %{email | attachments: [attachment | attachments]}
+  end
+  if Code.ensure_loaded?(Plug) do
+    def attachment(%__MODULE__{attachments: attachments} = email, %Plug.Upload{} = upload) do
+      %{email | attachments: [Swoosh.Attachment.new(upload) | attachments]}
+    end
   end
 end

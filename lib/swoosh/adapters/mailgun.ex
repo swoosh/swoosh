@@ -70,13 +70,13 @@ defmodule Swoosh.Adapters.Mailgun do
   end
 
   # example custom_vars
-  # 
-  # %{"my_var" => %{"my_message_id": 123}, 
+  #
+  # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
-  defp prepare_custom_vars(body, %Email{provider_options: %{custom_vars: my_vars}}) do
-    my_vars 
+  defp prepare_custom_vars(body, %Email{provider_options: %{custom_vars: custum_vars}}) do
+    custum_vars
     |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "v:#{k}", Poison.encode!(v)) end)
-  end   
+  end
   defp prepare_custom_vars(body, _email), do: body
 
 

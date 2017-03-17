@@ -53,7 +53,8 @@ defmodule Swoosh.Adapters.SparkPost do
     to: to,
     subject: subject,
     text_body: text,
-    html_body: html
+    html_body: html,
+    attachments: attachments
   } = email) do
     %{
       content: %{
@@ -64,7 +65,8 @@ defmodule Swoosh.Adapters.SparkPost do
         subject: subject,
         text: text,
         html: html,
-        headers: %{}
+        headers: %{},
+        attachments: prepare_attachments(attachments)
       },
       recipients: prepare_recipients(to, to)
     }
@@ -103,6 +105,12 @@ defmodule Swoosh.Adapters.SparkPost do
           header_to: raw_email_addresses(to)
         }
       }
+    end)
+  end
+
+  defp prepare_attachments(attachments) do
+    Enum.map(attachments, fn %{content_type: type, path: path, filename: name} ->
+      %{type: type, name: name, data: path |> File.read! |> Base.encode64}
     end)
   end
 

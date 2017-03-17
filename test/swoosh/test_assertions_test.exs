@@ -32,7 +32,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `subject` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: \"Hello, Avengers!\"\n" <>
         "rhs: \"Hello, X-Men!\"" = error.message
     end
@@ -44,7 +44,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `from` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: {\"\", \"tony.stark@example.com\"}\n" <>
         "rhs: {\"\", \"thor.odinson@example.com\"}" = error.message
     end
@@ -56,7 +56,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
         "rhs: [{\"\", \"steve.rogers@example.com\"}]" = error.message
     end
@@ -68,7 +68,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: [{\"\", \"steve.rogers@example.com\"}]\n" <>
         "rhs: [{\"\", \"bruce.banner@example.com\"}]" = error.message
     end
@@ -80,7 +80,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `cc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
         "rhs: []" = error.message
     end
@@ -92,7 +92,7 @@ defmodule Swoosh.TestAssertionsTest do
     rescue
       error in [ExUnit.AssertionError] ->
         "Email `bcc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
+        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
         "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
         "rhs: []" = error.message
     end
@@ -106,9 +106,9 @@ defmodule Swoosh.TestAssertionsTest do
       error in [ExUnit.AssertionError] ->
         "No message matching {:email, ^email} after 0ms.\n" <>
         "The following variables were pinned:\n" <>
-        "  email = %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: nil, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Wrong, Avengers!\", text_body: nil, to: []}\n" <>
+        "  email = %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Wrong, Avengers!\", text_body: nil, to: []}\n" <>
         "Process mailbox:\n" <>
-        "  {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}}"
+        "  {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}}"
         = error.message
     end
   end
@@ -123,7 +123,7 @@ defmodule Swoosh.TestAssertionsTest do
       assert_email_not_sent email
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
+        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
         "(which matched {:email, ^email})" = error.message
     end
   end
@@ -140,7 +140,7 @@ defmodule Swoosh.TestAssertionsTest do
       assert_no_email_sent()
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: nil, bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
+        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
         "(which matched {:email, _})" = error.message
     end
   end
