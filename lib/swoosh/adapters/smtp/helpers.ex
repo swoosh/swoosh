@@ -66,6 +66,17 @@ if Code.ensure_loaded?(:mimemail) do
       Map.to_list(additional_headers) ++ headers
     end
 
+    defp prepare_parts(headers, %Email{
+      attachments: attachments,
+      html_body: html_body,
+      text_body: text_body
+    }) when length(attachments) > 0 do
+      parts = Enum.map(attachments, &prepare_attachment(&1))
+      parts = if text_body, do: [prepare_part(:plain, text_body) | parts], else: parts
+      parts = if html_body, do: [prepare_part(:html, html_body) | parts], else: parts
+
+      {"multipart", "mixed", headers, parts}
+    end
     defp prepare_parts(headers, %Email{html_body: nil, text_body: text_body}) do
       headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
       {"text", "plain", headers, text_body}
@@ -89,6 +100,16 @@ if Code.ensure_loaded?(:mimemail) do
         {"disposition", "inline"},
         {"disposition-params",[]}],
        content}
+    end
+
+    defp prepare_attachment(%{filename: filename, path: path, content_type: content_type}) do
+      [type, format] = String.split(content_type, "/")
+      file = File.read!(path)
+
+      {type, format,
+       [{"Content-Transfer-Encoding", "base64"}],
+       [{"disposition", "attachment"}, {"disposition-params", [{"filename", filename}]}],
+       file}
     end
   end
 end
