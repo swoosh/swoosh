@@ -50,6 +50,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_content(email)
     |> prepare_reply_to(email)
     |> prepare_template_id(email)
+    |> prepare_categories(email)
   end
 
   defp email_item({"", email}), do: %{email: email}
@@ -77,12 +78,12 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_bcc(personalizations, %Email{bcc: bcc}), do: Map.put(personalizations, :bcc, bcc |> Enum.map(&email_item(&1)))
 
   # example custom_vars
-  # 
-  # %{"my_var" => %{"my_message_id": 123}, 
+  #
+  # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
   defp prepare_custom_vars(personalizations, %Email{provider_options: %{custom_args: my_vars}}) do
     Map.put(personalizations, :custom_args, my_vars)
-  end   
+  end
   defp prepare_custom_vars(personalizations, _email), do: personalizations
 
   defp prepare_substitutions(personalizations, %Email{provider_options: %{substitutions: substitutions}}) do
@@ -110,4 +111,9 @@ defmodule Swoosh.Adapters.Sendgrid do
     Map.put(body, :template_id, template_id)
   end
   defp prepare_template_id(body, _email), do: body
+
+  defp prepare_categories(body, %Email{provider_options: %{categories: categories}}) do
+    Map.put(body, :categories, categories)
+  end
+  defp prepare_categories(body, _email), do: body
 end
