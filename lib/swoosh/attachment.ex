@@ -41,15 +41,7 @@ defmodule Swoosh.Attachment do
 
   def new(path, opts) do
     filename = opts[:filename] || Path.basename(path)
-    content_type = opts[:content_type] || determine_content_type(path)
+    content_type = opts[:content_type] || MIME.from_path(path)
     %__MODULE__{path: path, filename: filename, content_type: content_type}
-  end
-
-  defp determine_content_type(path) do
-    if Code.ensure_loaded?(Plug) do
-      Plug.MIME.path(path)
-    else
-      "application/octet-stream"
-    end
   end
 end
