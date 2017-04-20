@@ -489,7 +489,7 @@ defmodule Swoosh.Email do
        attachments: [%Swoosh.Attachment{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"}]}
   """
   @spec attachment(t, binary | Swoosh.Attachment.t) :: t
-  def attachment(%__MODULE__{attachments: attachments} = email, <<path::binary>>) do
+  def attachment(%__MODULE__{attachments: attachments} = email, path) when is_binary(path) do
     %{email | attachments: [Swoosh.Attachment.new(path) | attachments]}
   end
   def attachment(%__MODULE__{attachments: attachments} = email, %Swoosh.Attachment{} = attachment) do
