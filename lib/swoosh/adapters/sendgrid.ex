@@ -48,6 +48,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_personalizations(email)
     |> prepare_subject(email)
     |> prepare_content(email)
+    |> prepare_attachments(email)
     |> prepare_reply_to(email)
     |> prepare_template_id(email)
     |> prepare_categories(email)
@@ -103,6 +104,16 @@ defmodule Swoosh.Adapters.Sendgrid do
   end
   defp prepare_content(body, %Email{html_body: html}), do: Map.put(body, :content, [%{type: "text/html", value: html}])
   defp prepare_content(body, %Email{text_body: text}), do: Map.put(body, :content, [%{type: "text/plain", type: text}])
+
+  defp prepare_attachments(body, %Email{attachments: []}), do: body
+  defp prepare_attachments(body, %Email{attachments: attachments}) do
+    attachments = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename} ->
+      content = path |> File.read! |> Base.encode64
+      %{type: type, filename: filename, content: content}
+    end)
+
+    Map.put(body, :attachments, attachments)
+  end
 
   defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
   defp prepare_reply_to(body, %Email{reply_to: reply_to}), do: Map.put(body, :reply_to, reply_to |> email_item)
