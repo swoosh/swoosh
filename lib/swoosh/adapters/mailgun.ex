@@ -52,9 +52,8 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp auth(config), do: Base.encode64("api:#{config[:api_key]}")
 
-  defp content_type(%Email{attachments: nil}), do: "application/x-www-form-urlencoded"
-  defp content_type(%Email{attachments: []}), do: "application/x-www-form-urlencoded"
-  defp content_type(%Email{}), do: "multipart/form-data"
+  defp content_type(%{attachments: []}), do: "application/x-www-form-urlencoded"
+  defp content_type(%{}), do: "multipart/form-data"
 
   defp prepare_body(email) do
     %{}
@@ -66,6 +65,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_reply_to(email)
+    |> prepare_attachments(email)
     |> prepare_custom_vars(email)
   end
 
@@ -79,6 +79,10 @@ defmodule Swoosh.Adapters.Mailgun do
   end
   defp prepare_custom_vars(body, _email), do: body
 
+  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(body, %{attachments: attachments}) do
+    Map.put(body, :attachment, Enum.map(attachments, &File.read!(&1.path)))
+  end
 
   defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, prepare_recipient(from))
 
