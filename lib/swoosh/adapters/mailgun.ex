@@ -27,10 +27,20 @@ defmodule Swoosh.Adapters.Mailgun do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
-    params = email |> prepare_body |> Plug.Conn.Query.encode
     url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    case :hackney.post(url, headers, params, [:with_body]) do
+    payload = case prepare_body(email) do
+      %{attachments: attachments} = params ->
+        {:multipart,
+         params
+         |> Map.drop([:attachments])
+         |> Enum.map(fn {k, v} -> {to_string(k), v} end)
+         |> Kernel.++(attachments)}
+      no_attachment ->
+        Plug.Conn.Query.encode(no_attachment)
+    end
+
+    case :hackney.post(url, headers, payload, [:with_body]) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Poison.decode!(body)["id"]}}
       {:ok, 401, _headers, body} ->
@@ -81,7 +91,15 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    Map.put(body, :attachment, Enum.map(attachments, &File.read!(&1.path)))
+    Map.put(body, :attachments, Enum.map(attachments, &prepare_file(&1)))
+  end
+
+  defp prepare_file(attachment) do
+    {:file, attachment.path,
+     {"form-data",
+      [{~s/"name"/, ~s/"attachment"/},
+       {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
+     []}
   end
 
   defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, prepare_recipient(from))
