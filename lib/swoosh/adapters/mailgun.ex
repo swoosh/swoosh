@@ -29,18 +29,7 @@ defmodule Swoosh.Adapters.Mailgun do
     headers = prepare_headers(email, config)
     url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    payload = case prepare_body(email) do
-      %{attachments: attachments} = params ->
-        {:multipart,
-         params
-         |> Map.drop([:attachments])
-         |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-         |> Kernel.++(attachments)}
-      no_attachment ->
-        Plug.Conn.Query.encode(no_attachment)
-    end
-
-    case :hackney.post(url, headers, payload, [:with_body]) do
+    case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Poison.decode!(body)["id"]}}
       {:ok, 401, _headers, body} ->
@@ -77,6 +66,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_custom_vars(email)
+    |> encode_body
   end
 
   # example custom_vars
@@ -131,4 +121,13 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
+
+  defp encode_body(%{attachments: attachments} = params) do
+    {:multipart,
+     params
+     |> Map.drop([:attachments])
+     |> Enum.map(fn {k, v} -> {to_string(k), v} end)
+     |> Kernel.++(attachments)}
+  end
+  defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
 end
