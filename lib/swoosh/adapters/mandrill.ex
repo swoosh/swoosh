@@ -62,6 +62,7 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_text(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
+    |> prepare_attachments(email)
     |> prepare_reply_to(email)
   end
 
@@ -90,11 +91,20 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_bcc(body, %Email{bcc: []}), do: body
   defp prepare_bcc(body, %Email{bcc: bcc}), do: prepare_recipients(body, bcc, "bcc")
 
+  defp prepare_attachments(body, %Email{attachments: []}), do: body
+  defp prepare_attachments(body, %Email{attachments: attachments}) do
+    Map.put(body, "attachments", Enum.map(attachments, &%{
+      "name" => &1.filename,
+      "type" => &1.content_type,
+      "content" => &1 |> File.read! |> Base.encode64
+    }))
+  end
+
   defp prepare_recipients(body, recipients, type \\ "to") do
     recipients =
-        recipients
-        |> Enum.map(&prepare_recipient(&1, type))
-        |> Enum.concat(body[:to])
+      recipients
+      |> Enum.map(&prepare_recipient(&1, type))
+      |> Enum.concat(body[:to])
 
     Map.put(body, :to, recipients)
   end
