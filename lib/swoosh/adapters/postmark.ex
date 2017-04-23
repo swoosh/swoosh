@@ -62,6 +62,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_text(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
+    |> prepare_attachments(email)
     |> prepare_reply_to(email)
     |> prepare_template(email)
   end
@@ -75,6 +76,15 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_bcc(body, %Email{bcc: []}), do: body
   defp prepare_bcc(body, %Email{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
+
+  defp prepare_attachments(body, %Email{attachments: []}), do: body
+  defp prepare_attachments(body, %Email{attachments: attachments}) do
+    Map.put(body, "Attachments", Enum.map(attachments, &%{
+      "Name" => &1.filename,
+      "ContentType" => &1.content_type,
+      "Content" => &1 |> File.read! |> Base.encode64
+    }))
+  end
 
   defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
   defp prepare_reply_to(body, %Email{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
