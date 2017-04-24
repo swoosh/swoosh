@@ -82,7 +82,7 @@ defmodule Swoosh.Adapters.Postmark do
     Map.put(body, "Attachments", Enum.map(attachments, &%{
       "Name" => &1.filename,
       "ContentType" => &1.content_type,
-      "Content" => &1 |> File.read! |> Base.encode64
+      "Content" => &1.path |> File.read! |> Base.encode64
     }))
   end
 
