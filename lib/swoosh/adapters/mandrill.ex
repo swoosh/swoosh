@@ -96,7 +96,7 @@ defmodule Swoosh.Adapters.Mandrill do
     Map.put(body, "attachments", Enum.map(attachments, &%{
       "name" => &1.filename,
       "type" => &1.content_type,
-      "content" => &1 |> File.read! |> Base.encode64
+      "content" => &1.path |> File.read! |> Base.encode64
     }))
   end
 
