@@ -90,7 +90,7 @@ defmodule Swoosh.Mailer do
     {:error, :from_not_set}
   end
   def deliver(adapter, %Swoosh.Email{} = email, config) do
-    config = config |> Swoosh.Mailer.parse_runtime_config()
+    config = Swoosh.Mailer.parse_runtime_config(config)
 
     :ok = adapter.validate_config(config)
     adapter.deliver(email, config)

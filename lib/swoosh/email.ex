@@ -292,10 +292,7 @@ defmodule Swoosh.Email do
   """
   @spec put_bcc(t, mailbox | address | [mailbox|address]) :: t
   def put_bcc(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    recipients =
-      recipients
-      |> Enum.map(&format_recipient(&1))
-    %{email | bcc: recipients}
+    %{email | bcc: Enum.map(recipients, &format_recipient(&1))}
   end
   def put_bcc(%__MODULE__{} = email, recipient) do
     put_bcc(email, [recipient])
@@ -334,10 +331,7 @@ defmodule Swoosh.Email do
   """
   @spec put_cc(t, mailbox | address | [mailbox|address]) :: t
   def put_cc(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    recipients =
-      recipients
-      |> Enum.map(&format_recipient(&1))
-    %{email | cc: recipients}
+    %{email | cc: Enum.map(recipients, &format_recipient(&1))}
   end
   def put_cc(%__MODULE__{} = email, recipient) do
     put_cc(email, [recipient])
@@ -376,10 +370,7 @@ defmodule Swoosh.Email do
   """
   @spec put_to(t, mailbox | address | [mailbox|address]) :: t
   def put_to(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    recipients =
-      recipients
-      |> Enum.map(&format_recipient(&1))
-    %{email | to: recipients}
+    %{email | to: Enum.map(recipients, &format_recipient(&1))}
   end
   def put_to(%__MODULE__{} = email, recipient) do
     put_to(email, [recipient])
@@ -398,9 +389,8 @@ defmodule Swoosh.Email do
        provider_options: %{}, reply_to: nil, subject: "", text_body: nil, to: []}
   """
   @spec header(t, String.t, String.t) :: t
-  def header(%__MODULE__{headers: headers} = email, name, value) when is_binary(name) and is_binary(value) do
-    headers = headers |> Map.put(name, value)
-    Map.put(email, :headers, headers)
+  def header(%__MODULE__{} = email, name, value) when is_binary(name) and is_binary(value) do
+    put_in(email.headers[name], value)
   end
   def header(%__MODULE__{}, name, value) do
     raise ArgumentError, message:
