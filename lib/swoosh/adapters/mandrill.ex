@@ -68,31 +68,31 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp set_api_key(body, config), do: Map.put(body, :key, config[:api_key])
 
-  defp set_async(body, %Email{provider_options: %{async: true}}), do: Map.put(body, :async, true)
+  defp set_async(body, %{provider_options: %{async: true}}), do: Map.put(body, :async, true)
   defp set_async(body, _email), do: body
 
-  defp prepare_from(body, %Email{from: {nil, address}}), do: Map.put(body, :from_email, address)
-  defp prepare_from(body, %Email{from: {name, address}}) do
+  defp prepare_from(body, %{from: {nil, address}}), do: Map.put(body, :from_email, address)
+  defp prepare_from(body, %{from: {name, address}}) do
     body
     |> Map.put(:from_name, name)
     |> Map.put(:from_email, address)
   end
 
-  defp prepare_to(body, %Email{to: to}), do: prepare_recipients(body, to)
+  defp prepare_to(body, %{to: to}), do: prepare_recipients(body, to)
 
-  defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %Email{reply_to: {_name, address}}) do
+  defp prepare_reply_to(body, %{reply_to: nil}), do: body
+  defp prepare_reply_to(body, %{reply_to: {_name, address}}) do
     Map.put(body, :headers, %{"Reply-To" => address})
   end
 
-  defp prepare_cc(body, %Email{cc: []}), do: body
-  defp prepare_cc(body, %Email{cc: cc}), do: prepare_recipients(body, cc, "cc")
+  defp prepare_cc(body, %{cc: []}), do: body
+  defp prepare_cc(body, %{cc: cc}), do: prepare_recipients(body, cc, "cc")
 
-  defp prepare_bcc(body, %Email{bcc: []}), do: body
-  defp prepare_bcc(body, %Email{bcc: bcc}), do: prepare_recipients(body, bcc, "bcc")
+  defp prepare_bcc(body, %{bcc: []}), do: body
+  defp prepare_bcc(body, %{bcc: bcc}), do: prepare_recipients(body, bcc, "bcc")
 
-  defp prepare_attachments(body, %Email{attachments: []}), do: body
-  defp prepare_attachments(body, %Email{attachments: attachments}) do
+  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(body, %{attachments: attachments}) do
     Map.put(body, "attachments", Enum.map(attachments, &%{
       "name" => &1.filename,
       "type" => &1.content_type,
@@ -112,7 +112,7 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_recipient({"", email}, type), do: %{email: email, type: type}
   defp prepare_recipient({name, email}, type), do: %{email: email, name: name, type: type}
 
-  defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
+  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
   defp prepare_text(body, %{text_body: nil}), do: body
   defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, :text, text_body)

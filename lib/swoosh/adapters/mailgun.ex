@@ -73,7 +73,7 @@ defmodule Swoosh.Adapters.Mailgun do
   #
   # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
-  defp prepare_custom_vars(body, %Email{provider_options: %{custom_vars: custom_vars}}) do
+  defp prepare_custom_vars(body, %{provider_options: %{custom_vars: custom_vars}}) do
     custom_vars
     |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "v:#{k}", Poison.encode!(v)) end)
   end
@@ -92,18 +92,18 @@ defmodule Swoosh.Adapters.Mailgun do
      []}
   end
 
-  defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, prepare_recipient(from))
+  defp prepare_from(body, %{from: from}), do: Map.put(body, :from, prepare_recipient(from))
 
-  defp prepare_to(body, %Email{to: to}), do: Map.put(body, :to, prepare_recipients(to))
+  defp prepare_to(body, %{to: to}), do: Map.put(body, :to, prepare_recipients(to))
 
-  defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %Email{reply_to: {_name, address}}), do: Map.put(body, "h:Reply-To", address)
+  defp prepare_reply_to(body, %{reply_to: nil}), do: body
+  defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "h:Reply-To", address)
 
-  defp prepare_cc(body, %Email{cc: []}), do: body
-  defp prepare_cc(body, %Email{cc: cc}), do: Map.put(body, :cc, prepare_recipients(cc))
+  defp prepare_cc(body, %{cc: []}), do: body
+  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, prepare_recipients(cc))
 
-  defp prepare_bcc(body, %Email{bcc: []}), do: body
-  defp prepare_bcc(body, %Email{bcc: bcc}), do: Map.put(body, :bcc, prepare_recipients(bcc))
+  defp prepare_bcc(body, %{bcc: []}), do: body
+  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, :bcc, prepare_recipients(bcc))
 
   defp prepare_recipients(recipients) do
     recipients
@@ -114,7 +114,7 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_recipient({"", address}), do: address
   defp prepare_recipient({name, address}), do: "#{name} <#{address}>"
 
-  defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
+  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
   defp prepare_text(body, %{text_body: nil}), do: body
   defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, :text, text_body)

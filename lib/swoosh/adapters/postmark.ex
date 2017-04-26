@@ -48,7 +48,7 @@ defmodule Swoosh.Adapters.Postmark do
      {"Accept", "application/json"}]
   end
 
-  defp api_endpoint(%Email{provider_options: %{template_id: _, template_model: _}}),
+  defp api_endpoint(%{provider_options: %{template_id: _, template_model: _}}),
     do: @api_endpoint <> "/withTemplate"
   defp api_endpoint(_email),
     do: @api_endpoint
@@ -67,18 +67,18 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_template(email)
   end
 
-  defp prepare_from(body, %Email{from: from}), do: Map.put(body, "From", prepare_recipient(from))
+  defp prepare_from(body, %{from: from}), do: Map.put(body, "From", prepare_recipient(from))
 
-  defp prepare_to(body, %Email{to: to}), do: Map.put(body, "To", prepare_recipients(to))
+  defp prepare_to(body, %{to: to}), do: Map.put(body, "To", prepare_recipients(to))
 
-  defp prepare_cc(body, %Email{cc: []}), do: body
-  defp prepare_cc(body, %Email{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
+  defp prepare_cc(body, %{cc: []}), do: body
+  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
 
-  defp prepare_bcc(body, %Email{bcc: []}), do: body
-  defp prepare_bcc(body, %Email{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
+  defp prepare_bcc(body, %{bcc: []}), do: body
+  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
 
-  defp prepare_attachments(body, %Email{attachments: []}), do: body
-  defp prepare_attachments(body, %Email{attachments: attachments}) do
+  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(body, %{attachments: attachments}) do
     Map.put(body, "Attachments", Enum.map(attachments, &%{
       "Name" => &1.filename,
       "ContentType" => &1.content_type,
@@ -86,8 +86,8 @@ defmodule Swoosh.Adapters.Postmark do
     }))
   end
 
-  defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %Email{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
+  defp prepare_reply_to(body, %{reply_to: nil}), do: body
+  defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
 
   defp prepare_recipients(recipients) do
     recipients
@@ -98,14 +98,14 @@ defmodule Swoosh.Adapters.Postmark do
   defp prepare_recipient({"", address}), do: address
   defp prepare_recipient({name, address}), do: "\"#{name}\" <#{address}>"
 
-  defp prepare_subject(body, %Email{subject: ""}), do: body
-  defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, "Subject", subject)
+  defp prepare_subject(body, %{subject: ""}), do: body
+  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)
 
-  defp prepare_text(body, %Email{text_body: nil}), do: body
-  defp prepare_text(body, %Email{text_body: text_body}), do: Map.put(body, "TextBody", text_body)
+  defp prepare_text(body, %{text_body: nil}), do: body
+  defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, "TextBody", text_body)
 
-  defp prepare_html(body, %Email{html_body: nil}), do: body
-  defp prepare_html(body, %Email{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
+  defp prepare_html(body, %{html_body: nil}), do: body
+  defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HtmlBody", html_body)
 
   # example custom vars
   #
@@ -113,7 +113,7 @@ defmodule Swoosh.Adapters.Postmark do
   #   "template_id"    => 123,
   #   "template_model" => %{"name": 1, "company": 2}
   # }
-  defp prepare_template(body, %Email{provider_options: provider_options}),
+  defp prepare_template(body, %{provider_options: provider_options}),
     do: Enum.reduce(provider_options, body, &put_in_body/2)
   defp prepare_template(body, _email), do: body
 
