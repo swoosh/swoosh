@@ -25,7 +25,6 @@ defmodule Swoosh.Application do
               " are in your dependency list.")
             []
         end
-
       else
         children
       end
