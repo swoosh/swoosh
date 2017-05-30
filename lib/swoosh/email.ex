@@ -151,7 +151,7 @@ defmodule Swoosh.Email do
   end
 
   defp do_new({key, value}, email)
-    when key in [:subject, :from, :to, :cc, :bcc, :reply_to, :text_body, :html_body] do
+    when key in [:subject, :from, :to, :cc, :bcc, :reply_to, :text_body, :html_body, :attachment] do
     apply(__MODULE__, key, [email, value])
   end
   defp do_new({key, value}, email)

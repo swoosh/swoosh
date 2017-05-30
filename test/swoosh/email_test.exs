@@ -2,7 +2,7 @@ defmodule Swoosh.EmailTest do
   use ExUnit.Case, async: true
   doctest Swoosh.Email, import: true
 
-  alias Swoosh.Email
+  alias Swoosh.{Email, Attachment}
   import Swoosh.Email
 
   test "new without arguments create an empty email" do
@@ -12,6 +12,11 @@ defmodule Swoosh.EmailTest do
   test "new with arguments create an email with fiels populated" do
     email = new(subject: "Hello, Avengers!")
     assert email.subject == "Hello, Avengers!"
+  end
+
+  test "new with multiple attachments" do
+    email = new(attachment: "/data/1", attachment: "/data/2")
+    assert [%Attachment{}, %Attachment{}] = email.attachments
   end
 
   test "new raises if arguments contain unknown field" do
