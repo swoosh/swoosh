@@ -66,6 +66,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_custom_vars(email)
+    |> prepare_custom_headers(email)
     |> encode_body
   end
 
@@ -78,6 +79,11 @@ defmodule Swoosh.Adapters.Mailgun do
     |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "v:#{k}", Poison.encode!(v)) end)
   end
   defp prepare_custom_vars(body, _email), do: body
+
+  defp prepare_custom_headers(body, %{headers: headers}) do
+    headers
+    |> Enum.reduce(body, fn({k, v}, body_acc) -> Map.put(body_acc, "h:#{k}", v) end)
+  end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
