@@ -1,5 +1,17 @@
 ## Changelog
 
+## Unreleased
+
+### Added
+
+* Warn when failing to start the preview server ([#130](https://github.com/swoosh/swoosh/pull/130))
+* Support for mail headers in Mailgun adapter ([#134](https://github.com/swoosh/swoosh/pull/134))
+* Allow adding attachments in Email.new ([#135](https://github.com/swoosh/swoosh/pull/135))
+
+### Misc
+
+* Mention async implementation in [README](https://github.com/swoosh/swoosh#async-emails)
+
 ## v0.8.0 - 2017-05-06
 
 ### Added
