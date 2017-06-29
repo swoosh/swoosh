@@ -27,74 +27,38 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email sent with wrong subject" do
-    try do
+    assert_raise ExUnit.AssertionError, fn -> 
       assert_email_sent [subject: "Hello, X-Men!"]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `subject` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: \"Hello, Avengers!\"\n" <>
-        "rhs: \"Hello, X-Men!\"" = error.message
     end
   end
 
   test "assert email sent with wrong from" do
-    try do
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [from: "thor.odinson@example.com"]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `from` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: {\"\", \"tony.stark@example.com\"}\n" <>
-        "rhs: {\"\", \"thor.odinson@example.com\"}" = error.message
     end
   end
 
   test "assert email sent with wrong to" do
-    try do
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [to: "bruce.banner@example.com"]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
-        "rhs: [{\"\", \"steve.rogers@example.com\"}]" = error.message
     end
   end
 
   test "assert email sent with wrong to (list)" do
-    try do
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [to: ["bruce.banner@example.com"]]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `to` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: [{\"\", \"steve.rogers@example.com\"}]\n" <>
-        "rhs: [{\"\", \"bruce.banner@example.com\"}]" = error.message
     end
   end
 
   test "assert email sent with wrong cc" do
-    try do
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [cc: "bruce.banner@example.com"]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `cc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
-        "rhs: []" = error.message
     end
   end
 
   test "assert email sent with wrong bcc" do
-    try do
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [bcc: "bruce.banner@example.com"]
-    rescue
-      error in [ExUnit.AssertionError] ->
-        "Email `bcc` does not match\n" <>
-        "email: %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}\n" <>
-        "lhs: {\"\", \"bruce.banner@example.com\"}\n" <>
-        "rhs: []" = error.message
     end
   end
 
