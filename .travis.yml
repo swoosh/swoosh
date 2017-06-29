@@ -1,14 +1,14 @@
 language: elixir
 sudo: false
 elixir:
-  - '1.4'
-  - '1.5.0-rc.0'
+  - 1.4
+  - 1.5.0-rc.0
 otp_release:
-  - '19.3'
-  - '20.0'
+  - 19.3
+  - 20.0
 matrix:
   allow_failures:
-    - elixir: '1.5.0-rc.0'
+    - elixir: 1.5.0-rc.0
 script: mix test.ci
 after_script:
   - mix deps.get --only docs
