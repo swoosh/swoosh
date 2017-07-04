@@ -102,8 +102,6 @@ defmodule Swoosh.Adapters.Sendgrid do
     end
     Map.put(body, :content, content)
   end
-  defp prepare_content(body, %{html_body: html}), do: Map.put(body, :content, [%{type: "text/html", value: html}])
-  defp prepare_content(body, %{text_body: text}), do: Map.put(body, :content, [%{type: "text/plain", type: text}])
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
