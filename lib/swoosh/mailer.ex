@@ -60,16 +60,18 @@ defmodule Swoosh.Mailer do
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
-      {otp_app, adapter, config} = Swoosh.Mailer.parse_config(__MODULE__, opts)
+      Swoosh.Mailer.parse_config(__MODULE__, opts)
+      @opts opts
 
-      @adapter adapter
-      @config config
-
-      def __adapter__, do: @adapter
+      def __adapter__ do
+        {_, adapter, _} = Swoosh.Mailer.parse_config(__MODULE__, @opts)
+        adapter
+      end
 
       def deliver(email, config \\ [])
       def deliver(email, config) do
-        Swoosh.Mailer.deliver(@adapter, email, Keyword.merge(@config, config))
+        {_otp_app, adapter, base_config} = Swoosh.Mailer.parse_config(__MODULE__, @opts)
+        Swoosh.Mailer.deliver(adapter, email, Keyword.merge(base_config, config))
       end
 
       def deliver!(email, config \\ [])
