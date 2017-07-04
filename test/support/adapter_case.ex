@@ -5,6 +5,9 @@ defmodule AdapterCase do
 
   using do
     quote do
+      import Swoosh.Email
+      alias Swoosh.AdapterError
+
       defp parse(conn, opts \\ []) do
         opts =
           opts

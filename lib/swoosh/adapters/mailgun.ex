@@ -32,12 +32,15 @@ defmodule Swoosh.Adapters.Mailgun do
     case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Poison.decode!(body)["id"]}}
+      {:ok, code, _headers, body} when code in [400, 402, 404] ->
+        error = Poison.decode!(body)
+        {:error, AdapterError.exception(reason: code_to_reason(code), original: error.message)}
       {:ok, 401, _headers, body} ->
-        {:error, {401, body}}
+        {:error, AdapterError.exception(reason: :unauthorized, original: body)}
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
+        {:error, AdapterError.exception(reason: :server_error, original: body)}
       {:error, reason} ->
-        {:error, reason}
+        {:error, AdapterError.exception(reason: reason)}
     end
   end
 

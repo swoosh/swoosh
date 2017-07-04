@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.Sendgrid do
       {:ok, code, _headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{}}
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, body}}
+        {:error, AdapterError.exception(reason: code_to_reason(code)), original: body}
       {:error, reason} ->
         {:error, reason}
     end
