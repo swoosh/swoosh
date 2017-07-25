@@ -65,11 +65,10 @@ defmodule Swoosh.Mailer do
       @adapter adapter
       @config config
 
-      def __adapter__, do: @adapter
-
       def deliver(email, config \\ [])
       def deliver(email, config) do
-        Swoosh.Mailer.deliver(@adapter, email, Keyword.merge(@config, config))
+        config = Keyword.merge(@config, config)
+        Swoosh.Mailer.deliver(Keyword.get(config, :adapter, @adapter), email, config)
       end
 
       def deliver!(email, config \\ [])
