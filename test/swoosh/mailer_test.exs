@@ -3,9 +3,12 @@ defmodule Swoosh.MailerTest do
 
   alias Swoosh.DeliveryError
 
-  Application.put_env(:swoosh, Swoosh.MailerTest.FakeMailer,
+  Application.put_env(
+    :swoosh,
+    Swoosh.MailerTest.FakeMailer,
     api_key: "api-key",
-    domain: "avengers.com")
+    domain: "avengers.com"
+  )
 
   defmodule FakeAdapter do
     use Swoosh.Adapter
@@ -18,11 +21,13 @@ defmodule Swoosh.MailerTest do
   end
 
   setup_all do
-    valid_email = Swoosh.Email.new(from: "tony.stark@example.com",
-                                   to: "steve.rogers@example.com",
-                                   subject: "Hello, Avengers!",
-                                   html_body: "<h1>Hello</h1>",
-                                   text_body: "Hello")
+    valid_email = Swoosh.Email.new(
+      from: "tony.stark@example.com",
+      to: "steve.rogers@example.com",
+      subject: "Hello, Avengers!",
+      html_body: "<h1>Hello</h1>",
+      text_body: "Hello"
+    )
     {:ok, valid_email: valid_email}
   end
 
@@ -32,6 +37,14 @@ defmodule Swoosh.MailerTest do
         use Swoosh.Mailer, otp_app: :swoosh
       end
     end
+  end
+
+  test "dynamic adapter", %{valid_email: email} do
+    defmodule OtherAdapterMailer do
+      use Swoosh.Mailer, opt_app: :swoosh, adapter: NotExistAdapter
+    end
+
+    assert {:ok, _} = OtherAdapterMailer.deliver(email, adapter: FakeAdapter)
   end
 
   test "should raise if deliver!/2 is called with invalid from", %{valid_email: valid_email} do
