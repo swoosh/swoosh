@@ -41,7 +41,7 @@ defmodule Swoosh.MailerTest do
 
   test "dynamic adapter", %{valid_email: email} do
     defmodule OtherAdapterMailer do
-      use Swoosh.Mailer, opt_app: :swoosh, adapter: NotExistAdapter
+      use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
     end
 
     assert {:ok, _} = OtherAdapterMailer.deliver(email, adapter: FakeAdapter)
