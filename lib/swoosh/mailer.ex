@@ -25,7 +25,7 @@ defmodule Swoosh.Mailer do
   Most of the configuration that goes into the config is specific to the adapter,
   so check the adapter's documentation for more information.
 
-  Per module configuration is also supported:
+  Per module configuration is also supported, it has priority over mix configs:
   
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample,
