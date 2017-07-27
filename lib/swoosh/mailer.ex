@@ -26,7 +26,7 @@ defmodule Swoosh.Mailer do
   so check the adapter's documentation for more information.
 
   Per module configuration is also supported, it has priority over mix configs:
-  
+
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample,
           adapter: Swoosh.Adapters.Sendgrid,
@@ -66,12 +66,15 @@ defmodule Swoosh.Mailer do
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
+      alias Swoosh.Mailer
+
       @otp_app Keyword.fetch!(opts, :otp_app)
       @mailer_config opts
 
       def deliver(email, config \\ [])
       def deliver(email, config) do
-        Swoosh.Mailer.deliver(email, {@otp_app, __MODULE__, @mailer_config, config})
+        config = Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
+        Mailer.deliver(email, config)
       end
 
       def deliver!(email, config \\ [])
@@ -92,8 +95,7 @@ defmodule Swoosh.Mailer do
       when address in ["", nil] do
     {:error, :from_not_set}
   end
-  def deliver(%Swoosh.Email{} = email, unprocessed_config) do
-    config = parse_runtime_config(unprocessed_config)
+  def deliver(%Swoosh.Email{} = email, config) do
     adapter = Keyword.fetch!(config, :adapter)
 
     :ok = adapter.validate_config(config)
@@ -108,7 +110,7 @@ defmodule Swoosh.Mailer do
   3. dynamic configs passed into the function
   4. system envs
   """
-  def parse_runtime_config({otp_app, mailer, mailer_config, dynamic_config}) do
+  def parse_config(otp_app, mailer, mailer_config, dynamic_config) do
     Application.get_env(otp_app, mailer, [])
     |> Keyword.merge(mailer_config)
     |> Keyword.merge(dynamic_config)
