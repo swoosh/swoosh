@@ -58,15 +58,14 @@ defmodule Swoosh.Mailer do
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
-      {otp_app, adapter, config} = Swoosh.Mailer.parse_config(__MODULE__, opts)
+      {otp_app, module_config} = Swoosh.Mailer.parse_static_config(__MODULE__, opts)
 
-      @adapter adapter
-      @config config
+      @otp_app otp_app
+      @module_config module_config
 
       def deliver(email, config \\ [])
       def deliver(email, config) do
-        config = Keyword.merge(@config, config)
-        Swoosh.Mailer.deliver(Keyword.get(config, :adapter, @adapter), email, config)
+        Swoosh.Mailer.deliver(email, {@otp_app, __MODULE__, @module_config, config})
       end
 
       def deliver!(email, config \\ [])
@@ -80,14 +79,21 @@ defmodule Swoosh.Mailer do
     end
   end
 
-  def deliver(_adapter, %Swoosh.Email{from: nil}, _config) do
+  def deliver(%Swoosh.Email{from: nil}, _config) do
     {:error, :from_not_set}
   end
-  def deliver(_adapter, %Swoosh.Email{from: {_name, address}}, _config) when address in ["", nil] do
+  def deliver(%Swoosh.Email{from: {_name, address}}, _config)
+      when address in ["", nil] do
     {:error, :from_not_set}
   end
-  def deliver(adapter, %Swoosh.Email{} = email, config) do
-    config = Swoosh.Mailer.parse_runtime_config(config)
+  def deliver(%Swoosh.Email{} = email, {otp_app, mailer, module_config, config}) do
+    config =
+      Application.get_env(otp_app, mailer, [])
+      |> Keyword.merge(module_config)
+      |> Keyword.merge(config)
+      |> Swoosh.Mailer.parse_system_env
+
+    adapter = Keyword.fetch!(config, :adapter)
 
     :ok = adapter.validate_config(config)
     adapter.deliver(email, config)
@@ -96,26 +102,26 @@ defmodule Swoosh.Mailer do
   @doc """
   Parses the OTP configuration at compile time.
   """
-  def parse_config(mailer, opts) do
-    otp_app = Keyword.fetch!(opts, :otp_app)
+  def parse_static_config(mailer, module_config) do
+    otp_app = Keyword.fetch!(module_config, :otp_app)
     config = Application.get_env(otp_app, mailer, [])
-    adapter = opts[:adapter] || config[:adapter]
+    adapter = module_config[:adapter] || config[:adapter]
 
     unless adapter do
       raise ArgumentError, "missing :adapter configuration in " <>
                            "config #{inspect otp_app}, #{inspect mailer}"
     end
 
-    {otp_app, adapter, config}
+    {otp_app, module_config}
   end
 
   @doc """
-  Parses the OTP configuration at run time.
+  Parses the OTP configuration via system env vars.
 
   This function will transform all the {:system, "ENV_VAR"} tuples into their
   respective values grabbed from the process environment.
   """
-  def parse_runtime_config(config) do
+  def parse_system_env(config) do
     Enum.map config, fn
       {key, {:system, env_var}} -> {key, System.get_env(env_var)}
       {key, value} -> {key, value}
