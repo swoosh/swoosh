@@ -25,9 +25,7 @@ defmodule Swoosh.Mailer do
   Most of the configuration that goes into the config is specific to the adapter,
   so check the adapter's documentation for more information.
 
-  Note that the configuration is set into your mailer at compile time. If you
-  need to reference config at runtime you can use a tuple like
-  `{:system, "ENV_VAR"}`.
+  System environment variables can be specified with `{:system, "ENV_VAR_NAME"}`:
 
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.SMTP,
