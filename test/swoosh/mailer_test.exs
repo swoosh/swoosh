@@ -73,18 +73,22 @@ defmodule Swoosh.MailerTest do
       use Swoosh.Mailer, otp_app: :swoosh, adapter: FakeAdapter
     end
 
-    assert EnvMailer.deliver(email) ==
-      {:ok, {email, [
+    {:ok, {_email, configs}} = EnvMailer.deliver(email)
+
+    assert MapSet.subset?(
+      MapSet.new([
         username: "userenv",
         password: "passwordenv",
         relay: "smtp.sendgrid.net",
         tls: :always
-      ]}}
+      ]),
+      MapSet.new(configs)
+    )
   end
 
   test "merge config passed to deliver/2 into Mailer's config", %{valid_email: email} do
-    assert FakeMailer.deliver(email, domain: "jarvis.com") ==
-      {:ok, {email, [api_key: "api-key", domain: "jarvis.com"]}}
+    {:ok, {_email, configs}} = FakeMailer.deliver(email, domain: "jarvis.com")
+    assert {:domain, "jarvis.com"} in configs
   end
 
   test "validate config passed to deliver/2", %{valid_email: email} do
@@ -97,9 +101,7 @@ defmodule Swoosh.MailerTest do
       use Swoosh.Mailer, otp_app: :swoosh, adapter: NoConfigAdapter
     end
 
-    assert_raise ArgumentError, """
-    expected [:api_key] to be set, got: [domain: "jarvis.com"]
-    """, fn ->
+    assert_raise ArgumentError, ~r/expected \[:api_key\] to be set/, fn ->
       NoConfigMailer.deliver(email, domain: "jarvis.com")
     end
   end
