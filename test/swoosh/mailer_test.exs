@@ -31,16 +31,9 @@ defmodule Swoosh.MailerTest do
     {:ok, valid_email: valid_email}
   end
 
-  test "should raise if no adapter is specified" do
-    assert_raise ArgumentError, fn ->
-      defmodule NoAdapterMailer do
-        use Swoosh.Mailer, otp_app: :swoosh
-      end
-    end
-  end
-
   test "dynamic adapter", %{valid_email: email} do
     defmodule OtherAdapterMailer do
+      # sending with NotExistAdapter would raise
       use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
     end
 
@@ -103,6 +96,16 @@ defmodule Swoosh.MailerTest do
 
     assert_raise ArgumentError, ~r/expected \[:api_key\] to be set/, fn ->
       NoConfigMailer.deliver(email, domain: "jarvis.com")
+    end
+  end
+
+  test "raise when sending without an adapter configured", %{valid_email: email} do
+    defmodule NoAdapterMailer do
+      use Swoosh.Mailer, otp_app: :swoosh
+    end
+
+    assert_raise KeyError, ~r/:adapter not found/, fn ->
+      NoAdapterMailer.deliver(email)
     end
   end
 end
