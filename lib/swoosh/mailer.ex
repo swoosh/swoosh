@@ -25,6 +25,14 @@ defmodule Swoosh.Mailer do
   Most of the configuration that goes into the config is specific to the adapter,
   so check the adapter's documentation for more information.
 
+  Per module configuration is also supported:
+  
+      defmodule Sample.Mailer do
+        use Swoosh.Mailer, otp_app: :sample,
+          adapter: Swoosh.Adapters.Sendgrid,
+          api_key: "SG.x.x"
+      end
+
   System environment variables can be specified with `{:system, "ENV_VAR_NAME"}`:
 
       config :sample, Sample.Mailer,
