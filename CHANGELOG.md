@@ -2,10 +2,11 @@
 
 ## v0.9.0-dev
 
-* Simplify `Swoosh.TestAssertions.assert_email_sent/1`
+* Simplify `Swoosh.TestAssertions.assert_email_sent/1` ([#139](https://github.com/swoosh/swoosh/pull/139))
   * to cope with different AST in different Elixir versions
   * to take advantage of ExUnit colored diffs
 * Now requires `Elixir ~> 1.4` to welcome OTP20
+* Rework configuration loading ([#146](https://github.com/swoosh/swoosh/pull/146))
 
 ## v0.8.1 - 2017-06-10
 
