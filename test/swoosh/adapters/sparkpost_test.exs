@@ -14,7 +14,7 @@ defmodule Swoosh.Adapters.SparkPostTest do
     }
   """
 
-  setup_all do
+  setup do
     bypass = Bypass.open
     config = [
       endpoint: "http://localhost:#{bypass.port}",

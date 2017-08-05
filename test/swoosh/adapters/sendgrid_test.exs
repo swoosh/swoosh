@@ -4,7 +4,7 @@ defmodule Swoosh.Adapters.SendgridTest do
   import Swoosh.Email
   alias Swoosh.Adapters.Sendgrid
 
-  setup_all do
+  setup do
     bypass = Bypass.open
     config = [api_key: "123", base_url: "http://localhost:#{bypass.port}"]
 

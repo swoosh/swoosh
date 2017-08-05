@@ -14,7 +14,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
     }
   """
 
-  setup_all do
+  setup do
     bypass = Bypass.open
     config = [base_url: "http://localhost:#{bypass.port}",
               api_key: "jarvis"]
