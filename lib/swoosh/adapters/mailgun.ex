@@ -116,7 +116,7 @@ defmodule Swoosh.Adapters.Mailgun do
   end
 
   defp prepare_recipient({"", address}), do: address
-  defp prepare_recipient({name, address}), do: "#{name} <#{address}>"
+  defp prepare_recipient({name, address}), do: ~s("#{name}" <#{address}>)
 
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
