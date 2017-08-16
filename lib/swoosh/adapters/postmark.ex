@@ -96,7 +96,7 @@ defmodule Swoosh.Adapters.Postmark do
   end
 
   defp prepare_recipient({"", address}), do: address
-  defp prepare_recipient({name, address}), do: "\"#{name}\" <#{address}>"
+  defp prepare_recipient({name, address}), do: ~s("#{name}" <#{address}>)
 
   defp prepare_subject(body, %{subject: ""}), do: body
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)
