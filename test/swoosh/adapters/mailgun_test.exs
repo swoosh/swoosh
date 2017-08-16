@@ -64,11 +64,11 @@ defmodule Swoosh.Adapters.MailgunTest do
       conn = parse(conn)
       expected_path = "/" <> config[:domain] <> "/messages"
       body_params = %{"subject" => "Hello, Avengers!",
-                      "to" => "wasp.avengers@example.com,Steve Rogers <steve.rogers@example.com>",
-                      "bcc" => "beast.avengers@example.com,Clinton Francis Barton <hawk.eye@example.com>",
-                      "cc" => "thor.odinson@example.com,Bruce Banner <hulk.smash@example.com>",
+                      "to" => ~s(wasp.avengers@example.com,"Steve Rogers" <steve.rogers@example.com>),
+                      "bcc" => ~s(beast.avengers@example.com,"Clinton Francis Barton" <hawk.eye@example.com>),
+                      "cc" => ~s(thor.odinson@example.com,"Bruce Banner" <hulk.smash@example.com>),
                       "h:Reply-To" => "office.avengers@example.com",
-                      "from" => "T Stark <tony.stark@example.com>",
+                      "from" => ~s("T Stark" <tony.stark@example.com>),
                       "text" => "Hello",
                       "html" => "<h1>Hello</h1>"}
       assert body_params == conn.body_params
