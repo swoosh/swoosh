@@ -65,10 +65,10 @@ defmodule Swoosh.Adapters.PostmarkTest do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       body_params = %{"Subject" => "Hello, Avengers!",
-                      "To" => "\"Steve Rogers\" <steve.rogers@example.com>,wasp.avengers@example.com",
+                      "To" => "\"Steve Rogers\" <steve.rogers@example.com>, wasp.avengers@example.com",
                       "From" => "\"T Stark\" <tony.stark@example.com>",
-                      "Cc" => "thor.odinson@example.com,\"Bruce Banner\" <hulk.smash@example.com>",
-                      "Bcc" => "beast.avengers@example.com,\"Clinton Francis Barton\" <hawk.eye@example.com>",
+                      "Cc" => "thor.odinson@example.com, \"Bruce Banner\" <hulk.smash@example.com>",
+                      "Bcc" => "beast.avengers@example.com, \"Clinton Francis Barton\" <hawk.eye@example.com>",
                       "ReplyTo" => "iron.stark@example.com",
                       "TextBody" => "Hello",
                       "HtmlBody" => "<h1>Hello</h1>"}

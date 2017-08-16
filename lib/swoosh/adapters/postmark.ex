@@ -20,6 +20,7 @@ defmodule Swoosh.Adapters.Postmark do
   use Swoosh.Adapter, required_config: [:api_key]
 
   alias Swoosh.Email
+  import Swoosh.Email.Render
 
   @base_url     "https://api.postmarkapp.com"
   @api_endpoint "/email"
@@ -67,15 +68,15 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_template(email)
   end
 
-  defp prepare_from(body, %{from: from}), do: Map.put(body, "From", prepare_recipient(from))
+  defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
 
-  defp prepare_to(body, %{to: to}), do: Map.put(body, "To", prepare_recipients(to))
+  defp prepare_to(body, %{to: to}), do: Map.put(body, "To", render_recipient(to))
 
   defp prepare_cc(body, %{cc: []}), do: body
-  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
+  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, "Cc", render_recipient(cc))
 
   defp prepare_bcc(body, %{bcc: []}), do: body
-  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
+  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", render_recipient(bcc))
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
@@ -88,15 +89,6 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
-
-  defp prepare_recipients(recipients) do
-    recipients
-    |> Enum.map(&prepare_recipient(&1))
-    |> Enum.join(",")
-  end
-
-  defp prepare_recipient({"", address}), do: address
-  defp prepare_recipient({name, address}), do: ~s("#{name}" <#{address}>)
 
   defp prepare_subject(body, %{subject: ""}), do: body
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)

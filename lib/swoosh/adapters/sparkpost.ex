@@ -22,6 +22,7 @@ defmodule Swoosh.Adapters.SparkPost do
   use Swoosh.Adapter, required_config: [:api_key]
 
   alias Swoosh.Email
+  import Swoosh.Email.Render
 
   @endpoint "https://api.sparkpost.com/api/v1"
 
@@ -77,7 +78,7 @@ defmodule Swoosh.Adapters.SparkPost do
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: reply_to}) do
-    put_in(body, [:content, :reply_to], format_recipient(reply_to))
+    put_in(body, [:content, :reply_to], render_recipient(reply_to))
   end
 
   defp prepare_cc(body, %{cc: []}), do: body
@@ -86,7 +87,7 @@ defmodule Swoosh.Adapters.SparkPost do
     |> update_in([:recipients], fn list ->
       list ++ prepare_recipients(cc, to)
     end)
-    |> put_in([:content, :headers, "CC"], format_recipients(cc))
+    |> put_in([:content, :headers, "CC"], render_recipient(cc))
   end
 
   defp prepare_bcc(body, %{bcc: []}), do: body
@@ -108,25 +109,13 @@ defmodule Swoosh.Adapters.SparkPost do
     end)
   end
 
+  defp raw_email_addresses(mailboxes) do
+    mailboxes |> Enum.map(fn {_name, address} -> address end) |> Enum.join(",")
+  end
+
   defp prepare_attachments(attachments) do
     Enum.map(attachments, fn %{content_type: type, path: path, filename: name} ->
       %{type: type, name: name, data: path |> File.read! |> Base.encode64}
     end)
   end
-
-  defp raw_email_addresses(mailboxes) do
-    mailboxes |> Enum.map(fn {_name, address} -> address end) |> Enum.join(",")
-  end
-
-  defp format_recipients(recipients) do
-    recipients
-    |> Enum.map(&format_recipient/1)
-    |> Enum.join(", ")
-  end
-
-  defp format_recipient({"", address}) do
-    [name, _at_domain] = String.split(address, "@", parts: 2)
-    format_recipient({name, address})
-  end
-  defp format_recipient({name, address}), do: "#{name} <#{address}>"
 end

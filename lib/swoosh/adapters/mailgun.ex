@@ -21,6 +21,7 @@ defmodule Swoosh.Adapters.Mailgun do
   use Swoosh.Adapter, required_config: [:api_key, :domain]
 
   alias Swoosh.Email
+  import Swoosh.Email.Render
 
   @base_url     "https://api.mailgun.net/v3"
   @api_endpoint "/messages"
@@ -96,27 +97,18 @@ defmodule Swoosh.Adapters.Mailgun do
      []}
   end
 
-  defp prepare_from(body, %{from: from}), do: Map.put(body, :from, prepare_recipient(from))
+  defp prepare_from(body, %{from: from}), do: Map.put(body, :from, render_recipient(from))
 
-  defp prepare_to(body, %{to: to}), do: Map.put(body, :to, prepare_recipients(to))
+  defp prepare_to(body, %{to: to}), do: Map.put(body, :to, render_recipient(to))
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "h:Reply-To", address)
 
   defp prepare_cc(body, %{cc: []}), do: body
-  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, prepare_recipients(cc))
+  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, render_recipient(cc))
 
   defp prepare_bcc(body, %{bcc: []}), do: body
-  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, :bcc, prepare_recipients(bcc))
-
-  defp prepare_recipients(recipients) do
-    recipients
-    |> Enum.map(&prepare_recipient(&1))
-    |> Enum.join(",")
-  end
-
-  defp prepare_recipient({"", address}), do: address
-  defp prepare_recipient({name, address}), do: ~s("#{name}" <#{address}>)
+  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, :bcc, render_recipient(bcc))
 
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 

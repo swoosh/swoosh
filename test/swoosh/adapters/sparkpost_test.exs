@@ -89,10 +89,10 @@ defmodule Swoosh.Adapters.SparkPostTest do
             "name" => "T Stark"
           },
           "headers" => %{
-            "CC" => "thor.odinson <thor.odinson@example.com>, Bruce Banner <hulk.smash@example.com>"
+            "CC" => "thor.odinson@example.com, \"Bruce Banner\" <hulk.smash@example.com>"
           },
           "html" => "<h1>Hello</h1>",
-          "reply_to" => "office.avengers <office.avengers@example.com>",
+          "reply_to" => "office.avengers@example.com",
           "subject" => "Hello, Avengers!",
           "text" => "Hello",
           "attachments" => []
