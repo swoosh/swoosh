@@ -52,6 +52,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_reply_to(email)
     |> prepare_template_id(email)
     |> prepare_categories(email)
+    |> prepare_custom_headers(email)
   end
 
   defp email_item({"", email}), do: %{email: email}
@@ -125,4 +126,8 @@ defmodule Swoosh.Adapters.Sendgrid do
     Map.put(body, :categories, categories)
   end
   defp prepare_categories(body, _email), do: body
+
+  defp prepare_custom_headers(body, %{headers: headers}) do
+    Map.put(body, :headers, headers)
+  end
 end

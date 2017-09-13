@@ -210,6 +210,41 @@ defmodule Swoosh.Adapters.SendgridTest do
     assert Sendgrid.deliver(email, config) == {:ok, %{}}
   end
 
+  test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> header("In-Reply-To", "<1234@example.com>")
+      |> header("X-Accept-Language", "en")
+      |> header("X-Mailer", "swoosh")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+                      "personalizations" => [%{
+                        "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
+                      }],
+                      "content" => [%{"type" => "text/plain", "value" => "Hello"}, %{"type" => "text/html", "value" => "<h1>Hello</h1>"}],
+                      "subject" => "Hello, Avengers!",
+                      "headers" => %{
+                        "In-Reply-To" => "<1234@example.com>",
+                        "X-Accept-Language" => "en",
+                        "X-Mailer" => "swoosh",
+                      }
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+    end
+
+    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+  end
+
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       assert "/mail/send" == conn.request_path
