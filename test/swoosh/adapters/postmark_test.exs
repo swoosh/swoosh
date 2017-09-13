@@ -118,6 +118,34 @@ defmodule Swoosh.Adapters.PostmarkTest do
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
+  test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to("avengers@example.com")
+      |> header("In-Reply-To", "<1234@example.com>")
+      |> header("X-Accept-Language", "en")
+      |> header("X-Mailer", "swoosh")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"To" => "avengers@example.com",
+                      "From" => "\"T Stark\" <tony.stark@example.com>",
+                      "Headers" => [
+                        %{"Name" => "In-Reply-To", "Value" => "<1234@example.com>"},
+                        %{"Name" => "X-Accept-Language", "Value" => "en"},
+                        %{"Name" => "X-Mailer", "Value" => "swoosh"}
+                      ]}
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     errors = "{\"errors\":[\"The provided authorization grant is invalid, expired, or revoked\"], \"message\":\"error\"}"
 

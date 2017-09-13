@@ -66,6 +66,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
     |> prepare_template(email)
+    |> prepare_custom_headers(email)
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
@@ -114,4 +115,9 @@ defmodule Swoosh.Adapters.Postmark do
   defp put_in_body({:template_id, val}, body_acc),
     do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body(_, body_acc), do: body_acc
+
+  defp prepare_custom_headers(body, %{headers: headers}) do
+    custom_headers = Enum.map(headers, fn {k, v} -> %{"Name" => k, "Value" => v} end)
+    Map.put(body, "Headers", custom_headers)
+  end
 end
