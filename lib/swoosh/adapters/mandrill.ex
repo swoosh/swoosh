@@ -54,7 +54,7 @@ defmodule Swoosh.Adapters.Mandrill do
   end
 
   defp prepare_message(email) do
-    %{to: [], headers: %{}}
+    %{to: []}
     |> prepare_from(email)
     |> prepare_to(email)
     |> prepare_subject(email)
@@ -83,8 +83,7 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: {_name, address}}) do
-    put_in(body, [:headers, "Reply-To"], address)
-    #Map.put(body, :headers, %{"Reply-To" => address})
+    Map.put(body, :headers, %{"Reply-To" => address})
   end
 
   defp prepare_cc(body, %{cc: []}), do: body
@@ -122,7 +121,9 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
 
+  defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do
-    %{body | headers: Map.merge(body[:headers], headers)}
+    custom_headers =  Map.merge(body[:headers] || %{}, headers)
+    Map.put(body, :headers, custom_headers)
   end
 end

@@ -127,6 +127,7 @@ defmodule Swoosh.Adapters.Sendgrid do
   end
   defp prepare_categories(body, _email), do: body
 
+  defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do
     Map.put(body, :headers, headers)
   end

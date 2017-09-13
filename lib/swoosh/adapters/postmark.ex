@@ -116,6 +116,7 @@ defmodule Swoosh.Adapters.Postmark do
     do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body(_, body_acc), do: body_acc
 
+  defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do
     custom_headers = Enum.map(headers, fn {k, v} -> %{"Name" => k, "Value" => v} end)
     Map.put(body, "Headers", custom_headers)
