@@ -104,6 +104,40 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
+  test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> reply_to("office.avengers@example.com")
+      |> header("In-Reply-To", "<1234@example.com>")
+      |> header("X-Accept-Language", "en")
+      |> header("X-Mailer", "swoosh")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"key" => "jarvis",
+                      "message" => %{
+                        "subject" => "",
+                        "headers" => %{
+                          "Reply-To" => "office.avengers@example.com",
+                          "In-Reply-To" => "<1234@example.com>",
+                          "X-Accept-Language" => "en",
+                          "X-Mailer" => "swoosh",
+                        },
+                        "to" => [%{"type" => "to", "email" => "steve.rogers@example.com", "name" => "Steve Rogers"}],
+                        "from_name" => "T Stark",
+                        "from_email" => "tony.stark@example.com"}}
+      assert body_params == conn.body_params
+      assert "/messages/send.json" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
+  end
+
   test "a queued email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     email = put_provider_option(email, :async, true)
     Bypass.expect bypass, fn conn ->
