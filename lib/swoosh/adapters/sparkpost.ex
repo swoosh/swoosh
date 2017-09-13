@@ -74,6 +74,7 @@ defmodule Swoosh.Adapters.SparkPost do
     |> prepare_reply_to(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
+    |> prepare_custom_headers(email)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
@@ -117,5 +118,10 @@ defmodule Swoosh.Adapters.SparkPost do
     Enum.map(attachments, fn %{content_type: type, path: path, filename: name} ->
       %{type: type, name: name, data: path |> File.read! |> Base.encode64}
     end)
+  end
+
+  defp prepare_custom_headers(body, %{headers: headers}) do
+    custom_headers = Map.merge(body.content.headers, headers)
+    put_in(body, [:content, :headers], custom_headers)
   end
 end
