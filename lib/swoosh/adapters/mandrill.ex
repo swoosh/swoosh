@@ -94,11 +94,19 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    Map.put(body, "attachments", Enum.map(attachments, &%{
-      "name" => &1.filename,
-      "type" => &1.content_type,
-      "content" => &1.path |> File.read! |> Base.encode64
-    }))
+
+    attachments = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: "attachment"} ->
+      content = path |> File.read! |> Base.encode64
+      %{type: type, name: filename, content: content}
+    end)
+
+    images = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: "inline"} ->
+      content = path |> File.read! |> Base.encode64
+      %{type: type, name: "cid:#{filename}", content: content}
+    end)
+
+    Map.put(body, "attachments", attachments)
+    Map.put(body, "images", images)
   end
 
   defp prepare_recipients(body, recipients, type \\ "to") do
