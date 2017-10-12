@@ -18,7 +18,7 @@ defmodule Swoosh.Adapters.AmazonSesTest do
   setup do
     bypass = Bypass.open
     config = [
-      base_url: "http://localhost:#{bypass.port}",
+      region: "http://localhost:#{bypass.port}",
       access_key: "fake_username",
       secret: "fake_password"
     ]
@@ -28,27 +28,24 @@ defmodule Swoosh.Adapters.AmazonSesTest do
       |> from("guybrush.threepwood@pirates.grog")
       |> to("murry@lechucksship.gov")
       |> subject("Mighty Pirate Newsletter")
-      |> body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> html_body("<h1>Hello</h1>")
 
     {:ok, bypass: bypass, valid_email: valid_email, config: config}
   end
 
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
-    expected_raw_message_data """
-    From: guybrush.threepwood@pirates.grog
-    Subject: Mighty Pirate Newsletter
-
-    <h1>Hello</h1>
-    """
-
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/" <> config[:domain] <> "/messages"
-      body_params = URL.encode_query(%{
-        "Action" => "SendRawEmail",
-        "ToAddresses.member.1" => "murry@lechucksship.gov",
-        "RawMessage.Data" => Base.encode64(expected_raw_message_data)
-      })
+      body_params = %{
+        "Action" => "SendEmail",
+        "Destination.ToAddresses.member.1" => "murry@lechucksship.gov",
+        "Source" => "guybrush.threepwood@pirates.grog",
+        "Message.Body.Text.Data" => "Hello",
+        "Message.Body.Html.Data" => "<h1>Hello</h1>",
+        "Message.Subject.Data" => "Mighty Pirate Newsletter"
+      }
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method
@@ -60,13 +57,6 @@ defmodule Swoosh.Adapters.AmazonSesTest do
   end
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
-    expected_raw_message_data """
-    From: "G Threepwood" <guybrush.threepwood@pirates.grog>
-    Subject: Mighty Pirate Newsletter
-
-    <h1>Hello</h1>
-    """
-
     email =
       new()
       |> from({"G Threepwood", "guybrush.threepwood@pirates.grog"})
@@ -77,20 +67,23 @@ defmodule Swoosh.Adapters.AmazonSesTest do
       |> bcc({"LeChuck", "lechuck@underworld.com"})
       |> bcc("stan@coolshirt.com")
       |> subject("Mighty Pirate Newsletter")
-      |> body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> html_body("<h1>Hello</h1>")
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/" <> config[:domain] <> "/messages"
       body_params = %{
-        "Action" => "SendRawEmail"
-        "ToAddresses.member.1" => ~s("Murry The Skull" <murry@lechucksship.gov>),
-        "ToAddresses.member.2" => "elaine.marley@triisland.gov",
-        "CcAddresses.member.1" => ~s("Cannibals" <canni723@monkeyisland.com>),
-        "CcAddresses.member.2" => "carla@sworddojo.org",
-        "BccAddresses.member.1" => ~s("LeChuck" <lechuck@underworld.com>),
-        "BccAddresses.member.2" => "stan@coolshirt.com",
-        "RawMessage.Data" => Base.encode64(expected_raw_message_data)
+        "Action" => "SendEmail",
+        "Destination.ToAddresses.member.1" => ~s("Murry The Skull" <murry@lechucksship.gov>),
+        "Destination.ToAddresses.member.2" => "elaine.marley@triisland.gov",
+        "Destination.CcAddresses.member.1" => ~s("Cannibals" <canni723@monkeyisland.com>),
+        "Destination.CcAddresses.member.2" => "carla@sworddojo.org",
+        "Destination.BccAddresses.member.1" => ~s("LeChuck" <lechuck@underworld.com>),
+        "Destination.BccAddresses.member.2" => "stan@coolshirt.com",
+        "Message.Body.Text.Data" => "Hello",
+        "Message.Body.Html.Data" => "<h1>Hello</h1>",
+        "Message.Subject.Data" => "Mighty Pirate Newsletter"
       }
 
       assert body_params == conn.body_params
