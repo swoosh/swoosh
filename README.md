@@ -29,7 +29,7 @@ defmodule Sample.UserEmail do
   import Swoosh.Email
 
   def welcome(user) do
-    new
+    new()
     |> to({user.name, user.email})
     |> from({"Dr B Banner", "hulk.smash@example.com"})
     |> subject("Hello, Avengers!")
@@ -162,7 +162,7 @@ defmodule Sample.UserEmail do
   use Phoenix.Swoosh, view: Sample.EmailView, layout: {Sample.LayoutView, :email}
 
   def welcome(user) do
-    new
+    new()
     |> to({user.name, user.email})
     |> from({"Dr B Banner", "hulk.smash@example.com"})
     |> subject("Hello, Avengers!")
