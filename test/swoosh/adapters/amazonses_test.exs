@@ -18,9 +18,10 @@ defmodule Swoosh.Adapters.AmazonSesTest do
   setup do
     bypass = Bypass.open
     config = [
-      region: "http://localhost:#{bypass.port}",
-      access_key: "fake_username",
-      secret: "fake_password"
+      host: "http://localhost:#{bypass.port}",
+      region: "us-east-1",
+      access_key: "AKIAJNAKMOVOTLN2XJWA",
+      secret: "1QQZ6mgRS2iOWUbOQkowfgZwB+9hVSZZDEKUFi8Y"
     ]
 
     valid_email =
@@ -37,14 +38,14 @@ defmodule Swoosh.Adapters.AmazonSesTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
-      expected_path = "/" <> config[:domain] <> "/messages"
+      expected_path = "/"
       body_params = %{
         "Action" => "SendEmail",
         "Destination.ToAddresses.member.1" => "murry@lechucksship.gov",
-        "Source" => "guybrush.threepwood@pirates.grog",
         "Message.Body.Text.Data" => "Hello",
         "Message.Body.Html.Data" => "<h1>Hello</h1>",
-        "Message.Subject.Data" => "Mighty Pirate Newsletter"
+        "Message.Subject.Data" => "Mighty Pirate Newsletter",
+        "Source" => "guybrush.threepwood@pirates.grog",
       }
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
@@ -72,17 +73,18 @@ defmodule Swoosh.Adapters.AmazonSesTest do
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
-      expected_path = "/" <> config[:domain] <> "/messages"
+      expected_path = "/"
       body_params = %{
         "Action" => "SendEmail",
-        "Destination.ToAddresses.member.1" => ~s("Murry The Skull" <murry@lechucksship.gov>),
-        "Destination.ToAddresses.member.2" => "elaine.marley@triisland.gov",
-        "Destination.CcAddresses.member.1" => ~s("Cannibals" <canni723@monkeyisland.com>),
-        "Destination.CcAddresses.member.2" => "carla@sworddojo.org",
-        "Destination.BccAddresses.member.1" => ~s("LeChuck" <lechuck@underworld.com>),
-        "Destination.BccAddresses.member.2" => "stan@coolshirt.com",
-        "Message.Body.Text.Data" => "Hello",
+        "Destination.BccAddresses.member.1" => "stan@coolshirt.com",
+        "Destination.BccAddresses.member.2" => ~s("LeChuck" <lechuck@underworld.com>),
+        "Destination.CcAddresses.member.1" => "carla@sworddojo.org",
+        "Destination.CcAddresses.member.2" => ~s("Cannibals" <canni723@monkeyisland.com>),
+        "Destination.ToAddresses.member.1" => "elaine.marley@triisland.gov",
+        "Destination.ToAddresses.member.2" => ~s("Murry The Skull" <murry@lechucksship.gov>),
         "Message.Body.Html.Data" => "<h1>Hello</h1>",
+        "Message.Body.Text.Data" => "Hello",
+        "Source" => ~s("G Threepwood" <guybrush.threepwood@pirates.grog>),
         "Message.Subject.Data" => "Mighty Pirate Newsletter"
       }
 
@@ -177,7 +179,7 @@ defmodule Swoosh.Adapters.AmazonSesTest do
 
   test "validate_config/1 with invalid config" do
     assert_raise ArgumentError, """
-    expected [:base_url, :access_key, :secret] to be set, got: []
+    expected [:secret, :access_key, :region] to be set, got: []
     """, fn ->
       AmazonSes.validate_config([])
     end

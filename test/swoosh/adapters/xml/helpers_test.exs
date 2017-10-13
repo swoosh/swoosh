@@ -1,4 +1,4 @@
-defmodule Swoosh.Adapters.XML.Helpers do
+defmodule Swoosh.Adapters.XML.HelpersTest do
   use ExUnit.Case, async: true
   alias Swoosh.Adapters.XML.Helpers, as: XmlHelper
 
