@@ -1,9 +1,12 @@
 defmodule Swoosh.Adapters.XML.HelpersTest do
+  require Record
   use ExUnit.Case, async: true
   alias Swoosh.Adapters.XML.Helpers, as: XmlHelper
 
+  Record.defrecord :xmlElement, Record.extract(:xmlElement, from_lib: "xmerl/include/xmerl.hrl")
+
   setup do
-    xml_string ="""
+    xml_string = """
     <xml>
         <test>Test Text</test>
         <test>Test 2 Text</test>
@@ -16,20 +19,21 @@ defmodule Swoosh.Adapters.XML.HelpersTest do
     {:ok, xml_string: xml_string}
   end
 
-  test "parse returns xmlnode ", %{xml_string: xml_string} do
-    assert XmlHelper.parse(xml_string) == %{}
-  end
-
-  test "first returns the first xml node found", %{xml_string: xml_string} do
-    xml_node = XmlHelper.parse(xml_string)
-    assert XmlHelper.first(xml_node, "//test") == %{}
-  end
-
-  test "text returns the text value of the xml node", %{xml_string: xml_string} do
-    xml_node =
+  test "first returns the first xml node found and prints text", %{xml_string: xml_string} do
+    text =
       XmlHelper.parse(xml_string)
       |> XmlHelper.first("//test")
+      |> XmlHelper.text
 
-    assert XmlHelper.text(xml_node) == "Test Text"
+    assert text == "Test Text"
+  end
+
+  test "text prints blank on empty node", %{xml_string: xml_string} do
+    text =
+      XmlHelper.parse(xml_string)
+      |> XmlHelper.first("//test2/inside")
+      |> XmlHelper.text
+
+    assert text == ""
   end
 end
