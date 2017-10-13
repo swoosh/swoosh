@@ -1,9 +1,6 @@
 defmodule Swoosh.Adapters.XML.HelpersTest do
-  require Record
   use ExUnit.Case, async: true
   alias Swoosh.Adapters.XML.Helpers, as: XmlHelper
-
-  Record.defrecord :xmlElement, Record.extract(:xmlElement, from_lib: "xmerl/include/xmerl.hrl")
 
   setup do
     xml_string = """
