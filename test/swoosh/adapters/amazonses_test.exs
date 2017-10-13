@@ -5,14 +5,25 @@ defmodule Swoosh.Adapters.AmazonSesTest do
   alias Swoosh.Adapters.AmazonSes
 
   @success_response """
-  <SendEmailResponse xmlns="https://email.amazonaws.com/doc/2010-03-31/">
+  <SendEmailResponse>
     <SendEmailResult>
-      <MessageId>000001271b15238a-fd3ae762-2563-11df-8cd4-6d4e828a9ae8-000000</MessageId>
+      <MessageId>messageId</MessageId>
     </SendEmailResult>
     <ResponseMetadata>
-      <RequestId>fd3ae762-2563-11df-8cd4-6d4e828a9ae8</RequestId>
+      <RequestId>requestId</RequestId>
     </ResponseMetadata>
   </SendEmailResponse>
+  """
+
+  @error_response """
+  <ErrorResponse>
+    <Error>
+      <Type>ErrorType</Type>
+      <Code>ErrorCode</Code>
+      <Message>Error Message</Message>
+    </Error>
+    <RequestId>a97266f7-b062-11e7-b126-6b0f7a9b3379</RequestId>
+  </ErrorResponse>
   """
 
   setup do
@@ -20,8 +31,8 @@ defmodule Swoosh.Adapters.AmazonSesTest do
     config = [
       host: "http://localhost:#{bypass.port}",
       region: "us-east-1",
-      access_key: "AKIAJNAKMOVOTLN2XJWA",
-      secret: "1QQZ6mgRS2iOWUbOQkowfgZwB+9hVSZZDEKUFi8Y"
+      access_key: "fake_access",
+      secret: "fake_secret"
     ]
 
     valid_email =
@@ -54,7 +65,7 @@ defmodule Swoosh.Adapters.AmazonSesTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end
 
-    assert AmazonSes.deliver(email, config) == {:ok, %{id: "000001271b15238a-fd3ae762-2563-11df-8cd4-6d4e828a9ae8-000000"}}
+    assert AmazonSes.deliver(email, config) == {:ok, %{id: "messageId"}}
   end
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
@@ -95,7 +106,21 @@ defmodule Swoosh.Adapters.AmazonSesTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end
 
-    assert AmazonSes.deliver(email, config) == {:ok, %{id: "000001271b15238a-fd3ae762-2563-11df-8cd4-6d4e828a9ae8-000000"}}
+    assert AmazonSes.deliver(email, config) == {:ok, %{id: "messageId"}}
+  end
+
+  test "a sent email that returns a api error parses correctly", %{bypass: bypass, config: config, valid_email: email} do
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      expected_path = "/"
+
+      assert expected_path == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 500, @error_response)
+    end
+
+    assert AmazonSes.deliver(email, config) == {:error, %{code: "ErrorCode", message: "Error Message"}}
   end
 
   # test "delivery/1 with custom variables returns :ok", %{bypass: bypass, config: config} do
