@@ -71,12 +71,14 @@ defmodule Swoosh.Mailer do
       @otp_app Keyword.fetch!(opts, :otp_app)
       @mailer_config opts
 
+      @spec deliver(Swoosh.Email.t, Keyword.t) :: {:ok, term} | {:error, term}
       def deliver(email, config \\ [])
       def deliver(email, config) do
         config = Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
         Mailer.deliver(email, config)
       end
 
+      @spec deliver!(Swoosh.Email.t, Keyword.t) :: term | no_return
       def deliver!(email, config \\ [])
       def deliver!(email, config) do
         case deliver(email, config) do
