@@ -19,9 +19,9 @@ defmodule Swoosh.Attachment do
 
   Examples with inline-attachments:
 
-      Attachment.new("/path/to/attachment.png", type: "inline")
-      Attachment.new("/path/to/attachment.png", filename: "image.png", type: "inline")
-      Attachment.new("/path/to/attachment.png", filename: "image.png", content_type: "image/png", type: "inline")
+      Attachment.new("/path/to/attachment.png", type: :inline)
+      Attachment.new("/path/to/attachment.png", filename: "image.png", type: :inline)
+      Attachment.new("/path/to/attachment.png", filename: "image.png", content_type: "image/png", type: :inline)
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
 
   """
@@ -50,7 +50,7 @@ defmodule Swoosh.Attachment do
   def new(path, opts) do
     filename = opts[:filename] || Path.basename(path)
     content_type = opts[:content_type] || MIME.from_path(path)
-    type = opts[:type] || "attachment"
+    type = opts[:type] || :attachment
     %__MODULE__{path: path, filename: filename, content_type: content_type, type: type}
   end
 end

@@ -86,7 +86,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_attachment(attachment) do
     case attachment.type do
-      "inline" -> %{"Name" => attachment.filename,
+      :inline -> %{"Name" => attachment.filename,
                     "ContentType" => attachment.content_type,
                     "Content" => attachment.path |> File.read! |> Base.encode64,
                     "ContentID" => "cid:#{attachment.filename}" }

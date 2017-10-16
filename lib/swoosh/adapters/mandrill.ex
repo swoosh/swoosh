@@ -95,12 +95,12 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
 
-    attachments = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: "attachment"} ->
+    attachments = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: :attachment} ->
       content = path |> File.read! |> Base.encode64
       %{type: type, name: filename, content: content}
     end)
 
-    images = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: "inline"} ->
+    images = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: :inline} ->
       content = path |> File.read! |> Base.encode64
       %{type: type, name: "cid:#{filename}", content: content}
     end)

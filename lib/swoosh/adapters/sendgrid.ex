@@ -109,7 +109,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     attachments = Enum.map(attachments, fn %{content_type: type, path: path, filename: filename, type: type} ->
       content = path |> File.read! |> Base.encode64
       case type do
-        "inline" -> %{type: type, filename: filename, content: content, disposition: "inline", content_id: "cid:#{filename}"}
+        :inline -> %{type: type, filename: filename, content: content, disposition: "inline", content_id: "cid:#{filename}"}
         _ -> %{type: type, filename: filename, content: content}
       end
     end)
