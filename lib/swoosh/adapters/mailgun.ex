@@ -98,7 +98,15 @@ defmodule Swoosh.Adapters.Mailgun do
     |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, :inline)))
   end
 
-  defp prepare_file(attachment, type) do
+  defp prepare_file(attachment, :inline) do
+    {:file, attachment.path,
+     {"form-data",
+      [{~s/"name"/, ~s/"inline"/},
+       {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
+     []}
+  end
+
+  defp prepare_file(attachment, :attachment) do
     {:file, attachment.path,
      {"form-data",
       [{~s/"name"/, ~s/"attachment"/},
