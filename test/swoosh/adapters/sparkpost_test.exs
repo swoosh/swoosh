@@ -42,7 +42,8 @@ defmodule Swoosh.Adapters.SparkPostTest do
           "html" => "<h1>Hello</h1>",
           "subject" => "Hello, Avengers!",
           "text" => nil,
-          "attachments" => []
+          "attachments" => [],
+          "inline_images" => []
         },
         "recipients" => [
           %{
@@ -95,7 +96,8 @@ defmodule Swoosh.Adapters.SparkPostTest do
           "reply_to" => "office.avengers@example.com",
           "subject" => "Hello, Avengers!",
           "text" => "Hello",
-          "attachments" => []
+          "attachments" => [],
+          "inline_images" => []
         },
         "recipients" => [
           %{
@@ -184,7 +186,8 @@ defmodule Swoosh.Adapters.SparkPostTest do
           "html" => "<h1>Hello</h1>",
           "text" => "Hello",
           "subject" => "Hello, Avengers!",
-          "attachments" => []
+          "attachments" => [],
+          "inline_images" => []
         },
         "recipients" => [
           %{
