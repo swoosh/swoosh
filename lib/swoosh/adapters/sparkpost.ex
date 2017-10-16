@@ -57,6 +57,8 @@ defmodule Swoosh.Adapters.SparkPost do
     html_body: html,
     attachments: attachments
   } = email) do
+    normal_attachments = Enum.filter(attachments, fn(attachment) -> attachment.type == :attachment end)
+    inline_attachments = Enum.filter(attachments, fn(attachment) -> attachment.type == :inline end)
     %{
       content: %{
         from: %{
@@ -67,7 +69,8 @@ defmodule Swoosh.Adapters.SparkPost do
         text: text,
         html: html,
         headers: %{},
-        attachments: prepare_attachments(attachments)
+        attachments: prepare_attachments(normal_attachments),
+        inline_images: prepare_attachments(inline_attachments)
       },
       recipients: prepare_recipients(to, to)
     }
