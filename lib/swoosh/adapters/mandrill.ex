@@ -94,7 +94,6 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-
     normal_attachments = Enum.filter(attachments, fn(attachment) -> attachment.type == :attachment end)
     inline_attachments = Enum.filter(attachments, fn(attachment) -> attachment.type == :inline end)
     
@@ -105,11 +104,12 @@ defmodule Swoosh.Adapters.Mandrill do
 
     inline_attachments = Enum.map(inline_attachments, fn %Swoosh.Attachment{content_type: type, path: path, filename: filename} ->
       content = path |> File.read! |> Base.encode64
-      %{type: type, name: "cid:#{filename}", content: content}
+      %{type: type, name: "#{filename}", content: content}
     end)
 
-    Map.put(body, "attachments", normal_attachments)
-    Map.put(body, "images", inline_attachments)
+    body
+    |> Map.put("attachments", normal_attachments)
+    |> Map.put("images", inline_attachments)
   end
 
   defp prepare_recipients(body, recipients, type \\ "to") do
