@@ -86,7 +86,11 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    Map.put(body, :attachments, Enum.map(attachments, &prepare_file(&1)))
+    normal_attachments = Enum.map(attachments, fn(attachment = %{type: :attachment}) -> prepare_file(attachment) end)
+    inline_attachments = Enum.map(attachments, fn(attachment = %{type: :inline}) -> prepare_file(attachment) end)
+
+    Map.put(body, :attachments, normal_attachments)
+    Map.put(body, :inline, inline_attachments)
   end
 
   defp prepare_file(attachment) do
