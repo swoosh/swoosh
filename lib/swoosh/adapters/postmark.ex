@@ -89,7 +89,7 @@ defmodule Swoosh.Adapters.Postmark do
       :inline -> %{"Name" => attachment.filename,
                     "ContentType" => attachment.content_type,
                     "Content" => attachment.path |> File.read! |> Base.encode64,
-                    "ContentID" => "cid:#{attachment.filename}" }
+                    "ContentID" => "cid:#{attachment.filename}"}
       _ -> %{"Name" => attachment.filename,
              "ContentType" => attachment.content_type,
              "Content" => attachment.path |> File.read! |> Base.encode64}
