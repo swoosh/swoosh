@@ -72,7 +72,6 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_custom_vars(email)
     |> prepare_custom_headers(email)
     |> encode_body
-    |> IO.inspect
   end
 
   # example custom_vars
