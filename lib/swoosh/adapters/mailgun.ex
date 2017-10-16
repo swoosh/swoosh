@@ -22,7 +22,6 @@ defmodule Swoosh.Adapters.Mailgun do
 
   alias Swoosh.Email
   import Swoosh.Email.Render
-  import IEx
 
   @base_url     "https://api.mailgun.net/v3"
   @api_endpoint "/messages"
