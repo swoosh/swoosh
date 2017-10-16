@@ -48,7 +48,7 @@ defmodule Swoosh.AttachmentTest do
   end
 
   test "create an attachment that should be sent as an inline-attachment" do
-    attachment = Attachment.new("/data/file.png", type: "inline")
-    assert attachment.type == "inline"
+    attachment = Attachment.new("/data/file.png", type: :inline)
+    assert attachment.type == :inline
   end
 end
