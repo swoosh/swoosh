@@ -88,26 +88,17 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    normal_attachments = Enum.filter(attachments, fn(%Swoosh.Attachment{type: type}) -> type == :attachment end)
-    inline_attachments = Enum.filter(attachments, fn(%Swoosh.Attachment{type: type}) -> type == :inline end)
+    {normal_attachments, inline_attachments} = Enum.split_with(attachments, fn(%Swoosh.Attachment{type: type}) -> type == :attachment end)
 
     body
-    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, :attachment)))
-    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, :inline)))
+    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
+    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
   end
 
-  defp prepare_file(attachment, :inline) do
+  defp prepare_file(attachment, type) do
     {:file, attachment.path,
      {"form-data",
-      [{~s/"name"/, ~s/"inline"/},
-       {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
-     []}
-  end
-
-  defp prepare_file(attachment, :attachment) do
-    {:file, attachment.path,
-     {"form-data",
-      [{~s/"name"/, ~s/"attachment"/},
+      [{~s/"name"/, ~s/"#{type}"/},
        {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
      []}
   end
@@ -136,8 +127,7 @@ defmodule Swoosh.Adapters.Mailgun do
   defp encode_body(%{attachments: attachments, inline: inline} = params) do
     {:multipart,
      params
-     |> Map.drop([:attachments])
-     |> Map.drop([:inline])
+     |> Map.drop([:attachments, :inline])
      |> Enum.map(fn {k, v} -> {to_string(k), v} end)
      |> Kernel.++(attachments)
      |> Kernel.++(inline)
