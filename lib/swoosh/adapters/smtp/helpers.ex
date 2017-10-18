@@ -15,7 +15,6 @@ if Code.ensure_loaded?(:mimemail) do
     def body(email, config) do
       {type, subtype, headers, parts} = prepare_message(email)
       options = prepare_options(config)
-      IO.inspect {type, subtype, headers, [], parts}
       :mimemail.encode({type, subtype, headers, [], parts}, options)
     end
 
