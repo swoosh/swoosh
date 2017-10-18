@@ -84,6 +84,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
           {key, func.(value)}
       end
     end
+    defp enforce_type!(key, value), do: {key, value}
 
     defp all_recipients(email) do
       [email.to, email.cc, email.bcc]
