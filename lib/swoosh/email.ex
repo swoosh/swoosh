@@ -464,7 +464,7 @@ defmodule Swoosh.Email do
   as an argument. If you give a path we will detect the MIME type and determine the filename
   automatically.
 
-  You can also send an inline-attachment used for embedding images in the body of emails by specifying `type: "inline"`
+  You can also send an inline-attachment used for embedding images in the body of emails by specifying `type: :inline`
 
   ## Examples
 
