@@ -14,7 +14,7 @@ defmodule Swoosh.Template do
     quote do
       unquote(codes)
 
-      def render(template, assigns) do
+      def render(template, assigns \\ %{}) do
         render_template(template, assigns)
       end
     end
