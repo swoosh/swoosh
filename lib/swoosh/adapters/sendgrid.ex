@@ -106,7 +106,7 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    attachments = Enum.map(attachments, fn %Swoosh.Attachment{content_type: content_type, path: path, filename: filename, type: type} ->
+    attachments = Enum.map(attachments, fn %{content_type: content_type, path: path, filename: filename, type: type} ->
       content = path |> File.read! |> Base.encode64
       case type do
         :inline -> %{type: content_type, filename: filename, content: content, disposition: "inline", content_id: filename}

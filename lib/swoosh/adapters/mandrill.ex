@@ -94,16 +94,16 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    normal_attachments = prepare_attachments_structure(Enum.filter(attachments, fn(attachment) -> attachment.type == :attachment end))
-    inline_attachments = prepare_attachments_structure(Enum.filter(attachments, fn(attachment) -> attachment.type == :inline end))
+    {normal_attachments, inline_attachments} 
+      = Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
 
     body
-    |> Map.put("attachments", normal_attachments)
-    |> Map.put("images", inline_attachments)
+    |> Map.put("attachments", prepare_attachments_structure(normal_attachments))
+    |> Map.put("images", prepare_attachments_structure(inline_attachments))
   end
 
   defp prepare_attachments_structure(attachments) do
-    Enum.map(attachments, fn %Swoosh.Attachment{content_type: type, path: path, filename: filename} ->
+    Enum.map(attachments, fn %{content_type: type, path: path, filename: filename} ->
       content = path |> File.read! |> Base.encode64
       %{type: type, name: filename, content: content}
     end)
