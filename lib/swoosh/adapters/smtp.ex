@@ -61,7 +61,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
     }
     @config_keys Map.keys(@config_transformations)
 
-    defp gen_smtp_config(config) do
+    def gen_smtp_config(config) do
       Enum.reduce(config, [], fn {key, value}, config_acc ->
         [enforce_type!(key, value) | config_acc]
       end)
