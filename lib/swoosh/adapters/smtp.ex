@@ -78,7 +78,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
               #{key} is not configured properly,
               got: #{value}, expected one of the followings:
               #{valid_values |> Enum.map(&inspect/1) |> Enum.join(", ")}
-            """
+              """
           end
         func ->
           {key, func.(value)}
