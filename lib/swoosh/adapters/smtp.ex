@@ -55,9 +55,9 @@ if Code.ensure_loaded?(:gen_smtp_client) do
     @config_transformations %{
       port: &String.to_integer/1,
       retries: &String.to_integer/1,
-      ssl: {&String.to_existing_atom/1, [true, false]},
-      tls: {&String.to_existing_atom/1, [:always, :never, :if_available]},
-      auth: {&String.to_existing_atom/1, [:always, :if_available]}
+      ssl: {&String.to_atom/1, [true, false]},
+      tls: {&String.to_atom/1, [:always, :never, :if_available]},
+      auth: {&String.to_atom/1, [:always, :if_available]}
     }
     @config_keys Map.keys(@config_transformations)
 
