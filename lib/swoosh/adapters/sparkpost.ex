@@ -57,8 +57,9 @@ defmodule Swoosh.Adapters.SparkPost do
     html_body: html,
     attachments: attachments
   } = email) do
-    {normal_attachments, inline_attachments} 
-      = Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
+    {normal_attachments, inline_attachments} =
+      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
+
     %{
       content: %{
         from: %{
