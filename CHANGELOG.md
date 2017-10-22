@@ -1,5 +1,11 @@
 ## Changelog
 
+## Unreleased
+
+### Added
+
+* Inline attachment support in all adapters! ([#159](https://github.com/swoosh/swoosh/pull/159) - many thanks to @theodowling)
+
 ## v0.10.0 - 2017-09-13
 
 ### Added
