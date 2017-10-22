@@ -20,6 +20,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
           password: "ilovepepperpotts",
           tls: :always,
           auth: :always,
+          port: 1025,
           dkim: [
             s: "default", d: "domain.com",
             private_key: {:pem_plain, File.read!("priv/keys/domain.private")}
@@ -40,12 +41,50 @@ if Code.ensure_loaded?(:gen_smtp_client) do
       sender = Helpers.sender(email)
       recipients = all_recipients(email)
       body = Helpers.body(email, config)
-      case :gen_smtp_client.send_blocking({sender, recipients, body}, config) do
+
+      case :gen_smtp_client.send_blocking(
+        {sender, recipients, body},
+        gen_smtp_config(config)
+      ) do
         receipt when is_binary(receipt) -> {:ok, receipt}
         {:error, type, message} -> {:error, {type, message}}
         {:error, reason} -> {:error, reason}
       end
     end
+
+    @config_transformations %{
+      port: &String.to_integer/1,
+      retries: &String.to_integer/1,
+      ssl: {&String.to_atom/1, [true, false]},
+      tls: {&String.to_atom/1, [:always, :never, :if_available]},
+      auth: {&String.to_atom/1, [:always, :if_available]}
+    }
+    @config_keys Map.keys(@config_transformations)
+
+    def gen_smtp_config(config) do
+      Enum.reduce(config, [], fn {key, value}, config_acc ->
+        [enforce_type!(key, value) | config_acc]
+      end)
+    end
+
+    defp enforce_type!(key, value) when key in @config_keys and is_binary(value) do
+      case Map.get(@config_transformations, key) do
+        {func, valid_values} ->
+          value = func.(value)
+          if value in valid_values do
+            {key, value}
+          else
+            raise ArgumentError, """
+              #{key} is not configured properly,
+              got: #{value}, expected one of the followings:
+              #{valid_values |> Enum.map(&inspect/1) |> Enum.join(", ")}
+              """
+          end
+        func ->
+          {key, func.(value)}
+      end
+    end
+    defp enforce_type!(key, value), do: {key, value}
 
     defp all_recipients(email) do
       [email.to, email.cc, email.bcc]
