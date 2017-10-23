@@ -88,7 +88,7 @@ if Code.ensure_loaded?(:gen_smtp_client) do
          when key in [:username, :password, :relay] and not is_binary(value) do
       raise ArgumentError, """
         #{key} is not configured properly,
-        got: #{value}, expected a string
+        got: #{inspect(value)}, expected a string
         """
     end
     defp enforce_type!(key, value), do: {key, value}
