@@ -74,4 +74,15 @@ defmodule Swoosh.Adapters.SMTPTest do
       SMTP.deliver(@email, [tls: "INVALID"])
     end
   end
+  
+  test "gen_smtp_config/1 with invalid args for string parameters" do
+    for config <- [:username, :password, :relay] do
+      assert_raise ArgumentError, """
+      #{config} is not configured properly,
+      got: nil, expected a string
+      """, fn ->
+        SMTP.deliver(@email, [{config, nil}])
+      end
+    end
+  end
 end
