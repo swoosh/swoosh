@@ -14,8 +14,20 @@ defmodule Swoosh.Template do
     quote do
       unquote(codes)
 
-      def render(template, assigns \\ %{}) do
-        render_template(template, assigns)
+      def render(template) do
+        render(template, %{})
+      end
+
+      def render_to_html(email, template, assigns \\ %{}) do
+        assigns = Map.merge(email.assigns, assigns)
+
+        %{ email | html_body: render(template, assigns) }
+      end
+
+      def render_to_text(email, template, assigns \\ %{}) do
+        assigns = Map.merge(email.assigns, assigns)
+
+        %{ email | text_body: render(template, assigns) }
       end
     end
   end
@@ -31,30 +43,51 @@ defmodule Swoosh.Template do
     end
   end
 
+  @doc """
+  Returns a keyword list of all template engines identified by their extensions.
+  """
+  @spec engines() :: %{ atom => module }
   def engines() do
     @default_engines |> Enum.into(%{})
   end
 
+  @doc """
+  Returns all template paths in a given template root.
+  """
+  @spec find_all(binary, binary) :: binary
   def find_all(root, pattern \\ @default_pattern) do
     root
     |> Path.join(pattern <> ".#{extensions_pattern()}")
     |> Path.wildcard()
   end
 
+  @doc """
+  Converts the template path into the template name.
+
+  ## Examples
+
+      iex> Swoosh.Template.template_path_to_name(
+      ...>   "lib/templates/users/welcome.html.eex",
+      ...>   "lib/templates")
+      "users/welcome.html"
+  """
+  @spec template_path_to_name(binary, binary) :: binary
+  def template_path_to_name(path, root) do
+    path
+    |> Path.rootname()
+    |> Path.relative_to(root)
+  end
+
   defp compile(path, root) do
     engine = engine_for(path)
-    name = path |> Path.rootname() |> Path.relative_to(root)
+    name = template_path_to_name(path, root)
     quoted = engine.compile(path)
 
-    defp = String.to_atom(name)
-
     quote do
-      defp unquote(defp)(var!(assigns)) do
-        unquote(quoted)
-      end
+      def render(unquote(name), var!(assigns)) do
+        _ = var!(assigns)
 
-      defp render_template(unquote(name), assigns) do
-        unquote(defp)(assigns)
+        unquote(quoted)
       end
     end
   end
