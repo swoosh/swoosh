@@ -14,9 +14,7 @@ defmodule Swoosh.Template do
     quote do
       unquote(codes)
 
-      def render(template) do
-        render(template, %{})
-      end
+      def render(template), do: render(template, %{})
 
       def render_to_html(email, template, assigns \\ %{}) do
         assigns = Map.merge(email.assigns, assigns)
@@ -48,7 +46,9 @@ defmodule Swoosh.Template do
   """
   @spec engines() :: %{ atom => module }
   def engines() do
-    @default_engines |> Enum.into(%{})
+    @default_engines
+    |> Keyword.merge(Application.get_env(:swoosh, :template_engines, []))
+    |> Enum.into(%{})
   end
 
   @doc """
