@@ -1,5 +1,16 @@
 ## Changelog
 
+## Unreleased
+
+### Added
+
+* Inline attachment support in all adapters! ([#159](https://github.com/swoosh/swoosh/pull/159) - many thanks to @theodowling)
+* Injected Mailer functions now come with typespecs ([#158](https://github.com/swoosh/swoosh/pull/158))
+
+### Fixed
+
+* SMTP configs are now checked and parsed to appropriate types if passed in as strings ([#162](https://github.com/swoosh/swoosh/pull/162))
+
 ## v0.10.0 - 2017-09-13
 
 ### Added

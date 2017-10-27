@@ -35,6 +35,8 @@ defmodule Swoosh.Adapters.Mailgun do
         {:ok, %{id: Poison.decode!(body)["id"]}}
       {:ok, 401, _headers, body} ->
         {:error, {401, body}}
+      {:ok, code, _headers, ""} when code > 399 ->
+        {:error, {code, ""}}
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, Poison.decode!(body)}}
       {:error, reason} ->
@@ -86,13 +88,18 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    Map.put(body, :attachments, Enum.map(attachments, &prepare_file(&1)))
+    {normal_attachments, inline_attachments} =
+      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
+
+    body
+    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
+    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
   end
 
-  defp prepare_file(attachment) do
+  defp prepare_file(attachment, type) do
     {:file, attachment.path,
      {"form-data",
-      [{~s/"name"/, ~s/"attachment"/},
+      [{~s/"name"/, ~s/"#{type}"/},
        {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
      []}
   end
@@ -118,12 +125,14 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
 
-  defp encode_body(%{attachments: attachments} = params) do
+  defp encode_body(%{attachments: attachments, inline: inline} = params) do
     {:multipart,
      params
-     |> Map.drop([:attachments])
+     |> Map.drop([:attachments, :inline])
      |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-     |> Kernel.++(attachments)}
+     |> Kernel.++(attachments)
+     |> Kernel.++(inline)
+    }
   end
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
 end

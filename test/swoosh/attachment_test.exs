@@ -46,4 +46,9 @@ defmodule Swoosh.AttachmentTest do
     assert attachment.filename == "real.zip"
     assert attachment.path == path
   end
+
+  test "create an attachment that should be sent as an inline-attachment" do
+    attachment = Attachment.new("/data/file.png", type: :inline)
+    assert attachment.type == :inline
+  end
 end

@@ -3,7 +3,7 @@ defmodule Swoosh.Attachment do
   Struct representing an attachment in an email.
   """
 
-  defstruct filename: nil, content_type: nil, path: nil
+  defstruct filename: nil, content_type: nil, path: nil, type: nil
 
   @type t :: %__MODULE__{}
 
@@ -16,6 +16,14 @@ defmodule Swoosh.Attachment do
       Attachment.new("/path/to/attachment.png", filename: "image.png")
       Attachment.new("/path/to/attachment.png", filename: "image.png", content_type: "image/png")
       Attachment.new(params["file"]) # Where params["file"] is a %Plug.Upload
+
+  Examples with inline-attachments:
+
+      Attachment.new("/path/to/attachment.png", type: :inline)
+      Attachment.new("/path/to/attachment.png", filename: "image.png", type: :inline)
+      Attachment.new("/path/to/attachment.png", filename: "image.png", content_type: "image/png", type: :inline)
+      Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
+
   """
   @spec new(binary, Keyword.t) :: %__MODULE__{}
   def new(path, opts \\ [])
@@ -42,6 +50,7 @@ defmodule Swoosh.Attachment do
   def new(path, opts) do
     filename = opts[:filename] || Path.basename(path)
     content_type = opts[:content_type] || MIME.from_path(path)
-    %__MODULE__{path: path, filename: filename, content_type: content_type}
+    type = opts[:type] || :attachment
+    %__MODULE__{path: path, filename: filename, content_type: content_type, type: type}
   end
 end

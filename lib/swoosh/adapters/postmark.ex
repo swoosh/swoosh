@@ -81,11 +81,22 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    Map.put(body, "Attachments", Enum.map(attachments, &%{
-      "Name" => &1.filename,
-      "ContentType" => &1.content_type,
-      "Content" => &1.path |> File.read! |> Base.encode64
-    }))
+    Map.put(body, "Attachments", Enum.map(attachments, &prepare_attachment/1))
+  end
+
+  defp prepare_attachment(attachment) do
+    attachment_data = %{
+      "Name"        => attachment.filename,
+      "ContentType" => attachment.content_type,
+      "Content"     => attachment.path |> File.read! |> Base.encode64,
+    }
+
+    case attachment.type do
+      :attachment ->
+        attachment_data
+      :inline ->
+        Map.put(attachment_data, "ContentID", "cid:#{attachment.filename}")
+    end
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body

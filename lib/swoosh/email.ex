@@ -464,23 +464,30 @@ defmodule Swoosh.Email do
   as an argument. If you give a path we will detect the MIME type and determine the filename
   automatically.
 
+  You can also send an inline-attachment used for embedding images in the body of emails by specifying `type: :inline`
+
   ## Examples
 
       iex> new() |> attachment("/data/att.zip")
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
-       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip"}]}
+       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip", type: :attachment}]}
       iex> new() |> attachment(Swoosh.Attachment.new("/data/att.zip"))
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
-       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip"}]}
+       attachments: [%Swoosh.Attachment{path: "/data/att.zip", content_type: "application/zip", filename: "att.zip", type: :attachment}]}
       iex> new() |> attachment(%Plug.Upload{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"})
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
-       attachments: [%Swoosh.Attachment{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"}]}
+       attachments: [%Swoosh.Attachment{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip", type: :attachment}]}
+      iex> new() |> attachment(Swoosh.Attachment.new("/data/att.png", type: :inline))
+      %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: nil, subject: "", text_body: nil, to: [],
+       attachments: [%Swoosh.Attachment{path: "/data/att.png", content_type: "image/png", filename: "att.png", type: :inline}]}
   """
   @spec attachment(t, binary | Swoosh.Attachment.t) :: t
   def attachment(%__MODULE__{attachments: attachments} = email, path) when is_binary(path) do
