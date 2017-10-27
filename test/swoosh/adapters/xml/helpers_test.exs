@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.XML.HelpersTest do
   use ExUnit.Case, async: true
   alias Swoosh.Adapters.XML.Helpers, as: XMLHelper
 
-  setup do
+  setup_all do
     xml_string = """
     <xml>
         <test>Test Text</test>

@@ -2,7 +2,29 @@ defmodule Swoosh.Adapters.AmazonSES do
   @moduledoc ~S"""
   An adapter that sends email using the Amazon Simple Email Service Query API.
 
-  For reference: [Amazone SES Query Api Docs](http://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html)
+  This email adapter makes use of the Amazon SES SendRawEmail action and generates
+  a SMTP style message containing the information to be emailed. This allows for
+  greater more customizable email message and ensures the capability to add
+  attachments. As a result, however, the `gen_smtp` dependency is required in order
+  to correctly generate the SMTP message that will be sent.
+
+  Ensure sure you have the dependency added in your mix.exs file
+
+    # You only need to do this if you are using Elixir < 1.4
+    def application do
+      [applications: [:swoosh, :gen_smtp]]
+    end
+
+    def deps do
+      [{:swoosh, "~> 0.10.0"},
+       {:gen_smtp, "~> 0.12.0"}]
+    end
+
+  See Also:
+
+  [Amazon SES Query Api Docs](http://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html)
+
+  [Amazon SES SendRawEmail Documentation](http://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html)
 
   ## Example
 
