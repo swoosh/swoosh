@@ -1,3 +1,5 @@
+Code.require_file "../support/fixtures/views.exs", __DIR__
+
 defmodule Swoosh.EmailTest do
   use ExUnit.Case, async: true
   doctest Swoosh.Email, import: true
@@ -287,5 +289,10 @@ defmodule Swoosh.EmailTest do
       """, fn ->
       new() |> to([{"Bruce Banner", nil}, "thor.odinson@example.com"])
     end
+  end
+
+  test "put_view/2" do
+    email = new() |> put_view(MyApp.FakeView)
+    assert %Email{ private: %{ swoosh_view: MyApp.FakeView } } = email
   end
 end

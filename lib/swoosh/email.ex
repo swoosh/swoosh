@@ -501,4 +501,12 @@ defmodule Swoosh.Email do
       %{email | attachments: [Swoosh.Attachment.new(upload) | attachments]}
     end
   end
+
+  @doc """
+  Stores the view for rendering.
+  """
+  @spec put_view(t, atom) :: t
+  def put_view(email, module) do
+    put_private(email, :swoosh_view, module)
+  end
 end
