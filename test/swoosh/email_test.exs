@@ -291,8 +291,103 @@ defmodule Swoosh.EmailTest do
     end
   end
 
+  test "layout/1 returns false when no layout is set" do
+    email = new()
+    assert layout(email) == false
+  end
+
+  test "layout/2 reutrns the layout when a layout is set" do
+    email = new() |> put_layout({ MyApp.FakeLayout, "template_1" })
+    assert layout(email) == { MyApp.FakeLayout, "template_1" }
+  end
+
   test "put_view/2" do
     email = new() |> put_view(MyApp.FakeView)
     assert %Email{ private: %{ swoosh_view: MyApp.FakeView } } = email
+  end
+
+  test "put_layout/2" do
+    email = new() |> put_layout({ MyApp.FakeLayout, "layout" })
+    assert %Email{ private: %{ swoosh_layout: { MyApp.FakeLayout, "layout" } } } = email
+  end
+
+  test "render_to_html/3 renders a template" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> render_to_html("template_1")
+
+    assert %Email{ html_body: "Hello, world!\n" } = email
+  end
+
+  test "render_to_html/3 renders a template with layout" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> render_to_html("template_1")
+
+    assert %Email{ html_body: "This is a layout!\n\nHello, world!\n" } = email
+  end
+
+  test "render_to_html/3 renders template with assigns" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> assign(:subject, "world")
+      |> render_to_html("template_2")
+
+    assert %Email{ html_body: "This is a layout!\n\nHello, world!\n" } = email
+  end
+
+  test "render_to_html/3 renders template with passed in assigns" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> render_to_html("template_2", subject: "world")
+
+    assert %Email{ html_body: "This is a layout!\n\nHello, world!\n" } = email
+  end
+
+  test "render_to_text/3 renders a template" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> render_to_text("template_1")
+
+    assert %Email{ text_body: "Hello, world!\n" } = email
+  end
+
+  test "render_to_text/3 renders a template with layout" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> render_to_text("template_1")
+
+    assert %Email{ text_body: "This is a layout!\n\nHello, world!\n" } = email
+  end
+
+  test "render_to_text/3 renders template with assigns" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> assign(:subject, "world")
+      |> render_to_text("template_2")
+
+    assert %Email{ text_body: "This is a layout!\n\nHello, world!\n" } = email
+  end
+
+  test "render_to_text/3 renders template with passed in assigns" do
+    email =
+      new()
+      |> put_view(MyApp.FakeView)
+      |> put_layout({ MyApp.FakeLayout, "layout" })
+      |> render_to_text("template_2", subject: "world")
+
+    assert %Email{ text_body: "This is a layout!\n\nHello, world!\n" } = email
   end
 end
