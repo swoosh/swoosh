@@ -31,7 +31,7 @@ defmodule Swoosh.Adapters.Mandrill do
 
     case :hackney.post(url, @headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        interpret_response(body)
+        parse_response(body)
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, Poison.decode!(body)}}
       {:error, reason} ->
@@ -39,11 +39,11 @@ defmodule Swoosh.Adapters.Mandrill do
     end
   end
 
-  defp interpret_response(body) when is_binary(body), do: body |> Poison.decode! |> hd |> interpret_response
-  defp interpret_response(%{"status" => "sent"} = body), do: {:ok, %{id: body["_id"]}}
-  defp interpret_response(%{"status" => "queued"} = body), do: {:ok, %{id: body["_id"]}}
-  defp interpret_response(%{"status" => "rejected"} = body), do: {:error, body}
-  defp interpret_response(body), do: {:error, Poison.decode!(body)}
+  defp parse_response(body) when is_binary(body), do: body |> Poison.decode! |> hd |> parse_response
+  defp parse_response(%{"status" => "sent"} = body), do: {:ok, %{id: body["_id"]}}
+  defp parse_response(%{"status" => "queued"} = body), do: {:ok, %{id: body["_id"]}}
+  defp parse_response(%{"status" => "rejected"} = body), do: {:error, body}
+  defp parse_response(body), do: {:error, body}
 
   defp base_url(config), do: config[:base_url] || @base_url
 

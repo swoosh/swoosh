@@ -72,7 +72,7 @@ end
     end
     ```
 
-3. (Optional) If you are using `Swoosh.Adapters.SMTP` or `Swoosh.Adapters.Sendmail`, you also need to add gen_stmp to your deps and list of applications:
+3. (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add gen_stmp to your deps and list of applications:
 
     ```elixir
     # You only need to do this if you are using Elixir < 1.4
@@ -99,6 +99,7 @@ Mandrill   | Swoosh.Adapters.Mandrill
 Mailgun    | Swoosh.Adapters.Mailgun
 Postmark   | Swoosh.Adapters.Postmark
 SparkPost  | Swoosh.Adapters.SparkPost
+Amazon SES | Swoosh.Adapters.AmazonSES
 
 Configure which adapter you want to use by updating your `config/config.exs` file:
 
