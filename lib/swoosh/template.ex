@@ -15,18 +15,6 @@ defmodule Swoosh.Template do
       unquote(codes)
 
       def render(template), do: render(template, %{})
-
-      def render_to_html(email, template, assigns \\ %{}) do
-        assigns = Map.merge(email.assigns, assigns)
-
-        %{ email | html_body: render(template, assigns) }
-      end
-
-      def render_to_text(email, template, assigns \\ %{}) do
-        assigns = Map.merge(email.assigns, assigns)
-
-        %{ email | text_body: render(template, assigns) }
-      end
     end
   end
 
