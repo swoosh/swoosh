@@ -8,17 +8,17 @@ defmodule Swoosh.Adapters.AmazonSES do
   attachments. As a result, however, the `gen_smtp` dependency is required in order
   to correctly generate the SMTP message that will be sent.
 
-  Ensure sure you have the dependency added in your mix.exs file
+  Ensure sure you have the dependency added in your mix.exs file.
 
-    # You only need to do this if you are using Elixir < 1.4
-    def application do
-      [applications: [:swoosh, :gen_smtp]]
-    end
+      # You only need to do this if you are using Elixir < 1.4
+      def application do
+        [applications: [:swoosh, :gen_smtp]]
+      end
 
-    def deps do
-      [{:swoosh, "~> 0.10.0"},
-       {:gen_smtp, "~> 0.12.0"}]
-    end
+      def deps do
+        [{:swoosh, "~> 0.10.0"},
+         {:gen_smtp, "~> 0.12.0"}]
+      end
 
   See Also:
 

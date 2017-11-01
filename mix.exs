@@ -1,7 +1,7 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.10.0"
+  @version "0.11.0"
 
   def project do
     [app: :swoosh,
@@ -19,6 +19,8 @@ defmodule Swoosh.Mixfile do
 
      # Docs
      name: "Swoosh",
+     source_url: "https://github.com/swoosh/swoosh",
+     homepage_url: "https://github.com/swoosh/swoosh",
      docs: [source_ref: "v#{@version}", main: "Swoosh",
             canonical: "http://hexdocs.pm/swoosh",
             source_url: "https://github.com/swoosh/swoosh"]]
@@ -41,7 +43,7 @@ defmodule Swoosh.Mixfile do
      {:plug, "~> 1.4", optional: true},
      {:credo, "~> 0.8", only: [:dev, :test]},
      {:bypass, "~> 0.8", only: :test},
-     {:ex_doc, "~> 0.16", only: :docs},
+     {:ex_doc, "~> 0.16", only: :docs, runtime: false},
      {:inch_ex, ">= 0.0.0", only: :docs}]
   end
 

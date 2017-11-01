@@ -26,7 +26,7 @@ defmodule Swoosh.Adapters.XML.Helpers do
   @doc false
   def first(node, path) do
     path
-    |> to_char_list
+    |> to_charlist
     |> :xmerl_xpath.string(node)
     |> List.first
   end
@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.XML.Helpers do
   @doc false
   def text(node) do
     "./text()"
-    |> to_char_list
+    |> to_charlist
     |> :xmerl_xpath.string(node)
     |> extract_text
   end
