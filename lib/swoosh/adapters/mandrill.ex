@@ -50,6 +50,7 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_body(email, config) do
     %{message: prepare_message(email)}
     |> set_async(email)
+    |> set_template_name(email)
     |> set_api_key(config)
   end
 
@@ -64,6 +65,7 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_bcc(email)
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
+    |> prepare_global_merge_vars(email)
     |> prepare_custom_headers(email)
   end
 
@@ -128,6 +130,16 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
+
+  defp set_template_name(body, %{provider_options: %{template_name: template_name}}) do
+    Map.put(body, :template_name, template_name)
+  end
+  defp set_template_name(body, _email), do: body
+
+  defp prepare_global_merge_vars(body, %{provider_options: %{global_merge_vars: global_merge_vars}}) do
+    Map.put(body, :global_merge_vars, global_merge_vars)
+  end
+  defp prepare_global_merge_vars(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do
