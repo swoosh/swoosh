@@ -66,6 +66,7 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
     |> prepare_global_merge_vars(email)
+    |> prepare_merge_vars(email)
     |> prepare_custom_headers(email)
   end
 
@@ -140,6 +141,11 @@ defmodule Swoosh.Adapters.Mandrill do
     Map.put(body, :global_merge_vars, global_merge_vars)
   end
   defp prepare_global_merge_vars(body, _email), do: body
+
+  defp prepare_merge_vars(body, %{provider_options: %{merge_vars: merge_vars}}) do
+    Map.put(body, :merge_vars, merge_vars)
+  end
+  defp prepare_merge_vars(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do
