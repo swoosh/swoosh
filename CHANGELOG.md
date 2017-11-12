@@ -1,5 +1,11 @@
 ## Changelog
 
+## DEV
+
+### Added
+
+* Mandrill template and variable interpolation support ([#172](https://github.com/swoosh/swoosh/pull/172) - thanks and congrats on your first Elixir PR @sescobb27)
+
 ## v0.11.0 - 2017-11-01
 
 ### Added
