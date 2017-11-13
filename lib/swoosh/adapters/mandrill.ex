@@ -23,11 +23,12 @@ defmodule Swoosh.Adapters.Mandrill do
 
   @base_url     "https://mandrillapp.com/api/1.0"
   @api_endpoint "/messages/send.json"
+  @template_api_endpoint "/messages/send-template.json"
   @headers      [{"Content-Type", "application/json"}]
 
   def deliver(%Email{} = email, config \\ []) do
     body = email |> prepare_body(config) |> Poison.encode!
-    url = [base_url(config), @api_endpoint]
+    url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, @headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
@@ -47,10 +48,15 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
+  defp api_endpoint(%{provider_options: %{template_name: _template_name}}), do: @template_api_endpoint
+  defp api_endpoint(%{provider_options: %{template_content: _template_content}}), do: @template_api_endpoint
+  defp api_endpoint(_email), do: @api_endpoint
+
   defp prepare_body(email, config) do
     %{message: prepare_message(email)}
     |> set_async(email)
     |> set_template_name(email)
+    |> set_template_content(email)
     |> set_api_key(config)
   end
 
@@ -136,6 +142,14 @@ defmodule Swoosh.Adapters.Mandrill do
     Map.put(body, :template_name, template_name)
   end
   defp set_template_name(body, _email), do: body
+
+  defp set_template_content(body, %{provider_options: %{template_content: template_content}}) do
+    Map.put(body, :template_content, template_content)
+  end
+  defp set_template_content(body, %{provider_options: %{template_name: _template_name}}) do
+    Map.put(body, :template_content, [%{name: "", content: ""}])
+  end
+  defp set_template_content(body, _email), do: body
 
   defp prepare_global_merge_vars(body, %{provider_options: %{global_merge_vars: global_merge_vars}}) do
     Map.put(body, :global_merge_vars, global_merge_vars)
