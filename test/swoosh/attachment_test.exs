@@ -51,4 +51,13 @@ defmodule Swoosh.AttachmentTest do
     attachment = Attachment.new("/data/file.png", type: :inline)
     assert attachment.type == :inline
   end
+
+  test "create an attachment with custom headers" do
+    attachment = Attachment.new("/data/file.png", headers: [{"Content-Type", "text/calendar; method=\"REQUEST\""}])
+    assert length(attachment.headers) == 1
+    {a, b} = Enum.at(attachment.headers, 0)
+    assert a == "Content-Type"
+    assert b == "text/calendar; method=\"REQUEST\""
+  end
+
 end
