@@ -49,7 +49,6 @@ defmodule Swoosh.Adapters.Mandrill do
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp api_endpoint(%{provider_options: %{template_name: _template_name}}), do: @template_api_endpoint
-  defp api_endpoint(%{provider_options: %{template_content: _template_content}}), do: @template_api_endpoint
   defp api_endpoint(_email), do: @api_endpoint
 
   defp prepare_body(email, config) do
