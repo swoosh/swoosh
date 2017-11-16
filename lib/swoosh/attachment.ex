@@ -3,7 +3,7 @@ defmodule Swoosh.Attachment do
   Struct representing an attachment in an email.
   """
 
-  defstruct filename: nil, content_type: nil, path: nil, type: nil, headers: []
+  defstruct filename: nil, content_type: nil, path: nil, type: nil, headers: [], data: nil
 
   @type t :: %__MODULE__{}
 

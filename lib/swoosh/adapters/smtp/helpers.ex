@@ -102,21 +102,24 @@ if Code.ensure_loaded?(:mimemail) do
        content}
     end
 
-    defp prepare_attachment(%{filename: filename, path: path, content_type: content_type, type: attachment_type, headers: custom_headers}) do
+    defp prepare_attachment(%{filename: filename, path: path, content_type: content_type, type: attachment_type, headers: custom_headers, data: data}) do
       [type, format] = String.split(content_type, "/")
-      file = File.read!(path)
+      content = case data do
+        nil -> File.read!(path)
+        _   -> data
+      end
 
       case attachment_type do
         :attachment -> {type, format,
                          [{"Content-Transfer-Encoding", "base64"}] ++ custom_headers,
                          [{"disposition", "attachment"}, {"disposition-params", [{"filename", filename}]}],
-                         file}
+                         content}
         :inline     -> {type, format,
                          [{"Content-Transfer-Encoding", "base64"}, {"Content-Id", "<#{filename}>"}] ++ custom_headers,
                          [{"content-type-params", []},
                           {"disposition", "inline"},
                           {"disposition-params", []}],
-                         file}
+                         content}
       end
 
     end

@@ -31,4 +31,16 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
 
     assert {:ok, _response} = Swoosh.Adapters.SMTP.deliver(email, config)
   end
+
+  test "deliver with attachment in memory", %{config: config} do
+    email = 
+      new()
+      |> from({"Swoosh SMTP", "swoosh+smtp@#{config[:domain]}"})
+      |> to("swoosh+to@#{config[:domain]}")
+      |> subject("Swoosh - SMTP integration test")
+      |> text_body("This email was sent by the Swoosh library automation testing")
+      |> attachment(%Swoosh.Attachment{content_type: "text/plain", data: "this is an attachment", filename: "example.txt"})
+    assert {:ok, _response} = Swoosh.Adapters.SMTP.deliver(email, config)
+  end
+
 end
