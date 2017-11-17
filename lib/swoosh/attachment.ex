@@ -54,4 +54,12 @@ defmodule Swoosh.Attachment do
     headers = opts[:headers] || []
     %__MODULE__{path: path, filename: filename, content_type: content_type, type: type, headers: headers}
   end
+
+  @spec get_content(%__MODULE__{}) :: binary | no_return
+  def get_content(%__MODULE__{data: data, path: path}) do
+    case data do
+      nil -> File.read!(path)
+      _   -> data
+    end
+  end
 end

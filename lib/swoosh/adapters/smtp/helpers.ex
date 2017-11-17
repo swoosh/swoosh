@@ -102,12 +102,9 @@ if Code.ensure_loaded?(:mimemail) do
        content}
     end
 
-    defp prepare_attachment(%{filename: filename, path: path, content_type: content_type, type: attachment_type, headers: custom_headers, data: data}) do
+    defp prepare_attachment(%{filename: filename, content_type: content_type, type: attachment_type, headers: custom_headers} = attachment) do
       [type, format] = String.split(content_type, "/")
-      content = case data do
-        nil -> File.read!(path)
-        _   -> data
-      end
+      content = Swoosh.Attachment.get_content(attachment)
 
       case attachment_type do
         :attachment -> {type, format,
