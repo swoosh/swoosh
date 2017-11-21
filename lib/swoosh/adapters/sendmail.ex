@@ -28,6 +28,7 @@ if Code.ensure_loaded?(:mimemail) do
       port = Port.open({:spawn, cmd(email, config)}, [:binary])
       Port.command(port, body)
       Port.close(port)
+      :ok
     end
 
     @doc false
