@@ -126,9 +126,9 @@ defmodule Swoosh.Adapters.Mandrill do
   end
 
   defp prepare_attachments_structure(attachments) do
-    Enum.map(attachments, fn %{content_type: type, path: path, filename: filename} ->
-      content = path |> File.read! |> Base.encode64
-      %{type: type, name: filename, content: content}
+    Enum.map(attachments, fn attachment ->
+      content = Swoosh.Attachment.get_content(attachment, :base64)
+      %{type: attachment.content_type, name: attachment.filename, content: content}
     end)
   end
 
