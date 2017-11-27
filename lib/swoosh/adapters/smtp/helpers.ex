@@ -68,14 +68,35 @@ if Code.ensure_loaded?(:mimemail) do
 
     defp prepare_parts(headers, %{
       attachments: attachments,
+      html_body: nil,
+      text_body: text_body
+    }) when length(attachments) > 0 do
+      parts = Enum.map(attachments, &prepare_attachment(&1))
+      parts = [prepare_part(:plain, text_body) | parts]
+
+      {"multipart", "mixed", headers, parts}
+    end
+    defp prepare_parts(headers, %{
+      attachments: attachments,
+      html_body: html_body,
+      text_body: nil
+    }) when length(attachments) > 0 do
+      parts = Enum.map(attachments, &prepare_attachment(&1))
+      parts = [prepare_part(:html, html_body) | parts]
+
+      {"multipart", "mixed", headers, parts}
+    end
+    defp prepare_parts(headers, %{
+      attachments: attachments,
       html_body: html_body,
       text_body: text_body
     }) when length(attachments) > 0 do
       parts = Enum.map(attachments, &prepare_attachment(&1))
-      parts = if text_body, do: [prepare_part(:plain, text_body) | parts], else: parts
-      parts = if html_body, do: [prepare_part(:html, html_body) | parts], else: parts
+      text_part = prepare_part(:plain, text_body)
+      html_part = prepare_part(:html, html_body)
+      alt_part = {"multipart", "alternative", [], [], [text_part, html_part]}
 
-      {"multipart", "mixed", headers, parts}
+      {"multipart", "mixed", headers, [alt_part | parts]}
     end
     defp prepare_parts(headers, %{html_body: nil, text_body: text_body}) do
       headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
