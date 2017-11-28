@@ -75,13 +75,7 @@ defmodule Swoosh.Attachment do
     raise Swoosh.AttachmentContentError, message: "No path or data is provided"
   end
   def get_content(%__MODULE__{data: data, path: path}, encoding \\ :raw) do
-    content =
-      case data do
-        nil -> File.read!(path)
-        _   -> data
-      end
-
-    encode(content, encoding)
+    encode(data || File.read!(path), encoding)
   end
 
   defp encode(content, :raw), do: content
