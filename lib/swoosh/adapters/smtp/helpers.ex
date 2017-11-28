@@ -67,29 +67,42 @@ if Code.ensure_loaded?(:mimemail) do
     end
 
     defp prepare_parts(headers, %{
+      attachments: [],
+      html_body: html_body,
+      text_body: text_body
+    }) do
+      case {text_body, html_body} do
+        {text_body, nil} ->
+          headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
+          {"text", "plain", headers, text_body}
+        {nil, html_body} ->
+          headers = [{"Content-Type", "text/html; charset=\"utf-8\""} | headers]
+          {"text", "html", headers, html_body}
+        {text_body, html_body} ->
+          parts = [prepare_part(:plain, text_body), prepare_part(:html, html_body)]
+          {"multipart", "alternative", headers, parts}
+      end
+    end
+    defp prepare_parts(headers, %{
       attachments: attachments,
       html_body: html_body,
       text_body: text_body
-    }) when length(attachments) > 0 do
-      parts = Enum.map(attachments, &prepare_attachment(&1))
-      parts = if text_body, do: [prepare_part(:plain, text_body) | parts], else: parts
-      parts = if html_body, do: [prepare_part(:html, html_body) | parts], else: parts
+    }) do
+      content_part =
+        case {prepare_part(:plain, text_body), prepare_part(:html, html_body)} do
+          {text_part, nil} ->
+            text_part
+          {nil, html_part} ->
+            html_part
+          {text_part, html_part} ->
+            {"multipart", "alternative", [], [], [text_part, html_part]}
+        end
+      attachment_parts = Enum.map(attachments, &prepare_attachment(&1))
 
-      {"multipart", "mixed", headers, parts}
-    end
-    defp prepare_parts(headers, %{html_body: nil, text_body: text_body}) do
-      headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
-      {"text", "plain", headers, text_body}
-    end
-    defp prepare_parts(headers, %{html_body: html_body, text_body: nil}) do
-      headers = [{"Content-Type", "text/html; charset=\"utf-8\""} | headers]
-      {"text", "html", headers, html_body}
-    end
-    defp prepare_parts(headers, %{html_body: html_body, text_body: text_body}) do
-      parts = [prepare_part(:plain, text_body), prepare_part(:html, html_body)]
-      {"multipart", "alternative", headers, parts}
+      {"multipart", "mixed", headers, [content_part | attachment_parts]}
     end
 
+    defp prepare_part(_subtype, nil), do: nil
     defp prepare_part(subtype, content) do
       subtype_string = to_string(subtype)
       {"text",
@@ -102,21 +115,44 @@ if Code.ensure_loaded?(:mimemail) do
        content}
     end
 
-    defp prepare_attachment(%{filename: filename, content_type: content_type, type: attachment_type, headers: custom_headers} = attachment) do
+    defp prepare_attachment(%{
+      filename: filename,
+      content_type: content_type,
+      type: attachment_type,
+      headers: custom_headers
+    } = attachment) do
       [type, format] = String.split(content_type, "/")
       content = Swoosh.Attachment.get_content(attachment)
 
       case attachment_type do
-        :attachment -> {type, format,
-                         [{"Content-Transfer-Encoding", "base64"}] ++ custom_headers,
-                         [{"disposition", "attachment"}, {"disposition-params", [{"filename", filename}]}],
-                         content}
-        :inline     -> {type, format,
-                         [{"Content-Transfer-Encoding", "base64"}, {"Content-Id", "<#{filename}>"}] ++ custom_headers,
-                         [{"content-type-params", []},
-                          {"disposition", "inline"},
-                          {"disposition-params", []}],
-                         content}
+        :attachment ->
+          {
+            type, format,
+            [
+              {"Content-Transfer-Encoding", "base64"}
+              | custom_headers
+            ],
+            [
+              {"disposition", "attachment"},
+              {"disposition-params", [{"filename", filename}]}
+            ],
+            content
+          }
+        :inline ->
+          {
+            type, format,
+            [
+              {"Content-Transfer-Encoding", "base64"},
+              {"Content-Id", "<#{filename}>"}
+              | custom_headers
+            ],
+            [
+              {"content-type-params", []},
+              {"disposition", "inline"},
+              {"disposition-params", []}
+            ],
+            content
+          }
       end
 
     end
