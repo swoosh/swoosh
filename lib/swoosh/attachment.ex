@@ -8,10 +8,10 @@ defmodule Swoosh.Attachment do
   @type t :: %__MODULE__{
     filename: String.t,
     content_type: String.t,
-    path: String.t,
+    path: String.t | nil,
+    data: binary | nil,
     type: :inline | :attachment,
     headers: [{String.t, String.t}],
-    data: binary
   }
 
   @doc ~S"""
@@ -32,7 +32,7 @@ defmodule Swoosh.Attachment do
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
 
   """
-  @spec new(binary, Keyword.t) :: %__MODULE__{}
+  @spec new(binary | struct, Keyword.t) :: %__MODULE__{}
   def new(path, opts \\ [])
 
   if Code.ensure_loaded?(Plug) do
