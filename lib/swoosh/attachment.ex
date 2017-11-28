@@ -71,6 +71,9 @@ defmodule Swoosh.Attachment do
 
   @type content_encoding :: :raw | :base64
   @spec get_content(%__MODULE__{}, content_encoding) :: binary | no_return
+  def get_content(%__MODULE__{data: nil, path: nil}) do
+    raise Swoosh.AttachmentContentError, message: "No path or data is provided"
+  end
   def get_content(%__MODULE__{data: data, path: path}, encoding \\ :raw) do
     content =
       case data do
