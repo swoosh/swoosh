@@ -5,6 +5,13 @@
 ### Added
 
 * Mandrill template and variable interpolation support ([#172](https://github.com/swoosh/swoosh/pull/172) - thanks and congrats on your first Elixir PR @sescobb27)
+* Support optional attachment headers in SMTP related Adapters ([#176](https://github.com/swoosh/swoosh/pull/176) - thanks! @davec82)
+* Support in-memory attachment ([#178](https://github.com/swoosh/swoosh/pull/178) - thanks again! @davec82, and [#182](https://github.com/swoosh/swoosh/pull/182))
+
+### Fixed
+
+* Dialyzer warnings ([#180](https://github.com/swoosh/swoosh/pull/180) thanks! @xadhoom)
+* Alternative multipart email with attachment shows both text and html content ([#184](https://github.com/swoosh/swoosh/pull/184) thanks again! @xadhoom)
 
 ## v0.11.0 - 2017-11-01
 
