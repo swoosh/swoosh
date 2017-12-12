@@ -100,6 +100,8 @@ Mailgun    | Swoosh.Adapters.Mailgun
 Postmark   | Swoosh.Adapters.Postmark
 SparkPost  | Swoosh.Adapters.SparkPost
 Amazon SES | Swoosh.Adapters.AmazonSES
+Dyn        | Swoosh.Adapters.Dyn
+
 
 Configure which adapter you want to use by updating your `config/config.exs` file:
 
