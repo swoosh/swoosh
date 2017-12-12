@@ -16,16 +16,6 @@ defmodule Swoosh.Adapters.DynTest do
     }
     """
 
-  @error_response """
-    {
-      "response": {
-        "status":452,
-        "message": "Missing or Invalid Required Fields",
-        "data": "Required arguments are not defined"
-      }
-    }
-    """
-
   setup do
     bypass = Bypass.open
     config = [base_url: "http://localhost:#{bypass.port}",
