@@ -1,8 +1,6 @@
 defmodule Swoosh.Adapters.DynTest do
   use AdapterCase, async: true
 
-  require IEx
-
   import Swoosh.Email
   alias Swoosh.Adapters.Dyn
 
