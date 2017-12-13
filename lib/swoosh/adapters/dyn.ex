@@ -1,4 +1,4 @@
-  defmodule Swoosh.Adapters.Dyn do
+defmodule Swoosh.Adapters.Dyn do
   @moduledoc ~S"""
   An adapter that sends email using the Dyn API.
 
@@ -10,7 +10,6 @@
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Dyn,
         api_key: "my-api-key",
-        domain: "avengers.com"
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -29,7 +28,8 @@
     headers = prepare_headers(email, config)
     url = [base_url(config), "/", @api_endpoint]
 
-    body = %{}
+    body =
+      %{}
       |> prepare_from(email)
       |> prepare_to(email)
       |> prepare_subject(email)
@@ -76,7 +76,7 @@
   defp prepare_cc(body, %{cc: ccs}) do
     ccs
     |> Enum.with_index(1)
-    |> Enum.map(fn {cc, counter} -> {String.to_atom("cc[#{counter}]"), render_recipient(cc)} end)
+    |> Enum.map(fn {cc, counter} -> {"cc[#{counter}]", render_recipient(cc)} end)
     |> Enum.into(body)
   end
 
@@ -84,7 +84,7 @@
   defp prepare_bcc(body, %{bcc: bccs}) do
     bccs
     |> Enum.with_index(1)
-    |> Enum.map(fn {bcc, counter} -> {String.to_atom("bcc[#{counter}]"), render_recipient(bcc)} end)
+    |> Enum.map(fn {bcc, counter} -> {"bcc[#{counter}]", render_recipient(bcc)} end)
     |> Enum.into(body)
   end
 
@@ -98,5 +98,5 @@
 
   defp add_auth_token(body, api_key), do: Map.put(body, :apikey, api_key)
 
-  defp encode_body(body), do: Plug.Conn.Query.encode(body)
+  defp encode_body(body), do: URI.encode_query(body)
 end

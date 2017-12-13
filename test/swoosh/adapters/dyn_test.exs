@@ -104,7 +104,6 @@ defmodule Swoosh.Adapters.DynTest do
     Bypass.expect bypass, fn conn ->
       Plug.Conn.resp(conn, 500, "{\"messge\": \"error\"}")
     end
-    response = "{\"messge\": \"error\"}"
     assert Dyn.deliver(email, config) == {:error, "Error: \"{\\\"messge\\\": \\\"error\\\"}\""}
   end
 

@@ -134,5 +134,5 @@ defmodule Swoosh.Adapters.Mailgun do
      |> Kernel.++(inline)
     }
   end
-  defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
+  defp encode_body(no_attachments), do: URI.encode_query(no_attachments)
 end
