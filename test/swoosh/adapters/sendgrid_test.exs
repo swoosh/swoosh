@@ -31,9 +31,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "text-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -55,9 +58,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "html-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -79,9 +85,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
@@ -113,9 +122,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with custom variables returns :ok", %{bypass: bypass, config: config} do
@@ -149,9 +161,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with template_id returns :ok", %{bypass: bypass, config: config} do
@@ -177,9 +192,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with substitutions returns :ok", %{bypass: bypass, config: config} do
@@ -205,9 +223,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
@@ -239,10 +260,13 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
@@ -290,9 +314,12 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert body_params == conn.body_params
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
-      Plug.Conn.resp(conn, 200, "{\"message\":\"success\"}")
+
+      conn
+      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
+      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
     end
-    assert Sendgrid.deliver(email, config) == {:ok, %{}}
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
 end
