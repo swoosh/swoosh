@@ -19,6 +19,7 @@ defmodule Swoosh.Adapters.Dyn do
   use Swoosh.Adapter, required_config: [:api_key]
 
   alias Swoosh.Email
+  alias Swoosh.DeliveryError
   import Swoosh.Email.Render
 
   @base_url     "https://emailapi.dynect.net"
@@ -37,6 +38,7 @@ defmodule Swoosh.Adapters.Dyn do
       |> prepare_text(email)
       |> prepare_cc(email)
       |> prepare_bcc(email)
+      |> prepare_attachments(email)
       |> prepare_reply_to(email)
       |> add_auth_token(config[:api_key])
       |> encode_body
@@ -95,6 +97,11 @@ defmodule Swoosh.Adapters.Dyn do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :bodyhtml, html_body)
+
+  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(body, %{attachments: attachments}) do
+    raise DeliveryError, reason: :unsupported_feature, payload: :attachments
+  end
 
   defp add_auth_token(body, api_key), do: Map.put(body, :apikey, api_key)
 

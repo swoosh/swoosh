@@ -2,6 +2,7 @@ defmodule Swoosh.Adapters.DynTest do
   use AdapterCase, async: true
 
   import Swoosh.Email
+  alias Swoosh.DeliveryError
   alias Swoosh.Adapters.Dyn
 
   @success_response """
@@ -50,7 +51,15 @@ defmodule Swoosh.Adapters.DynTest do
     assert Dyn.deliver(email, config) == {:ok, "OK"}
   end
 
-  test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
+  test "an email with attachments results in DeliveryError", %{config: config, valid_email: email} do
+    email_with_attachments = email
+    |> attachment("README.md")
+    assert_raise DeliveryError, fn ->
+      Dyn.deliver(email_with_attachments, config)
+    end
+  end
+
+  test "deliver/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -84,7 +93,7 @@ defmodule Swoosh.Adapters.DynTest do
     assert Dyn.deliver(email, config) == {:ok, "OK"}
   end
 
-  test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
+  test "deliver/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       Plug.Conn.resp(conn, 404, "Not Found")
     end
