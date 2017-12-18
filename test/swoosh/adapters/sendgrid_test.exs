@@ -32,11 +32,15 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
+  defp respond_with(conn, [body: body, id: id]) do
+    conn
+    |> Plug.Conn.put_resp_header("X-Message-Id", id)
+    |> Plug.Conn.resp(200, body)
   end
 
   test "text-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -59,9 +63,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -86,9 +88,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -123,9 +123,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -162,9 +160,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -193,9 +189,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -224,9 +218,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
@@ -261,9 +253,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
 
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
@@ -315,9 +305,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       assert "/mail/send" == conn.request_path
       assert "POST" == conn.method
 
-      conn
-      |> Plug.Conn.put_resp_header("X-Message-Id", "123-xyz")
-      |> Plug.Conn.resp(200, "{\"message\":\"success\"}")
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
