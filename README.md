@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/swoosh/swoosh.svg?branch=master)](https://travis-ci.org/swoosh/swoosh)
 [![Inline docs](http://inch-ci.org/github/swoosh/swoosh.svg?branch=master&style=flat)](http://inch-ci.org/github/swoosh/swoosh)
-[![Deps Status](https://beta.hexfaktor.org/badge/all/github/swoosh/swoosh.svg)](https://beta.hexfaktor.org/github/swoosh/swoosh)
 
 Compose, deliver and test your emails easily in Elixir.
 
@@ -60,7 +59,7 @@ end
 
     ```elixir
     def deps do
-      [{:swoosh, "~> 0.12.0"}]
+      [{:swoosh, "~> 0.12.1"}]
     end
     ```
 

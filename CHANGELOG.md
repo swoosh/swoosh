@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.12.1 - 2017-01-05
+
+### Fixed
+
+* Fix date header formatting in Amazon SES adapter. ([#190](https://github.com/swoosh/swoosh/pull/190))
+
 ## v0.12.0 - 2017-12-13
 
 ### Added

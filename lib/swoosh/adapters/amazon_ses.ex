@@ -210,7 +210,14 @@ if Code.ensure_loaded?(:mimemail) do
 
     defp encrypt_value(secret, unencrypted_data), do: :crypto.hmac(:sha256, secret, unencrypted_data)
 
-    defp amz_date(dt), do: "#{dt.year}#{dt.month}#{dt.day}"
+    defp amz_date(dt) do
+      date_string = Enum.map_join(
+        [dt.month, dt.day],
+        &String.pad_leading(to_string(&1), 2, "0")
+      )
+
+      "#{dt.year}#{date_string}"
+    end
     defp amz_datetime(dt) do
       time_string = Enum.map_join(
         [dt.hour, dt.minute, dt.second],
