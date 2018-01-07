@@ -19,6 +19,12 @@ defmodule Swoosh.Adapters.SendgridTest do
     {:ok, bypass: bypass, config: config, valid_email: valid_email}
   end
 
+  defp respond_with(conn, [body: body, id: id]) do
+    conn
+    |> Plug.Conn.put_resp_header("X-Message-Id", id)
+    |> Plug.Conn.resp(200, body)
+  end
+
   test "successful delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
@@ -35,12 +41,6 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
-  end
-
-  defp respond_with(conn, [body: body, id: id]) do
-    conn
-    |> Plug.Conn.put_resp_header("X-Message-Id", id)
-    |> Plug.Conn.resp(200, body)
   end
 
   test "text-only delivery returns :ok", %{bypass: bypass, config: config} do
