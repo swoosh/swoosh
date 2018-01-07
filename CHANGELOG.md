@@ -1,5 +1,11 @@
 ## Changelog
 
+## Dev
+
+### Added
+
+* Return the message id from the sendgrid adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
+
 ## v0.12.1 - 2017-01-05
 
 ### Fixed
