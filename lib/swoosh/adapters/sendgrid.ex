@@ -31,13 +31,19 @@ defmodule Swoosh.Adapters.Sendgrid do
     body = email |> prepare_body() |> Poison.encode!
     url = [base_url(config), @api_endpoint]
     case :hackney.post(url, headers, body, [:with_body]) do
-      {:ok, code, _headers, _body} when code >= 200 and code <= 399 ->
-        {:ok, %{}}
+      {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
+        {:ok, %{id: extract_id(headers)}}
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, body}}
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  defp extract_id(headers) do
+    headers
+    |> Enum.into(%{})
+    |> Map.get("X-Message-Id")
   end
 
   defp base_url(config), do: config[:base_url] || @base_url

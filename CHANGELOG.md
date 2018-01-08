@@ -1,6 +1,18 @@
 ## Changelog
 
-## DEV
+## Dev
+
+### Added
+
+* Return the message id from the sendgrid adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
+
+## v0.12.1 - 2017-01-05
+
+### Fixed
+
+* Fix date header formatting in Amazon SES adapter. ([#190](https://github.com/swoosh/swoosh/pull/190))
+
+## v0.12.0 - 2017-12-13
 
 ### Added
 
@@ -12,6 +24,7 @@
 
 * Dialyzer warnings ([#180](https://github.com/swoosh/swoosh/pull/180) thanks! @xadhoom)
 * Alternative multipart email with attachment shows both text and html content ([#184](https://github.com/swoosh/swoosh/pull/184) thanks again! @xadhoom)
+* Fix warning in Amazon SES adapter when `mimemail` dependency is not loaded. ([#187](https://github.com/swoosh/swoosh/pull/184))
 
 ## v0.11.0 - 2017-11-01
 
