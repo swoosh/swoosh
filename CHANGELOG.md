@@ -1,9 +1,10 @@
 ## Changelog
 
-## Dev
+## v0.13.0
 
 ### Added
 
+* **New Adapter** Dyn ([#188](https://github.com/swoosh/swoosh/pull/188), thanks! @jann)
 * Return the message id from the sendgrid adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
 
 ## v0.12.1 - 2017-01-05
