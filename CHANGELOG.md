@@ -5,7 +5,8 @@
 ### Added
 
 * **New Adapter** Dyn ([#188](https://github.com/swoosh/swoosh/pull/188), thanks! @jann)
-* Return the message id from the sendgrid adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
+* Return message id from Sendgrid Adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
+* Support handling recipient variables in Mailgun Adapter ([#194](https://github.com/swoosh/swoosh/pull/194), thanks! @messutied)
 
 ## v0.12.1 - 2017-01-05
 
