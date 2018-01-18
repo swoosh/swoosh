@@ -1,6 +1,6 @@
 ## Changelog
 
-## v0.13.0 - Dev
+## v0.13.0 - 2018-01-18
 
 ### Added
 
@@ -8,7 +8,7 @@
 * Return message id from Sendgrid Adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
 * Support handling recipient variables in Mailgun Adapter ([#194](https://github.com/swoosh/swoosh/pull/194), thanks! @messutied)
 
-## v0.12.1 - 2017-01-05
+## v0.12.1 - 2018-01-05
 
 ### Fixed
 

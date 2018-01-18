@@ -46,11 +46,11 @@ defmodule Swoosh.Adapters.Dyn do
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
         {:ok, Poison.decode!(body)["response"]["message"]}
-      {:ok, 404, _headers, body} ->
+      {:ok, 404, _headers, _body} ->
         {:error, "Not found"}
-      {:ok, 503, _headers, body} ->
+      {:ok, 503, _headers, _body} ->
         {:error, "Service Unavailable"}
-      {:ok, code, _headers, body} ->
+      {:ok, _code, _headers, body} ->
         {:error, "Error: #{inspect(body)}"}
       {:error, reason} ->
         {:error, reason}
@@ -59,7 +59,7 @@ defmodule Swoosh.Adapters.Dyn do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  defp prepare_headers(email, config) do
+  defp prepare_headers(email, _config) do
     [{"User-Agent", "swoosh/#{Swoosh.version}"},
      {"Content-Type", content_type(email)}]
   end
@@ -99,7 +99,7 @@ defmodule Swoosh.Adapters.Dyn do
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :bodyhtml, html_body)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
-  defp prepare_attachments(body, %{attachments: attachments}) do
+  defp prepare_attachments(_body, _email) do
     raise DeliveryError, reason: :unsupported_feature, payload: :attachments
   end
 
