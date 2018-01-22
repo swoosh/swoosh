@@ -1,5 +1,33 @@
 ## Changelog
 
+## v0.13.0 - 2018-01-18
+
+### Added
+
+* **New Adapter** Dyn ([#188](https://github.com/swoosh/swoosh/pull/188), thanks! @jann)
+* Return message id from Sendgrid Adapter ([#189](https://github.com/swoosh/swoosh/pull/189, thanks! @felipesere)
+* Support handling recipient variables in Mailgun Adapter ([#194](https://github.com/swoosh/swoosh/pull/194), thanks! @messutied)
+
+## v0.12.1 - 2018-01-05
+
+### Fixed
+
+* Fix date header formatting in Amazon SES adapter. ([#190](https://github.com/swoosh/swoosh/pull/190))
+
+## v0.12.0 - 2017-12-13
+
+### Added
+
+* Mandrill template and variable interpolation support ([#172](https://github.com/swoosh/swoosh/pull/172) - thanks and congrats on your first Elixir PR @sescobb27)
+* Support optional attachment headers in SMTP related Adapters ([#176](https://github.com/swoosh/swoosh/pull/176) - thanks! @davec82)
+* Support in-memory attachment ([#178](https://github.com/swoosh/swoosh/pull/178) - thanks again! @davec82, and [#182](https://github.com/swoosh/swoosh/pull/182))
+
+### Fixed
+
+* Dialyzer warnings ([#180](https://github.com/swoosh/swoosh/pull/180) thanks! @xadhoom)
+* Alternative multipart email with attachment shows both text and html content ([#184](https://github.com/swoosh/swoosh/pull/184) thanks again! @xadhoom)
+* Fix warning in Amazon SES adapter when `mimemail` dependency is not loaded. ([#187](https://github.com/swoosh/swoosh/pull/184))
+
 ## v0.11.0 - 2017-11-01
 
 ### Added

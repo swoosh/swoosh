@@ -3,9 +3,16 @@ defmodule Swoosh.Attachment do
   Struct representing an attachment in an email.
   """
 
-  defstruct filename: nil, content_type: nil, path: nil, type: nil
+  defstruct [:filename, :content_type, :path, :type, :headers, :data]
 
-  @type t :: %__MODULE__{}
+  @type t :: %__MODULE__{
+    filename: String.t,
+    content_type: String.t,
+    path: String.t | nil,
+    data: binary | nil,
+    type: :inline | :attachment,
+    headers: [{String.t, String.t}],
+  }
 
   @doc ~S"""
   Creates a new Attachment
@@ -25,7 +32,7 @@ defmodule Swoosh.Attachment do
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
 
   """
-  @spec new(binary, Keyword.t) :: %__MODULE__{}
+  @spec new(binary | struct, Keyword.t) :: %__MODULE__{}
   def new(path, opts \\ [])
 
   if Code.ensure_loaded?(Plug) do
@@ -51,6 +58,26 @@ defmodule Swoosh.Attachment do
     filename = opts[:filename] || Path.basename(path)
     content_type = opts[:content_type] || MIME.from_path(path)
     type = opts[:type] || :attachment
-    %__MODULE__{path: path, filename: filename, content_type: content_type, type: type}
+    headers = opts[:headers] || []
+
+    %__MODULE__{
+      path: path,
+      filename: filename,
+      content_type: content_type,
+      type: type,
+      headers: headers
+    }
   end
+
+  @type content_encoding :: :raw | :base64
+  @spec get_content(%__MODULE__{}, content_encoding) :: binary | no_return
+  def get_content(%__MODULE__{data: nil, path: nil}) do
+    raise Swoosh.AttachmentContentError, message: "No path or data is provided"
+  end
+  def get_content(%__MODULE__{data: data, path: path}, encoding \\ :raw) do
+    encode(data || File.read!(path), encoding)
+  end
+
+  defp encode(content, :raw), do: content
+  defp encode(content, :base64), do: Base.encode64(content)
 end

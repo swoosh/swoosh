@@ -2,6 +2,10 @@ defmodule Swoosh.Adapters.Mandrill do
   @moduledoc ~S"""
   An adapter that sends email using the Mandrill API.
 
+  It supports both the `send` and `send-template` endpoint. In order to use the
+  latter you need to set `template_name` in the `provider_options` map on
+  `Swoosh.Email`.
+
   For reference: [Mandrill API docs](https://mandrillapp.com/api/docs/messages.html)
 
   ## Example
@@ -15,6 +19,17 @@ defmodule Swoosh.Adapters.Mandrill do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Example of using the `send-template` endpoint
+
+      import Swoosh.Email
+
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:template_name, "welcome")
+      |> put_provider_option(:template_content, [%{"name" => "START_DATE", "content" => "Next Monday"}])
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -23,11 +38,12 @@ defmodule Swoosh.Adapters.Mandrill do
 
   @base_url     "https://mandrillapp.com/api/1.0"
   @api_endpoint "/messages/send.json"
+  @template_api_endpoint "/messages/send-template.json"
   @headers      [{"Content-Type", "application/json"}]
 
   def deliver(%Email{} = email, config \\ []) do
     body = email |> prepare_body(config) |> Poison.encode!
-    url = [base_url(config), @api_endpoint]
+    url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, @headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
@@ -47,9 +63,14 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
+  defp api_endpoint(%{provider_options: %{template_name: _template_name}}), do: @template_api_endpoint
+  defp api_endpoint(_email), do: @api_endpoint
+
   defp prepare_body(email, config) do
     %{message: prepare_message(email)}
     |> set_async(email)
+    |> set_template_name(email)
+    |> set_template_content(email)
     |> set_api_key(config)
   end
 
@@ -64,6 +85,8 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_bcc(email)
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
+    |> prepare_global_merge_vars(email)
+    |> prepare_merge_vars(email)
     |> prepare_custom_headers(email)
   end
 
@@ -103,9 +126,9 @@ defmodule Swoosh.Adapters.Mandrill do
   end
 
   defp prepare_attachments_structure(attachments) do
-    Enum.map(attachments, fn %{content_type: type, path: path, filename: filename} ->
-      content = path |> File.read! |> Base.encode64
-      %{type: type, name: filename, content: content}
+    Enum.map(attachments, fn attachment ->
+      content = Swoosh.Attachment.get_content(attachment, :base64)
+      %{type: attachment.content_type, name: attachment.filename, content: content}
     end)
   end
 
@@ -128,6 +151,29 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
+
+  defp set_template_name(body, %{provider_options: %{template_name: template_name}}) do
+    Map.put(body, :template_name, template_name)
+  end
+  defp set_template_name(body, _email), do: body
+
+  defp set_template_content(body, %{provider_options: %{template_content: template_content}}) do
+    Map.put(body, :template_content, template_content)
+  end
+  defp set_template_content(body, %{provider_options: %{template_name: _template_name}}) do
+    Map.put(body, :template_content, [%{name: "", content: ""}])
+  end
+  defp set_template_content(body, _email), do: body
+
+  defp prepare_global_merge_vars(body, %{provider_options: %{global_merge_vars: global_merge_vars}}) do
+    Map.put(body, :global_merge_vars, global_merge_vars)
+  end
+  defp prepare_global_merge_vars(body, _email), do: body
+
+  defp prepare_merge_vars(body, %{provider_options: %{merge_vars: merge_vars}}) do
+    Map.put(body, :merge_vars, merge_vars)
+  end
+  defp prepare_merge_vars(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
   defp prepare_custom_headers(body, %{headers: headers}) do

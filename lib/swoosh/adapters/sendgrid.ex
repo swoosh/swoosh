@@ -31,13 +31,19 @@ defmodule Swoosh.Adapters.Sendgrid do
     body = email |> prepare_body() |> Poison.encode!
     url = [base_url(config), @api_endpoint]
     case :hackney.post(url, headers, body, [:with_body]) do
-      {:ok, code, _headers, _body} when code >= 200 and code <= 399 ->
-        {:ok, %{}}
+      {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
+        {:ok, %{id: extract_id(headers)}}
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, body}}
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  defp extract_id(headers) do
+    headers
+    |> Enum.into(%{})
+    |> Map.get("X-Message-Id")
   end
 
   defp base_url(config), do: config[:base_url] || @base_url
@@ -106,12 +112,20 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   defp prepare_attachments(body, %{attachments: []}), do: body
   defp prepare_attachments(body, %{attachments: attachments}) do
-    attachments = Enum.map(attachments, fn %{content_type: content_type, path: path, filename: filename, type: type} ->
-      content = path |> File.read! |> Base.encode64
-      case type do
-        :inline -> %{type: content_type, filename: filename, content: content, disposition: "inline", content_id: filename}
-        _ -> %{type: content_type, filename: filename, content: content}
-      end
+    attachments = Enum.map(attachments, fn attachment ->
+      attachment_info = %{
+        filename: attachment.filename,
+        type: attachment.content_type,
+        content: Swoosh.Attachment.get_content(attachment, :base64)
+      }
+
+      extra =
+        case attachment.type do
+          :inline -> %{disposition: "inline", content_id: attachment.filename}
+          :attachment -> %{disposition: "attachment"}
+        end
+
+      Map.merge(attachment_info, extra)
     end)
 
     Map.put(body, :attachments, attachments)

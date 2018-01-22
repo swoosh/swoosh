@@ -84,7 +84,6 @@ defmodule Swoosh.Mailer do
         case deliver(email, config) do
           {:ok, result} -> result
           {:error, reason} -> raise DeliveryError, reason: reason
-          {:error, reason, payload} -> raise DeliveryError, reason: reason, payload: payload
         end
       end
     end

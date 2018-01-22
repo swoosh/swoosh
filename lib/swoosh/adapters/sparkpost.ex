@@ -119,8 +119,12 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp prepare_attachments(attachments) do
-    Enum.map(attachments, fn %{content_type: type, path: path, filename: name} ->
-      %{type: type, name: name, data: path |> File.read! |> Base.encode64}
+    Enum.map(attachments, fn attachment ->
+      %{
+        type: attachment.content_type,
+        name: attachment.filename,
+        data: Swoosh.Attachment.get_content(attachment, :base64)
+      }
     end)
   end
 

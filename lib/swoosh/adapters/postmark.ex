@@ -88,7 +88,7 @@ defmodule Swoosh.Adapters.Postmark do
     attachment_data = %{
       "Name"        => attachment.filename,
       "ContentType" => attachment.content_type,
-      "Content"     => attachment.path |> File.read! |> Base.encode64,
+      "Content"     => Swoosh.Attachment.get_content(attachment, :base64)
     }
 
     case attachment.type do
