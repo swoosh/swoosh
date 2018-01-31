@@ -177,7 +177,7 @@ Feels familiar doesn't it? Head to the [phoenix_swoosh](https://github.com/swoos
 ## Attachments
 
 You can attach files to your email using the `Swoosh.Email.attachment/2` function. Just give the path of your
-file as an argument and we will do the rest. It also works with a `%Plug.Upload{}` struct.
+file as an argument and we will do the rest. It also works with a `%Plug.Upload{}` struct, or a `%Swoosh.Attachment{}` struct, which can be constructed using `Swoosh.Attachment.new` detailed here in the [docs](https://hexdocs.pm/swoosh/Swoosh.Attachment.html#new/2).
 
 All built-in adapters have support for attachments.
 
