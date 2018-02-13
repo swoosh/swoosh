@@ -18,13 +18,16 @@ if Code.ensure_loaded?(:gen_smtp_client) do
           relay: "smtp.avengers.com",
           username: "tonystark",
           password: "ilovepepperpotts",
+          ssl: true,
           tls: :always,
           auth: :always,
           port: 1025,
           dkim: [
             s: "default", d: "domain.com",
             private_key: {:pem_plain, File.read!("priv/keys/domain.private")}
-          ]
+          ],
+          retries: 2,
+          no_mx_lookups: false
 
         # lib/sample/mailer.ex
         defmodule Sample.Mailer do
@@ -57,7 +60,8 @@ if Code.ensure_loaded?(:gen_smtp_client) do
       retries: &String.to_integer/1,
       ssl: {&String.to_atom/1, [true, false]},
       tls: {&String.to_atom/1, [:always, :never, :if_available]},
-      auth: {&String.to_atom/1, [:always, :if_available]}
+      auth: {&String.to_atom/1, [:always, :if_available]},
+      no_mx_lookups: {&String.to_atom/1, [true, false]}
     }
     @config_keys Map.keys(@config_transformations)
 
