@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.13.1 - Unreleased
+
+### Added
+
+* SMTP Adapter now accepts `:no_mx_lookups` option ([#203](https://github.com/swoosh/swoosh/pull/203), thanks @sergioaugrod)
+
 ## v0.13.0 - 2018-01-18
 
 ### Added
