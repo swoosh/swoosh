@@ -63,7 +63,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -104,7 +104,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -179,7 +179,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     end
   end
 
-  test "delivery/1 with template_name calls send-template endpoint", %{bypass: bypass, config: config} do
+  test "deliver/1 with template_name calls send-template endpoint", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -200,7 +200,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with template_name but without template_content returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with template_name but without template_content returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -233,7 +233,7 @@ defmodule Swoosh.Adapters.MandrillTest do
   end
 
 
-  test "delivery/1 with template_content and template_content returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with template_content and template_content returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -266,7 +266,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with template_name returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with template_name returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -298,7 +298,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with global_merge_vars returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with global_merge_vars returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -333,7 +333,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with merge_vars returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with merge_vars returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -374,7 +374,7 @@ defmodule Swoosh.Adapters.MandrillTest do
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
 
-  test "delivery/1 with metadata returns :ok", %{bypass: bypass, config: config} do
+  test "deliver/1 with metadata returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
