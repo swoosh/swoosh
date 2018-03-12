@@ -55,11 +55,7 @@ defmodule Swoosh.Adapters.SparkPost do
     subject: subject,
     text_body: text,
     html_body: html,
-    attachments: attachments
   } = email) do
-    {normal_attachments, inline_attachments} =
-      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
-
     %{
       content: %{
         from: %{
@@ -70,8 +66,6 @@ defmodule Swoosh.Adapters.SparkPost do
         text: text,
         html: html,
         headers: %{},
-        attachments: prepare_attachments(normal_attachments),
-        inline_images: prepare_attachments(inline_attachments)
       },
       recipients: prepare_recipients(to, to)
     }
@@ -79,6 +73,7 @@ defmodule Swoosh.Adapters.SparkPost do
     |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_custom_headers(email)
+    |> prepare_attachments(email)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
@@ -118,14 +113,24 @@ defmodule Swoosh.Adapters.SparkPost do
     mailboxes |> Enum.map(fn {_name, address} -> address end) |> Enum.join(",")
   end
 
-  defp prepare_attachments(attachments) do
-    Enum.map(attachments, fn attachment ->
-      %{
-        type: attachment.content_type,
-        name: attachment.filename,
-        data: Swoosh.Attachment.get_content(attachment, :base64)
-      }
-    end)
+  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(body, %{attachments: attachments}) do
+    {standalone_attachments, inline_attachments} =
+      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
+  
+    body
+    |> inject_attachments(:attachments, standalone_attachments)
+    |> inject_attachments(:inline_images, inline_attachments)
+  end
+  
+  defp inject_attachments(body, _key, []), do: body
+  defp inject_attachments(body, key, attachments) do
+    Map.put(body, key, Enum.map(
+      attachments,
+      fn %{content_type: type, filename: name} = attachment ->
+        %{type: type, name: name, data: Swoosh.Attachment.get_content(attachment, :base64)}
+      end
+    ))
   end
 
   defp prepare_custom_headers(body, %{headers: headers}) do
