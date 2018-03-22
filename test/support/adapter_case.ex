@@ -9,7 +9,7 @@ defmodule AdapterCase do
         opts =
           opts
           |> Keyword.put_new(:parsers, [Plug.Parsers.URLENCODED, Plug.Parsers.JSON])
-          |> Keyword.put_new(:json_decoder, Poison)
+          |> Keyword.put_new(:json_decoder, Jason)
 
         Plug.Parsers.call(conn, Plug.Parsers.init(opts))
       end

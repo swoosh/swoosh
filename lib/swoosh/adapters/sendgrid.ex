@@ -28,7 +28,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     headers = [{"Content-Type", "application/json"},
                {"User-Agent", "swoosh/#{Swoosh.version}"},
                {"Authorization", "Bearer #{config[:api_key]}"}]
-    body = email |> prepare_body() |> Poison.encode!
+    body = email |> prepare_body() |> Jason.encode!
     url = [base_url(config), @api_endpoint]
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, code, headers, _body} when code >= 200 and code <= 399 ->

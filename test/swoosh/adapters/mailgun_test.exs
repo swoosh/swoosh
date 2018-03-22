@@ -98,7 +98,7 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "from" => "tony.stark@example.com",
                       "html" => "<h1>Hello</h1>",
                       "v:my_var" => "{\"my_message_id\":123}",
-                      "v:my_other_var" => "{\"stuff\":2,\"my_other_id\":1}"}
+                      "v:my_other_var" => "{\"my_other_id\":1,\"stuff\":2}"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method
@@ -125,7 +125,7 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "to" => "steve.rogers@example.com, juan.diaz@example.com",
                       "from" => "tony.stark@example.com",
                       "html" => "<h1>Hello</h1>",
-                      "recipient-variables" => "{\"steve.rogers@example.com\":{\"var1\":123},\"juan.diaz@example.com\":{\"var1\":456}}"}
+                      "recipient-variables" => "{\"juan.diaz@example.com\":{\"var1\":456},\"steve.rogers@example.com\":{\"var1\":123}}"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method

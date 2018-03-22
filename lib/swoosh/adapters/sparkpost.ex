@@ -28,14 +28,14 @@ defmodule Swoosh.Adapters.SparkPost do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
-    body = email |> prepare_body |> Poison.encode!
+    body = email |> prepare_body |> Jason.encode!
     url = [endpoint(config), "/transmissions"]
 
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, Poison.decode!(body)}
+        {:ok, Jason.decode!(body)}
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
+        {:error, {code, Jason.decode!(body)}}
       {:error, reason} ->
         {:error, reason}
     end

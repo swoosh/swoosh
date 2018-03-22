@@ -42,20 +42,20 @@ defmodule Swoosh.Adapters.Mandrill do
   @headers      [{"Content-Type", "application/json"}]
 
   def deliver(%Email{} = email, config \\ []) do
-    body = email |> prepare_body(config) |> Poison.encode!
+    body = email |> prepare_body(config) |> Jason.encode!
     url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, @headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
         parse_response(body)
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
+        {:error, {code, Jason.decode!(body)}}
       {:error, reason} ->
         {:error, reason}
     end
   end
 
-  defp parse_response(body) when is_binary(body), do: body |> Poison.decode! |> hd |> parse_response
+  defp parse_response(body) when is_binary(body), do: body |> Jason.decode! |> hd |> parse_response
   defp parse_response(%{"status" => "sent"} = body), do: {:ok, %{id: body["_id"]}}
   defp parse_response(%{"status" => "queued"} = body), do: {:ok, %{id: body["_id"]}}
   defp parse_response(%{"status" => "rejected"} = body), do: {:error, body}

@@ -27,14 +27,14 @@ defmodule Swoosh.Adapters.Postmark do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params = email |> prepare_body |> Poison.encode!
+    params = email |> prepare_body |> Jason.encode!
     url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, headers, params, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, %{id: Poison.decode!(body)["MessageID"]}}
+        {:ok, %{id: Jason.decode!(body)["MessageID"]}}
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Poison.decode!(body)}}
+        {:error, {code, Jason.decode!(body)}}
       {:error, reason} ->
         {:error, reason}
     end

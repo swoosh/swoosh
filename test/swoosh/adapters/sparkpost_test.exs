@@ -60,7 +60,7 @@ defmodule Swoosh.Adapters.SparkPostTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end
 
-    assert {:ok, Poison.decode!(@success_response)} == SparkPost.deliver(email, config)
+    assert {:ok, Jason.decode!(@success_response)} == SparkPost.deliver(email, config)
   end
 
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
@@ -147,7 +147,7 @@ defmodule Swoosh.Adapters.SparkPostTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end
 
-    assert {:ok, Poison.decode!(@success_response)} == SparkPost.deliver(email, config)
+    assert {:ok, Jason.decode!(@success_response)} == SparkPost.deliver(email, config)
   end
 
   test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
@@ -208,7 +208,7 @@ defmodule Swoosh.Adapters.SparkPostTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end
 
-    assert {:ok, Poison.decode!(@success_response)} == SparkPost.deliver(email, config)
+    assert {:ok, Jason.decode!(@success_response)} == SparkPost.deliver(email, config)
   end
 
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
