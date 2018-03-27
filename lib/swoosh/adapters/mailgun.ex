@@ -23,7 +23,7 @@ defmodule Swoosh.Adapters.Mailgun do
   alias Swoosh.Email
   import Swoosh.Email.Render
 
-  @base_url     "https://api.mailgun.net/v3"
+  @base_url "https://api.mailgun.net/v3"
   @api_endpoint "/messages"
 
   def deliver(%Email{} = email, config \\ []) do
@@ -32,13 +32,17 @@ defmodule Swoosh.Adapters.Mailgun do
 
     case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, %{id: Swoosh.json_library.decode!(body)["id"]}}
+        {:ok, %{id: Swoosh.json_library().decode!(body)["id"]}}
+
       {:ok, 401, _headers, body} ->
         {:error, {401, body}}
+
       {:ok, code, _headers, ""} when code > 399 ->
         {:error, {code, ""}}
+
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library.decode!(body)}}
+        {:error, {code, Swoosh.json_library().decode!(body)}}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -47,9 +51,11 @@ defmodule Swoosh.Adapters.Mailgun do
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_headers(email, config) do
-    [{"User-Agent", "swoosh/#{Swoosh.version}"},
-     {"Authorization", "Basic #{auth(config)}"},
-     {"Content-Type", content_type(email)}]
+    [
+      {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"Authorization", "Basic #{auth(config)}"},
+      {"Content-Type", content_type(email)}
+    ]
   end
 
   defp auth(config), do: Base.encode64("api:#{config[:api_key]}")
@@ -79,13 +85,17 @@ defmodule Swoosh.Adapters.Mailgun do
   # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
   defp prepare_custom_vars(body, %{provider_options: %{custom_vars: custom_vars}}) do
-    Enum.reduce(custom_vars, body, fn {k, v}, body -> Map.put(body, "v:#{k}", Swoosh.json_library.encode!(v)) end)
+    Enum.reduce(custom_vars, body, fn {k, v}, body ->
+      Map.put(body, "v:#{k}", Swoosh.json_library().encode!(v))
+    end)
   end
+
   defp prepare_custom_vars(body, _email), do: body
 
   defp prepare_recipient_vars(body, %{provider_options: %{recipient_vars: recipient_vars}}) do
-    Map.put(body, "recipient-variables", Swoosh.json_library.encode!(recipient_vars))
+    Map.put(body, "recipient-variables", Swoosh.json_library().encode!(recipient_vars))
   end
+
   defp prepare_recipient_vars(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
@@ -93,6 +103,7 @@ defmodule Swoosh.Adapters.Mailgun do
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
     {normal_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
@@ -104,9 +115,7 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_file(attachment, type) do
     {:file, attachment.path,
-     {"form-data",
-      [{~s/"name"/, ~s/"#{type}"/},
-       {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
+     {"form-data", [{~s/"name"/, ~s/"#{type}"/}, {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
      []}
   end
 
@@ -115,7 +124,9 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_to(body, %{to: to}), do: Map.put(body, :to, render_recipient(to))
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "h:Reply-To", address)
+
+  defp prepare_reply_to(body, %{reply_to: {_name, address}}),
+    do: Map.put(body, "h:Reply-To", address)
 
   defp prepare_cc(body, %{cc: []}), do: body
   defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, render_recipient(cc))
@@ -137,8 +148,8 @@ defmodule Swoosh.Adapters.Mailgun do
      |> Map.drop([:attachments, :inline])
      |> Enum.map(fn {k, v} -> {to_string(k), v} end)
      |> Kernel.++(attachments)
-     |> Kernel.++(inline)
-    }
+     |> Kernel.++(inline)}
   end
+
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
 end

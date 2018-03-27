@@ -71,15 +71,17 @@ defmodule Swoosh.Mailer do
       @otp_app Keyword.fetch!(opts, :otp_app)
       @mailer_config opts
 
-      @spec deliver(Swoosh.Email.t, Keyword.t) :: {:ok, term} | {:error, term}
+      @spec deliver(Swoosh.Email.t(), Keyword.t()) :: {:ok, term} | {:error, term}
       def deliver(email, config \\ [])
+
       def deliver(email, config) do
         config = Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
         Mailer.deliver(email, config)
       end
 
-      @spec deliver!(Swoosh.Email.t, Keyword.t) :: term | no_return
+      @spec deliver!(Swoosh.Email.t(), Keyword.t()) :: term | no_return
       def deliver!(email, config \\ [])
+
       def deliver!(email, config) do
         case deliver(email, config) do
           {:ok, result} -> result
@@ -92,10 +94,12 @@ defmodule Swoosh.Mailer do
   def deliver(%Swoosh.Email{from: nil}, _config) do
     {:error, :from_not_set}
   end
+
   def deliver(%Swoosh.Email{from: {_name, address}}, _config)
       when address in ["", nil] do
     {:error, :from_not_set}
   end
+
   def deliver(%Swoosh.Email{} = email, config) do
     adapter = Keyword.fetch!(config, :adapter)
 
@@ -115,7 +119,7 @@ defmodule Swoosh.Mailer do
     Application.get_env(otp_app, mailer, [])
     |> Keyword.merge(mailer_config)
     |> Keyword.merge(dynamic_config)
-    |> Swoosh.Mailer.interpolate_env_vars
+    |> Swoosh.Mailer.interpolate_env_vars()
   end
 
   @doc """
@@ -125,10 +129,9 @@ defmodule Swoosh.Mailer do
   respective values grabbed from the process environment.
   """
   def interpolate_env_vars(config) do
-    Enum.map config, fn
+    Enum.map(config, fn
       {key, {:system, env_var}} -> {key, System.get_env(env_var)}
       {key, value} -> {key, value}
-    end
+    end)
   end
 end
-

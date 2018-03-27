@@ -36,26 +36,30 @@ defmodule Swoosh.Adapters.Mandrill do
 
   alias Swoosh.Email
 
-  @base_url     "https://mandrillapp.com/api/1.0"
+  @base_url "https://mandrillapp.com/api/1.0"
   @api_endpoint "/messages/send.json"
   @template_api_endpoint "/messages/send-template.json"
-  @headers      [{"Content-Type", "application/json"}]
+  @headers [{"Content-Type", "application/json"}]
 
   def deliver(%Email{} = email, config \\ []) do
-    body = email |> prepare_body(config) |> Swoosh.json_library.encode!
+    body = email |> prepare_body(config) |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, @headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
         parse_response(body)
+
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library.decode!(body)}}
+        {:error, {code, Swoosh.json_library().decode!(body)}}
+
       {:error, reason} ->
         {:error, reason}
     end
   end
 
-  defp parse_response(body) when is_binary(body), do: body |> Swoosh.json_library.decode! |> hd |> parse_response
+  defp parse_response(body) when is_binary(body),
+    do: body |> Swoosh.json_library().decode! |> hd |> parse_response
+
   defp parse_response(%{"status" => "sent"} = body), do: {:ok, %{id: body["_id"]}}
   defp parse_response(%{"status" => "queued"} = body), do: {:ok, %{id: body["_id"]}}
   defp parse_response(%{"status" => "rejected"} = body), do: {:error, body}
@@ -63,7 +67,9 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  defp api_endpoint(%{provider_options: %{template_name: _template_name}}), do: @template_api_endpoint
+  defp api_endpoint(%{provider_options: %{template_name: _template_name}}),
+    do: @template_api_endpoint
+
   defp api_endpoint(_email), do: @api_endpoint
 
   defp prepare_body(email, config) do
@@ -97,6 +103,7 @@ defmodule Swoosh.Adapters.Mandrill do
   defp set_async(body, _email), do: body
 
   defp prepare_from(body, %{from: {nil, address}}), do: Map.put(body, :from_email, address)
+
   defp prepare_from(body, %{from: {name, address}}) do
     body
     |> Map.put(:from_name, name)
@@ -106,6 +113,7 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_to(body, %{to: to}), do: prepare_recipients(body, to)
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
+
   defp prepare_reply_to(body, %{reply_to: {_name, address}}) do
     Map.put(body, :headers, %{"Reply-To" => address})
   end
@@ -117,6 +125,7 @@ defmodule Swoosh.Adapters.Mandrill do
   defp prepare_bcc(body, %{bcc: bcc}), do: prepare_recipients(body, bcc, "bcc")
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
     {normal_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
@@ -156,34 +165,43 @@ defmodule Swoosh.Adapters.Mandrill do
   defp set_template_name(body, %{provider_options: %{template_name: template_name}}) do
     Map.put(body, :template_name, template_name)
   end
+
   defp set_template_name(body, _email), do: body
 
   defp set_template_content(body, %{provider_options: %{template_content: template_content}}) do
     Map.put(body, :template_content, template_content)
   end
+
   defp set_template_content(body, %{provider_options: %{template_name: _template_name}}) do
     Map.put(body, :template_content, [%{name: "", content: ""}])
   end
+
   defp set_template_content(body, _email), do: body
 
-  defp prepare_global_merge_vars(body, %{provider_options: %{global_merge_vars: global_merge_vars}}) do
+  defp prepare_global_merge_vars(body, %{
+         provider_options: %{global_merge_vars: global_merge_vars}
+       }) do
     Map.put(body, :global_merge_vars, global_merge_vars)
   end
+
   defp prepare_global_merge_vars(body, _email), do: body
 
   defp prepare_merge_vars(body, %{provider_options: %{merge_vars: merge_vars}}) do
     Map.put(body, :merge_vars, merge_vars)
   end
+
   defp prepare_merge_vars(body, _email), do: body
 
   defp prepare_metadata(body, %{provider_options: %{metadata: metadata}}) do
     Map.put(body, :metadata, metadata)
   end
+
   defp prepare_metadata(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
+
   defp prepare_custom_headers(body, %{headers: headers}) do
-    custom_headers =  Map.merge(body[:headers] || %{}, headers)
+    custom_headers = Map.merge(body[:headers] || %{}, headers)
     Map.put(body, :headers, custom_headers)
   end
 end

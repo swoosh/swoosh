@@ -10,16 +10,19 @@ defmodule Swoosh.Adapter do
       @behaviour Swoosh.Adapter
 
       def validate_config(config) do
-        missing_keys = Enum.reduce(@required_config, [], fn(key, missing_keys) ->
-          if config[key] in [nil, ""], do: [key | missing_keys], else: missing_keys
-        end)
+        missing_keys =
+          Enum.reduce(@required_config, [], fn key, missing_keys ->
+            if config[key] in [nil, ""], do: [key | missing_keys], else: missing_keys
+          end)
+
         raise_on_missing_config(missing_keys, config)
       end
 
       defp raise_on_missing_config([], _config), do: :ok
+
       defp raise_on_missing_config(key, config) do
         raise ArgumentError, """
-        expected #{inspect key} to be set, got: #{inspect config}
+        expected #{inspect(key)} to be set, got: #{inspect(config)}
         """
       end
     end
@@ -27,9 +30,9 @@ defmodule Swoosh.Adapter do
 
   @type t :: module
 
-  @type email :: Email.t
+  @type email :: Email.t()
 
-  @typep config :: Keyword.t
+  @typep config :: Keyword.t()
 
   @doc """
   Delivers an email with the given config.

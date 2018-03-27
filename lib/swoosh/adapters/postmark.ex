@@ -22,19 +22,21 @@ defmodule Swoosh.Adapters.Postmark do
   alias Swoosh.Email
   import Swoosh.Email.Render
 
-  @base_url     "https://api.postmarkapp.com"
+  @base_url "https://api.postmarkapp.com"
   @api_endpoint "/email"
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params = email |> prepare_body |> Swoosh.json_library.encode!
+    params = email |> prepare_body |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
     case :hackney.post(url, headers, params, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, %{id: Swoosh.json_library.decode!(body)["MessageID"]}}
+        {:ok, %{id: Swoosh.json_library().decode!(body)["MessageID"]}}
+
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library.decode!(body)}}
+        {:error, {code, Swoosh.json_library().decode!(body)}}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -43,16 +45,18 @@ defmodule Swoosh.Adapters.Postmark do
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_headers(config) do
-    [{"User-Agent", "swoosh/#{Swoosh.version}"},
-     {"X-Postmark-Server-Token", config[:api_key]},
-     {"Content-Type", "application/json"},
-     {"Accept", "application/json"}]
+    [
+      {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"X-Postmark-Server-Token", config[:api_key]},
+      {"Content-Type", "application/json"},
+      {"Accept", "application/json"}
+    ]
   end
 
   defp api_endpoint(%{provider_options: %{template_id: _, template_model: _}}),
     do: @api_endpoint <> "/withTemplate"
-  defp api_endpoint(_email),
-    do: @api_endpoint
+
+  defp api_endpoint(_email), do: @api_endpoint
 
   defp prepare_body(email) do
     %{}
@@ -80,27 +84,31 @@ defmodule Swoosh.Adapters.Postmark do
   defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", render_recipient(bcc))
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
     Map.put(body, "Attachments", Enum.map(attachments, &prepare_attachment/1))
   end
 
   defp prepare_attachment(attachment) do
     attachment_data = %{
-      "Name"        => attachment.filename,
+      "Name" => attachment.filename,
       "ContentType" => attachment.content_type,
-      "Content"     => Swoosh.Attachment.get_content(attachment, :base64)
+      "Content" => Swoosh.Attachment.get_content(attachment, :base64)
     }
 
     case attachment.type do
       :attachment ->
         attachment_data
+
       :inline ->
         Map.put(attachment_data, "ContentID", "cid:#{attachment.filename}")
     end
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, "ReplyTo", address)
+
+  defp prepare_reply_to(body, %{reply_to: {_name, address}}),
+    do: Map.put(body, "ReplyTo", address)
 
   defp prepare_subject(body, %{subject: ""}), do: body
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)
@@ -119,15 +127,15 @@ defmodule Swoosh.Adapters.Postmark do
   # }
   defp prepare_template(body, %{provider_options: provider_options}),
     do: Enum.reduce(provider_options, body, &put_in_body/2)
+
   defp prepare_template(body, _email), do: body
 
-  defp put_in_body({:template_model, val}, body_acc),
-    do: Map.put(body_acc, "TemplateModel", val)
-  defp put_in_body({:template_id, val}, body_acc),
-    do: Map.put(body_acc, "TemplateId", val)
+  defp put_in_body({:template_model, val}, body_acc), do: Map.put(body_acc, "TemplateModel", val)
+  defp put_in_body({:template_id, val}, body_acc), do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body(_, body_acc), do: body_acc
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
+
   defp prepare_custom_headers(body, %{headers: headers}) do
     custom_headers = Enum.map(headers, fn {k, v} -> %{"Name" => k, "Value" => v} end)
     Map.put(body, "Headers", custom_headers)

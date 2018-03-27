@@ -55,30 +55,42 @@ defmodule Swoosh.Email do
 
   import Swoosh.Email.Format
 
-  defstruct subject: "", from: nil, to: [], cc: [], bcc: [], text_body: nil,
-            html_body: nil, attachments: [], reply_to: nil, headers: %{},
-            private: %{}, assigns: %{}, provider_options: %{}
+  defstruct subject: "",
+            from: nil,
+            to: [],
+            cc: [],
+            bcc: [],
+            text_body: nil,
+            html_body: nil,
+            attachments: [],
+            reply_to: nil,
+            headers: %{},
+            private: %{},
+            assigns: %{},
+            provider_options: %{}
 
-  @type name :: String.t
-  @type address :: String.t
+  @type name :: String.t()
+  @type address :: String.t()
   @type mailbox :: {name, address}
-  @type subject :: String.t
-  @type text_body :: String.t
-  @type html_body :: String.t
+  @type subject :: String.t()
+  @type text_body :: String.t()
+  @type html_body :: String.t()
 
-  @type t :: %__MODULE__{subject: String.t,
-                         from: mailbox | nil,
-                         to: [mailbox],
-                         cc: [mailbox] | [],
-                         bcc: [mailbox] | [],
-                         text_body: text_body | nil,
-                         html_body: html_body | nil,
-                         reply_to: mailbox | nil,
-                         headers: map,
-                         private: map,
-                         assigns: map,
-                         attachments: [Swoosh.Attachment.t],
-                         provider_options: map}
+  @type t :: %__MODULE__{
+          subject: String.t(),
+          from: mailbox | nil,
+          to: [mailbox],
+          cc: [mailbox] | [],
+          bcc: [mailbox] | [],
+          text_body: text_body | nil,
+          html_body: html_body | nil,
+          reply_to: mailbox | nil,
+          headers: map,
+          private: map,
+          assigns: map,
+          attachments: [Swoosh.Attachment.t()],
+          provider_options: map
+        }
 
   @doc ~S"""
   Returns a `Swoosh.Email` struct.
@@ -145,24 +157,36 @@ defmodule Swoosh.Email do
       iex> new(to: "steve.rogers@example.com", subject: "Hello, Avengers!")
       %Swoosh.Email{to: [{"", "steve.rogers@example.com"}], subject: "Hello, Avengers!"}
   """
-  @spec new(none | Enum.t) :: t
+  @spec new(none | Enum.t()) :: t
   def new(opts \\ []) do
-    Enum.reduce opts,  %__MODULE__{}, &do_new/2
+    Enum.reduce(opts, %__MODULE__{}, &do_new/2)
   end
 
   defp do_new({key, value}, email)
-    when key in [:subject, :from, :to, :cc, :bcc, :reply_to, :text_body, :html_body, :attachment] do
+       when key in [
+              :subject,
+              :from,
+              :to,
+              :cc,
+              :bcc,
+              :reply_to,
+              :text_body,
+              :html_body,
+              :attachment
+            ] do
     apply(__MODULE__, key, [email, value])
   end
+
   defp do_new({key, value}, email)
-    when key in [:headers, :assigns, :provider_options] do
+       when key in [:headers, :assigns, :provider_options] do
     Map.put(email, key, value)
   end
+
   defp do_new({key, value}, _email) do
-    raise ArgumentError, message:
-    """
-    invalid field `#{inspect key}` (value=#{inspect value}) for Swoosh.Email.new/1.
-    """
+    raise ArgumentError,
+      message: """
+      invalid field `#{inspect(key)}` (value=#{inspect(value)}) for Swoosh.Email.new/1.
+      """
   end
 
   @doc """
@@ -227,7 +251,7 @@ defmodule Swoosh.Email do
        text_body: nil, to: []}
   """
   @spec subject(t, subject) :: t
-  def subject(email, subject), do: %{email|subject: subject}
+  def subject(email, subject), do: %{email | subject: subject}
 
   @doc """
   Sets the `text_body` field.
@@ -243,7 +267,7 @@ defmodule Swoosh.Email do
        text_body: "Hello", to: []}
   """
   @spec text_body(t, text_body | nil) :: t
-  def text_body(email, text_body), do: %{email|text_body: text_body}
+  def text_body(email, text_body), do: %{email | text_body: text_body}
 
   @doc """
   Sets the `html_body` field.
@@ -259,7 +283,7 @@ defmodule Swoosh.Email do
        text_body: nil, to: []}
   """
   @spec html_body(t, html_body | nil) :: t
-  def html_body(email, html_body), do: %{email|html_body: html_body}
+  def html_body(email, html_body), do: %{email | html_body: html_body}
 
   @doc """
   Adds new recipients in the `bcc` field.
@@ -273,14 +297,16 @@ defmodule Swoosh.Email do
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
   """
-  @spec bcc(t, mailbox | address | [mailbox|address]) :: t
+  @spec bcc(t, mailbox | address | [mailbox | address]) :: t
   def bcc(%__MODULE__{bcc: bcc} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
       |> Enum.map(&format_recipient(&1))
       |> Enum.concat(bcc)
+
     %{email | bcc: recipients}
   end
+
   def bcc(%__MODULE__{} = email, recipient) do
     bcc(email, [recipient])
   end
@@ -290,10 +316,11 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `bcc` recipients.
   """
-  @spec put_bcc(t, mailbox | address | [mailbox|address]) :: t
+  @spec put_bcc(t, mailbox | address | [mailbox | address]) :: t
   def put_bcc(%__MODULE__{} = email, recipients) when is_list(recipients) do
     %{email | bcc: Enum.map(recipients, &format_recipient(&1))}
   end
+
   def put_bcc(%__MODULE__{} = email, recipient) do
     put_bcc(email, [recipient])
   end
@@ -312,14 +339,16 @@ defmodule Swoosh.Email do
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
   """
-  @spec cc(t, mailbox | address | [mailbox|address]) :: t
+  @spec cc(t, mailbox | address | [mailbox | address]) :: t
   def cc(%__MODULE__{cc: cc} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
       |> Enum.map(&format_recipient(&1))
       |> Enum.concat(cc)
+
     %{email | cc: recipients}
   end
+
   def cc(%__MODULE__{} = email, recipient) do
     cc(email, [recipient])
   end
@@ -329,10 +358,11 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `cc` recipients.
   """
-  @spec put_cc(t, mailbox | address | [mailbox|address]) :: t
+  @spec put_cc(t, mailbox | address | [mailbox | address]) :: t
   def put_cc(%__MODULE__{} = email, recipients) when is_list(recipients) do
     %{email | cc: Enum.map(recipients, &format_recipient(&1))}
   end
+
   def put_cc(%__MODULE__{} = email, recipient) do
     put_cc(email, [recipient])
   end
@@ -351,14 +381,16 @@ defmodule Swoosh.Email do
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: [{"", "steve.rogers@example.com"}]}
   """
-  @spec to(t, mailbox | address | [mailbox|address]) :: t
+  @spec to(t, mailbox | address | [mailbox | address]) :: t
   def to(%__MODULE__{to: to} = email, recipients) when is_list(recipients) do
     recipients =
       recipients
       |> Enum.map(&format_recipient(&1))
       |> Enum.concat(to)
+
     %{email | to: recipients}
   end
+
   def to(%__MODULE__{} = email, recipient) do
     to(email, [recipient])
   end
@@ -368,10 +400,11 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `to` recipients.
   """
-  @spec put_to(t, mailbox | address | [mailbox|address]) :: t
+  @spec put_to(t, mailbox | address | [mailbox | address]) :: t
   def put_to(%__MODULE__{} = email, recipients) when is_list(recipients) do
     %{email | to: Enum.map(recipients, &format_recipient(&1))}
   end
+
   def put_to(%__MODULE__{} = email, recipient) do
     put_to(email, [recipient])
   end
@@ -388,19 +421,20 @@ defmodule Swoosh.Email do
        headers: %{"X-Magic-Number" => "7"}, html_body: nil, private: %{},
        provider_options: %{}, reply_to: nil, subject: "", text_body: nil, to: []}
   """
-  @spec header(t, String.t, String.t) :: t
+  @spec header(t, String.t(), String.t()) :: t
   def header(%__MODULE__{} = email, name, value) when is_binary(name) and is_binary(value) do
     put_in(email.headers[name], value)
   end
-  def header(%__MODULE__{}, name, value) do
-    raise ArgumentError, message:
-    """
-    header/3 expects the header name and value to be strings.
 
-    Instead it got:
-      name: `#{inspect name}`.
-      value: `#{inspect value}`.
-    """
+  def header(%__MODULE__{}, name, value) do
+    raise ArgumentError,
+      message: """
+      header/3 expects the header name and value to be strings.
+
+      Instead it got:
+        name: `#{inspect(name)}`.
+        value: `#{inspect(value)}`.
+      """
   end
 
   @doc ~S"""
@@ -435,7 +469,8 @@ defmodule Swoosh.Email do
        reply_to: nil, subject: "", text_body: nil, to: []}
   """
   @spec put_provider_option(t, atom, any) :: t
-  def put_provider_option(%__MODULE__{provider_options: provider_options} = email, key, value) when is_atom(key) do
+  def put_provider_option(%__MODULE__{provider_options: provider_options} = email, key, value)
+      when is_atom(key) do
     %{email | provider_options: Map.put(provider_options, key, value)}
   end
 
@@ -497,13 +532,15 @@ defmodule Swoosh.Email do
         content_type: "image/png", filename: "att.png",
         type: :inline, data: nil, headers: []}]}
   """
-  @spec attachment(t, binary | Swoosh.Attachment.t) :: t
+  @spec attachment(t, binary | Swoosh.Attachment.t()) :: t
   def attachment(%__MODULE__{attachments: attachments} = email, path) when is_binary(path) do
     %{email | attachments: [Swoosh.Attachment.new(path) | attachments]}
   end
+
   def attachment(%__MODULE__{attachments: attachments} = email, %Swoosh.Attachment{} = attachment) do
     %{email | attachments: [attachment | attachments]}
   end
+
   if Code.ensure_loaded?(Plug) do
     def attachment(%__MODULE__{attachments: attachments} = email, %Plug.Upload{} = upload) do
       %{email | attachments: [Swoosh.Attachment.new(upload) | attachments]}

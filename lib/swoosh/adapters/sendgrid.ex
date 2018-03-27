@@ -25,16 +25,22 @@ defmodule Swoosh.Adapters.Sendgrid do
   @api_endpoint "/mail/send"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = [{"Content-Type", "application/json"},
-               {"User-Agent", "swoosh/#{Swoosh.version}"},
-               {"Authorization", "Bearer #{config[:api_key]}"}]
-    body = email |> prepare_body() |> Swoosh.json_library.encode!
+    headers = [
+      {"Content-Type", "application/json"},
+      {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"Authorization", "Bearer #{config[:api_key]}"}
+    ]
+
+    body = email |> prepare_body() |> Swoosh.json_library().encode!
     url = [base_url(config), @api_endpoint]
+
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{id: extract_id(headers)}}
+
       {:ok, code, _headers, body} when code > 399 ->
         {:error, {code, body}}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -68,7 +74,8 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_from(body, %{from: from}), do: Map.put(body, :from, from |> email_item)
 
   defp prepare_personalizations(body, email) do
-    personalizations = %{}
+    personalizations =
+      %{}
       |> prepare_to(email)
       |> prepare_cc(email)
       |> prepare_bcc(email)
@@ -77,13 +84,19 @@ defmodule Swoosh.Adapters.Sendgrid do
 
     Map.put(body, :personalizations, [personalizations])
   end
-  defp prepare_to(personalizations, %{to: to}), do: Map.put(personalizations, :to, to |> Enum.map(&email_item(&1)))
+
+  defp prepare_to(personalizations, %{to: to}),
+    do: Map.put(personalizations, :to, to |> Enum.map(&email_item(&1)))
 
   defp prepare_cc(personalizations, %{cc: []}), do: personalizations
-  defp prepare_cc(personalizations, %{cc: cc}), do: Map.put(personalizations, :cc, cc |> Enum.map(&email_item(&1)))
+
+  defp prepare_cc(personalizations, %{cc: cc}),
+    do: Map.put(personalizations, :cc, cc |> Enum.map(&email_item(&1)))
 
   defp prepare_bcc(personalizations, %{bcc: []}), do: personalizations
-  defp prepare_bcc(personalizations, %{bcc: bcc}), do: Map.put(personalizations, :bcc, bcc |> Enum.map(&email_item(&1)))
+
+  defp prepare_bcc(personalizations, %{bcc: bcc}),
+    do: Map.put(personalizations, :bcc, bcc |> Enum.map(&email_item(&1)))
 
   # example custom_vars
   #
@@ -92,59 +105,72 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_custom_vars(personalizations, %{provider_options: %{custom_args: my_vars}}) do
     Map.put(personalizations, :custom_args, my_vars)
   end
+
   defp prepare_custom_vars(personalizations, _email), do: personalizations
 
-  defp prepare_substitutions(personalizations, %{provider_options: %{substitutions: substitutions}}) do
+  defp prepare_substitutions(personalizations, %{
+         provider_options: %{substitutions: substitutions}
+       }) do
     Map.put(personalizations, :substitutions, substitutions)
   end
+
   defp prepare_substitutions(personalizations, _email), do: personalizations
 
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
   defp prepare_content(body, %{html_body: html, text_body: text}) do
-    content = cond do
-      html && text -> [%{type: "text/plain", value: text}, %{type: "text/html", value: html}]
-      html -> [%{type: "text/html", value: html}]
-      text -> [%{type: "text/plain", value: text}]
-    end
+    content =
+      cond do
+        html && text -> [%{type: "text/plain", value: text}, %{type: "text/html", value: html}]
+        html -> [%{type: "text/html", value: html}]
+        text -> [%{type: "text/plain", value: text}]
+      end
+
     Map.put(body, :content, content)
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
-    attachments = Enum.map(attachments, fn attachment ->
-      attachment_info = %{
-        filename: attachment.filename,
-        type: attachment.content_type,
-        content: Swoosh.Attachment.get_content(attachment, :base64)
-      }
+    attachments =
+      Enum.map(attachments, fn attachment ->
+        attachment_info = %{
+          filename: attachment.filename,
+          type: attachment.content_type,
+          content: Swoosh.Attachment.get_content(attachment, :base64)
+        }
 
-      extra =
-        case attachment.type do
-          :inline -> %{disposition: "inline", content_id: attachment.filename}
-          :attachment -> %{disposition: "attachment"}
-        end
+        extra =
+          case attachment.type do
+            :inline -> %{disposition: "inline", content_id: attachment.filename}
+            :attachment -> %{disposition: "attachment"}
+          end
 
-      Map.merge(attachment_info, extra)
-    end)
+        Map.merge(attachment_info, extra)
+      end)
 
     Map.put(body, :attachments, attachments)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
-  defp prepare_reply_to(body, %{reply_to: reply_to}), do: Map.put(body, :reply_to, reply_to |> email_item)
+
+  defp prepare_reply_to(body, %{reply_to: reply_to}),
+    do: Map.put(body, :reply_to, reply_to |> email_item)
 
   defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
     Map.put(body, :template_id, template_id)
   end
+
   defp prepare_template_id(body, _email), do: body
 
   defp prepare_categories(body, %{provider_options: %{categories: categories}}) do
     Map.put(body, :categories, categories)
   end
+
   defp prepare_categories(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
+
   defp prepare_custom_headers(body, %{headers: headers}) do
     Map.put(body, :headers, headers)
   end

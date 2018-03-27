@@ -47,13 +47,13 @@ if Code.ensure_loaded?(:mimemail) do
     alias Swoosh.Adapters.XML.Helpers, as: XMLHelper
     alias Swoosh.Adapters.SMTP.Helpers, as: SMTPHelper
 
-    @encoding     "AWS4-HMAC-SHA256"
-    @host_prefix  "email."
-    @host_suffix  ".amazonaws.com"
+    @encoding "AWS4-HMAC-SHA256"
+    @host_prefix "email."
+    @host_suffix ".amazonaws.com"
     @service_name "ses"
-    @action       "SendRawEmail"
+    @action "SendRawEmail"
     @base_headers %{"Content-Type" => "application/x-www-form-urlencoded"}
-    @version      "2010-12-01"
+    @version "2010-12-01"
 
     def deliver(%Email{} = email, config \\ []) do
       query = email |> prepare_body(config) |> encode_body
@@ -63,8 +63,10 @@ if Code.ensure_loaded?(:mimemail) do
       case :hackney.post(url, headers, query, [:with_body]) do
         {:ok, 200, _headers, body} ->
           {:ok, parse_response(body)}
+
         {:ok, code, _headers, body} when code > 399 ->
           {:error, parse_error_response(body)}
+
         {_, reason} ->
           {:error, reason}
       end
@@ -102,14 +104,14 @@ if Code.ensure_loaded?(:mimemail) do
     end
 
     defp encode_body(body) do
-      body |> Enum.sort |> URI.encode_query
+      body |> Enum.sort() |> URI.encode_query()
     end
 
     defp generate_raw_message_data(email, config) do
       email
       |> SMTPHelper.body(config)
-      |> Base.encode64
-      |> URI.encode
+      |> Base.encode64()
+      |> URI.encode()
     end
 
     defp prepare_headers(headers, query, config) do
@@ -120,7 +122,7 @@ if Code.ensure_loaded?(:mimemail) do
       |> prepare_header_date(current_date_time)
       |> prepare_header_length(query)
       |> prepare_header_authorization(query, current_date_time, config)
-      |> Map.to_list
+      |> Map.to_list()
     end
 
     defp prepare_header_authorization(headers, query, current_date_time, config) do
@@ -133,19 +135,21 @@ if Code.ensure_loaded?(:mimemail) do
         |> generate_signing_string(config, current_date_time)
         |> generate_signature(current_date_time, config[:region], config[:secret])
 
-      authorization = prepare_authorization(config, signed_header_list, current_date_time, signature)
+      authorization =
+        prepare_authorization(config, signed_header_list, current_date_time, signature)
+
       Map.put(headers, "Authorization", authorization)
     end
 
     defp setup_headers_string(headers) do
       headers
-      |> Enum.sort
+      |> Enum.sort()
       |> Enum.map_join("\n", fn {k, v} -> "#{String.downcase(k)}:#{v}" end)
     end
 
     defp generate_signed_header_list(headers) do
       headers
-      |> Map.keys
+      |> Map.keys()
       |> Enum.map_join(";", &String.downcase/1)
     end
 
@@ -181,12 +185,17 @@ if Code.ensure_loaded?(:mimemail) do
 
     defp prepare_authorization(config, signed_header_list, date_time, signature) do
       date = amz_date(date_time)
-      credential = "#{config[:access_key]}/#{date}/#{config[:region]}/#{@service_name}/aws4_request"
-      "#{@encoding} Credential=#{credential}, SignedHeaders=#{signed_header_list}, Signature=#{signature}"
+
+      credential =
+        "#{config[:access_key]}/#{date}/#{config[:region]}/#{@service_name}/aws4_request"
+
+      "#{@encoding} Credential=#{credential}, SignedHeaders=#{signed_header_list}, Signature=#{
+        signature
+      }"
     end
 
     defp generate_signature(string_to_sign, date_time, region, secret) do
-      "AWS4" <> secret
+      ("AWS4" <> secret)
       |> encrypt_value(amz_date(date_time))
       |> encrypt_value(region)
       |> encrypt_value(@service_name)
@@ -208,21 +217,25 @@ if Code.ensure_loaded?(:mimemail) do
       |> Enum.join("\n")
     end
 
-    defp encrypt_value(secret, unencrypted_data), do: :crypto.hmac(:sha256, secret, unencrypted_data)
+    defp encrypt_value(secret, unencrypted_data),
+      do: :crypto.hmac(:sha256, secret, unencrypted_data)
 
     defp amz_date(dt) do
-      date_string = Enum.map_join(
-        [dt.month, dt.day],
-        &String.pad_leading(to_string(&1), 2, "0")
-      )
+      date_string =
+        Enum.map_join(
+          [dt.month, dt.day],
+          &String.pad_leading(to_string(&1), 2, "0")
+        )
 
       "#{dt.year}#{date_string}"
     end
+
     defp amz_datetime(dt) do
-      time_string = Enum.map_join(
-        [dt.hour, dt.minute, dt.second],
-        &String.pad_leading(to_string(&1), 2, "0")
-      )
+      time_string =
+        Enum.map_join(
+          [dt.hour, dt.minute, dt.second],
+          &String.pad_leading(to_string(&1), 2, "0")
+        )
 
       "#{amz_date(dt)}T#{time_string}Z"
     end

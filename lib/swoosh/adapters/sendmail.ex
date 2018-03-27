@@ -39,10 +39,12 @@ if Code.ensure_loaded?(:mimemail) do
 
     @doc false
     def cmd_path(config) do
-      default = case config[:qmail] do
-        true -> "/var/qmail/bin/qmail-inject"
-        _ -> "/usr/sbin/sendmail"
-      end
+      default =
+        case config[:qmail] do
+          true -> "/var/qmail/bin/qmail-inject"
+          _ -> "/usr/sbin/sendmail"
+        end
+
       config[:cmd_path] || default
     end
 

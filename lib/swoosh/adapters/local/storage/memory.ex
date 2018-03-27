@@ -117,19 +117,21 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   end
 
   def handle_call({:push, email}, _from, emails) do
-    id = :crypto.strong_rand_bytes(16) |> Base.encode16 |> String.downcase
+    id = :crypto.strong_rand_bytes(16) |> Base.encode16() |> String.downcase()
     email = email |> Swoosh.Email.header("Message-ID", id)
     {:reply, email, [email | emails]}
   end
 
-  def handle_call(:pop, _from, [h|t]) do
+  def handle_call(:pop, _from, [h | t]) do
     {:reply, h, t}
   end
 
   def handle_call({:get, id}, _from, emails) do
-    email = Enum.find(emails, fn %{headers: %{"Message-ID" => msg_id}} ->
-      msg_id == String.downcase(id)
-    end)
+    email =
+      Enum.find(emails, fn %{headers: %{"Message-ID" => msg_id}} ->
+        msg_id == String.downcase(id)
+      end)
+
     {:reply, email, emails}
   end
 

@@ -7,7 +7,7 @@ defmodule Swoosh.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(Swoosh.Adapters.Local.Storage.Memory, []),
+      worker(Swoosh.Adapters.Local.Storage.Memory, [])
     ]
 
     children =

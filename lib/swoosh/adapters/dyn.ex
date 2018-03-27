@@ -22,7 +22,7 @@ defmodule Swoosh.Adapters.Dyn do
   alias Swoosh.DeliveryError
   import Swoosh.Email.Render
 
-  @base_url     "https://emailapi.dynect.net"
+  @base_url "https://emailapi.dynect.net"
   @api_endpoint "rest/json/send"
 
   def deliver(%Email{} = email, config \\ []) do
@@ -45,13 +45,17 @@ defmodule Swoosh.Adapters.Dyn do
 
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, Swoosh.json_library.decode!(body)["response"]["message"]}
+        {:ok, Swoosh.json_library().decode!(body)["response"]["message"]}
+
       {:ok, 404, _headers, _body} ->
         {:error, "Not found"}
+
       {:ok, 503, _headers, _body} ->
         {:error, "Service Unavailable"}
+
       {:ok, _code, _headers, body} ->
         {:error, "Error: #{inspect(body)}"}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -60,8 +64,7 @@ defmodule Swoosh.Adapters.Dyn do
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_headers(email, _config) do
-    [{"User-Agent", "swoosh/#{Swoosh.version}"},
-     {"Content-Type", content_type(email)}]
+    [{"User-Agent", "swoosh/#{Swoosh.version()}"}, {"Content-Type", content_type(email)}]
   end
 
   defp content_type(%{attachments: []}), do: "application/x-www-form-urlencoded"
@@ -75,6 +78,7 @@ defmodule Swoosh.Adapters.Dyn do
   defp prepare_reply_to(body, %{reply_to: {_name, address}}), do: Map.put(body, :replyto, address)
 
   defp prepare_cc(body, %{cc: []}), do: body
+
   defp prepare_cc(body, %{cc: ccs}) do
     ccs
     |> Enum.with_index(1)
@@ -83,6 +87,7 @@ defmodule Swoosh.Adapters.Dyn do
   end
 
   defp prepare_bcc(body, %{bcc: []}), do: body
+
   defp prepare_bcc(body, %{bcc: bccs}) do
     bccs
     |> Enum.with_index(1)
@@ -99,6 +104,7 @@ defmodule Swoosh.Adapters.Dyn do
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :bodyhtml, html_body)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(_body, _email) do
     raise DeliveryError, reason: :unsupported_feature, payload: :attachments
   end

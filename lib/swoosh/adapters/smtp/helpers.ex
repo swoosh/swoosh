@@ -58,7 +58,9 @@ if Code.ensure_loaded?(:mimemail) do
     defp prepare_bcc(headers, %{bcc: bcc}), do: [{"Bcc", render_recipient(bcc)} | headers]
 
     defp prepare_reply_to(headers, %{reply_to: nil}), do: headers
-    defp prepare_reply_to(headers, %{reply_to: reply_to}), do: [{"Reply-To", render_recipient(reply_to)} | headers]
+
+    defp prepare_reply_to(headers, %{reply_to: reply_to}),
+      do: [{"Reply-To", render_recipient(reply_to)} | headers]
 
     defp prepare_mime_version(headers), do: [{"Mime-Version", "1.0"} | headers]
 
@@ -67,67 +69,80 @@ if Code.ensure_loaded?(:mimemail) do
     end
 
     defp prepare_parts(headers, %{
-      attachments: [],
-      html_body: html_body,
-      text_body: text_body
-    }) do
+           attachments: [],
+           html_body: html_body,
+           text_body: text_body
+         }) do
       case {text_body, html_body} do
         {text_body, nil} ->
           headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
           {"text", "plain", headers, text_body}
+
         {nil, html_body} ->
           headers = [{"Content-Type", "text/html; charset=\"utf-8\""} | headers]
           {"text", "html", headers, html_body}
+
         {text_body, html_body} ->
           parts = [prepare_part(:plain, text_body), prepare_part(:html, html_body)]
           {"multipart", "alternative", headers, parts}
       end
     end
+
     defp prepare_parts(headers, %{
-      attachments: attachments,
-      html_body: html_body,
-      text_body: text_body
-    }) do
+           attachments: attachments,
+           html_body: html_body,
+           text_body: text_body
+         }) do
       content_part =
         case {prepare_part(:plain, text_body), prepare_part(:html, html_body)} do
           {text_part, nil} ->
             text_part
+
           {nil, html_part} ->
             html_part
+
           {text_part, html_part} ->
             {"multipart", "alternative", [], [], [text_part, html_part]}
         end
+
       attachment_parts = Enum.map(attachments, &prepare_attachment(&1))
 
       {"multipart", "mixed", headers, [content_part | attachment_parts]}
     end
 
     defp prepare_part(_subtype, nil), do: nil
+
     defp prepare_part(subtype, content) do
       subtype_string = to_string(subtype)
-      {"text",
-       subtype_string,
-       [{"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
-        {"Content-Transfer-Encoding", "quoted-printable"}],
-       [{"content-type-params", [{"charset", "utf-8"}]},
-        {"disposition", "inline"},
-        {"disposition-params",[]}],
-       content}
+
+      {"text", subtype_string,
+       [
+         {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
+         {"Content-Transfer-Encoding", "quoted-printable"}
+       ],
+       [
+         {"content-type-params", [{"charset", "utf-8"}]},
+         {"disposition", "inline"},
+         {"disposition-params", []}
+       ], content}
     end
 
-    defp prepare_attachment(%{
-      filename: filename,
-      content_type: content_type,
-      type: attachment_type,
-      headers: custom_headers
-    } = attachment) do
+    defp prepare_attachment(
+           %{
+             filename: filename,
+             content_type: content_type,
+             type: attachment_type,
+             headers: custom_headers
+           } = attachment
+         ) do
       [type, format] = String.split(content_type, "/")
       content = Swoosh.Attachment.get_content(attachment)
 
       case attachment_type do
         :attachment ->
           {
-            type, format,
+            type,
+            format,
             [
               {"Content-Transfer-Encoding", "base64"}
               | custom_headers
@@ -138,9 +153,11 @@ if Code.ensure_loaded?(:mimemail) do
             ],
             content
           }
+
         :inline ->
           {
-            type, format,
+            type,
+            format,
             [
               {"Content-Transfer-Encoding", "base64"},
               {"Content-Id", "<#{filename}>"}
@@ -154,7 +171,6 @@ if Code.ensure_loaded?(:mimemail) do
             content
           }
       end
-
     end
   end
 end

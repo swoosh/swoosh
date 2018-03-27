@@ -2,13 +2,13 @@ defmodule Swoosh.Adapters.XML.Helpers do
   @moduledoc false
   require Record
 
-  Record.defrecord :xmlText, Record.extract(:xmlText, from_lib: "xmerl/include/xmerl.hrl")
+  Record.defrecord(:xmlText, Record.extract(:xmlText, from_lib: "xmerl/include/xmerl.hrl"))
 
   @doc false
   def parse(xml_string, options \\ []) do
     {node, _} =
       xml_string
-      |> :binary.bin_to_list
+      |> :binary.bin_to_list()
       |> :xmerl_scan.string(Keyword.merge([quiet: true], options))
 
     node
@@ -28,7 +28,7 @@ defmodule Swoosh.Adapters.XML.Helpers do
     path
     |> to_charlist
     |> :xmerl_xpath.string(node)
-    |> List.first
+    |> List.first()
   end
 
   @doc false

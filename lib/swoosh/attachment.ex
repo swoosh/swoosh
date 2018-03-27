@@ -32,18 +32,18 @@ defmodule Swoosh.Attachment do
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
 
   """
-  @spec new(binary | struct, Keyword.t) :: %__MODULE__{}
+  @spec new(binary | struct, Keyword.t()) :: %__MODULE__{}
   def new(path, opts \\ [])
 
   if Code.ensure_loaded?(Plug) do
     def new(
-      %Plug.Upload{
-        filename: filename,
-        content_type: content_type,
-        path: path
-      },
-      opts
-    ) do
+          %Plug.Upload{
+            filename: filename,
+            content_type: content_type,
+            path: path
+          },
+          opts
+        ) do
       new(
         path,
         Keyword.merge(
@@ -74,6 +74,7 @@ defmodule Swoosh.Attachment do
   def get_content(%__MODULE__{data: nil, path: nil}) do
     raise Swoosh.AttachmentContentError, message: "No path or data is provided"
   end
+
   def get_content(%__MODULE__{data: data, path: path}, encoding \\ :raw) do
     encode(data || File.read!(path), encoding)
   end

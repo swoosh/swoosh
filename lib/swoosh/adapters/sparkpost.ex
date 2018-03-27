@@ -28,14 +28,16 @@ defmodule Swoosh.Adapters.SparkPost do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
-    body = email |> prepare_body |> Swoosh.json_library.encode!
+    body = email |> prepare_body |> Swoosh.json_library().encode!
     url = [endpoint(config), "/transmissions"]
 
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, Swoosh.json_library.decode!(body)}
+        {:ok, Swoosh.json_library().decode!(body)}
+
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library.decode!(body)}}
+        {:error, {code, Swoosh.json_library().decode!(body)}}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -44,18 +46,22 @@ defmodule Swoosh.Adapters.SparkPost do
   defp endpoint(config), do: config[:endpoint] || @endpoint
 
   defp prepare_headers(_email, config) do
-    [{"User-Agent", "swoosh/#{Swoosh.version}"},
-     {"Authorization", config[:api_key]},
-     {"Content-Type", "application/json"}]
+    [
+      {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"Authorization", config[:api_key]},
+      {"Content-Type", "application/json"}
+    ]
   end
 
-  defp prepare_body(%{
-    from: {name, address},
-    to: to,
-    subject: subject,
-    text_body: text,
-    html_body: html,
-  } = email) do
+  defp prepare_body(
+         %{
+           from: {name, address},
+           to: to,
+           subject: subject,
+           text_body: text,
+           html_body: html
+         } = email
+       ) do
     %{
       content: %{
         from: %{
@@ -65,7 +71,7 @@ defmodule Swoosh.Adapters.SparkPost do
         subject: subject,
         text: text,
         html: html,
-        headers: %{},
+        headers: %{}
       },
       recipients: prepare_recipients(to, to)
     }
@@ -77,11 +83,13 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
+
   defp prepare_reply_to(body, %{reply_to: reply_to}) do
     put_in(body, [:content, :reply_to], render_recipient(reply_to))
   end
 
   defp prepare_cc(body, %{cc: []}), do: body
+
   defp prepare_cc(body, %{cc: cc, to: to}) do
     body
     |> update_in([:recipients], fn list ->
@@ -91,6 +99,7 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp prepare_bcc(body, %{bcc: []}), do: body
+
   defp prepare_bcc(body, %{bcc: bcc, to: to}) do
     update_in(body.recipients, fn list ->
       list ++ prepare_recipients(bcc, to)
@@ -114,6 +123,7 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
     {standalone_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
@@ -124,13 +134,15 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp inject_attachments(body, _key, []), do: body
+
   defp inject_attachments(body, key, attachments) do
-    Map.put(body, key, Enum.map(
-      attachments,
-      fn %{content_type: type, filename: name} = attachment ->
+    Map.put(
+      body,
+      key,
+      Enum.map(attachments, fn %{content_type: type, filename: name} = attachment ->
         %{type: type, name: name, data: Swoosh.Attachment.get_content(attachment, :base64)}
-      end
-    ))
+      end)
+    )
   end
 
   defp prepare_custom_headers(body, %{headers: headers}) do
