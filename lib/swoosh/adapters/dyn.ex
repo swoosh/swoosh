@@ -45,7 +45,7 @@ defmodule Swoosh.Adapters.Dyn do
 
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, Jason.decode!(body)["response"]["message"]}
+        {:ok, Swoosh.json_library.decode!(body)["response"]["message"]}
       {:ok, 404, _headers, _body} ->
         {:error, "Not found"}
       {:ok, 503, _headers, _body} ->

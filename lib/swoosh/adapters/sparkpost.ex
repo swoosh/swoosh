@@ -28,14 +28,14 @@ defmodule Swoosh.Adapters.SparkPost do
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
-    body = email |> prepare_body |> Jason.encode!
+    body = email |> prepare_body |> Swoosh.json_library.encode!
     url = [endpoint(config), "/transmissions"]
 
     case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, Jason.decode!(body)}
+        {:ok, Swoosh.json_library.decode!(body)}
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Jason.decode!(body)}}
+        {:error, {code, Swoosh.json_library.decode!(body)}}
       {:error, reason} ->
         {:error, reason}
     end
@@ -117,12 +117,12 @@ defmodule Swoosh.Adapters.SparkPost do
   defp prepare_attachments(body, %{attachments: attachments}) do
     {standalone_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
-  
+
     body
     |> inject_attachments(:attachments, standalone_attachments)
     |> inject_attachments(:inline_images, inline_attachments)
   end
-  
+
   defp inject_attachments(body, _key, []), do: body
   defp inject_attachments(body, key, attachments) do
     Map.put(body, key, Enum.map(
