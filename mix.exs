@@ -27,6 +27,11 @@ defmodule Swoosh.Mixfile do
         main: "Swoosh",
         canonical: "http://hexdocs.pm/swoosh",
         source_url: "https://github.com/swoosh/swoosh"
+      ],
+
+      # Suppress warnings
+      xref: [
+        exclude: [:gen_smtp_client, :mimemail, Plug.Adapters.Cowboy, Plug.Conn.Query]
       ]
     ]
   end
