@@ -546,4 +546,57 @@ defmodule Swoosh.Email do
       %{email | attachments: [Swoosh.Attachment.new(upload) | attachments]}
     end
   end
+
+  @doc """
+  Retrieves the current layout.
+  """
+  @spec layout(t) :: {atom, String.t} | false
+  def layout(email), do: email.private |> Map.get(:swoosh_layout, false)
+
+  @doc """
+  Stores the view for rendering.
+  """
+  @spec put_view(t, atom) :: t
+  def put_view(email, module) do
+    put_private(email, :swoosh_view, module)
+  end
+
+  @doc """
+  Stores the layout for rendering.
+  """
+  @spec put_layout(t, {atom, binary | atom} | false) :: t
+  def put_layout(email, layout) do
+    put_private(email, :swoosh_layout, layout)
+  end
+
+  @doc """
+  Renders the given template with the given assigns as `html_body`.
+  """
+  @spec render_to_html(t, binary, map | keyword) :: t
+  def render_to_html(email, template, assigns \\ %{}) do
+    email
+    |> html_body(do_render(email, template, assigns))
+  end
+
+  @doc """
+  Renders the given template with the given assigns as `text_body`.
+  """
+  @spec render_to_html(t, binary, map | keyword) :: t
+  def render_to_text(email, template, assigns \\ %{}) do
+    email
+    |> text_body(do_render(email, template, assigns))
+  end
+
+  defp do_render(email, template, assigns) do
+    layout  = Map.get(email.private, :swoosh_layout, false)
+    module  = Map.get(email.private, :swoosh_view)
+
+    assigns =
+      assigns
+      |> Enum.into(%{})
+      |> Map.merge(email.assigns)
+      |> Map.merge(%{ layout: layout })
+
+    Swoosh.View.render(module, template, assigns)
+  end
 end
