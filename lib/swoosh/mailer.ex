@@ -103,21 +103,7 @@ defmodule Swoosh.Mailer do
             :ok
 
           {:error, deps} when is_list(deps) ->
-            require Logger
-
-            deps =
-              deps
-              |> Enum.map(fn
-                {lib, module} -> "#{module} from #{inspect(lib)}"
-                {module} -> inspect(module)
-              end)
-              |> Enum.map(&"\n- #{&1}")
-
-            Logger.error("""
-            The following dependencies are required to use #{inspect(adapter)}:
-            #{deps}
-            """)
-
+            Swoosh.Mailer.warn_missing_deps(adapter, deps)
             :abort
         end
       end
@@ -170,5 +156,22 @@ defmodule Swoosh.Mailer do
       {key, {:system, env_var}} -> {key, System.get_env(env_var)}
       {key, value} -> {key, value}
     end)
+  end
+
+  def warn_missing_deps(adapter, deps) do
+    require Logger
+
+    deps =
+      deps
+      |> Enum.map(fn
+        {lib, module} -> "#{module} from #{inspect(lib)}"
+        {module} -> inspect(module)
+      end)
+      |> Enum.map(&"\n- #{&1}")
+
+    Logger.error("""
+    The following dependencies are required to use #{inspect(adapter)}:
+    #{deps}
+    """)
   end
 end
