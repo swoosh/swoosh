@@ -92,18 +92,24 @@ defmodule Swoosh.Mailer do
 
       @doc false
       def validate_dependency do
-        adapter = Keyword.fetch!(parse_config([]), :adapter)
+        require Logger
+        adapter = Keyword.get(parse_config([]), :adapter)
 
-        with {:module, _} <- Code.ensure_loaded(adapter),
+        with adapter when not is_nil(adapter) <- adapter,
+             {:module, _} <- Code.ensure_loaded(adapter),
              true <- function_exported?(adapter, :validate_dependency, 0),
              :ok <- adapter.validate_dependency() do
           :ok
         else
-          false ->
+          failure when failure in [nil, false] ->
             :ok
 
+          {:error, :nofile} ->
+            Logger.error("#{adapter} does not exist")
+            :abort
+
           {:error, deps} when is_list(deps) ->
-            Swoosh.Mailer.warn_missing_deps(adapter, deps)
+            Logger.error(Swoosh.Mailer.missing_deps_message(adapter, deps))
             :abort
         end
       end
@@ -158,9 +164,8 @@ defmodule Swoosh.Mailer do
     end)
   end
 
-  def warn_missing_deps(adapter, deps) do
-    require Logger
-
+  @doc false
+  def missing_deps_message(adapter, deps) do
     deps =
       deps
       |> Enum.map(fn
@@ -169,9 +174,9 @@ defmodule Swoosh.Mailer do
       end)
       |> Enum.map(&"\n- #{&1}")
 
-    Logger.error("""
+    """
     The following dependencies are required to use #{inspect(adapter)}:
     #{deps}
-    """)
+    """
   end
 end
