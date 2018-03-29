@@ -1,10 +1,20 @@
 ## Changelog
 
-## v0.13.1 - Unreleased
+## Unreleased
 
 ### Added
 
 * SMTP Adapter now accepts `:no_mx_lookups` option ([#203](https://github.com/swoosh/swoosh/pull/203), thanks @sergioaugrod)
+* Support of metadata for mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
+* Add SendGrid asm field ([#221](https://github.com/swoosh/swoosh/pull/221), thanks @nathf)
+
+### Changed
+
+* Poison -> Jason (Also making json library configurable, [#214](https://github.com/swoosh/swoosh/pull/214), [#216](https://github.com/swoosh/swoosh/pull/216))
+
+### Fixed
+
+* Sending text only email with SparkPost([#207](https://github.com/swoosh/swoosh/pull/207), fixed in [#210](https://github.com/swoosh/swoosh/pull/210))
 
 ## v0.13.0 - 2018-01-18
 
