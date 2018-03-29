@@ -6,7 +6,7 @@ defmodule Swoosh do
   @doc false
   def version, do: @version
 
-  @json_library Application.get_env(:swoosh, :json_library)
+  @json_library Application.get_env(:swoosh, :json_library, Jason)
 
   @doc false
   def json_library, do: @json_library
