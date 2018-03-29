@@ -17,7 +17,7 @@ defmodule Swoosh.Adapters.Sendmail do
       end
   """
 
-  use Swoosh.Adapter
+  use Swoosh.Adapter, required_deps: [gen_smtp: :mimemail]
 
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers

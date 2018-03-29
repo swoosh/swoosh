@@ -41,7 +41,10 @@ defmodule Swoosh.Adapters.AmazonSES do
       end
   """
 
-  use Swoosh.Adapter, required_config: [:region, :access_key, :secret]
+  use Swoosh.Adapter,
+    required_config: [:region, :access_key, :secret],
+    required_deps: [gen_smtp: :mimemail]
+
   alias Swoosh.Email
   alias Swoosh.Adapters.XML.Helpers, as: XMLHelper
   alias Swoosh.Adapters.SMTP.Helpers, as: SMTPHelper

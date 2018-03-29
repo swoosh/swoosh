@@ -6,6 +6,7 @@ defmodule Swoosh.Adapter do
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       @required_config opts[:required_config] || []
+      @required_deps opts[:required_deps] || []
 
       @behaviour Swoosh.Adapter
 
@@ -24,6 +25,23 @@ defmodule Swoosh.Adapter do
         raise ArgumentError, """
         expected #{inspect(key)} to be set, got: #{inspect(config)}
         """
+      end
+
+      case @required_deps do
+        [] ->
+          []
+
+        deps ->
+          def validate_dependency do
+            deps = unquote(deps)
+
+            if Enum.all?(deps, fn
+                 {lib, module} -> Code.ensure_loaded?(module)
+                 module -> Code.ensure_loaded?(module)
+               end),
+               do: :ok,
+               else: {:error, deps}
+          end
       end
     end
   end

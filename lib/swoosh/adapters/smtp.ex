@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.SMTP do
       end
   """
 
-  use Swoosh.Adapter, required_config: [:relay]
+  use Swoosh.Adapter, required_config: [:relay], required_deps: [gen_smtp: :gen_smtp_client]
 
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers

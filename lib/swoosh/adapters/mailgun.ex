@@ -18,7 +18,7 @@ defmodule Swoosh.Adapters.Mailgun do
       end
   """
 
-  use Swoosh.Adapter, required_config: [:api_key, :domain]
+  use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
 
   alias Swoosh.Email
   import Swoosh.Email.Render
