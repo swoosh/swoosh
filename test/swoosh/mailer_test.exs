@@ -40,6 +40,16 @@ defmodule Swoosh.MailerTest do
     assert {:ok, _} = OtherAdapterMailer.deliver(email, adapter: FakeAdapter)
   end
 
+  test "raise if mailer defined with nonexistent adapter", %{valid_email: email} do
+    defmodule WontWorkAdapterMailer do
+      use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
+    end
+
+    assert_raise UndefinedFunctionError, fn ->
+      WontWorkAdapterMailer.deliver(email)
+    end
+  end
+
   test "should raise if deliver!/2 is called with invalid from", %{valid_email: valid_email} do
     assert_raise DeliveryError, "delivery error: expected \"from\" to be set", fn ->
       Map.put(valid_email, :from, nil) |> FakeMailer.deliver!()
