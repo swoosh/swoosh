@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.Mailgun do
 
   For reference: [Mailgun API docs](https://documentation.mailgun.com/api-sending.html#sending)
 
+  ## Dependency
+  
+  Mailgun adapter requires `Plug` to work properly.
+
   ## Example
 
       # config/config.exs
