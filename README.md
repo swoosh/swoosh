@@ -92,14 +92,14 @@ list of the adapters currently included:
 
 Provider   | Swoosh adapter
 :----------| :------------------------
-SMTP       | Swoosh.Adapters.SMTP
-Sendgrid   | Swoosh.Adapters.Sendgrid
-Mandrill   | Swoosh.Adapters.Mandrill
-Mailgun    | Swoosh.Adapters.Mailgun
-Postmark   | Swoosh.Adapters.Postmark
-SparkPost  | Swoosh.Adapters.SparkPost
-Amazon SES | Swoosh.Adapters.AmazonSES
-Dyn        | Swoosh.Adapters.Dyn
+SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)
+Sendgrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)
+Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)
+Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)
+Postmark   | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)
+SparkPost  | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)
+Amazon SES | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)
+Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)
 
 Configure which adapter you want to use by updating your `config/config.exs` file:
 
@@ -108,6 +108,8 @@ config :sample, Sample.Mailer,
   adapter: Swoosh.Adapters.SMTP
   # adapter config (api keys, etc.)
 ```
+
+Check the documentation of the adapter you want to use for more specific configurations and instructions.
 
 Adding new adapters is super easy and we are definitely looking for contributions on that front. Get in touch if you want
 to help!
