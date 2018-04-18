@@ -10,12 +10,19 @@ defmodule Swoosh.TestAssertionsTest do
       |> from("tony.stark@example.com")
       |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
+      |> html_body("some html")
+      |> text_body("some text")
+
     Swoosh.Adapters.Test.deliver(email, nil)
     {:ok, email: email}
   end
 
   test "assert email sent with correct email", %{email: email} do
     assert_email_sent email
+  end
+
+  test "assert email sent with some content matched by a regex" do
+    assert_email_sent text_body: ~r/some text/, html_body: ~r/html$/
   end
 
   test "assert email sent with specific params" do
@@ -27,7 +34,7 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email sent with wrong subject" do
-    assert_raise ExUnit.AssertionError, fn -> 
+    assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent [subject: "Hello, X-Men!"]
     end
   end
@@ -62,18 +69,25 @@ defmodule Swoosh.TestAssertionsTest do
     end
   end
 
-  test "assert email sent with wrong email" do
+  test "assert email sent with wrong email", %{email: email} do
+    wrong_email = new() |> subject("Wrong, Avengers!")
+
+    message =
+      String.trim(
+        """
+        No message matching {:email, ^email} after 0ms.
+        The following variables were pinned:
+          email = #{inspect(wrong_email)}
+        Process mailbox:
+          {:email, #{inspect(email)}}
+        """
+      )
+
     try do
-      wrong_email = new() |> subject("Wrong, Avengers!")
       assert_email_sent wrong_email
     rescue
       error in [ExUnit.AssertionError] ->
-        "No message matching {:email, ^email} after 0ms.\n" <>
-        "The following variables were pinned:\n" <>
-        "  email = %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Wrong, Avengers!\", text_body: nil, to: []}\n" <>
-        "Process mailbox:\n" <>
-        "  {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}}"
-        = error.message
+        assert message == error.message
     end
   end
 
@@ -83,12 +97,13 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email not sent with expected email", %{email: email} do
+    message = "Unexpectedly received message {:email, #{inspect(email)}} (which matched {:email, ^email})"
+
     try do
       assert_email_not_sent email
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
-        "(which matched {:email, ^email})" = error.message
+        assert message, error.message
     end
   end
 
@@ -99,13 +114,14 @@ defmodule Swoosh.TestAssertionsTest do
     assert_no_email_sent()
   end
 
-  test "assert no email sent when sending an email" do
+  test "assert no email sent when sending an email", %{email: email} do
+    message = "Unexpectedly received message {:email, #{inspect(email)} (which matched {:email, _})"
+
     try do
       assert_no_email_sent()
     rescue
       error in [ExUnit.AssertionError] ->
-        "Unexpectedly received message {:email, %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: {\"\", \"tony.stark@example.com\"}, headers: %{}, html_body: nil, private: %{}, provider_options: %{}, reply_to: nil, subject: \"Hello, Avengers!\", text_body: nil, to: [{\"\", \"steve.rogers@example.com\"}]}} " <>
-        "(which matched {:email, _})" = error.message
+        assert message, error.message
     end
   end
 end
