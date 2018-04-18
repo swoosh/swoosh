@@ -10,6 +10,8 @@ defmodule Swoosh.TestAssertionsTest do
       |> from("tony.stark@example.com")
       |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
+      |> html_body("some html")
+      |> text_body("some text")
 
     Swoosh.Adapters.Test.deliver(email, nil)
     {:ok, email: email}
@@ -17,6 +19,10 @@ defmodule Swoosh.TestAssertionsTest do
 
   test "assert email sent with correct email", %{email: email} do
     assert_email_sent email
+  end
+
+  test "assert email sent with some content matched by a regex" do
+    assert_email_sent text_body: ~r/some text/, html_body: ~r/html$/
   end
 
   test "assert email sent with specific params" do
