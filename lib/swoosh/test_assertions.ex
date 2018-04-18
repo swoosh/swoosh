@@ -60,16 +60,10 @@ defmodule Swoosh.TestAssertions do
     do: assert(email.bcc == Enum.map(value, &format_recipient/1))
 
   defp assert_equal(email, {:bcc, value}), do: assert(format_recipient(value) in email.bcc)
+  defp assert_equal(email, {:text_body, %Regex{} = value}), do: assert(email.text_body =~ value)
   defp assert_equal(email, {:text_body, value}), do: assert(email.text_body == value)
+  defp assert_equal(email, {:html_body, %Regex{} = value}), do: assert(email.html_body =~ value)
   defp assert_equal(email, {:html_body, value}), do: assert(email.html_body == value)
-
-  defp assert_equal(email, {:regex, regex}) do
-    assert_equal(email, {:regex_html, regex})
-    assert_equal(email, {:regex_text, regex})
-  end
-
-  defp assert_equal(email, {:regex_html, regex}), do: assert(email.html_body =~ regex)
-  defp assert_equal(email, {:regex_text, regex}), do: assert(email.text_body =~ regex)
 
   @doc ~S"""
   Asserts `email` was not sent.
