@@ -44,9 +44,13 @@ defmodule Swoosh.MailerTest do
     # TODO: Remove version guard when dropping Elixir 1.4 support
     # Elixir < 1.5 raises an unexpected error when on_load fails
     test "raise if mailer defined with nonexistent adapter", %{valid_email: email} do
-      defmodule WontWorkAdapterMailer do
-        use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
-      end
+      import ExUnit.CaptureLog
+
+      assert capture_log(fn ->
+        defmodule WontWorkAdapterMailer do
+          use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
+        end
+      end) =~ ~r/Elixir.NotExistAdapter does not exist/
 
       assert_raise UndefinedFunctionError, fn ->
         WontWorkAdapterMailer.deliver(email)
