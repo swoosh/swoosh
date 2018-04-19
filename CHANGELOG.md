@@ -7,14 +7,25 @@
 * SMTP Adapter now accepts `:no_mx_lookups` option ([#203](https://github.com/swoosh/swoosh/pull/203), thanks @sergioaugrod)
 * Support of metadata for mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
 * Add SendGrid asm field ([#221](https://github.com/swoosh/swoosh/pull/221), thanks @nathf)
+* Support regex match on html and text body in TestAssertion ([#229](https://github.com/swoosh/swoosh/pull/229), thanks @michallepicki)
 
 ### Changed
 
 * Poison -> Jason (Also making json library configurable, [#214](https://github.com/swoosh/swoosh/pull/214), [#216](https://github.com/swoosh/swoosh/pull/216))
+* All modules are now defined regardless of whether their dependencies exist, warnings are suppressed via `xref: [exclude: [...]]`, compile time checks are put in place ([#219](https://github.com/swoosh/swoosh/pull/219))
+
+```
+> iex -S mix
+Compiling 1 file (.ex)
+
+06:02:24.569 [error] The following dependencies are required to use Swoosh.Adapters.SMTP:
+
+- gen_smtp_client from :gen_smtp
+```
 
 ### Fixed
 
-* Sending text only email with SparkPost([#207](https://github.com/swoosh/swoosh/pull/207), fixed in [#210](https://github.com/swoosh/swoosh/pull/210))
+* Sending text only email with SparkPost ([#207](https://github.com/swoosh/swoosh/pull/207), fixed in [#210](https://github.com/swoosh/swoosh/pull/210))
 
 ## v0.13.0 - 2018-01-18
 
