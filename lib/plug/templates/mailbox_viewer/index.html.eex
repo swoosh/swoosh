@@ -115,7 +115,13 @@
               <div class="header-content">
                 <dl class="dl-horizontal headers">
                   <dt class="col-sm-2">Subject</dt>
-                  <dd class="col-sm-10"><%= @email.subject %></dd>
+                  <dd class="col-sm-10">
+                    <%= if @email.subject == "" do %>
+                      <i>No subject</i>
+                    <% else %>
+                      <%= @email.subject %>
+                    <% end %>
+                  </dd>
 
                   <dt class="col-sm-2">From</dt>
                   <dd class="col-sm-10"><%= render_recipient(@email.from) %></dd>
@@ -135,6 +141,11 @@
                   <%= for {name, value} <- @email.headers do %>
                     <dt class="col-sm-2"><%= name %></dt>
                     <dd class="col-sm-10"><%= value %></dd>
+                  <% end %>
+
+                  <%= for {name, value} <- @email.provider_options do %>
+                    <dt class="col-sm-2"><%= name %></dt>
+                    <dd class="col-sm-10"><%= inspect(value) %></dd>
                   <% end %>
                 </dl>
               </div>
