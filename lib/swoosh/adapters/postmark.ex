@@ -56,6 +56,9 @@ defmodule Swoosh.Adapters.Postmark do
   defp api_endpoint(%{provider_options: %{template_id: _, template_model: _}}),
     do: @api_endpoint <> "/withTemplate"
 
+  defp api_endpoint(%{provider_options: %{template_alias: _, template_model: _}}),
+    do: @api_endpoint <> "/withTemplate"
+
   defp api_endpoint(_email), do: @api_endpoint
 
   defp prepare_body(email) do
@@ -125,6 +128,13 @@ defmodule Swoosh.Adapters.Postmark do
   #   "template_id"    => 123,
   #   "template_model" => %{"name": 1, "company": 2}
   # }
+  #
+  # Or, using template_alias
+  #
+  # %{
+  #   "template_alias" => "welcome",
+  #   "template_model" => %{"name": 1, "company": 2}
+  # }
   defp prepare_template(body, %{provider_options: provider_options}),
     do: Enum.reduce(provider_options, body, &put_in_body/2)
 
@@ -132,6 +142,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp put_in_body({:template_model, val}, body_acc), do: Map.put(body_acc, "TemplateModel", val)
   defp put_in_body({:template_id, val}, body_acc), do: Map.put(body_acc, "TemplateId", val)
+  defp put_in_body({:template_alias, val}, body_acc), do: Map.put(body_acc, "TemplateAlias", val)
   defp put_in_body(_, body_acc), do: body_acc
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
