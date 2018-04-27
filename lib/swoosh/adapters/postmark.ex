@@ -15,6 +15,23 @@ defmodule Swoosh.Adapters.Postmark do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Example of sending emails using templates
+
+  This will use Postmark's `withTemplate` endpoint.
+
+      import Swoosh.Email
+
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:template_id, "123456")
+      |> put_provider_option(:template_model, %{name: "Steve", email: "steve@avengers.com"})
+
+  You can also use `template_alias` instead of `template_id`, if you use Postmark's
+  [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template)
+  feature.
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
