@@ -28,7 +28,7 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
     assert_ok_response(email, config)
   end
 
-  test "template deliver", %{valid_email: valid_email, config: config} do
+  test "template id deliver", %{valid_email: valid_email, config: config} do
     config = Keyword.put_new(config, :template, true)
     template_model = %{
       name: "Swoosh",
@@ -37,6 +37,20 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
     email =
       valid_email
       |> put_provider_option(:template_id, 990321)
+      |> put_provider_option(:template_model, template_model)
+
+    assert_ok_response(email, config)
+  end
+
+  test "template alias deliver", %{valid_email: valid_email, config: config} do
+    config = Keyword.put_new(config, :template, true)
+    template_model = %{
+      name: "Swoosh",
+      action_url: "Postmark",
+    }
+    email =
+      valid_email
+      |> put_provider_option(:template_alias, "welcome")
       |> put_provider_option(:template_model, template_model)
 
     assert_ok_response(email, config)
