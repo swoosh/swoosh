@@ -5,9 +5,11 @@
 ### Added
 
 * SMTP Adapter now accepts `:no_mx_lookups` option ([#203](https://github.com/swoosh/swoosh/pull/203), thanks @sergioaugrod)
-* Support of metadata for mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
+* Support of metadata for Mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
 * Add SendGrid asm field ([#221](https://github.com/swoosh/swoosh/pull/221), thanks @nathf)
 * Support regex match on html and text body in TestAssertion ([#229](https://github.com/swoosh/swoosh/pull/229), thanks @michallepicki)
+* Support of template alias for Postmark ([#232](https://github.com/swoosh/swoosh/pull/232), thanks @sebastianseilund)
+* Display provider_options in mailbox_viewer ([#234](https://github.com/swoosh/swoosh/pull/234), thank you @sebastianseilund again!)
 
 ### Changed
 
