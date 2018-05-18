@@ -1,5 +1,9 @@
 language: elixir
 sudo: false
+cache:
+  directories:
+    - _build
+    - deps
 elixir:
   - 1.4
   - 1.5
