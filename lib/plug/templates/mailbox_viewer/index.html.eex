@@ -166,6 +166,18 @@
                         frameborder="0">
                 </iframe>
               <% end %>
+              <%= if length(@email.attachments) > 0 do %>
+                <h5>Attachments:</h3>
+                <ul>
+                  <%= for {attachment, index} <- Enum.with_index(@email.attachments) do %>
+                    <li>
+                      <a href="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/attachments/<%= index %>" target="_blank">
+                        <%= attachment.filename %>
+                      </a>
+                    </li>
+                  <% end %>
+                </ul>
+              <% end %>
             </div>
           <% else %>
             <div class="m-t-3 text-sm-center">

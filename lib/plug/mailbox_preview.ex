@@ -53,6 +53,35 @@ if Code.ensure_loaded?(Plug) do
       |> send_resp(200, email.html_body)
     end
 
+    get "/:id/attachments/:index" do
+      index = String.to_integer(index)
+      id
+      |> conn.assigns.storage_driver.get()
+      |> case do
+        %{attachments: attachments} when length(attachments) > index ->
+          attachments
+          |> Enum.at(index)
+          |> case do
+            %{data: data, content_type: content_type} when !is_nil(data) ->
+              conn
+              |> put_resp_content_type(content_type)
+              |> send_resp(200, data)
+            %{path: path, content_type: content_type} when !is_nil(path) ->
+              conn
+              |> put_resp_content_type(content_type)
+              |> send_resp(200, File.read!(path))
+            _ ->
+              conn
+              |> put_resp_content_type("text/html")
+              |> send_resp(500, "Attachment cannot be displayed")
+          end
+        _ ->
+          conn
+          |> put_resp_content_type("text/html")
+          |> send_resp(404, "Attachment Not Found")
+      end
+    end
+
     get "/:id" do
       emails = conn.assigns.storage_driver.all()
       email = conn.assigns.storage_driver.get(id)
