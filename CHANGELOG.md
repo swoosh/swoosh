@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.15.0 - Unreleased
+
+### Added
+
+- Expose Attachments in Mailbox Preview ([#245](https://github.com/swoosh/swoosh/pull/245), thanks! @maennchen)
+
 ## v0.14.0 - 2018-05-18
 
 ### Added
