@@ -6,6 +6,8 @@
 
 - Expose Attachments in Mailbox Preview ([#245](https://github.com/swoosh/swoosh/pull/245), thanks! @maennchen)
 
+![preview](https://user-images.githubusercontent.com/333918/40985860-3d0c6d66-68e5-11e8-8a31-87730b96d245.png)
+
 ## v0.14.0 - 2018-05-18
 
 ### Added
