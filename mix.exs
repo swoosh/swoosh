@@ -37,7 +37,7 @@ defmodule Swoosh.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :hackney, :mime], mod: {Swoosh.Application, []}]
+    [extra_applications: [:logger], mod: {Swoosh.Application, []}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
