@@ -8,6 +8,12 @@
 
 ![preview](https://user-images.githubusercontent.com/333918/40985860-3d0c6d66-68e5-11e8-8a31-87730b96d245.png)
 
+### Changed
+
+- Switchig from listing `applications` to `extra_applications`
+  - less error-prone
+  - fix `:jason` application not available in releases
+
 ## v0.14.0 - 2018-05-18
 
 ### Added
