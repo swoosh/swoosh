@@ -46,6 +46,14 @@ if Code.ensure_loaded?(Plug) do
       |> send_resp(200, template(emails: emails, email: nil, conn: conn))
     end
 
+    get "/clear" do
+      conn.assigns.storage_driver.delete_all()
+
+      conn
+      |> put_resp_header("location", "/")
+      |> send_resp(302, '')
+    end
+
     get "/:id/html" do
       email = conn.assigns.storage_driver.get(id)
       conn

@@ -98,6 +98,7 @@
                 <h6 class="list-group-item-heading">Empty mailbox...</h6>
               </div>
             <% else %>
+              <button class="btn btn-primary btn-block" onclick="location.href = '/clear'">Delete Message Queue</button>
               <%= for email <- @emails do %>
                 <% id = email.headers["Message-ID"] %>
                 <a href="<%= to_absolute_url(@conn, id) %>" class="list-group-item<%= if @email && @email.headers["Message-ID"] == id, do: " active" %>">
