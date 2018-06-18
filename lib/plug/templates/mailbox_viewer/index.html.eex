@@ -86,6 +86,10 @@
         height: 100%;
         border: 2px solid #f7f7f9;
       }
+
+      form {
+        margin-bottom: 0;
+      }
     </style>
   </head>
   <body>
@@ -98,7 +102,7 @@
                 <h6 class="list-group-item-heading">Empty mailbox...</h6>
               </div>
             <% else %>
-              <form method="POST" action="/clear" style="margin-bottom: 0">
+              <form method="POST" action="/clear">
                 <button class="btn btn-primary btn-block" type="submit">Delete Message Queue</button>
               </form>
               <%= for email <- @emails do %>
