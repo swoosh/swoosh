@@ -39,19 +39,19 @@ if Code.ensure_loaded?(Plug) do
     plug :match
     plug :dispatch
 
-    get "/" do
-      emails = conn.assigns.storage_driver.all()
-      conn
-      |> put_resp_content_type("text/html")
-      |> send_resp(200, template(emails: emails, email: nil, conn: conn))
-    end
-
-    get "/clear" do
+    post "/clear" do
       conn.assigns.storage_driver.delete_all()
 
       conn
       |> put_resp_header("location", "/")
       |> send_resp(302, '')
+    end
+
+    get "/" do
+      emails = conn.assigns.storage_driver.all()
+      conn
+      |> put_resp_content_type("text/html")
+      |> send_resp(200, template(emails: emails, email: nil, conn: conn))
     end
 
     get "/:id/html" do
