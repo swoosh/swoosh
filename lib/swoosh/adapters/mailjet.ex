@@ -62,14 +62,11 @@ defmodule Swoosh.Adapters.Mailjet do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
       {"Authorization", "Basic #{auth(config)}"},
-      {"Content-Type", content_type(email)}
+      {"Content-Type", "application/json"}
     ]
   end
 
   defp auth(config), do: Base.encode64("#{config[:api_key]}:#{config[:secret]}")
-
-  defp content_type(%{attachments: []}), do: "application/json"
-  #defp content_type(%{}), do: "multipart/form-data"
 
   defp prepare_body(email) do
     %{}
@@ -81,7 +78,7 @@ defmodule Swoosh.Adapters.Mailjet do
     #|> prepare_cc(email)
     #|> prepare_bcc(email)
     #|> prepare_reply_to(email)
-    #|> prepare_attachments(email)
+    |> prepare_attachments(email)
     #|> prepare_custom_vars(email)
     #|> prepare_recipient_vars(email)
     #|> prepare_custom_headers(email)
@@ -124,14 +121,20 @@ defmodule Swoosh.Adapters.Mailjet do
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
 
     body
-    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
-    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
+    |> Map.put(:Attachments, Enum.map(normal_attachments, &prepare_file(&1)))
+    # ContentID for Mailjet inlined attachments is not implemented here
+    |> Map.put(:InlinedAttachments, Enum.map(inline_attachments, &prepare_file(&1)))
   end
 
-  defp prepare_file(attachment, type) do
-    {:file, attachment.path,
-     {"form-data", [{~s/"name"/, ~s/"#{type}"/}, {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
-     []}
+  defp prepare_file(attachment) do
+    content = attachment.path
+    |> File.read!
+    |> Base.encode64
+     %{
+       ContentType: attachment.content_type,
+       Filename: attachment.filename,
+       Base64Content: content
+     }
   end
 
   defp prepare_recipient([recepient]), do: [prepare_recipient(recepient)]
