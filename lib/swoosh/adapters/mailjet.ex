@@ -1,12 +1,12 @@
 defmodule Swoosh.Adapters.Mailjet do
   @moduledoc ~S"""
-  An adapter that sends email using the Mailgun API.
+  An adapter that sends email using the Mailjet API.
 
-  For reference: [Mailgun API docs](https://documentation.mailgun.com/api-sending.html#sending)
+  For reference: [Mailjet API docs](https://dev.mailjet.com/guides/#send-api-v3-1)
 
   ## Dependency
 
-  Mailgun adapter requires `Plug` to work properly.
+  Mailjet adapter requires `Plug` to work properly.
 
   ## Example
 
@@ -24,8 +24,7 @@ defmodule Swoosh.Adapters.Mailjet do
 
   use Swoosh.Adapter, required_config: [:api_key, :secret], required_deps: [plug: Plug.Conn.Query]
 
-  alias Swoosh.Email
-  import Swoosh.Email.Render
+  alias Swoosh.{Email, Attachment}
 
   @base_url "https://api.mailjet.com/v3.1"
   @api_endpoint "send"
@@ -75,44 +74,19 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_subject(email)
     |> prepare_html(email)
     |> prepare_text(email)
-    #|> prepare_cc(email)
-    #|> prepare_bcc(email)
-    #|> prepare_reply_to(email)
+    |> prepare_cc(email)
+    |> prepare_bcc(email)
+    |> prepare_reply_to(email)
     |> prepare_attachments(email)
-    #|> prepare_custom_vars(email)
-    #|> prepare_recipient_vars(email)
-    #|> prepare_custom_headers(email)
+    |> prepare_variables(email)
+    |> prepare_headers(email)
     |> wrap_into_messages
-    |> encode_body
+    |> Swoosh.json_library.encode!()
   end
 
-  defp wrap_into_messages(body) do
-    %{
-      Messages: [body]
-    }
-  end
+  defp wrap_into_messages(body), do: %{Messages: [body]}
 
-  # example custom_vars
-  #
-  # %{"my_var" => %{"my_message_id": 123},
-  #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
-  defp prepare_custom_vars(body, %{provider_options: %{custom_vars: custom_vars}}) do
-    Enum.reduce(custom_vars, body, fn {k, v}, body ->
-      Map.put(body, "v:#{k}", Swoosh.json_library().encode!(v))
-    end)
-  end
-
-  defp prepare_custom_vars(body, _email), do: body
-
-  defp prepare_recipient_vars(body, %{provider_options: %{recipient_vars: recipient_vars}}) do
-    Map.put(body, "recipient-variables", Swoosh.json_library().encode!(recipient_vars))
-  end
-
-  defp prepare_recipient_vars(body, _email), do: body
-
-  defp prepare_custom_headers(body, %{headers: headers}) do
-    Enum.reduce(headers, body, fn {k, v}, body -> Map.put(body, "h:#{k}", v) end)
-  end
+  defp prepare_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
 
@@ -121,52 +95,40 @@ defmodule Swoosh.Adapters.Mailjet do
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
 
     body
-    |> Map.put(:Attachments, Enum.map(normal_attachments, &prepare_file(&1)))
+    |> Map.put("Attachments", Enum.map(normal_attachments, &Attachment.get_content(&1, :base64)))
     # ContentID for Mailjet inlined attachments is not implemented here
-    |> Map.put(:InlinedAttachments, Enum.map(inline_attachments, &prepare_file(&1)))
+    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &Attachment.get_content(&1. :base64)))
   end
 
-  defp prepare_file(attachment) do
-    content = attachment.path
-    |> File.read!
-    |> Base.encode64
-     %{
-       ContentType: attachment.content_type,
-       Filename: attachment.filename,
-       Base64Content: content
-     }
-  end
+  defp prepare_recipients(recipients), do: Enum.map(recipients, &prepare_recipient(&1))
+  
+  defp prepare_recipient({name, address}), do: %{"Name" => name, "Email" => address}
 
-  defp prepare_recipient([recepient]), do: [prepare_recipient(recepient)]
-  defp prepare_recipient({name, address}) do
-    %{
-      Name: name,
-      Email: address
-    }
-  end
+  defp prepare_from(body, %{from: from}), do: Map.put(body, "From", prepare_recipient(from))
 
-  defp prepare_from(body, %{from: from}), do: Map.put(body, :From, prepare_recipient(from))
-
-  defp prepare_to(body, %{to: to}), do: Map.put(body, :To, prepare_recipient(to))
+  defp prepare_to(body, %{to: to}), do: Map.put(body, "To", prepare_recipients(to))
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
-
-  defp prepare_reply_to(body, %{reply_to: {_name, address}}),
-    do: Map.put(body, "h:Reply-To", address)
+  defp prepare_reply_to(body, %{reply_to: reply_to}),
+    do: Map.put(body, "ReplyTo", prepare_recipient(reply_to))
 
   defp prepare_cc(body, %{cc: []}), do: body
-  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, render_recipient(cc))
+  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
 
   defp prepare_bcc(body, %{bcc: []}), do: body
-  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, :bcc, render_recipient(bcc))
+  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
 
-  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :Subject, subject)
+  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)
 
   defp prepare_text(body, %{text_body: nil}), do: body
-  defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, :TextPart, text_body)
+  defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, "TextPart", text_body)
 
   defp prepare_html(body, %{html_body: nil}), do: body
-  defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :HTMLPart, html_body)
+  defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HTMLPart", html_body)
+  
+  defp prepare_variables(body, %{provider_options: %{variables: variables}}) do
+    Map.put(body, "Variables", variables)
+  end
 
-  defp encode_body(body), do: Swoosh.json_library.encode!(body)
+  defp prepare_variables(body, _email), do: body
 end
