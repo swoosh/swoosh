@@ -97,7 +97,7 @@ defmodule Swoosh.Adapters.Mailjet do
     body
     |> Map.put("Attachments", Enum.map(normal_attachments, &Attachment.get_content(&1, :base64)))
     # ContentID for Mailjet inlined attachments is not implemented here
-    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &Attachment.get_content(&1. :base64)))
+    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &Attachment.get_content(&1, :base64)))
   end
 
   defp prepare_recipients(recipients), do: Enum.map(recipients, &prepare_recipient(&1))
