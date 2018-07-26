@@ -1,5 +1,12 @@
 ## Changelog
 
+## v0.16.0 - Unreleased
+
+### Added
+
+- Support for Mailgun tags ([#256](https://github.com/swoosh/swoosh/pull/256), thanks! @DavidOliver)
+- Allow cowboy2 in dependency ([#260](https://github.com/swoosh/swoosh/pull/260), thanks! @hl)
+
 ## v0.15.0 - 2018-06-15
 
 ### Added
