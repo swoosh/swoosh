@@ -13,7 +13,8 @@ elixir:
   - 1.6
 otp_release:
   - 19.3
-  - 20.0
+  - 20.3
+  - 21.0
 script: mix test.ci
 after_script:
   - mix deps.get --only docs
