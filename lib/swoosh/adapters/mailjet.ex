@@ -89,15 +89,21 @@ defmodule Swoosh.Adapters.Mailjet do
   defp prepare_custom_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
-
   defp prepare_attachments(body, %{attachments: attachments}) do
     {normal_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
 
     body
-    |> Map.put("Attachments", Enum.map(normal_attachments, &Attachment.get_content(&1, :base64)))
-    # ContentID for Mailjet inlined attachments is not implemented here
-    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &Attachment.get_content(&1, :base64)))
+    |> Map.put("Attachments", Enum.map(normal_attachments, &prepare_attachment/1))
+    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &prepare_attachment/1))
+  end
+
+  defp prepare_attachment(attachment) do
+    %{
+      "ContentType" => attachment.content_type,
+      "Filename" => attachment.filename,
+      "Base64Content" => Attachment.get_content(attachment, :base64)
+    }
   end
 
   defp prepare_recipients(recipients), do: Enum.map(recipients, &prepare_recipient(&1))
