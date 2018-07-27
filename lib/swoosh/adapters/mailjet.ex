@@ -30,7 +30,7 @@ defmodule Swoosh.Adapters.Mailjet do
   @api_endpoint "send"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = prepare_headers(email, config)
+    headers = prepare_headers(config)
     url = [base_url(config), "/", @api_endpoint]
 
     case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
@@ -57,7 +57,7 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  defp prepare_headers(email, config) do
+  defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
       {"Authorization", "Basic #{auth(config)}"},
@@ -79,14 +79,14 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_variables(email)
-    |> prepare_headers(email)
+    |> prepare_custom_headers(email)
     |> wrap_into_messages
     |> Swoosh.json_library.encode!()
   end
 
   defp wrap_into_messages(body), do: %{Messages: [body]}
 
-  defp prepare_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
+  defp prepare_custom_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
 
@@ -101,7 +101,7 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   defp prepare_recipients(recipients), do: Enum.map(recipients, &prepare_recipient(&1))
-  
+
   defp prepare_recipient({name, address}), do: %{"Name" => name, "Email" => address}
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", prepare_recipient(from))
@@ -125,7 +125,7 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HTMLPart", html_body)
-  
+
   defp prepare_variables(body, %{provider_options: %{variables: variables}}) do
     Map.put(body, "Variables", variables)
   end
