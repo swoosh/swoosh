@@ -59,7 +59,7 @@ end
 
     ```elixir
     def deps do
-      [{:swoosh, "~> 0.13"}]
+      [{:swoosh, "~> 0.16"}]
     end
     ```
 
@@ -80,7 +80,7 @@ end
     end
 
     def deps do
-      [{:swoosh, "~> 0.13"},
+      [{:swoosh, "~> 0.16"},
        {:gen_smtp, "~> 0.12.0"}]
     end
     ```
@@ -128,7 +128,7 @@ Task.start(fn ->
 end)
 ```
 
-Please take a look at the official docs for [Task](https://hexdocs.pm/elixir/Task.html) for further options.
+Please take a look at the official docs for [Task](https://hexdocs.pm/elixir/Task.html) and [Task.Supervisor](https://hexdocs.pm/elixir/Task.Supervisor.html) for further options.
 
 Note: it is not to say that `Task.start` is enough to cover the whole async aspect of sending emails. It is more to say that
 the implementation of sending emails is very application specific. For example, the simple example above might be sufficient

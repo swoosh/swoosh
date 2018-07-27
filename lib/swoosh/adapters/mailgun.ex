@@ -80,6 +80,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_attachments(email)
     |> prepare_custom_vars(email)
     |> prepare_recipient_vars(email)
+    |> prepare_tags(email)
     |> prepare_custom_headers(email)
     |> encode_body
   end
@@ -101,6 +102,12 @@ defmodule Swoosh.Adapters.Mailgun do
   end
 
   defp prepare_recipient_vars(body, _email), do: body
+
+  defp prepare_tags(body, %{provider_options: %{tags: tags}}) when is_list(tags) do
+    Map.put(body, "o:tag", tags)
+  end
+
+  defp prepare_tags(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     Enum.reduce(headers, body, fn {k, v}, body -> Map.put(body, "h:#{k}", v) end)

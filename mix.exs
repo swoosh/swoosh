@@ -1,7 +1,7 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.13.0"
+  @version "0.16.0"
 
   def project do
     [
@@ -37,7 +37,7 @@ defmodule Swoosh.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :hackney, :mime], mod: {Swoosh.Application, []}]
+    [extra_applications: [:logger], mod: {Swoosh.Application, []}]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
@@ -49,7 +49,7 @@ defmodule Swoosh.Mixfile do
       {:mime, "~> 1.1"},
       {:jason, "~> 1.0"},
       {:gen_smtp, "~> 0.12", optional: true},
-      {:cowboy, "~> 1.0", optional: true},
+      {:cowboy, "~> 1.0.1 or ~> 1.1 or ~> 2.4", optional: true},
       {:plug, "~> 1.4", optional: true},
       {:credo, "~> 0.8", only: [:dev, :test]},
       {:bypass, "~> 0.8", only: :test},

@@ -1,20 +1,54 @@
 ## Changelog
 
-## Unreleased
+## v0.16.0 - 2018-07-26
+
+### Added
+
+- Support for Mailgun tags ([#256](https://github.com/swoosh/swoosh/pull/256), thanks! @DavidOliver)
+- Allow cowboy2 in dependency ([#260](https://github.com/swoosh/swoosh/pull/260), thanks! @hl)
+
+## v0.15.0 - 2018-06-15
+
+### Added
+
+- Expose Attachments in Mailbox Preview ([#245](https://github.com/swoosh/swoosh/pull/245), thanks! @maennchen)
+
+![preview](https://user-images.githubusercontent.com/333918/40985860-3d0c6d66-68e5-11e8-8a31-87730b96d245.png)
+
+### Changed
+
+- Switchig from listing `applications` to `extra_applications`
+  - less error-prone
+  - fix `:jason` application not available in releases
+
+## v0.14.0 - 2018-05-18
 
 ### Added
 
 * SMTP Adapter now accepts `:no_mx_lookups` option ([#203](https://github.com/swoosh/swoosh/pull/203), thanks @sergioaugrod)
-* Support of metadata for mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
+* Support of metadata for Mandrill ([#208](https://github.com/swoosh/swoosh/pull/208), thanks @chubarovNick)
 * Add SendGrid asm field ([#221](https://github.com/swoosh/swoosh/pull/221), thanks @nathf)
+* Support regex match on html and text body in TestAssertion ([#229](https://github.com/swoosh/swoosh/pull/229), thanks @michallepicki)
+* Support of template alias for Postmark ([#232](https://github.com/swoosh/swoosh/pull/232), thanks @sebastianseilund)
+* Display provider_options in mailbox_viewer ([#234](https://github.com/swoosh/swoosh/pull/234), thank you @sebastianseilund again!)
 
 ### Changed
 
 * Poison -> Jason (Also making json library configurable, [#214](https://github.com/swoosh/swoosh/pull/214), [#216](https://github.com/swoosh/swoosh/pull/216))
+* All modules are now defined regardless of whether their dependencies exist, warnings are suppressed via `xref: [exclude: [...]]`, compile time checks are put in place ([#219](https://github.com/swoosh/swoosh/pull/219))
+
+```
+> iex -S mix
+Compiling 1 file (.ex)
+
+06:02:24.569 [error] The following dependencies are required to use Swoosh.Adapters.SMTP:
+
+- gen_smtp_client from :gen_smtp
+```
 
 ### Fixed
 
-* Sending text only email with SparkPost([#207](https://github.com/swoosh/swoosh/pull/207), fixed in [#210](https://github.com/swoosh/swoosh/pull/210))
+* Sending text only email with SparkPost ([#207](https://github.com/swoosh/swoosh/pull/207), fixed in [#210](https://github.com/swoosh/swoosh/pull/210))
 
 ## v0.13.0 - 2018-01-18
 
