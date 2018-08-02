@@ -1,5 +1,11 @@
 ## Changelog
 
+## Unreleased
+
+### Changed
+
+- Decode SendGrid adapter 4xx response ([#266](https://github.com/swoosh/swoosh/pull/266), thanks! @jackmarchant)
+
 ## v0.16.0 - 2018-07-26
 
 ### Added
