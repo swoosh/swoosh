@@ -259,6 +259,26 @@ defmodule Swoosh.Adapters.SendgridTest do
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
+  test "delivery/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
+    errors = "{\"errors\":[{\"field\": null, \"message\": \"too many requests\"}]}"
+
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 429, errors))
+
+    response = {:error, {429, %{"errors" => [%{"field" => nil, "message" => "too many requests"}]}}}
+
+    assert Sendgrid.deliver(email, config) == response
+  end
+
+  test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
+    errors = "{\"errors\":[{\"field\": \"identifier1\", \"message\": \"error message explained\"}]}"
+
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 400, errors))
+
+    response = {:error, {400, %{"errors" => [%{"field" => "identifier1", "message" => "error message explained"}]}}}
+
+    assert Sendgrid.deliver(email, config) == response
+  end
+
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       assert "/mail/send" == conn.request_path
@@ -341,5 +361,4 @@ defmodule Swoosh.Adapters.SendgridTest do
     end
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
-
 end
