@@ -41,9 +41,9 @@ if Code.ensure_loaded?(Plug) do
 
     post "/clear" do
       conn.assigns.storage_driver.delete_all()
-
+      path = if conn.assigns.base_path != "", do: conn.assigns.base_path, else: "/"
       conn
-      |> put_resp_header("location", "/")
+      |> put_resp_header("location", path)
       |> send_resp(302, '')
     end
 
