@@ -1,10 +1,11 @@
 ## Changelog
 
-## Unreleased
+## v0.16.1 - 2018-08-08
 
 ### Changed
 
 - Decode SendGrid adapter 4xx response ([#266](https://github.com/swoosh/swoosh/pull/266), thanks! @jackmarchant)
+- Fix clear button path when base_path is set ([#271](https://github.com/swoosh/swoosh/pull/271), thanks! @jhchen)
 
 ## v0.16.0 - 2018-07-26
 
