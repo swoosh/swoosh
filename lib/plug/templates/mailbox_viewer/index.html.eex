@@ -102,7 +102,7 @@
                 <h6 class="list-group-item-heading">Empty mailbox...</h6>
               </div>
             <% else %>
-              <form method="POST" action="/clear">
+              <form method="POST" action="<%= to_absolute_url(@conn, "clear") %>">
                 <button class="btn btn-primary btn-block" type="submit">Delete Message Queue</button>
               </form>
               <%= for email <- @emails do %>
