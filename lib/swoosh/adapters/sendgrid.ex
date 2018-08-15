@@ -85,6 +85,7 @@ defmodule Swoosh.Adapters.Sendgrid do
       |> prepare_bcc(email)
       |> prepare_custom_vars(email)
       |> prepare_substitutions(email)
+      |> prepare_dynamic_template_data(email)
 
     Map.put(body, :personalizations, [personalizations])
   end
@@ -119,6 +120,14 @@ defmodule Swoosh.Adapters.Sendgrid do
   end
 
   defp prepare_substitutions(personalizations, _email), do: personalizations
+
+  defp prepare_dynamic_template_data(personalizations, %{
+         provider_options: %{dynamic_template_data: dynamic_template_data}
+       }) do
+    Map.put(personalizations, :dynamic_template_data, dynamic_template_data)
+  end
+
+  defp prepare_dynamic_template_data(personalizations, _email), do: personalizations
 
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
