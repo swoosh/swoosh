@@ -124,13 +124,7 @@ defmodule Swoosh.TestAssertions do
   end
 
   defp email_pattern(%{} = pattern, {key, value}) when key in [:to, :cc, :bcc] do
-    value =
-      case value do
-        addresses when is_list(addresses) -> value
-        address -> [address]
-      end
-
-    Map.put(pattern, key, Enum.map(value, &format_recipient/1))
+    Map.put(pattern, key, value |> List.wrap() |> Enum.map(&format_recipient/1))
   end
 
   defp email_pattern(%{} = pattern, {key, value}) do
