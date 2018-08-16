@@ -78,14 +78,11 @@ defmodule Swoosh.TestAssertions do
   @doc ~S"""
   Asserts no emails were sent.
   """
-  @spec refute_email_sent() :: false | no_return
   defmacro refute_email_sent() do
     quote do
       refute_received {:email, _}
     end
   end
-
-  @spec refute_email_sent(keyword | Email.t() | map) :: false | no_return
 
   @doc ~S"""
   Asserts email with `attributes` was not sent.
