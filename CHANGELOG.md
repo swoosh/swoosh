@@ -1,5 +1,15 @@
 ## Changelog
 
+## v0.17.0 - Unreleased
+
+### Added
+
+- Sendgrid adapter now supports `dynamic_template_data` ([#276](https://github.com/swoosh/swoosh/pull/276), thanks! @gnimona)
+- Multiple improvements for TestAssertions ([#277](https://github.com/swoosh/swoosh/pull/277), thanks! @13k for the execellent effort)
+  - added `assert_email_sent/0` that asserts any email was sent
+  - added `refute_email_sent/0` (macro) that asserts no email was sent ("alias" of assert_no_email_sent/0)
+  - added `refute_email_sent/1` (macro) that supports pattern matching
+
 ## v0.16.1 - 2018-08-08
 
 ### Changed
