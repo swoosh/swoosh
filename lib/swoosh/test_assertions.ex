@@ -20,7 +20,7 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(Email.t() | map) :: true | no_return
+  @spec assert_email_sent(Email.t() | Keyword.t()) :: true | no_return
 
   @doc ~S"""
   Asserts `email` was sent.
