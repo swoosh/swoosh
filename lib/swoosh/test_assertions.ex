@@ -87,7 +87,11 @@ defmodule Swoosh.TestAssertions do
   @doc ~S"""
   Asserts email with `attributes` was not sent.
 
-  It will convert list fields (`:to`, `:cc`, `:bcc`) to a single element list if a single value is
+  Performs pattern matching using the given pattern, equivalent to `pattern = email`.
+  
+  When a list of attributes is given, they will be converted to a pattern.
+
+  It converts list fields (`:to`, `:cc`, `:bcc`) to a single element list if a single value is
   given (`to: "email@example.com"` => `to: ["email@example.com"]`).
 
   After conversion, performs pattern matching using a map of email attributes, similar to
@@ -101,11 +105,6 @@ defmodule Swoosh.TestAssertions do
     end
   end
 
-  @doc ~S"""
-  Asserts email matching `pattern` was not sent.
-
-  Performs pattern matching using the given pattern, equivalent to `pattern = email`.
-  """
   defmacro refute_email_sent(pattern) do
     quote do
       refute_received {:email, unquote(pattern)}
