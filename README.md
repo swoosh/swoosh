@@ -71,7 +71,7 @@ end
     end
     ```
 
-3. (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add gen_stmp to your deps and list of applications:
+3. (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
 
     ```elixir
     # You only need to do this if you are using Elixir < 1.4
