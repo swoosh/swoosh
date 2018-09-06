@@ -60,8 +60,8 @@ defmodule Swoosh.Adapters.AmazonSESTest do
         "Action" => "SendRawEmail",
         "Version" => "2010-12-01",
       }
-      assert body_params[:Action] == conn.body_params[:Action]
-      assert body_params[:Version] == conn.body_params[:Version]
+      assert body_params["Action"] == conn.body_params["Action"]
+      assert body_params["Version"] == conn.body_params["Version"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
@@ -92,9 +92,9 @@ defmodule Swoosh.Adapters.AmazonSESTest do
         "Version" => "2010-12-01",
         "ConfigurationSetName" => "configuration_set_name1"
       }
-      assert body_params[:Action] == conn.body_params[:Action]
-      assert body_params[:Version] == conn.body_params[:Version]
-      assert body_params[:ConfigurationSetName] == conn.body_params[:ConfigurationSetName]
+      assert body_params["Action"] == conn.body_params["Action"]
+      assert body_params["Version"] == conn.body_params["Version"]
+      assert body_params["ConfigurationSetName"] == conn.body_params["ConfigurationSetName"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
@@ -126,8 +126,8 @@ defmodule Swoosh.Adapters.AmazonSESTest do
         "Version" => "2010-12-01",
       }
 
-      assert body_params[:Action] == conn.body_params[:Action]
-      assert body_params[:Version] == conn.body_params[:Version]
+      assert body_params["Action"] == conn.body_params["Action"]
+      assert body_params["Version"] == conn.body_params[" Version"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
