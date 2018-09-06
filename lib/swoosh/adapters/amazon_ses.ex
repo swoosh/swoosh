@@ -108,23 +108,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp encode_body(body) do
-    tags = body["Tags"]
-    body = Map.delete(body, "Tags")
     body |> Enum.sort() |> URI.encode_query()
-      |> encode_tags(tags)
-  end
-
-  defp encode_tags(encoded,nil), do: encoded
-
-  defp encode_tags(encoded, tags) do
-    value = Enum.reduce(tags, %{encoded: encoded, index: 1}, fn (x, acc) ->
-      encoded = acc[:encoded]
-      index = acc[:index]
-      encoded = encoded <> "&Tags.member.#{index}.Name=#{x[:name]}&Tags.member.#{index}.Value=#{x[:value]}"
-      %{encoded: encoded, index: index + 1}
-    end)
-
-    value[:encoded]
   end
 
   defp prepare_configuration_set_name(body, %{provider_options: %{configuration_set_name: name}}) do
@@ -134,7 +118,15 @@ defmodule Swoosh.Adapters.AmazonSES do
   defp prepare_configuration_set_name(body, _email), do: body
 
   defp prepare_tags(body, %{provider_options: %{tags: tags}}) do
-    Map.put(body, "Tags", tags)
+    Map.merge(
+      body,
+      tags
+      |> Enum.with_index(1)
+      |> Enum.flat_map(fn {%{name: name, value: value}, index} ->
+        [{"Tags.member.#{index}.Name", name}, {"Tags.member.#{index}.Value", value}]
+      end)
+      |> Enum.into(%{})
+    )
   end
 
   defp prepare_tags(body, _email), do: body
