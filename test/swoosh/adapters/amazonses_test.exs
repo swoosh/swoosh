@@ -72,7 +72,6 @@ defmodule Swoosh.Adapters.AmazonSESTest do
   end
 
   test "a sent email with tags results in :ok", %{bypass: bypass, config: config} do
-
     email =
       new()
       |> from("guybrush.threepwood@pirates.grog")
