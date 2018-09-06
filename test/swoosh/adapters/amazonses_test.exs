@@ -71,6 +71,39 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
+  test "a sent email with tags results in :ok", %{bypass: bypass, config: config} do
+
+    email =
+      new()
+      |> from("guybrush.threepwood@pirates.grog")
+      |> to("elaine.marley@triisland.gov")
+      |> subject("Mighty Pirate Newsletter")
+      |> text_body("Hello")
+      |> html_body("<h1>Hello</h1>")
+      |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
+      |> put_provider_option(:configuration_set_name, "configuration_set_name1")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      expected_path = "/"
+
+      body_params = %{
+        "Action" => "SendRawEmail",
+        "Version" => "2010-12-01",
+        "ConfigurationSetName" => "configuration_set_name1"
+      }
+      assert body_params[:Action] == conn.body_params[:Action]
+      assert body_params[:Version] == conn.body_params[:Version]
+      assert body_params[:ConfigurationSetName] == conn.body_params[:ConfigurationSetName]
+      assert expected_path == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
+  end
+
   test "delivery/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
