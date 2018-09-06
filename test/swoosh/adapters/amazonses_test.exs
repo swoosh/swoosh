@@ -85,15 +85,19 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/"
-
       body_params = %{
         "Action" => "SendRawEmail",
         "Version" => "2010-12-01",
-        "ConfigurationSetName" => "configuration_set_name1"
+        "ConfigurationSetName" => "configuration_set_name1",
+        "Tags.member.1.Name" => "name1",
+        "Tags.member.1.Value" => "test1"
       }
+
       assert body_params["Action"] == conn.body_params["Action"]
       assert body_params["Version"] == conn.body_params["Version"]
       assert body_params["ConfigurationSetName"] == conn.body_params["ConfigurationSetName"]
+      assert body_params["Tags.member.1.Name"] == conn.body_params["Tags.member.1.Name"]
+      assert body_params["Tags.member.1.Value"] == conn.body_params["Tags.member.1.Value"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
