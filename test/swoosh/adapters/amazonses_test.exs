@@ -127,7 +127,7 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       }
 
       assert body_params["Action"] == conn.body_params["Action"]
-      assert body_params["Version"] == conn.body_params[" Version"]
+      assert body_params["Version"] == conn.body_params["Version"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
