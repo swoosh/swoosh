@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.18.0 - 2018-09-07
+
+### Added
+
+- Support for AWS SES tags ([#283](https://github.com/swoosh/swoosh/pull/283), thanks! @OpakAlex)
+
 ## v0.17.0 - 2018-08-20
 
 ### Added
