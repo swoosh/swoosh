@@ -1,5 +1,16 @@
 ## Changelog
 
+## v0.19.0 - 2018-09-11
+
+### Added
+
+- New clasue for `Attachment.new/2` to support taking in in-memory data
+  - `Attachment.new({:data, data_in_memory}, opts)`
+
+### Changed
+
+- Fixed Mailgun Adapter not supporting attachments with in-memory data
+
 ## v0.18.0 - 2018-09-07
 
 ### Added
