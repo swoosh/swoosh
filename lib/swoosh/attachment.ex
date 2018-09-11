@@ -3,16 +3,16 @@ defmodule Swoosh.Attachment do
   Struct representing an attachment in an email.
   """
 
-  defstruct [:filename, :content_type, :path, :type, :headers, :data]
+  defstruct filename: nil, content_type: nil, path: nil, data: nil, type: :attachment, headers: []
 
   @type t :: %__MODULE__{
-    filename: String.t,
-    content_type: String.t,
-    path: String.t | nil,
-    data: binary | nil,
-    type: :inline | :attachment,
-    headers: [{String.t, String.t}],
-  }
+          filename: String.t(),
+          content_type: String.t(),
+          path: String.t() | nil,
+          data: binary | nil,
+          type: :inline | :attachment,
+          headers: [{String.t(), String.t()}]
+        }
 
   @doc ~S"""
   Creates a new Attachment
@@ -32,7 +32,7 @@ defmodule Swoosh.Attachment do
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
 
   """
-  @spec new(binary | struct, Keyword.t()) :: %__MODULE__{}
+  @spec new(binary | struct, Keyword.t() | map) :: %__MODULE__{}
   def new(path, opts \\ [])
 
   if Code.ensure_loaded?(Plug) do
@@ -54,18 +54,18 @@ defmodule Swoosh.Attachment do
     end
   end
 
-  def new(path, opts) do
-    filename = opts[:filename] || Path.basename(path)
-    content_type = opts[:content_type] || MIME.from_path(path)
-    type = opts[:type] || :attachment
-    headers = opts[:headers] || []
+  def new({:data, data}, opts) do
+    %{struct!(__MODULE__, opts) | data: data}
+  end
 
-    %__MODULE__{
-      path: path,
-      filename: filename,
-      content_type: content_type,
-      type: type,
-      headers: headers
+  def new(path, opts) do
+    attachment = struct!(__MODULE__, opts)
+
+    %{
+      attachment
+      | path: path,
+        filename: attachment.filename || Path.basename(path),
+        content_type: attachment.content_type || MIME.from_path(path)
     }
   end
 
