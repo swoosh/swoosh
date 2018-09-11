@@ -141,7 +141,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
-      |> put_provider_option(:custom_args, %{my_var: %{"my_message_id": 123}, my_other_var: %{"my_other_id": 1, "stuff": 2}})
+      |> put_provider_option(:custom_args, %{my_var: %{my_message_id: 123}, my_other_var: %{my_other_id: 1, stuff: 2}})
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
