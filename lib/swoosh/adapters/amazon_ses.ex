@@ -39,6 +39,18 @@ defmodule Swoosh.Adapters.AmazonSES do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Using with tags and configuration set
+
+      import Swoosh.Email
+
+      new()
+      |> from("guybrush.threepwood@pirates.grog")
+      |> to("elaine.marley@triisland.gov")
+      |> subject("Mighty Pirate Newsletter")
+      |> text_body("Hello")
+      |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
+      |> put_provider_option(:configuration_set_name, "configuration_set_name1")
   """
 
   use Swoosh.Adapter,
