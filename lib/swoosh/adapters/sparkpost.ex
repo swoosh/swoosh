@@ -17,6 +17,20 @@ defmodule Swoosh.Adapters.SparkPost do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Using with SparkPost templates
+
+      import Swoosh.Email
+      
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:template_id, "my-first-email")
+      |> put_provider_option(:substitution_data, %{
+        first_name: "Peter",
+        last_name: "Parker"
+      })
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
