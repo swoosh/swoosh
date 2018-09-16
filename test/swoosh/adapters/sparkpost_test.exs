@@ -211,6 +211,66 @@ defmodule Swoosh.Adapters.SparkPostTest do
     assert {:ok, Swoosh.json_library.decode!(@success_response)} == SparkPost.deliver(email, config)
   end
 
+  test "delivery/1 with template returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> cc("thor.odinson@example.com")
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:template_id, "my-first-email")
+      |> put_provider_option(:substitution_data, %{first_name: "Peter", last_name: "Parker"})
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      expected_path = "/transmissions"
+      body_params = %{
+        "content" => %{
+          "from" => %{
+            "email" => "tony.stark@example.com",
+            "name" => "T Stark"
+          },
+          "headers" => %{
+            "CC" => "thor.odinson@example.com"
+          },
+          "html" => nil,
+          "text" => nil,
+          "subject" => "Hello, Avengers!",
+          "template_id" => "my-first-email"
+        },
+        "recipients" => [
+          %{
+            "address" => %{
+              "email" => "steve.rogers@example.com",
+              "header_to" => "steve.rogers@example.com",
+              "name" => "Steve Rogers"
+            }
+          },
+          %{
+            "address" => %{
+              "email" => "thor.odinson@example.com",
+              "header_to" => "steve.rogers@example.com",
+              "name" => ""
+            }
+          }
+        ],
+        "substitution_data" => %{
+          "first_name" => "Peter",
+          "last_name" => "Parker"
+        }
+      }
+
+      assert body_params == conn.body_params
+      assert expected_path == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert {:ok, Swoosh.json_library.decode!(@success_response)} == SparkPost.deliver(email, config)
+  end
+
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect bypass, fn conn ->
       Plug.Conn.resp(conn, 422, "{}")

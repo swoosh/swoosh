@@ -80,6 +80,8 @@ defmodule Swoosh.Adapters.SparkPost do
     |> prepare_bcc(email)
     |> prepare_custom_headers(email)
     |> prepare_attachments(email)
+    |> prepare_template_id(email)
+    |> prepare_substitutions(email)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
@@ -144,6 +146,18 @@ defmodule Swoosh.Adapters.SparkPost do
       end)
     )
   end
+
+  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
+    put_in(body, [:content, :template_id], template_id)
+  end
+
+  defp prepare_template_id(body, _email), do: body
+
+  defp prepare_substitutions(body, %{provider_options: %{substitution_data: substitution_data}}) do
+    Map.put(body, :substitution_data, substitution_data)
+  end
+
+  defp prepare_substitutions(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     custom_headers = Map.merge(body.content.headers, headers)
