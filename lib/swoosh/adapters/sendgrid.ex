@@ -15,6 +15,13 @@ defmodule Swoosh.Adapters.Sendgrid do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Sandbox mode
+
+  For [sandbox mode](https://sendgrid.com/docs/for-developers/sending-email/sandbox-mode/),
+  use `put_provider_option/3`:
+
+      iex> new() |> put_provider_option(:mail_settings, %{sandbox_mode: %{enable: true}})
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -186,6 +193,7 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_asm(body, %{provider_options: %{asm: asm}}) do
     Map.put(body, :asm, asm)
   end
+
   defp prepare_asm(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
