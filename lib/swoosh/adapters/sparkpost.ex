@@ -17,6 +17,20 @@ defmodule Swoosh.Adapters.SparkPost do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Using with SparkPost templates
+
+      import Swoosh.Email
+      
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:template_id, "my-first-email")
+      |> put_provider_option(:substitution_data, %{
+        first_name: "Peter",
+        last_name: "Parker"
+      })
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -80,6 +94,8 @@ defmodule Swoosh.Adapters.SparkPost do
     |> prepare_bcc(email)
     |> prepare_custom_headers(email)
     |> prepare_attachments(email)
+    |> prepare_template_id(email)
+    |> prepare_substitutions(email)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
@@ -144,6 +160,18 @@ defmodule Swoosh.Adapters.SparkPost do
       end)
     )
   end
+
+  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
+    put_in(body, [:content, :template_id], template_id)
+  end
+
+  defp prepare_template_id(body, _email), do: body
+
+  defp prepare_substitutions(body, %{provider_options: %{substitution_data: substitution_data}}) do
+    Map.put(body, :substitution_data, substitution_data)
+  end
+
+  defp prepare_substitutions(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     custom_headers = Map.merge(body.content.headers, headers)

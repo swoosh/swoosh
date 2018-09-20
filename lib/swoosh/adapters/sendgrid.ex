@@ -15,6 +15,13 @@ defmodule Swoosh.Adapters.Sendgrid do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Sandbox mode
+
+  For [sandbox mode](https://sendgrid.com/docs/for-developers/sending-email/sandbox-mode/),
+  use `put_provider_option/3`:
+
+      iex> new() |> put_provider_option(:mail_settings, %{sandbox_mode: %{enable: true}})
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -38,7 +45,10 @@ defmodule Swoosh.Adapters.Sendgrid do
       {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{id: extract_id(headers)}}
 
-      {:ok, code, _headers, body} when code > 399 ->
+      {:ok, code, _headers, body} when code >= 400 and code <= 499 ->
+        {:error, {code, Swoosh.json_library().decode!(body)}}
+
+      {:ok, code, _headers, body} when code >= 500 ->
         {:error, {code, body}}
 
       {:error, reason} ->
@@ -66,6 +76,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_categories(email)
     |> prepare_asm(email)
     |> prepare_custom_headers(email)
+    |> prepare_mail_settings(email)
   end
 
   defp email_item({"", email}), do: %{email: email}
@@ -82,6 +93,7 @@ defmodule Swoosh.Adapters.Sendgrid do
       |> prepare_bcc(email)
       |> prepare_custom_vars(email)
       |> prepare_substitutions(email)
+      |> prepare_dynamic_template_data(email)
 
     Map.put(body, :personalizations, [personalizations])
   end
@@ -116,6 +128,14 @@ defmodule Swoosh.Adapters.Sendgrid do
   end
 
   defp prepare_substitutions(personalizations, _email), do: personalizations
+
+  defp prepare_dynamic_template_data(personalizations, %{
+         provider_options: %{dynamic_template_data: dynamic_template_data}
+       }) do
+    Map.put(personalizations, :dynamic_template_data, dynamic_template_data)
+  end
+
+  defp prepare_dynamic_template_data(personalizations, _email), do: personalizations
 
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
 
@@ -173,6 +193,7 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_asm(body, %{provider_options: %{asm: asm}}) do
     Map.put(body, :asm, asm)
   end
+
   defp prepare_asm(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
@@ -180,4 +201,10 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_custom_headers(body, %{headers: headers}) do
     Map.put(body, :headers, headers)
   end
+
+  defp prepare_mail_settings(body, %{provider_options: %{mail_settings: mail_settings}}) do
+    Map.put(body, :mail_settings, mail_settings)
+  end
+
+  defp prepare_mail_settings(body, _), do: body
 end

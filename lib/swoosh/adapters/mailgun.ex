@@ -5,7 +5,7 @@ defmodule Swoosh.Adapters.Mailgun do
   For reference: [Mailgun API docs](https://documentation.mailgun.com/api-sending.html#sending)
 
   ## Dependency
-  
+
   Mailgun adapter requires `Plug` to work properly.
 
   ## Example
@@ -82,7 +82,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_recipient_vars(email)
     |> prepare_tags(email)
     |> prepare_custom_headers(email)
-    |> encode_body
+    |> encode_body()
   end
 
   # example custom_vars
@@ -124,10 +124,15 @@ defmodule Swoosh.Adapters.Mailgun do
     |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
   end
 
-  defp prepare_file(attachment, type) do
+  defp prepare_file(%{data: nil} = attachment, type) do
     {:file, attachment.path,
-     {"form-data", [{~s/"name"/, ~s/"#{type}"/}, {~s/"filename"/, ~s/"#{attachment.filename}"/}]},
-     []}
+     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]}, []}
+  end
+
+  defp prepare_file(attachment, type) do
+    {"attachment-data", attachment.data,
+     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]},
+     [{"Content-Type", attachment.content_type}]}
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, :from, render_recipient(from))

@@ -1,5 +1,39 @@
 ## Changelog
 
+## v0.19.0 - 2018-09-11
+
+### Added
+
+- New clasue for `Attachment.new/2` to support taking in in-memory data
+  - `Attachment.new({:data, data_in_memory}, opts)`
+
+### Changed
+
+- Fixed Mailgun Adapter not supporting attachments with in-memory data
+
+## v0.18.0 - 2018-09-07
+
+### Added
+
+- Support for AWS SES tags ([#283](https://github.com/swoosh/swoosh/pull/283), thanks! @OpakAlex)
+
+## v0.17.0 - 2018-08-20
+
+### Added
+
+- Sendgrid adapter now supports `dynamic_template_data` ([#276](https://github.com/swoosh/swoosh/pull/276), thanks! @gnimona)
+- Multiple improvements for TestAssertions ([#277](https://github.com/swoosh/swoosh/pull/277), thanks! @13k for the execellent effort)
+  - added `assert_email_sent/0` that asserts any email was sent
+  - added `refute_email_sent/0` (macro) that asserts no email was sent ("alias" of assert_no_email_sent/0)
+  - added `refute_email_sent/1` (macro) that supports pattern matching
+
+## v0.16.1 - 2018-08-08
+
+### Changed
+
+- Decode SendGrid adapter 4xx response ([#266](https://github.com/swoosh/swoosh/pull/266), thanks! @jackmarchant)
+- Fix clear button path when base_path is set ([#271](https://github.com/swoosh/swoosh/pull/271), thanks! @jhchen)
+
 ## v0.16.0 - 2018-07-26
 
 ### Added

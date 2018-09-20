@@ -141,7 +141,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
-      |> put_provider_option(:custom_args, %{my_var: %{"my_message_id": 123}, my_other_var: %{"my_other_id": 1, "stuff": 2}})
+      |> put_provider_option(:custom_args, %{my_var: %{my_message_id: 123}, my_other_var: %{my_other_id: 1, stuff: 2}})
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
@@ -223,6 +223,35 @@ defmodule Swoosh.Adapters.SendgridTest do
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
+  test "delivery/1 with dynamic_template_data returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:dynamic_template_data, %{"name" => "Steve Rogers"})
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+                      "personalizations" => [%{
+                        "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
+                        "dynamic_template_data" => %{"name" => "Steve Rogers"}
+                      }],
+                      "content" => [%{"type" => "text/plain", "value" => "Hello"}, %{"type" => "text/html", "value" => "<h1>Hello</h1>"}],
+                      "subject" => "Hello, Avengers!"
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
+    end
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
   test "delivery/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
@@ -257,6 +286,26 @@ defmodule Swoosh.Adapters.SendgridTest do
     end
 
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
+  test "delivery/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
+    errors = "{\"errors\":[{\"field\": null, \"message\": \"too many requests\"}]}"
+
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 429, errors))
+
+    response = {:error, {429, %{"errors" => [%{"field" => nil, "message" => "too many requests"}]}}}
+
+    assert Sendgrid.deliver(email, config) == response
+  end
+
+  test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
+    errors = "{\"errors\":[{\"field\": \"identifier1\", \"message\": \"error message explained\"}]}"
+
+    Bypass.expect(bypass, &Plug.Conn.resp(&1, 400, errors))
+
+    response = {:error, {400, %{"errors" => [%{"field" => "identifier1", "message" => "error message explained"}]}}}
+
+    assert Sendgrid.deliver(email, config) == response
   end
 
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
@@ -342,4 +391,36 @@ defmodule Swoosh.Adapters.SendgridTest do
     assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
+  test "delivery/1 with mail_settings returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:mail_settings, %{sandbox_mode: %{enable: true}})
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+                      "personalizations" => [%{
+                        "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}]
+                      }],
+                      "content" => [%{"type" => "text/plain", "value" => "Hello"}, %{"type" => "text/html", "value" => "<h1>Hello</h1>"}],
+                      "subject" => "Hello, Avengers!",
+                      "mail_settings" => %{
+                        "sandbox_mode" => %{
+                          "enable" => true
+                        }
+                      }
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
+    end
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
 end

@@ -13,6 +13,16 @@ defmodule Swoosh.TestAssertions do
   alias Swoosh.Email
 
   @doc ~S"""
+  Asserts any email was sent.
+  """
+  @spec assert_email_sent() :: true | no_return
+  def assert_email_sent do
+    assert_received {:email, _}
+  end
+
+  @spec assert_email_sent(Email.t() | Keyword.t()) :: true | no_return
+
+  @doc ~S"""
   Asserts `email` was sent.
 
   You pass a keyword list to match on specific params.
@@ -37,7 +47,7 @@ defmodule Swoosh.TestAssertions do
 
   def assert_email_sent(params) when is_list(params) do
     assert_received {:email, email}
-    Enum.each(params, fn param -> assert_equal(email, param) end)
+    Enum.each(params, &assert_equal(email, &1))
   end
 
   defp assert_equal(email, {:subject, value}), do: assert(email.subject == value)
@@ -66,16 +76,72 @@ defmodule Swoosh.TestAssertions do
   defp assert_equal(email, {:html_body, value}), do: assert(email.html_body == value)
 
   @doc ~S"""
-  Asserts `email` was not sent.
+  Asserts no emails were sent.
   """
-  def assert_email_not_sent(email) do
-    refute_received {:email, ^email}
+  defmacro refute_email_sent() do
+    quote do
+      refute_received {:email, _}
+    end
+  end
+
+  @doc ~S"""
+  Asserts email with `attributes` was not sent.
+
+  Performs pattern matching using the given pattern, equivalent to `pattern = email`.
+  
+  When a list of attributes is given, they will be converted to a pattern.
+
+  It converts list fields (`:to`, `:cc`, `:bcc`) to a single element list if a single value is
+  given (`to: "email@example.com"` => `to: ["email@example.com"]`).
+
+  After conversion, performs pattern matching using a map of email attributes, similar to
+  `%{attributes...} = email`.
+  """
+  defmacro refute_email_sent(attributes) when is_list(attributes) do
+    expr = attributes |> email_pattern() |> Macro.escape()
+
+    quote do
+      refute_email_sent(unquote(expr))
+    end
+  end
+
+  defmacro refute_email_sent(pattern) do
+    quote do
+      refute_received {:email, unquote(pattern)}
+    end
+  end
+
+  defp email_pattern(attributes) when is_list(attributes) do
+    Enum.reduce(attributes, %{}, &email_pattern(&2, &1))
+  end
+
+  defp email_pattern(%{} = pattern, {key, value}) when key in [:from, :reply_to] do
+    Map.put(pattern, key, format_recipient(value))
+  end
+
+  defp email_pattern(%{} = pattern, {key, value}) when key in [:to, :cc, :bcc] do
+    Map.put(pattern, key, value |> List.wrap() |> Enum.map(&format_recipient/1))
+  end
+
+  defp email_pattern(%{} = pattern, {key, value}) do
+    Map.put(pattern, key, value)
   end
 
   @doc ~S"""
   Asserts no emails were sent.
   """
+  @spec assert_no_email_sent() :: false | no_return
   def assert_no_email_sent() do
-    refute_received {:email, _}
+    refute_email_sent()
+  end
+
+  @doc ~S"""
+  Asserts `email` was not sent.
+
+  Performs exact matching of the email struct.
+  """
+  @spec assert_email_not_sent(Email.t()) :: false | no_return
+  def assert_email_not_sent(%Email{} = email) do
+    refute_email_sent(^email)
   end
 end

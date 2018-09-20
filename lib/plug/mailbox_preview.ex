@@ -31,7 +31,7 @@ if Code.ensure_loaded?(Plug) do
     def call(conn, opts) do
       conn =
         conn
-        |> assign(:base_path, opts[:base_path] || "")
+        |> assign(:base_path, opts[:base_path] || "/")
         |> assign(:storage_driver, opts[:storage_driver] || Memory)
       super(conn, opts)
     end
@@ -43,7 +43,7 @@ if Code.ensure_loaded?(Plug) do
       conn.assigns.storage_driver.delete_all()
 
       conn
-      |> put_resp_header("location", "/")
+      |> put_resp_header("location", conn.assigns.base_path)
       |> send_resp(302, '')
     end
 
@@ -103,7 +103,7 @@ if Code.ensure_loaded?(Plug) do
     end
 
     defp to_absolute_url(conn, path) do
-      URI.parse("#{conn.assigns.base_path}/#{path}").path
+      Path.join(conn.assigns.base_path, path)
     end
 
     defp render_recipient(recipient) do

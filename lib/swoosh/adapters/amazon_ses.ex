@@ -39,6 +39,18 @@ defmodule Swoosh.Adapters.AmazonSES do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Using with tags and configuration set
+
+      import Swoosh.Email
+
+      new()
+      |> from("guybrush.threepwood@pirates.grog")
+      |> to("elaine.marley@triisland.gov")
+      |> subject("Mighty Pirate Newsletter")
+      |> text_body("Hello")
+      |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
+      |> put_provider_option(:configuration_set_name, "configuration_set_name1")
   """
 
   use Swoosh.Adapter,
@@ -103,11 +115,33 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> Map.put("Action", @action)
     |> Map.put("Version", Keyword.get(config, :version, @version))
     |> Map.put("RawMessage.Data", generate_raw_message_data(email, config))
+    |> prepare_configuration_set_name(email)
+    |> prepare_tags(email)
   end
 
   defp encode_body(body) do
     body |> Enum.sort() |> URI.encode_query()
   end
+
+  defp prepare_configuration_set_name(body, %{provider_options: %{configuration_set_name: name}}) do
+    Map.put(body, "ConfigurationSetName", name)
+  end
+
+  defp prepare_configuration_set_name(body, _email), do: body
+
+  defp prepare_tags(body, %{provider_options: %{tags: tags}}) do
+    Map.merge(
+      body,
+      tags
+      |> Enum.with_index(1)
+      |> Enum.flat_map(fn {%{name: name, value: value}, index} ->
+        [{"Tags.member.#{index}.Name", name}, {"Tags.member.#{index}.Value", value}]
+      end)
+      |> Enum.into(%{})
+    )
+  end
+
+  defp prepare_tags(body, _email), do: body
 
   defp generate_raw_message_data(email, config) do
     email
