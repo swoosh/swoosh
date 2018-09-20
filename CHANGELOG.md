@@ -1,5 +1,13 @@
 ## Changelog
 
+## v0.20.0 -2018-09-20
+
+### Added
+
+- Support `mail_settings` for sendgrid adapter ([#291](https://github.com/swoosh/swoosh/pull/291), thanks! @rhnonose)
+  - which enables `sandbox_mode`
+- Support for SparkPost templates ([#292](https://github.com/swoosh/swoosh/pull/292), thanks! @kamilbielawski)
+
 ## v0.19.0 - 2018-09-11
 
 ### Added
