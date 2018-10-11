@@ -51,11 +51,11 @@ defmodule Sample.UserController do
     UserEmail.welcome(user) |> Mailer.deliver
   end
 end
-
 ```
+
 ## Installation
 
-1. Add swoosh to your list of dependencies in `mix.exs`:
+1.  Add swoosh to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
@@ -63,7 +63,7 @@ end
     end
     ```
 
-2. (Optional - only for Elixir < 1.4) Ensure swoosh is started before your application:
+2.  (Optional - only for Elixir &lt; 1.4) Ensure swoosh is started before your application:
 
     ```elixir
     def application do
@@ -71,7 +71,7 @@ end
     end
     ```
 
-3. (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
+3.  (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
 
     ```elixir
     # You only need to do this if you are using Elixir < 1.4
@@ -90,16 +90,16 @@ end
 Swoosh supports the most popular transactional email providers out of the box and also has a SMTP adapter. Below is the
 list of the adapters currently included:
 
-Provider   | Swoosh adapter
-:----------| :------------------------
-SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)
-Sendgrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)
-Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)
-Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)
-Postmark   | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)
-SparkPost  | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)
-Amazon SES | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)
-Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)
+| Provider   | Swoosh adapter                                                                                |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)           |
+| Sendgrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)   |
+| Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)   |
+| Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)     |
+| Postmark   | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)   |
+| SparkPost  | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content) |
+| Amazon SES | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content) |
+| Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)             |
 
 Configure which adapter you want to use by updating your `config/config.exs` file:
 
@@ -183,14 +183,12 @@ file as an argument and we will do the rest. It also works with a `%Plug.Upload{
 
 All built-in adapters have support for attachments.
 
-```
-new()
-|> to("peter@example.com")
-|> from({"Jarvis", "jarvis@example.com"})
-|> subject("Invoice May")
-|> text_body("Here is the invoice for your superhero services in May.")
-|> attachment("/Users/jarvis/invoice-peter-may.pdf")
-```
+    new()
+    |> to("peter@example.com")
+    |> from({"Jarvis", "jarvis@example.com"})
+    |> subject("Invoice May")
+    |> text_body("Here is the invoice for your superhero services in May.")
+    |> attachment("/Users/jarvis/invoice-peter-may.pdf")
 
 ## Testing
 
@@ -257,27 +255,23 @@ all gets published to [hexdocs](http://hexdocs.pm/swoosh).
 
 We are grateful for any contributions. Before you submit an issue or a pull request, remember to:
 
-* Look at our [Contributing guidelines](CONTRIBUTING.md)
-* Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
-* Do a quick search in the issue tracker to make sure the issues hasn't been reported yet.
-* Look and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Be nice and have fun!
+-   Look at our [Contributing guidelines](CONTRIBUTING.md)
+-   Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
+-   Do a quick search in the issue tracker to make sure the issues hasn't been reported yet.
+-   Look and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Be nice and have fun!
 
 ### Running tests
 
 Clone the repo and fetch its dependencies:
 
-```
-$ git clone https://github.com/swoosh/swoosh.git
-$ cd swoosh
-$ mix deps.get
-$ mix test
-```
+    $ git clone https://github.com/swoosh/swoosh.git
+    $ cd swoosh
+    $ mix deps.get
+    $ mix test
 
 ### Building docs
 
-```
-$ MIX_ENV=docs mix docs
-```
+    $ MIX_ENV=docs mix docs
 
 ## LICENSE
 
