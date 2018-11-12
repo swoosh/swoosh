@@ -30,6 +30,7 @@ defmodule Swoosh.Adapters.Mandrill do
       |> subject("Hello, Avengers!")
       |> put_provider_option(:template_name, "welcome")
       |> put_provider_option(:template_content, [%{"name" => "START_DATE", "content" => "Next Monday"}])
+      |> put_provider_option(:request_options, [{:connect_timeout, 15_000}, {:recv_timeout, 15_000}])
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -45,7 +46,9 @@ defmodule Swoosh.Adapters.Mandrill do
     body = email |> prepare_body(config) |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
-    case :hackney.post(url, @headers, body, [:with_body]) do
+    request_options = [ :with_body | get_request_options(email)]
+
+    case :hackney.post(url, @headers, body, request_options) do
       {:ok, 200, _headers, body} ->
         parse_response(body)
 
@@ -56,6 +59,11 @@ defmodule Swoosh.Adapters.Mandrill do
         {:error, reason}
     end
   end
+
+  defp get_request_options(%Email{provider_options: %{request_options: request_options}}) do
+    request_options
+  end
+  defp get_request_options(_), do: []
 
   defp parse_response(body) when is_binary(body),
     do: body |> Swoosh.json_library().decode! |> hd |> parse_response
