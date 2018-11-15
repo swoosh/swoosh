@@ -22,6 +22,12 @@ defmodule Swoosh.Adapters.Sendgrid do
   use `put_provider_option/3`:
 
       iex> new() |> put_provider_option(:mail_settings, %{sandbox_mode: %{enable: true}})
+  
+  ## To access supported request options from [Hackney](https://github.com/benoitc/hackney/blob/master/doc/hackney.md),
+  use `put_private/3`
+
+      new() 
+      |> put_private(:request_options, [{:connect_timeout, 15_000}, {:recv_timeout, 15_000}, {max_redirect, 10}])
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -41,7 +47,9 @@ defmodule Swoosh.Adapters.Sendgrid do
     body = email |> prepare_body() |> Swoosh.json_library().encode!
     url = [base_url(config), @api_endpoint]
 
-    case :hackney.post(url, headers, body, [:with_body]) do
+    request_options = [ :with_body | get_request_options(email)]
+
+    case :hackney.post(url, headers, body, request_options) do
       {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{id: extract_id(headers)}}
 
@@ -55,6 +63,11 @@ defmodule Swoosh.Adapters.Sendgrid do
         {:error, reason}
     end
   end
+
+  defp get_request_options(%Email{private: %{request_options: request_options}}) do
+    request_options
+  end
+  defp get_request_options(_), do: []
 
   defp extract_id(headers) do
     headers
