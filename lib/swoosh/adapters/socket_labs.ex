@@ -67,9 +67,6 @@ defmodule Swoosh.Adapters.SocketLabs do
        }),
        do: %{response_code: error_code, message_results: results, receipt: receipt}
 
-  defp parse_response(%{"ErrorCode" => error_code, "MessageResuts" => results}),
-    do: %{error_code: nil, message_results: results}
-
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_messages(email) do
@@ -92,6 +89,7 @@ defmodule Swoosh.Adapters.SocketLabs do
   end
 
   defp prepare_item({nil, address}), do: %{"emailAddress" => address}
+  defp prepare_item({"", address}), do: prepare_item(address)
   defp prepare_item({name, address}), do: %{"friendlyName" => name, "emailAddress" => address}
   defp prepare_item(address), do: prepare_item({nil, address})
 
@@ -147,8 +145,8 @@ defmodule Swoosh.Adapters.SocketLabs do
 
   defp prepare_api_template(body, _), do: body
 
-  defp prepare_message_id(body, %{provider_options: %{prepare_message_id: prepare_message_id}}) do
-    Map.put(body, "MessageId", prepare_message_id)
+  defp prepare_message_id(body, %{provider_options: %{message_id: message_id}}) do
+    Map.put(body, "MessageId", message_id)
   end
 
   defp prepare_message_id(body, _), do: body
@@ -172,12 +170,8 @@ defmodule Swoosh.Adapters.SocketLabs do
     Map.put(body, "CustomHeaders", custom_headers)
   end
 
-  defp prepare_merge_data(body, %{provider_options: %{merge_data: %{per_message: per_message}}}) do
-    put_in(body, ["MergeData", "PerMessage"], per_message)
-  end
-
-  defp prepare_merge_data(body, %{provider_options: %{merge_data: %{global: global}}}) do
-    put_in(body, ["MergeData", "Global"], global)
+  defp prepare_merge_data(body, %{provider_options: %{merge_data: merge_data}}) do
+    Map.put(body, "MergeData", merge_data)
   end
 
   defp prepare_merge_data(body, _), do: body
