@@ -13,14 +13,20 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   Starts the server
   """
   def start_link() do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    case GenServer.start_link(__MODULE__, [], name: {:global, __MODULE__}) do
+      {:ok, pid} ->
+        {:ok, pid}
+      {:error, {:already_started, pid}} ->
+        Process.link(pid)
+        {:ok, pid}
+    end
   end
 
   @doc """
   Stops the server
   """
   def stop() do
-    GenServer.stop(__MODULE__)
+    GenServer.stop({:global, __MODULE__})
   end
 
   @doc ~S"""
@@ -37,7 +43,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
   """
   def push(email) do
-    GenServer.call(__MODULE__, {:push, email})
+    GenServer.call({:global, __MODULE__}, {:push, email})
   end
 
   @doc ~S"""
@@ -57,7 +63,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       0
   """
   def pop() do
-    GenServer.call(__MODULE__, :pop)
+    GenServer.call({:global, __MODULE__}, :pop)
   end
 
   @doc ~S"""
@@ -73,7 +79,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
   """
   def get(id) do
-    GenServer.call(__MODULE__, {:get, id})
+    GenServer.call({:global, __MODULE__}, {:get, id})
   end
 
   @doc ~S"""
@@ -89,7 +95,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       [%Swoosh.Email{from: {"", "tony.stark@example.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}]
   """
   def all() do
-    GenServer.call(__MODULE__, :all)
+    GenServer.call({:global, __MODULE__}, :all)
   end
 
   @doc ~S"""
@@ -107,7 +113,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       []
   """
   def delete_all() do
-    GenServer.call(__MODULE__, :delete_all)
+    GenServer.call({:global, __MODULE__}, :delete_all)
   end
 
   # Callbacks
