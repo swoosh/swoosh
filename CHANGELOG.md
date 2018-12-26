@@ -1,6 +1,18 @@
 ## Changelog
 
-## v0.20.0 -2018-09-20
+## v0.21.0 Unreleased
+
+### Added
+
+- SocketLabs Adapter ([#320](https://github.com/swoosh/swoosh/pull/320), thanks! @mpran)
+
+### Changed
+
+- `Swoosh.Adapters.Local.Storage.Memory` is now started as a global process
+  - so when using `LocalAdapter` and testing muli-node setup, you can preview emails from all nodes
+  - ([#321](https://github.com/swoosh/swoosh/pull/321), thanks! @jhchen)
+
+## v0.20.0 - 2018-09-20
 
 ### Added
 
