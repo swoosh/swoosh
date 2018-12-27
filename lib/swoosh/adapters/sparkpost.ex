@@ -21,7 +21,7 @@ defmodule Swoosh.Adapters.SparkPost do
   ## Using with SparkPost templates
 
       import Swoosh.Email
-      
+
       new()
       |> from("tony.stark@example.com")
       |> to("steve.rogers@example.com")
@@ -45,7 +45,7 @@ defmodule Swoosh.Adapters.SparkPost do
     body = email |> prepare_body |> Swoosh.json_library().encode!
     url = [endpoint(config), "/transmissions"]
 
-    case :hackney.post(url, headers, body, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
         {:ok, Swoosh.json_library().decode!(body)}
 

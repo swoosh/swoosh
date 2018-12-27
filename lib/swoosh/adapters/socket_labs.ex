@@ -45,7 +45,7 @@ defmodule Swoosh.Adapters.SocketLabs do
 
     url = [base_url(config), @api_endpoint]
 
-    case :hackney.post(url, headers, body, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
         {:ok, parse_response(body)}
 

@@ -1,5 +1,5 @@
 defmodule Swoosh.Adapters.SMTPTest do
-  use AdapterCase, async: true
+  use Swoosh.AdapterCase, async: true
 
   alias Swoosh.Adapters.SMTP
 
@@ -74,7 +74,7 @@ defmodule Swoosh.Adapters.SMTPTest do
       SMTP.deliver(@email, [tls: "INVALID"])
     end
   end
-  
+
   test "gen_smtp_config/1 with invalid args for string parameters" do
     for config <- [:username, :password, :relay] do
       assert_raise ArgumentError, """
