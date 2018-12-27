@@ -1,10 +1,11 @@
 ## Changelog
 
-## v0.21.0 Unreleased
+## v0.21.0 - 2018-12-27
 
 ### Added
 
 - SocketLabs Adapter ([#320](https://github.com/swoosh/swoosh/pull/320), thanks! @mpran)
+- You can now pass options to `hackney` by setting `private: %{hackney_options: [...]}` in `%Email{}` ([#327](https://github.com/swoosh/swoosh/pull/327))
 
 ### Changed
 
