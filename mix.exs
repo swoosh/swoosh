@@ -51,7 +51,6 @@ defmodule Swoosh.Mixfile do
       {:gen_smtp, "~> 0.12", optional: true},
       {:cowboy, "~> 1.0.1 or ~> 1.1 or ~> 2.4", optional: true},
       {:plug, "~> 1.4", optional: true},
-      {:credo, "~> 1.0", only: [:dev, :test]},
       {:bypass, "~> 1.0", only: :test},
       {:ex_doc, "~> 0.16", only: :docs, runtime: false},
       {:inch_ex, ">= 0.0.0", only: :docs}
