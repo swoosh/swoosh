@@ -41,7 +41,7 @@ defmodule Swoosh.Adapters.Gmail do
   @api_endpoint "/users/me/messages/send"
 
   def deliver(%Email{} = email, config \\ []) do
-    access_token = config[:access_token] || raise("access_token is required")
+    access_token = config[:access_token] || raise(ArgumentError, "access_token is required")
 
     headers = [
       {"Authorization", "Bearer #{access_token}"},
@@ -93,18 +93,18 @@ defmodule Swoosh.Adapters.Gmail do
   defp base_url(config), do: config[:base_url] || @base_url
 
   def prepare_body(email) do
-      Mail.build_multipart()
-      |> prepare_from(email)
-      |> prepare_to(email)
-      |> prepare_cc(email)
-      |> prepare_bcc(email)
-      |> prepare_subject(email)
-      |> prepare_text(email)
-      |> prepare_html(email)
-      |> prepare_attachments(email)
-      |> prepare_reply_to(email)
-      |> Mail.Renderers.RFC2822.render()
-      |> parse_bcc(email)
+    Mail.build_multipart()
+    |> prepare_from(email)
+    |> prepare_to(email)
+    |> prepare_cc(email)
+    |> prepare_bcc(email)
+    |> prepare_subject(email)
+    |> prepare_text(email)
+    |> prepare_html(email)
+    |> prepare_attachments(email)
+    |> prepare_reply_to(email)
+    |> Mail.Renderers.RFC2822.render()
+    |> parse_bcc(email)
   end
 
   defp prepare_from(body, %{from: nil}), do: body
@@ -120,6 +120,7 @@ defmodule Swoosh.Adapters.Gmail do
   defp prepare_bcc(rendered_mail, %{bcc: bcc}), do: Mail.put_bcc(rendered_mail, bcc)
 
   defp parse_bcc(rendered_message, %{bcc: []}), do: rendered_message
+
   defp parse_bcc(rendered_message, %{bcc: bcc}),
     do: Mail.Renderers.RFC2822.render_header("bcc", bcc) <> "\r\n" <> rendered_message
 

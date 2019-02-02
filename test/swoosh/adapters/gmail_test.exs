@@ -120,6 +120,17 @@ defmodule Swoosh.Adapters.GmailTest do
              {:ok, %{id: "234jkasdfl", thread_id: "12312adfsx", labels: ["SENT"]}}
   end
 
+  test "deliver/1 without :access_token raises exception", %{config: config, valid_email: email} do
+    assert_raise(
+      ArgumentError,
+      "access_token is required",
+      fn ->
+        config = Keyword.delete(config, :access_token)
+        Gmail.deliver(email, config)
+      end
+    )
+  end
+
   defp prepare_body(mail) do
     Map.put(%{}, "raw", Base.url_encode64(mail))
   end
