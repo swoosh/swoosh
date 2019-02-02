@@ -31,22 +31,24 @@ defmodule Swoosh.Adapters.GmailTest do
       conn = parse(conn)
       boundary = get_boundary(conn.body_params)
 
-      body_params = ~s"""
-      To: "" <tony.stark@example.com>\r
-      Subject: Hello, Avengers!\r
-      Mime-Version: 1.0\r
-      From: "" <steve.rogers@example.com>\r
-      Content-Type: multipart/alternative; boundary="#{boundary}"\r
-      \r
-      --#{boundary}\r
-      Content-Type: text/html\r
-      Content-Transfer-Encoding: quoted-printable\r
-      \r
-      <h1>Hello</h1>\r
-      --#{boundary}--\
-      """ |> Base.url_encode64()
+      body_params =
+        ~s"""
+        To: "" <tony.stark@example.com>\r
+        Subject: Hello, Avengers!\r
+        Mime-Version: 1.0\r
+        From: "" <steve.rogers@example.com>\r
+        Content-Type: multipart/alternative; boundary="#{boundary}"\r
+        \r
+        --#{boundary}\r
+        Content-Type: text/html\r
+        Content-Transfer-Encoding: quoted-printable\r
+        \r
+        <h1>Hello</h1>\r
+        --#{boundary}--\
+        """
+        |> prepare_body()
 
-      assert Map.put(%{}, "raw", body_params) == conn.body_params
+      assert body_params == conn.body_params
       assert "/users/me/messages/send" == conn.request_path
       assert "POST" == conn.method
 
@@ -55,6 +57,10 @@ defmodule Swoosh.Adapters.GmailTest do
 
     assert Gmail.deliver(email, config) ==
              {:ok, %{id: "234jkasdfl", thread_id: "12312adfsx", labels: ["SENT"]}}
+  end
+
+  defp prepare_body(mail) do
+    Map.put(%{}, "raw", Base.url_encode64(mail))
   end
 
   defp get_boundary(%{"raw" => raw} = _body) do
