@@ -12,6 +12,8 @@ defmodule Swoosh.Adapters.Gmail do
 
   Gmail adapter requires `Mail` dependency to format message as RFC 2822 message.
 
+  Because `Mail` library removes Bcc headers, they are being added after email is
+  rendered.
   ## Example
 
       # config/congig.exs
