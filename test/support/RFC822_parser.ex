@@ -27,9 +27,7 @@ defmodule Plug.Parsers.RFC822 do
         {:ok, parsed, conn}
 
       error ->
-        raise "Malformed body #{error}"
+        raise Plug.Parsers.ParseError, "Malformed body #{error}"
     end
-  rescue
-    e -> reraise(Plug.Parsers.ParseError, [exception: e], __STACKTRACE__)
   end
 end
