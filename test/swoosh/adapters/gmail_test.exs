@@ -29,7 +29,7 @@ defmodule Swoosh.Adapters.GmailTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      boundary = get_boundary(conn.body_params)
+      boundary = Mail.Message.get_boundary(conn.body_params)
 
       body_params =
         ~s"""
@@ -46,7 +46,7 @@ defmodule Swoosh.Adapters.GmailTest do
         <h1>Hello</h1>\r
         --#{boundary}--\
         """
-        |> prepare_body()
+        |> Mail.Parsers.RFC2822.parse()
 
       assert body_params == conn.body_params
       assert "/users/me/messages/send" == conn.request_path
@@ -81,7 +81,7 @@ defmodule Swoosh.Adapters.GmailTest do
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      boundary = get_boundary(conn.body_params)
+      boundary = Mail.Message.get_boundary(conn.body_params)
 
       body_params =
         ~s"""
@@ -107,7 +107,7 @@ defmodule Swoosh.Adapters.GmailTest do
         <h1>Hello</h1>\r
         --#{boundary}--\
         """
-        |> prepare_body()
+        |> Mail.Parsers.RFC2822.parse()
 
       assert body_params == conn.body_params
       assert "/users/me/messages/send" == conn.request_path
@@ -132,13 +132,12 @@ defmodule Swoosh.Adapters.GmailTest do
   end
 
   defp prepare_body(mail) do
-    Map.put(%{}, "raw", Base.url_encode64(mail))
+    mail
   end
 
-  defp get_boundary(%{"raw" => raw} = _body) do
-    raw
-    |> Base.url_decode64!()
+  defp get_boundary(body) do
+    body
     |> Mail.Parsers.RFC2822.parse()
-    |> Mail.Message.get_boundary()
+    |> Mail.Message.get_boundary(body)
   end
 end
