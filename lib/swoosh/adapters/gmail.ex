@@ -45,17 +45,12 @@ defmodule Swoosh.Adapters.Gmail do
 
     headers = [
       {"Authorization", "Bearer #{access_token}"},
-      {"Content-Type", "application/json"}
+      {"Content-Type", "message/rfc822"}
     ]
 
     url = [base_url(config), @api_endpoint]
 
-    encoded_email = prepare_body(email) |> Base.url_encode64()
-
-    body =
-      %{}
-      |> Map.put("raw", encoded_email)
-      |> Swoosh.json_library().encode!()
+    body = prepare_body(email)
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
