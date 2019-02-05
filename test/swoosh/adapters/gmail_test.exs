@@ -61,8 +61,7 @@ defmodule Swoosh.Adapters.GmailTest do
 
   test "delivery/1 with all fields returns :ok", %{
     bypass: bypass,
-    config: config,
-    valid_email: email
+    config: config
   } do
     email =
       new()
@@ -129,15 +128,5 @@ defmodule Swoosh.Adapters.GmailTest do
         Gmail.deliver(email, config)
       end
     )
-  end
-
-  defp prepare_body(mail) do
-    mail
-  end
-
-  defp get_boundary(body) do
-    body
-    |> Mail.Parsers.RFC2822.parse()
-    |> Mail.Message.get_boundary(body)
   end
 end
