@@ -19,7 +19,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   end
 
   @doc false
-  def prepare_message(email, config) do
+  def prepare_message(email, config \\ []) do
     email
     |> prepare_headers()
     |> prepare_parts(email, config)
