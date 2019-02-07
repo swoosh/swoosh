@@ -87,7 +87,7 @@ defmodule Swoosh.Adapters.Gmail do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  def prepare_body(email) do
+  defp prepare_body(email) do
     Mail.build_multipart()
     |> prepare_from(email)
     |> prepare_to(email)
@@ -99,7 +99,10 @@ defmodule Swoosh.Adapters.Gmail do
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
     |> Mail.Renderers.RFC2822.render()
-    |> parse_bcc(email)
+    # When message is rendered, bcc header will be removed and we need to prepend bcc list to the
+    # begining of the message. Gmail will handle it from there.
+    # https://github.com/DockYard/elixir-mail/blob/master/lib/mail/renderers/rfc_2822.ex#L161
+    |> prepend_bcc(email)
   end
 
   defp prepare_from(body, %{from: nil}), do: body
@@ -114,9 +117,9 @@ defmodule Swoosh.Adapters.Gmail do
   defp prepare_bcc(rendered_mail, %{bcc: []}), do: rendered_mail
   defp prepare_bcc(rendered_mail, %{bcc: bcc}), do: Mail.put_bcc(rendered_mail, bcc)
 
-  defp parse_bcc(rendered_message, %{bcc: []}), do: rendered_message
+  defp prepend_bcc(rendered_message, %{bcc: []}), do: rendered_message
 
-  defp parse_bcc(rendered_message, %{bcc: bcc}),
+  defp prepend_bcc(rendered_message, %{bcc: bcc}),
     do: Mail.Renderers.RFC2822.render_header("bcc", bcc) <> "\r\n" <> rendered_message
 
   defp prepare_subject(body, %{subject: subject}), do: Mail.put_subject(body, subject)
