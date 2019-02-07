@@ -101,7 +101,7 @@ defmodule Swoosh.Adapters.Gmail do
     |> Mail.Renderers.RFC2822.render()
     # When message is rendered, bcc header will be removed and we need to prepend bcc list to the
     # begining of the message. Gmail will handle it from there.
-    # https://github.com/DockYard/elixir-mail/blob/master/lib/mail/renderers/rfc_2822.ex#L161
+    # https://github.com/DockYard/elixir-mail/blob/v0.2.0/lib/mail/renderers/rfc_2822.ex#L139
     |> prepend_bcc(email)
   end
 
