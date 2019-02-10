@@ -29,6 +29,7 @@ defmodule Swoosh.Adapter do
   """
   @callback deliver(email, config) :: {:ok, term} | {:error, term}
 
+  @spec validate_config([atom], Keyword.t()) :: :ok | no_return
   def validate_config(required_config, config) do
     missing_keys =
       Enum.reduce(required_config, [], fn key, missing_keys ->
@@ -48,6 +49,8 @@ defmodule Swoosh.Adapter do
     """
   end
 
+  @spec validate_dependency([module | {atom, module}]) ::
+          :ok | {:error, [module | {:atom | module}]}
   def validate_dependency(required_deps) do
     if Enum.all?(required_deps, fn
          {_lib, module} -> Code.ensure_loaded?(module)
