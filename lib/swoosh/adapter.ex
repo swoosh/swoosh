@@ -29,6 +29,11 @@ defmodule Swoosh.Adapter do
   """
   @callback deliver(email, config) :: {:ok, term} | {:error, term}
 
+  @callback validate_config(config) :: :ok | no_return
+  @callback validate_dependency() :: :ok | [module | {atom, module}]
+
+  @optional_callbacks validate_dependency: 0
+
   @spec validate_config([atom], Keyword.t()) :: :ok | no_return
   def validate_config(required_config, config) do
     missing_keys =
