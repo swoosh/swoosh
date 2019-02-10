@@ -152,10 +152,11 @@ defmodule Swoosh.Mailer do
 
     with adapter when not is_nil(adapter) <- adapter,
          {:module, _} <- Code.ensure_loaded(adapter),
+         true <- function_exported?(adapter, :validate_dependency, 0),
          :ok <- adapter.validate_dependency() do
       :ok
     else
-      nil ->
+      no_match when no_match in [nil, false] ->
         :ok
 
       {:error, :nofile} ->
