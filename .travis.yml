@@ -33,11 +33,11 @@ matrix:
     otp_release: 19.3
   - elixir: 1.8
     otp_release: 20.3
-after_success:
+after_script:
   - mix deps.get --only docs
   - MIX_ENV=docs mix inch.report
 stages:
-  - name: after_success
+  - name: after_script
     if: type = push
 notifications:
   recipients:
