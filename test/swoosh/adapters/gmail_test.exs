@@ -120,7 +120,7 @@ defmodule Swoosh.Adapters.GmailTest do
   end
 
   defmodule GMailer do
-    use Swoosh.Mailer, adapter: Swoosh.Adapters.Gmail
+    use Swoosh.Mailer, otp_app: :swoosh_test, adapter: Swoosh.Adapters.Gmail
   end
 
   test "deliver/1 without :access_token raises exception", %{config: config, valid_email: email} do
