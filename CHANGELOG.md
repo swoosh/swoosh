@@ -1,5 +1,15 @@
 ## Changelog
 
+## v0.21.1 - 2019-02-11
+
+### Added
+
+- callback definition for `validate_config` and `validate_dependency` on Adapter behaviour
+
+### Changed
+
+- Use `plug_cowboy` instead of `plug` to work with both Cowboy 1 and 2
+
 ## v0.21.0 - 2018-12-27
 
 ### Added
