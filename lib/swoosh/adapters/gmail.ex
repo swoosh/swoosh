@@ -33,23 +33,21 @@ defmodule Swoosh.Adapters.Gmail do
       See https://developers.google.com/oauthplayground when developing
   """
 
-  use Swoosh.Adapter, required_deps: [mail: Mail]
+  use Swoosh.Adapter, required_config: [:access_token], required_deps: [mail: Mail]
 
   alias Swoosh.Email
 
   @base_url "https://www.googleapis.com/upload/gmail/v1"
   @api_endpoint "/users/me/messages/send"
 
-  def deliver(%Email{} = email, config \\ []) do
-    access_token = config[:access_token] || raise(ArgumentError, "access_token is required")
-
+  def deliver(%Email{} = email, config) do
+    url = [base_url(config), @api_endpoint]
+    
     headers = [
-      {"Authorization", "Bearer #{access_token}"},
+      {"Authorization", "Bearer #{config[:access_token]}"},
       {"Content-Type", "message/rfc822"}
     ]
-
-    url = [base_url(config), @api_endpoint]
-
+    
     body = prepare_body(email)
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
