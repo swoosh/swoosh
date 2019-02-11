@@ -14,6 +14,7 @@ defmodule Swoosh.Adapters.Gmail do
 
   Because `Mail` library removes Bcc headers, they are being added after email is
   rendered.
+
   ## Example
 
       # config/congig.exs
