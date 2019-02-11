@@ -128,7 +128,7 @@ defmodule Swoosh.Adapters.GmailTest do
       ArgumentError,
       fn ->
         config = Keyword.delete(config, :access_token)
-        Gmailer.deliver(email, config)
+        GMailer.deliver(email, config)
       end
     )
   end
