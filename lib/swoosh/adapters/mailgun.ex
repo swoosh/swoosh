@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.Mailgun do
     headers = prepare_headers(email, config)
     url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, prepare_body(email), email) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Swoosh.json_library().decode!(body)["id"]}}
 

@@ -45,7 +45,7 @@ defmodule Swoosh.Adapters.Mandrill do
     body = email |> prepare_body(config) |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
-    case :hackney.post(url, @headers, body, [:with_body]) do
+    case Swoosh.ApiClient.post(url, @headers, body, email) do
       {:ok, 200, _headers, body} ->
         parse_response(body)
 

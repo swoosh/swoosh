@@ -12,24 +12,17 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   @doc false
   def body(email, config) do
-    {type, subtype, headers, parts} = prepare_message(email)
-    options = prepare_options(config)
-    :mimemail.encode({type, subtype, headers, [], parts}, options)
+    {message_config, config} = Keyword.split(config, [:transfer_encoding])
+    {type, subtype, headers, parts} = prepare_message(email, message_config)
+    {encoding_config, _config} = Keyword.split(config, [:dkim])
+    :mimemail.encode({type, subtype, headers, [], parts}, encoding_config)
   end
 
   @doc false
-  def prepare_message(email) do
+  def prepare_message(email, config) do
     email
     |> prepare_headers()
-    |> prepare_parts(email)
-  end
-
-  @doc false
-  def prepare_options(config) do
-    case config[:dkim] do
-      nil -> []
-      dkim -> [dkim: dkim]
-    end
+    |> prepare_parts(email, config)
   end
 
   defp prepare_headers(email) do
@@ -71,7 +64,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
          attachments: [],
          html_body: html_body,
          text_body: text_body
-       }) do
+       }, config) do
     case {text_body, html_body} do
       {text_body, nil} ->
         headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
@@ -82,7 +75,10 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
         {"text", "html", headers, html_body}
 
       {text_body, html_body} ->
-        parts = [prepare_part(:plain, text_body), prepare_part(:html, html_body)]
+        parts = [
+          prepare_part(:plain, text_body, config),
+          prepare_part(:html, html_body, config)
+        ]
         {"multipart", "alternative", headers, parts}
     end
   end
@@ -91,9 +87,9 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
          attachments: attachments,
          html_body: html_body,
          text_body: text_body
-       }) do
+       }, config) do
     content_part =
-      case {prepare_part(:plain, text_body), prepare_part(:html, html_body)} do
+      case {prepare_part(:plain, text_body, config), prepare_part(:html, html_body, config)} do
         {text_part, nil} ->
           text_part
 
@@ -109,15 +105,17 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     {"multipart", "mixed", headers, [content_part | attachment_parts]}
   end
 
-  defp prepare_part(_subtype, nil), do: nil
+  defp prepare_part(_subtype, nil, _config), do: nil
 
-  defp prepare_part(subtype, content) do
+  defp prepare_part(subtype, content, config) do
     subtype_string = to_string(subtype)
+    transfer_encoding =
+      Keyword.get(config, :transfer_encoding, "quoted-printable")
 
     {"text", subtype_string,
      [
        {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
-       {"Content-Transfer-Encoding", "quoted-printable"}
+       {"Content-Transfer-Encoding", transfer_encoding}
      ],
      [
        {"content-type-params", [{"charset", "utf-8"}]},

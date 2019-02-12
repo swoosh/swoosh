@@ -1,5 +1,5 @@
 defmodule Swoosh.Adapters.SendgridTest do
-  use AdapterCase, async: true
+  use Swoosh.AdapterCase, async: true
 
   import Swoosh.Email
   alias Swoosh.Adapters.Sendgrid

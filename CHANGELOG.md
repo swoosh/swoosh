@@ -1,5 +1,36 @@
 ## Changelog
 
+## v0.21.1 - 2019-02-11
+
+### Added
+
+- callback definition for `validate_config` and `validate_dependency` on Adapter behaviour
+
+### Changed
+
+- Use `plug_cowboy` instead of `plug` to work with both Cowboy 1 and 2
+
+## v0.21.0 - 2018-12-27
+
+### Added
+
+- SocketLabs Adapter ([#320](https://github.com/swoosh/swoosh/pull/320), thanks! @mpran)
+- You can now pass options to `hackney` by setting `private: %{hackney_options: [...]}` in `%Email{}` ([#327](https://github.com/swoosh/swoosh/pull/327))
+
+### Changed
+
+- `Swoosh.Adapters.Local.Storage.Memory` is now started as a global process
+  - so when using `LocalAdapter` and testing muli-node setup, you can preview emails from all nodes
+  - ([#321](https://github.com/swoosh/swoosh/pull/321), thanks! @jhchen)
+
+## v0.20.0 - 2018-09-20
+
+### Added
+
+- Support `mail_settings` for sendgrid adapter ([#291](https://github.com/swoosh/swoosh/pull/291), thanks! @rhnonose)
+  - which enables `sandbox_mode`
+- Support for SparkPost templates ([#292](https://github.com/swoosh/swoosh/pull/292), thanks! @kamilbielawski)
+
 ## v0.19.0 - 2018-09-11
 
 ### Added

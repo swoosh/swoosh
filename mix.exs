@@ -1,7 +1,7 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.19.0"
+  @version "0.21.1"
 
   def project do
     [
@@ -50,11 +50,11 @@ defmodule Swoosh.Mixfile do
       {:jason, "~> 1.0"},
       {:gen_smtp, "~> 0.12", optional: true},
       {:cowboy, "~> 1.0.1 or ~> 1.1 or ~> 2.4", optional: true},
-      {:plug, "~> 1.4", optional: true},
-      {:credo, "~> 0.8", only: [:dev, :test]},
-      {:bypass, "~> 0.8", only: :test},
+      {:plug_cowboy, ">= 1.0.0", optional: true},
+      {:bypass, "~> 1.0", only: :test},
       {:ex_doc, "~> 0.16", only: :docs, runtime: false},
-      {:inch_ex, ">= 0.0.0", only: :docs}
+      {:inch_ex, ">= 0.0.0", only: :docs},
+      {:mail, "~> 0.2", optional: true}
     ]
   end
 

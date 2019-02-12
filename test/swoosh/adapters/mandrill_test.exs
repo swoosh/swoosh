@@ -1,5 +1,5 @@
 defmodule Swoosh.Adapters.MandrillTest do
-  use AdapterCase, async: true
+  use Swoosh.AdapterCase, async: true
 
   import Swoosh.Email
   alias Swoosh.Adapters.Mandrill

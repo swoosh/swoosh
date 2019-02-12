@@ -24,6 +24,7 @@ defmodule Swoosh.Email do
   This key is reserved for use with adapters, libraries and frameworks.
 
   * `private` - a map of values that are for use by libraries/frameworks, example: `%{phoenix_template: "welcome.html.eex"}`
+    - `hackney_options` will be passed to underlining hackney post call
 
   ## Provider options
 
