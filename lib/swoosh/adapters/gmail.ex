@@ -134,7 +134,7 @@ defmodule Swoosh.Adapters.Gmail do
   end
 
   defp prepare_attachment(attachment, body) do
-    Mail.put_attachment(body, {filename, Swoosh.Attachment.get_content(attachment)})
+    Mail.put_attachment(body, {attachment.filename, Swoosh.Attachment.get_content(attachment)})
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
