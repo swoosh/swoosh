@@ -133,13 +133,8 @@ defmodule Swoosh.Adapters.Gmail do
     Enum.reduce(attachments, body, &prepare_attachment/2)
   end
 
-  defp prepare_attachment(%{data: nil, path: path, filename: filename}, body) do
-    data = File.read!(path)
-    Mail.put_attachment(body, {filename, data})
-  end
-
-  defp prepare_attachment(%{data: data, filename: filename}, body) do
-    Mail.put_attachment(body, {filename, data})
+  defp prepare_attachment(attachment, body) do
+    Mail.put_attachment(body, {filename, Swoosh.Attachment.get_content(attachment)})
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
