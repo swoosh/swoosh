@@ -9,6 +9,7 @@ branches:
     - master
 elixir: '1.8'
 otp_release: '21.2'
+script: mix test.ci
 stages:
   - test
   - name: inch
@@ -16,7 +17,7 @@ stages:
 jobs:
   include:
     - stage: test
-    
+
     - otp_release: '21.2'
       elixir: '1.7'
 
@@ -28,7 +29,7 @@ jobs:
 
     - otp_release: '20.3'
       elixir: '1.5'
-      
+
     - otp_release: '19.3'
       elixir: '1.5'
 
