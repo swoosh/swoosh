@@ -1,5 +1,12 @@
 ## Changelog
 
+## v0.22.0 - 2019-02-20
+
+### Added
+
+- Gmail Adapter ([#342](https://github.com/swoosh/swoosh/pull/342), thanks! @mpran)
+- Option to change encoding for SMTP Adapter ([#341](https://github.com/swoosh/swoosh/pull/341), thanks! @ivan-kolmychek)
+
 ## v0.21.1 - 2019-02-11
 
 ### Added
