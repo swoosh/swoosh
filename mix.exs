@@ -1,7 +1,7 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.22.0"
+  @version "0.22.1"
 
   def project do
     [
@@ -31,7 +31,15 @@ defmodule Swoosh.Mixfile do
 
       # Suppress warnings
       xref: [
-        exclude: [:gen_smtp_client, :mimemail, Plug.Adapters.Cowboy, Plug.Conn.Query]
+        exclude: [
+          :gen_smtp_client,
+          :mimemail,
+          Plug.Adapters.Cowboy,
+          Plug.Conn.Query,
+          Plug.Cowboy,
+          Mail,
+          Mail.Renderers.RFC2822
+        ]
       ]
     ]
   end

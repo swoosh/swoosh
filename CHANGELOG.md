@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.22.1 - 2019-02-22
+
+### Fixed
+
+- Warnings for missing optional deps (mainly `Mail` added in Gmail Adapter PR) ([#356](https://github.com/swoosh/swoosh/issues/356))
+
 ## v0.22.0 - 2019-02-20
 
 ### Added
