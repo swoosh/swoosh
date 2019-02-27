@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.22.2 - 2019-02-28
+
+### Fixed
+
+- Sparkpost attachment regression ([#359](https://github.com/swoosh/swoosh/pull/359), thanks! @LostKobrakai)
+
 ## v0.22.1 - 2019-02-22
 
 ### Fixed
