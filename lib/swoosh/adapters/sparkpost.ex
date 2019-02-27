@@ -154,7 +154,6 @@ defmodule Swoosh.Adapters.SparkPost do
   defp inject_attachments(body, key, attachments) do
     put_in(
       body.content[key],
-      key,
       Enum.map(attachments, fn %{content_type: type, filename: name} = attachment ->
         %{type: type, name: name, data: Swoosh.Attachment.get_content(attachment, :base64)}
       end)
