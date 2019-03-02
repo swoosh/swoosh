@@ -1,5 +1,24 @@
 ## Changelog
 
+## v0.22.2 - 2019-02-28
+
+### Fixed
+
+- Sparkpost attachment regression ([#359](https://github.com/swoosh/swoosh/pull/359), thanks! @LostKobrakai)
+
+## v0.22.1 - 2019-02-22
+
+### Fixed
+
+- Warnings for missing optional deps (mainly `Mail` added in Gmail Adapter PR) ([#356](https://github.com/swoosh/swoosh/issues/356))
+
+## v0.22.0 - 2019-02-20
+
+### Added
+
+- Gmail Adapter ([#342](https://github.com/swoosh/swoosh/pull/342), thanks! @mpran)
+- Option to change encoding for SMTP Adapter ([#341](https://github.com/swoosh/swoosh/pull/341), thanks! @ivan-kolmychek)
+
 ## v0.21.1 - 2019-02-11
 
 ### Added
