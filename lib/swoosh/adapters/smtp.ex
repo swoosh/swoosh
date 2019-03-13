@@ -59,7 +59,7 @@ defmodule Swoosh.Adapters.SMTP do
     retries: &String.to_integer/1,
     ssl: {&String.to_atom/1, [true, false]},
     tls: {&String.to_atom/1, [:always, :never, :if_available]},
-    auth: {&String.to_atom/1, [:always, :if_available]},
+    auth: {&String.to_atom/1, [:always, :never, :if_available]},
     no_mx_lookups: {&String.to_atom/1, [true, false]}
   }
   @config_keys Map.keys(@config_transformations)
