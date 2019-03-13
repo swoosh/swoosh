@@ -59,7 +59,7 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert_raise ArgumentError, """
     auth is not configured properly,
     got: INVALID, expected one of the followings:
-    :always, :if_available
+    :always, :never, :if_available
     """, fn ->
       SMTP.deliver(@email, [auth: "INVALID"])
     end
