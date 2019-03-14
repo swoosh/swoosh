@@ -1,5 +1,5 @@
 defmodule Swoosh.Adapters.MailjetTest do
-  use Swoosh.AdapterCase, async: true
+  use AdapterCase, async: true
 
   import Swoosh.Email
   alias Swoosh.Adapters.Mailjet
@@ -34,8 +34,8 @@ defmodule Swoosh.Adapters.MailjetTest do
 
     config = [
       base_url: "http://localhost:#{bypass.port}",
-      public_key: "public_key",
-      private_key: "private_key"
+      api_key: "public_key",
+      secret: "private_key"
     ]
 
     valid_email =
@@ -173,8 +173,7 @@ defmodule Swoosh.Adapters.MailjetTest do
               "ErrorIdentifier" => "error id",
               "ErrorCode" => "mj-0004",
               "StatusCode" => 400,
-              "ErrorMessage" =>
-                ~s(Type mismatch. Expected type "array of emails".),
+              "ErrorMessage" => ~s(Type mismatch. Expected type "array of emails".),
               "ErrorRelatedTo" => ["HTMLPart", "TemplateID"]
             }
           ]
@@ -208,10 +207,26 @@ defmodule Swoosh.Adapters.MailjetTest do
       "ErrorIdentifier" => "error id",
       "ErrorCode" => "mj-0002",
       "StatusCode" => 400,
-      "ErrorMessage" =>
-        "Malformed JSON, please review the syntax and properties types."
+      "ErrorMessage" => "Malformed JSON, please review the syntax and properties types."
     }
 
     assert Mailjet.deliver(email, config) == {:error, {400, error_result}}
+  end
+
+  test "delivery/1 - sends valid auth header", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+      auth_header = ["Basic #{Base.encode64("public_key:private_key")}"]
+
+      assert ^auth_header = Plug.Conn.get_req_header(conn, "authorization")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    Mailjet.deliver(email, config)
   end
 end
