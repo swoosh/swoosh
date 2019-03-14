@@ -1,5 +1,15 @@
 ## Changelog
 
+## v0.23.0 - 2019-03-15
+
+### Added
+
+- Mailjet Adapter ([#367](https://github.com/swoosh/swoosh/pull/367), thanks! @panmichal and @denispeplin)
+
+### Fixed
+
+- Allows `:never` as an options to SMTP `auth` configuration
+
 ## v0.22.2 - 2019-02-28
 
 ### Fixed
