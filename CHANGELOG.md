@@ -1,5 +1,55 @@
 ## Changelog
 
+## v0.22.2 - 2019-02-28
+
+### Fixed
+
+- Sparkpost attachment regression ([#359](https://github.com/swoosh/swoosh/pull/359), thanks! @LostKobrakai)
+
+## v0.22.1 - 2019-02-22
+
+### Fixed
+
+- Warnings for missing optional deps (mainly `Mail` added in Gmail Adapter PR) ([#356](https://github.com/swoosh/swoosh/issues/356))
+
+## v0.22.0 - 2019-02-20
+
+### Added
+
+- Gmail Adapter ([#342](https://github.com/swoosh/swoosh/pull/342), thanks! @mpran)
+- Option to change encoding for SMTP Adapter ([#341](https://github.com/swoosh/swoosh/pull/341), thanks! @ivan-kolmychek)
+
+## v0.21.1 - 2019-02-11
+
+### Added
+
+- callback definition for `validate_config` and `validate_dependency` on Adapter behaviour
+
+### Changed
+
+- Use `plug_cowboy` instead of `plug` to work with both Cowboy 1 and 2
+
+## v0.21.0 - 2018-12-27
+
+### Added
+
+- SocketLabs Adapter ([#320](https://github.com/swoosh/swoosh/pull/320), thanks! @mpran)
+- You can now pass options to `hackney` by setting `private: %{hackney_options: [...]}` in `%Email{}` ([#327](https://github.com/swoosh/swoosh/pull/327))
+
+### Changed
+
+- `Swoosh.Adapters.Local.Storage.Memory` is now started as a global process
+  - so when using `LocalAdapter` and testing muli-node setup, you can preview emails from all nodes
+  - ([#321](https://github.com/swoosh/swoosh/pull/321), thanks! @jhchen)
+
+## v0.20.0 - 2018-09-20
+
+### Added
+
+- Support `mail_settings` for sendgrid adapter ([#291](https://github.com/swoosh/swoosh/pull/291), thanks! @rhnonose)
+  - which enables `sandbox_mode`
+- Support for SparkPost templates ([#292](https://github.com/swoosh/swoosh/pull/292), thanks! @kamilbielawski)
+
 ## v0.19.0 - 2018-09-11
 
 ### Added

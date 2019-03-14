@@ -47,7 +47,7 @@ defmodule Swoosh.Adapters.Postmark do
     params = email |> prepare_body |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
-    case :hackney.post(url, headers, params, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, params, email) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Swoosh.json_library().decode!(body)["MessageID"]}}
 

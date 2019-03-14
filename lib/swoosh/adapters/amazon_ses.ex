@@ -74,7 +74,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     url = base_url(config)
     headers = prepare_headers(@base_headers, query, config)
 
-    case :hackney.post(url, headers, query, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, query, email) do
       {:ok, 200, _headers, body} ->
         {:ok, parse_response(body)}
 

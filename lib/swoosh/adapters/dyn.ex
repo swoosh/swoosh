@@ -43,7 +43,7 @@ defmodule Swoosh.Adapters.Dyn do
       |> add_auth_token(config[:api_key])
       |> encode_body
 
-    case :hackney.post(url, headers, body, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
         {:ok, Swoosh.json_library().decode!(body)["response"]["message"]}
 

@@ -41,7 +41,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     body = email |> prepare_body() |> Swoosh.json_library().encode!
     url = [base_url(config), @api_endpoint]
 
-    case :hackney.post(url, headers, body, [:with_body]) do
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, code, headers, _body} when code >= 200 and code <= 399 ->
         {:ok, %{id: extract_id(headers)}}
 
