@@ -38,7 +38,7 @@ defmodule Swoosh.Adapters.Mailjet do
         {:ok, %{id: get_message_id(body)}}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, body}}
+        {:error, {error_code, Swoosh.json_library().decode!(body)}}
 
       {:error, reason} ->
         {:error, reason}
@@ -79,6 +79,7 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_variables(email)
+    |> prepare_template_id(email)
     |> prepare_custom_headers(email)
     |> wrap_into_messages
     |> Swoosh.json_library.encode!()
@@ -137,4 +138,12 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   defp prepare_variables(body, _email), do: body
+
+  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
+    body
+    |> Map.put("TemplateID", template_id)
+    |> Map.put("TemplateLanguage", true)
+  end
+
+  defp prepare_template_id(body, _email), do: body
 end
