@@ -138,7 +138,7 @@
                   <dd class="col-sm-10"><%= render_recipient(@email.to) %></dd>
 
                   <dt class="col-sm-2">Sent at</dt>
-                  <dd class="col-sm-10"><%= @email.private.sent_at %></dd>
+                  <dd class="col-sm-10" data-datetime="<%= @email.private.sent_at %>"></dd>
 
                   <dt class="col-sm-2">Cc</dt>
                   <dd class="col-sm-10"><%= render_recipient(@email.cc) %></dd>
@@ -201,5 +201,11 @@
     </div>
 
     </div>
+    <script>
+      const datetimes = Array.from(document.querySelectorAll('[data-datetime]'));
+      for (let dt of datetimes) {
+        dt.textContent = new Date(dt.dataset.datetime).toLocaleString();
+      }
+    </script>
   </body>
 </html>
