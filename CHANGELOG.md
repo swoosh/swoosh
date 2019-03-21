@@ -1,5 +1,12 @@
 ## Changelog
 
+## v0.23.1 - 2019-03-22
+
+### Added
+
+- Local mailbox now displays a Sent At
+- Local mailbox now has a title
+
 ## v0.23.0 - 2019-03-15
 
 ### Added
