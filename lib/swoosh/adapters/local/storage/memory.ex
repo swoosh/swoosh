@@ -127,7 +127,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
     email =
       email
       |> Swoosh.Email.header("Message-ID", id)
-      |> Swoosh.Email.header("Sent-At", DateTime.utc_now())
+      |> Swoosh.Email.private("Sent-At", DateTime.utc_now() |> DateTime.to_iso8601())
 
     attachments_with_data =
       Enum.map(email.attachments, fn attachment -> 
