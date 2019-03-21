@@ -137,9 +137,6 @@
                   <dt class="col-sm-2">To</dt>
                   <dd class="col-sm-10"><%= render_recipient(@email.to) %></dd>
 
-                  <dt class="col-sm-2">Sent at</dt>
-                  <dd class="col-sm-10" data-datetime="<%= @email.private.sent_at %>"></dd>
-
                   <dt class="col-sm-2">Cc</dt>
                   <dd class="col-sm-10"><%= render_recipient(@email.cc) %></dd>
 
@@ -158,6 +155,9 @@
                     <dt class="col-sm-2"><%= name %></dt>
                     <dd class="col-sm-10"><%= inspect(value) %></dd>
                   <% end %>
+
+                  <dt class="col-sm-2">Sent at</dt>
+                  <dd class="col-sm-10" data-datetime="<%= @email.private.sent_at %>"></dd>
                 </dl>
               </div>
             </div>
