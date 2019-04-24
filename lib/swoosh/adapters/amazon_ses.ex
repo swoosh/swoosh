@@ -17,7 +17,7 @@ defmodule Swoosh.Adapters.AmazonSES do
 
       def deps do
         [{:swoosh, "~> 0.10.0"},
-         {:gen_smtp, "~> 0.12.0"}]
+         {:gen_smtp, "~> 0.13.0"}]
       end
 
   See Also:

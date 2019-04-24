@@ -56,7 +56,7 @@ defmodule Swoosh.Mixfile do
       {:hackney, "~> 1.9"},
       {:mime, "~> 1.1"},
       {:jason, "~> 1.0"},
-      {:gen_smtp, "~> 0.12", optional: true},
+      {:gen_smtp, "~> 0.13", optional: true},
       {:cowboy, "~> 1.0.1 or ~> 1.1 or ~> 2.4", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
       {:bypass, "~> 1.0", only: :test},

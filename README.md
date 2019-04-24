@@ -82,7 +82,7 @@ end
     def deps do
       [
         {:swoosh, "~> 0.23"},
-        {:gen_smtp, "~> 0.12"}
+        {:gen_smtp, "~> 0.13"}
       ]
     end
     ```
