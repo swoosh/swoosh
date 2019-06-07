@@ -227,6 +227,9 @@ For email to reach this mailbox you will need to set your `Mailer` adapter to `S
 # in config/dev.exs
 config :sample, Mailer,
   adapter: Swoosh.Adapters.Local
+  
+# to change the preview server port
+# config :swoosh, preview_port: 4001
 ```
 
 Then, use the Mix task to start the mailbox preview server
