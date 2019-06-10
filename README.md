@@ -229,7 +229,7 @@ config :sample, Mailer,
   adapter: Swoosh.Adapters.Local
   
 # to change the preview server port
-# config :swoosh, preview_port: 4001
+config :swoosh, preview_port: 4001
 ```
 
 Then, use the Mix task to start the mailbox preview server
