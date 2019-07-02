@@ -94,6 +94,7 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_global_merge_vars(email)
     |> prepare_metadata(email)
     |> prepare_merge_vars(email)
+    |> prepare_merge_language(email)
     |> prepare_custom_headers(email)
   end
 
@@ -191,6 +192,12 @@ defmodule Swoosh.Adapters.Mandrill do
   end
 
   defp prepare_merge_vars(body, _email), do: body
+
+  defp prepare_merge_language(body, %{provider_options: %{merge_language: merge_language}}) do
+    Map.put(body, :merge_language, merge_language)
+  end
+
+  defp prepare_merge_language(body, _email), do: body
 
   defp prepare_metadata(body, %{provider_options: %{metadata: metadata}}) do
     Map.put(body, :metadata, metadata)
