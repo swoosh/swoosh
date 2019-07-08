@@ -126,4 +126,21 @@ defmodule Swoosh.MailerTest do
       NoAdapterMailer.deliver(email)
     end
   end
+
+  test "delivery/1 with perform_deliveries: false returns :error", %{valid_email: email} do
+    defmodule Mailer do
+      use Swoosh.Mailer,
+        otp_app: :swoosh, adapter: FakeAdapter, perform_deliveries: false
+    end
+    Application.put_env(:swoosh, Swoosh.MailerTest.DynamicMailer, [
+          perform_deliveries: fn -> false end
+        ])
+    defmodule DynamicMailer do
+      use Swoosh.Mailer,
+        otp_app: :swoosh, adapter: FakeAdapter
+    end
+
+    assert {:error, :deliveries_disabled} = Mailer.deliver(email)
+    assert {:error, :deliveries_disabled} = DynamicMailer.deliver(email)
+  end
 end

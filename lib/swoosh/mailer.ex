@@ -75,7 +75,12 @@ defmodule Swoosh.Mailer do
       def deliver(email, config \\ [])
 
       def deliver(email, config) do
-        Mailer.deliver(email, parse_config(config))
+        mailer_config = parse_config(config)
+        case perform_deliveries(mailer_config) do
+          true -> Mailer.deliver(email, mailer_config)
+          false -> {:error, :deliveries_disabled}
+        end
+
       end
 
       @spec deliver!(Swoosh.Email.t(), Keyword.t()) :: term | no_return
@@ -98,6 +103,14 @@ defmodule Swoosh.Mailer do
 
       defp parse_config(config) do
         Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
+      end
+
+      defp perform_deliveries(config) do
+        case Keyword.get(config, :perform_deliveries, true) do
+          value when is_boolean(value) -> value
+          value when is_function(value) -> value.()
+          _ -> true
+        end
       end
     end
   end
