@@ -14,7 +14,7 @@ defmodule Swoosh.Email do
   * `bcc` - the intended blind carbon copy recipient(s) of the email, example: `[{"Janet Pym", "wasp.avengers@example.com"}]`
   * `text_body` - the content of the email in plaintext, example: `"Hello"`
   * `html_body` - the content of the email in HTML, example: `"<h1>Hello</h1>"`
-  * `reply_to` - the email address that should receive replies, example: `{"Clints Barton", "hawk.eye@example.com"}`
+  * `reply_to` - the email address that should receive replies, example: `{"Clint Barton", "hawk.eye@example.com"}`
   * `headers` - a map of headers that should be included in the email, example: `%{"X-Accept-Language" => "en-us, en"}`
   * `attachments` - a list of attachments that should be included in the email, example: `[%{path: "/data/uuid-random", filename: "att.zip", content_type: "application/zip"}]`
   * `assigns` - a map of values that correspond with any template variables, example: `%{"first_name" => "Bruce"}`
