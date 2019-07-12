@@ -1,5 +1,17 @@
 ## Changelog
 
+## v0.23.3 - 2019-07-11
+
+### Added
+
+- Support mailchimp merge language option ([#391](https://github.com/swoosh/swoosh/pull/391), thanks! @Deepwalker)
+
+### Fixed
+
+- "Clint Barton" @jc00ke's <most important OSS contribution ever> ([#393](https://github.com/swoosh/swoosh/pull/393))
+
+### Fixed
+
 ## v0.23.2 - 2019-06-04
 
 ### Added
