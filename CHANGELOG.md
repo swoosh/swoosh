@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- "Clint Barton" @jc00ke's <most important OSS contribution ever> ([#393](https://github.com/swoosh/swoosh/pull/393))
+- "Clint Barton" @jc00ke's "most important OSS contribution ever" ([#393](https://github.com/swoosh/swoosh/pull/393))
 
 ### Fixed
 
