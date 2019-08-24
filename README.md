@@ -227,18 +227,15 @@ For email to reach this mailbox you will need to set your `Mailer` adapter to `S
 # in config/dev.exs
 config :sample, Mailer,
   adapter: Swoosh.Adapters.Local
-  
-# to change the preview server port
+
+# to change the preview server port (4000 by default)
 config :swoosh, preview_port: 4001
+
+# to run the preview server together as part of your phoenix app
+config :swoosh, serve_mailbox: true, preview_port: 4001
 ```
 
-Then, use the Mix task to start the mailbox preview server
-
-```console
-$ mix swoosh.mailbox.server
-```
-
-Or in your Phoenix project you can `forward` directly to the plug, like this:
+If you dont want to run the preview server as part of your app as shown above, in your Phoenix project you can also `forward` directly to the plug if you so choose, like this:
 
 ```elixir
 # in web/router.ex
@@ -249,6 +246,12 @@ if Mix.env == :dev do
     forward "/mailbox", Plug.Swoosh.MailboxPreview, [base_path: "/dev/mailbox"]
   end
 end
+```
+
+And finally you can also use the following Mix task to start the mailbox preview server independently  though note that it won't display/process emails being sent from outside its own process (great for testing within iex).
+
+```console
+$ mix swoosh.mailbox.server
 ```
 
 If you are curious, this is how it looks:
