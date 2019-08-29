@@ -12,8 +12,8 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   @doc """
   Starts the server
   """
-  def start_link() do
-    case GenServer.start_link(__MODULE__, [], name: {:global, __MODULE__}) do
+  def start_link(args \\ []) do
+    case GenServer.start_link(__MODULE__, args, name: {:global, __MODULE__}) do
       {:ok, pid} ->
         {:ok, pid}
       {:error, {:already_started, pid}} ->
@@ -130,10 +130,10 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       |> Swoosh.Email.put_private(:sent_at, DateTime.utc_now() |> DateTime.to_iso8601())
 
     attachments_with_data =
-      Enum.map(email.attachments, fn attachment -> 
+      Enum.map(email.attachments, fn attachment ->
         %{attachment | data: Swoosh.Attachment.get_content(attachment)}
       end)
-    
+
     email = %{email | attachments: attachments_with_data}
     {:reply, email, [email | emails]}
   end
