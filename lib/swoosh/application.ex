@@ -4,11 +4,12 @@ defmodule Swoosh.Application do
   require Logger
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      worker(Swoosh.Adapters.Local.Storage.Memory, [])
-    ]
+    children =
+      if Application.get_env(:swoosh, :local, true) do
+        [Swoosh.Adapters.Local.Storage.Memory]
+      else
+        []
+      end
 
     children =
       if Application.get_env(:swoosh, :serve_mailbox) do
