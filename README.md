@@ -228,10 +228,10 @@ For email to reach this mailbox you will need to set your `Mailer` adapter to `S
 config :sample, Mailer,
   adapter: Swoosh.Adapters.Local
 
-# to change the preview server port (4000 by default)
-config :swoosh, preview_port: 4001
+# to run the preview server together as part of your app
+config :swoosh, serve_mailbox: true
 
-# to run the preview server together as part of your phoenix app
+# to change the preview server port (4000 by default)
 config :swoosh, serve_mailbox: true, preview_port: 4001
 ```
 
