@@ -260,7 +260,7 @@ If you are curious, this is how it looks:
 
 ### Production
 
-Swoosh starts a memory storage process for local adapter by default. Normally it does not harm being left around in production.
+Swoosh starts a memory storage process for local adapter by default. Normally it does no harm being left around in production.
 However, if it is causing problems, or you don't like having it around, it can be disabled like so:
 
 ```elixir
