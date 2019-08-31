@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.23.4 - 2019-08-31
+
+### Fixed
+
+- Prevent causing problems in multi node setup by allowing `Swoosh.Adapters.Local.Storage.Memory` to be disabled with config flag
+
 ## v0.23.3 - 2019-07-11
 
 ### Added
