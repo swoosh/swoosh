@@ -139,10 +139,12 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp prepare_variables(body, _email), do: body
 
-  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
+  defp prepare_template_id(body, %{provider_options: %{template_id: template_id} = provider_options}) do
     body
     |> Map.put("TemplateID", template_id)
     |> Map.put("TemplateLanguage", true)
+    |> Map.put("TemplateErrorDeliver", provider_options.template_error_deliver)
+    |> Map.put("TemplateErrorReporting", provider_options.template_error_reporting)
   end
 
   defp prepare_template_id(body, _email), do: body
