@@ -144,7 +144,7 @@ defmodule Swoosh.Adapters.Mailjet do
     |> Map.put("TemplateID", template_id)
     |> Map.put("TemplateLanguage", true)
     |> Map.put("TemplateErrorDeliver", !!provider_options[:template_error_deliver])
-    |> Map.put("TemplateErrorReporting", provider_options[:template_error_reporting])
+    |> Map.put("TemplateErrorReporting", Swoosh.Email.Format.format_recipient(provider_options[:template_error_reporting]))
   end
 
   defp prepare_template(body, _email), do: body
