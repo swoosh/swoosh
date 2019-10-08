@@ -149,9 +149,9 @@ defmodule Swoosh.Adapters.Mailjet do
     case provider_options[:template_error_reporting] do
       nil ->
         body
-      {name, email} when is_string(name) and is_string(email) ->
+      {name, email} when is_binary(name) and is_binary(email) ->
         Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => name})
-      email when is_string(email) ->
+      email when is_binary(email) ->
         Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => ""})
       map when is_map(map) ->
         Map.put(body, "TemplateErrorReporting", map)
