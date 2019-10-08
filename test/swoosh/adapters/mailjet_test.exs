@@ -112,6 +112,11 @@ defmodule Swoosh.Adapters.MailjetTest do
             "Subject" => "Hello, world!",
             "TemplateID" => "template id",
             "TemplateLanguage" => true,
+            "TemplateErrorDeliver" => true,
+            "TemplateErrorReporting" => %{
+              "Email" => "developer@example.com",
+              "Name" => ""
+            },
             "Variables" => %{
               "firstname" => "Pan",
               "lastname" => "Michal"
@@ -132,6 +137,8 @@ defmodule Swoosh.Adapters.MailjetTest do
       email
       |> put_provider_option(:variables, %{firstname: "Pan", lastname: "Michal"})
       |> put_provider_option(:template_id, "template id")
+      |> put_provider_option(:template_error_deliver, true)
+      |> put_provider_option(:template_error_reporting, "developer@example.com")
 
     assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
   end
