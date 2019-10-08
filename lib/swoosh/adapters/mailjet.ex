@@ -140,14 +140,22 @@ defmodule Swoosh.Adapters.Mailjet do
   defp prepare_variables(body, _email), do: body
 
   defp prepare_template(body, %{provider_options: %{template_id: template_id} = provider_options}) do
-    body
-    |> Map.put("TemplateID", template_id)
-    |> Map.put("TemplateLanguage", true)
-    |> Map.put("TemplateErrorDeliver", !!provider_options[:template_error_deliver])
-    |> Map.put("TemplateErrorReporting", if provider_options[:template_error_reporting], do:
-      prepare_recipient(
-        Swoosh.Email.Format.format_recipient(provider_options[:template_error_reporting]))
-      )
+    body =
+      body
+      |> Map.put("TemplateID", template_id)
+      |> Map.put("TemplateLanguage", true)
+      |> Map.put("TemplateErrorDeliver", !!provider_options[:template_error_deliver])
+
+    case provider_options[:template_error_reporting] do
+      nil ->
+        body
+      {name, email} when is_binary(name) and is_binary(email) ->
+        Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => name})
+      email when is_binary(email) ->
+        Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => ""})
+      map when is_map(map) ->
+        Map.put(body, "TemplateErrorReporting", map)
+    end
   end
 
   defp prepare_template(body, _email), do: body
