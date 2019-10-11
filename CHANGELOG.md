@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.23.5 - 2019-10-11
+
+### Added
+
+- Mailjet Adapter now supports `TemplateErrorDeliver` and `TemplateErrorReporting`
+
 ## v0.23.4 - 2019-08-31
 
 ### Fixed
