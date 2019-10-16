@@ -4,6 +4,16 @@ defmodule Swoosh.Adapters.MailjetTest do
   import Swoosh.Email
   alias Swoosh.Adapters.Mailjet
 
+  @firstname "Pan"
+  @lastname "Michal"
+  @subject "Hello, world!"
+  @sender "sender@example.com"
+  @receiver "receiver@example.com"
+  @developer "developer@example.com"
+  @template_id "template_id"
+  @custom_id "my-great-custom-id"
+  @template_html_content "<h1>Hello, world!</h1>"
+  @template_text_content "# Hello, world!"
   @success_response """
     {
       "Messages":[
@@ -40,14 +50,14 @@ defmodule Swoosh.Adapters.MailjetTest do
 
     valid_email =
       new()
-      |> from("sender@example.com")
-      |> to("receiver@example.com")
-      |> subject("Hello, world!")
+      |> from(@sender)
+      |> to(@receiver)
+      |> subject(@subject)
 
     {:ok, bypass: bypass, valid_email: valid_email, config: config}
   end
 
-  test "delivery/1 - valid email with html body results in message ID", %{
+  test "delivery/1 - valid email with html and text body results in message ID", %{
     bypass: bypass,
     config: config,
     valid_email: email
@@ -59,17 +69,18 @@ defmodule Swoosh.Adapters.MailjetTest do
         "Messages" => [
           %{
             "From" => %{
-              "Email" => "sender@example.com",
+              "Email" => @sender,
               "Name" => ""
             },
             "To" => [
               %{
-                "Email" => "receiver@example.com",
+                "Email" => @receiver,
                 "Name" => ""
               }
             ],
-            "Subject" => "Hello, world!",
-            "HTMLPart" => "<h1>Hello, world!</h1>",
+            "Subject" => @subject,
+            "TextPart" => @template_text_content,
+            "HTMLPart" => @template_html_content,
             "Headers" => %{}
           }
         ]
@@ -82,7 +93,10 @@ defmodule Swoosh.Adapters.MailjetTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end)
 
-    email = email |> html_body("<h1>Hello, world!</h1>")
+    email =
+      email
+      |> text_body(@template_text_content)
+      |> html_body(@template_html_content)
 
     assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
   end
@@ -100,26 +114,26 @@ defmodule Swoosh.Adapters.MailjetTest do
         "Messages" => [
           %{
             "From" => %{
-              "Email" => "sender@example.com",
+              "Email" => @sender,
               "Name" => ""
             },
             "To" => [
               %{
-                "Email" => "receiver@example.com",
+                "Email" => @receiver,
                 "Name" => ""
               }
             ],
-            "Subject" => "Hello, world!",
-            "TemplateID" => "template id",
+            "Subject" => @subject,
+            "TemplateID" => @template_id,
             "TemplateLanguage" => true,
             "TemplateErrorDeliver" => true,
             "TemplateErrorReporting" => %{
-              "Email" => "developer@example.com",
+              "Email" => @developer,
               "Name" => ""
             },
             "Variables" => %{
-              "firstname" => "Pan",
-              "lastname" => "Michal"
+              "firstname" => @firstname,
+              "lastname" => @lastname
             },
             "Headers" => %{}
           }
@@ -135,10 +149,56 @@ defmodule Swoosh.Adapters.MailjetTest do
 
     email =
       email
-      |> put_provider_option(:variables, %{firstname: "Pan", lastname: "Michal"})
-      |> put_provider_option(:template_id, "template id")
+      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
+      |> put_provider_option(:template_id, @template_id)
       |> put_provider_option(:template_error_deliver, true)
-      |> put_provider_option(:template_error_reporting, "developer@example.com")
+      |> put_provider_option(:template_error_reporting, @developer)
+
+    assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
+  end
+
+  test "delivery/1 - valid email with CustomID", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TextPart" => @template_text_content,
+            "HTMLPart" => @template_html_content,
+            "CustomID": @custom_id
+            "Headers" => %{}
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email =
+      email
+      |> text_body(@template_text_content)
+      |> html_body(@template_html_content)
+      |> put_provider_option(:custom_id, @custom_id)
 
     assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
   end

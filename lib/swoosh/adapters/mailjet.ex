@@ -81,11 +81,15 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_variables(email)
     |> prepare_template(email)
     |> prepare_custom_headers(email)
+    |> prepare_custom_id(email)
     |> wrap_into_messages
     |> Swoosh.json_library.encode!()
   end
 
   defp wrap_into_messages(body), do: %{Messages: [body]}
+
+  defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}), do: Map.put(body, "CustomID", custom_id)
+  defp prepare_custom_id(body, _options), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
 
