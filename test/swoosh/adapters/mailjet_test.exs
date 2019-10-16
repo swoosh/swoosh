@@ -181,7 +181,7 @@ defmodule Swoosh.Adapters.MailjetTest do
             "Subject" => @subject,
             "TextPart" => @template_text_content,
             "HTMLPart" => @template_html_content,
-            "CustomID": @custom_id
+            "CustomID": @custom_id,
             "Headers" => %{}
           }
         ]
