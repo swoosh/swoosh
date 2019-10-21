@@ -30,9 +30,10 @@ defmodule Swoosh.Attachment do
       Attachment.new("/path/to/attachment.png", filename: "image.png", type: :inline)
       Attachment.new("/path/to/attachment.png", filename: "image.png", content_type: "image/png", type: :inline)
       Attachment.new(params["file"], type: "inline") # Where params["file"] is a %Plug.Upload
+      Attachment.new({:data, File.read!("/path/to/attachment.png")}, filename: "image.png", content_type: "image/png", type: :inline)
 
   """
-  @spec new(binary | struct, Keyword.t() | map) :: %__MODULE__{}
+  @spec new(binary | struct | {:data, binary}, Keyword.t() | map) :: %__MODULE__{}
   def new(path, opts \\ [])
 
   if Code.ensure_loaded?(Plug) do
