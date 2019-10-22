@@ -82,6 +82,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_recipient_vars(email)
     |> prepare_tags(email)
     |> prepare_custom_headers(email)
+    |> prepare_template(email)
     |> encode_body()
   end
 
@@ -157,6 +158,10 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_html(body, %{html_body: nil}), do: body
   defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, :html, html_body)
+
+  defp prepare_template(body, %{provider_options: %{template_name: template_name}}), do: Map.put(body, "template", template_name)
+
+  defp prepare_template(body, _), do: body
 
   defp encode_body(%{attachments: attachments, inline: inline} = params) do
     {:multipart,
