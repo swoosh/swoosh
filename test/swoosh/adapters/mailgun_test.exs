@@ -59,6 +59,8 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
+      |> put_provider_option(:template_name, "avengers-templates")
+      |> put_provider_option(:custom_vars, %{"key" => "value"})
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
@@ -70,7 +72,9 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "h:Reply-To" => "office.avengers@example.com",
                       "from" => ~s("T Stark" <tony.stark@example.com>),
                       "text" => "Hello",
-                      "html" => "<h1>Hello</h1>"}
+                      "html" => "<h1>Hello</h1>",
+                      "v:key" => ~s("value"),
+                      "template" => "avengers-templates"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method
