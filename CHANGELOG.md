@@ -1,5 +1,16 @@
 ## Changelog
 
+## v0.24.0 - 2019-10-24
+
+### Added
+
+- `:custom_id` Mailjet provider option
+- `:template_name` Mailgun provider option
+
+### Fixed
+
+- `Attachment.new` spec
+
 ## v0.23.5 - 2019-10-11
 
 ### Added

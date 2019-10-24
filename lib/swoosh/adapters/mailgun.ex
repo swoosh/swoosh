@@ -20,6 +20,13 @@ defmodule Swoosh.Adapters.Mailgun do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Provider options
+
+  - :template_name
+  - :custom_vars
+  - :recipient_vars
+  - :tags
   """
 
   use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
