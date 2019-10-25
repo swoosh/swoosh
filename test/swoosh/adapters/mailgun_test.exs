@@ -73,7 +73,7 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "from" => ~s("T Stark" <tony.stark@example.com>),
                       "text" => "Hello",
                       "html" => "<h1>Hello</h1>",
-                      "v:key" => ~s("value"),
+                      "v:key" => "value",
                       "template" => "avengers-templates"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
