@@ -83,7 +83,8 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp email_item({name, email}), do: %{email: email, name: name}
   defp email_item(email), do: %{email: email}
 
-  defp prepare_from(body, %{from: from}), do: Map.put(body, :from, from |> email_item)
+  defp prepare_from(body, %{from: from}),
+    do: Map.put(body, :from, from |> email_item)
 
   defp prepare_personalizations(body, email) do
     personalizations =
@@ -115,7 +116,9 @@ defmodule Swoosh.Adapters.Sendgrid do
   #
   # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
-  defp prepare_custom_vars(personalizations, %{provider_options: %{custom_args: my_vars}}) do
+  defp prepare_custom_vars(personalizations, %{
+         provider_options: %{custom_args: my_vars}
+       }) do
     Map.put(personalizations, :custom_args, my_vars)
   end
 
@@ -135,19 +138,23 @@ defmodule Swoosh.Adapters.Sendgrid do
     Map.put(personalizations, :dynamic_template_data, dynamic_template_data)
   end
 
-  defp prepare_dynamic_template_data(personalizations, _email), do: personalizations
+  defp prepare_dynamic_template_data(personalizations, _email),
+    do: personalizations
 
-  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, :subject, subject)
+  defp prepare_subject(body, %{subject: subject}),
+    do: Map.put(body, :subject, subject)
 
   defp prepare_content(body, %{html_body: html, text_body: text}) do
     content =
-      cond do
-        html && text -> [%{type: "text/plain", value: text}, %{type: "text/html", value: html}]
-        html -> [%{type: "text/html", value: html}]
-        text -> [%{type: "text/plain", value: text}]
-      end
+      Enum.reject(
+        [%{type: "text/plain", value: text}, %{type: "text/html", value: html}],
+        &is_nil(&1.value)
+      )
 
-    Map.put(body, :content, content)
+    case content do
+      [] -> body
+      _ -> Map.put(body, :content, content)
+    end
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
@@ -178,7 +185,9 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_reply_to(body, %{reply_to: reply_to}),
     do: Map.put(body, :reply_to, reply_to |> email_item)
 
-  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
+  defp prepare_template_id(body, %{
+         provider_options: %{template_id: template_id}
+       }) do
     Map.put(body, :template_id, template_id)
   end
 
@@ -196,13 +205,17 @@ defmodule Swoosh.Adapters.Sendgrid do
 
   defp prepare_asm(body, _email), do: body
 
-  defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
+  defp prepare_custom_headers(body, %{headers: headers})
+       when map_size(headers) == 0,
+       do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     Map.put(body, :headers, headers)
   end
 
-  defp prepare_mail_settings(body, %{provider_options: %{mail_settings: mail_settings}}) do
+  defp prepare_mail_settings(body, %{
+         provider_options: %{mail_settings: mail_settings}
+       }) do
     Map.put(body, :mail_settings, mail_settings)
   end
 
