@@ -99,14 +99,14 @@ defmodule Swoosh.Adapters.Mailgun do
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
   defp prepare_custom_vars(body, %{provider_options: %{custom_vars: custom_vars}}) do
     Enum.reduce(custom_vars, body, fn {k, v}, body ->
-      Map.put(body, "v:#{k}", Swoosh.json_library().encode!(v))
+      Map.put(body, "v:#{k}", encode_variable(v))
     end)
   end
 
   defp prepare_custom_vars(body, _email), do: body
 
   defp prepare_recipient_vars(body, %{provider_options: %{recipient_vars: recipient_vars}}) do
-    Map.put(body, "recipient-variables", Swoosh.json_library().encode!(recipient_vars))
+    Map.put(body, "recipient-variables", encode_variable(recipient_vars))
   end
 
   defp prepare_recipient_vars(body, _email), do: body
@@ -180,4 +180,7 @@ defmodule Swoosh.Adapters.Mailgun do
   end
 
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
+
+  defp encode_variable(var) when is_map(var) or is_list(var), do: Swoosh.json_library().encode!(var)
+  defp encode_variable(var), do: var
 end
