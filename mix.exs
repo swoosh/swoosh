@@ -1,7 +1,7 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.24.0"
+  @version "0.24.1"
 
   def project do
     [

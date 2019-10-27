@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.24.1 - 2019-10-27
+
+### Fixed
+
+- Custom variable encoding for Mailgun
+
 ## v0.24.0 - 2019-10-24
 
 ### Added
