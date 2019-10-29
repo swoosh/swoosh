@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.24.2 - 2019-10-29
+
+### Fixed
+
+- Allow empty content in Sendgrid for template users
+
 ## v0.24.1 - 2019-10-27
 
 ### Fixed
