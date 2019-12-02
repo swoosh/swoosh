@@ -29,19 +29,12 @@ jobs:
     - otp_release: '20.3'
       elixir: '1.6'
 
-    - otp_release: '20.3'
-      elixir: '1.5'
-
-    - otp_release: '19.3'
-      elixir: '1.5'
-
     - stage: inch
       script:
         - mix deps.get --only docs
         - MIX_ENV=docs mix inch.report
 
   allow_failures:
-    - elixir: '1.5'
     - elixir: '1.6'
     - elixir: '1.7'
 
