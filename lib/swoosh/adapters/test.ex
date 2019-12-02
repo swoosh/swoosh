@@ -20,7 +20,14 @@ defmodule Swoosh.Adapters.Test do
   use Swoosh.Adapter
 
   def deliver(email, _config) do
-    send(self(), {:email, email})
+    for pid <- pids() do
+      send(pid, {:email, email})
+    end
+
     {:ok, %{}}
+  end
+
+  defp pids do
+    Enum.uniq([self() | List.wrap(Process.get(:"$callers"))])
   end
 end
