@@ -100,13 +100,14 @@ defmodule Swoosh.TestAssertionsTest do
     wrong_email = new() |> subject("Wrong, Avengers!")
 
     message =
-      String.trim("""
+      """
       No message matching {:email, ^email} after 0ms.
       The following variables were pinned:
         email = #{inspect(wrong_email)}
       Process mailbox:
         {:email, #{inspect(email)}}
-      """)
+      """
+      |> String.trim()
 
     try do
       assert_email_sent(wrong_email)
@@ -157,38 +158,6 @@ defmodule Swoosh.TestAssertionsTest do
       error in [ExUnit.AssertionError] ->
         assert message, error.message
     end
-  end
-
-  test "send email in a task" do
-    assert_email_sent()
-
-    Task.start(fn ->
-      new()
-      |> from("tony.stark@example.com")
-      |> to("steve.rogers@example.com")
-      |> subject("Async Avengers!")
-      |> deliver()
-    end)
-
-    Process.sleep(10)
-    assert_email_sent(subject: "Async Avengers!")
-  end
-
-  test "send email via supervised task" do
-    assert_email_sent()
-
-    {:ok, sup} = start_supervised(Task.Supervisor)
-
-    Task.Supervisor.async_nolink(sup, fn ->
-      new()
-      |> from("tony.stark@example.com")
-      |> to("steve.rogers@example.com")
-      |> subject("Async Super Avengers!")
-      |> deliver()
-    end)
-
-    Process.sleep(10)
-    assert_email_sent(subject: "Async Super Avengers!")
   end
 
   test "refute email sent" do
