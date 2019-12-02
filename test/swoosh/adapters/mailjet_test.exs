@@ -15,28 +15,24 @@ defmodule Swoosh.Adapters.MailjetTest do
   @template_html_content "<h1>Hello, world!</h1>"
   @template_text_content "# Hello, world!"
   @success_response """
-    {
-      "Messages":[
-        {
-            "Status":"success",
-            "CustomID":"",
-            "To":[
-              {
-                  "Email":"michal@example.com",
-                  "MessageUUID":"12345-12345-12345",
-                  "MessageID":123456789,
-                  "MessageHref":"https://api.mailjet.com/v3/REST/message/123456789"
-              }
-            ],
-            "Cc":[
-
-            ],
-            "Bcc":[
-
-            ]
-        }
-      ]
-    }
+  {
+    "Messages":[
+      {
+        "Status":"success",
+        "CustomID":"",
+        "To":[
+          {
+            "Email":"michal@example.com",
+            "MessageUUID":"12345-12345-12345",
+            "MessageID":123456789,
+            "MessageHref":"https://api.mailjet.com/v3/REST/message/123456789"
+          }
+        ],
+        "Cc":[],
+        "Bcc":[]
+      }
+    ]
+  }
   """
 
   setup do

@@ -22,7 +22,9 @@ defmodule Swoosh.Adapters.Mailjet do
       end
   """
 
-  use Swoosh.Adapter, required_config: [:api_key, :secret], required_deps: [plug: Plug.Conn.Query]
+  use Swoosh.Adapter,
+    required_config: [:api_key, :secret],
+    required_deps: [plug: Plug.Conn.Query]
 
   alias Swoosh.{Email, Attachment}
 
@@ -46,13 +48,20 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   # MessageHref: https://api.mailjet.com/v3/REST/message/#{message_id}
-  defp get_message_id(%{"Messages" => [%{"To" => [%{"MessageID" => message_id}]}]}) do
+  defp get_message_id(%{
+         "Messages" => [%{"To" => [%{"MessageID" => message_id}]}]
+       }) do
     message_id
   end
+
+  defp get_message_id(%{"Messages" => [%{"To" => messages}]}) do
+    Enum.map(messages, fn %{"MessageID" => message_id} -> message_id end)
+  end
+
   defp get_message_id(body) when is_binary(body) do
     body
     |> Swoosh.json_library().decode!
-    |> get_message_id
+    |> get_message_id()
   end
 
   defp base_url(config), do: config[:base_url] || @base_url
@@ -83,24 +92,34 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_custom_headers(email)
     |> prepare_custom_id(email)
     |> wrap_into_messages
-    |> Swoosh.json_library.encode!()
+    |> Swoosh.json_library().encode!()
   end
 
   defp wrap_into_messages(body), do: %{Messages: [body]}
 
-  defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}), do: Map.put(body, "CustomID", custom_id)
+  defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}),
+    do: Map.put(body, "CustomID", custom_id)
+
   defp prepare_custom_id(body, _options), do: body
 
-  defp prepare_custom_headers(body, %{headers: headers}), do: Map.put(body, "Headers", headers)
+  defp prepare_custom_headers(body, %{headers: headers}),
+    do: Map.put(body, "Headers", headers)
 
   defp prepare_attachments(body, %{attachments: []}), do: body
+
   defp prepare_attachments(body, %{attachments: attachments}) do
     {normal_attachments, inline_attachments} =
       Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
 
     body
-    |> Map.put("Attachments", Enum.map(normal_attachments, &prepare_attachment/1))
-    |> Map.put("InlinedAttachments", Enum.map(inline_attachments, &prepare_attachment/1))
+    |> Map.put(
+      "Attachments",
+      Enum.map(normal_attachments, &prepare_attachment/1)
+    )
+    |> Map.put(
+      "InlinedAttachments",
+      Enum.map(inline_attachments, &prepare_attachment/1)
+    )
   end
 
   defp prepare_attachment(attachment) do
@@ -111,31 +130,45 @@ defmodule Swoosh.Adapters.Mailjet do
     }
   end
 
-  defp prepare_recipients(recipients), do: Enum.map(recipients, &prepare_recipient(&1))
+  defp prepare_recipients(recipients),
+    do: Enum.map(recipients, &prepare_recipient(&1))
 
-  defp prepare_recipient({name, address}), do: %{"Name" => name, "Email" => address}
+  defp prepare_recipient({name, address}),
+    do: %{"Name" => name, "Email" => address}
 
-  defp prepare_from(body, %{from: from}), do: Map.put(body, "From", prepare_recipient(from))
+  defp prepare_from(body, %{from: from}),
+    do: Map.put(body, "From", prepare_recipient(from))
 
-  defp prepare_to(body, %{to: to}), do: Map.put(body, "To", prepare_recipients(to))
+  defp prepare_to(body, %{to: to}),
+    do: Map.put(body, "To", prepare_recipients(to))
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
+
   defp prepare_reply_to(body, %{reply_to: reply_to}),
     do: Map.put(body, "ReplyTo", prepare_recipient(reply_to))
 
   defp prepare_cc(body, %{cc: []}), do: body
-  defp prepare_cc(body, %{cc: cc}), do: Map.put(body, "Cc", prepare_recipients(cc))
+
+  defp prepare_cc(body, %{cc: cc}),
+    do: Map.put(body, "Cc", prepare_recipients(cc))
 
   defp prepare_bcc(body, %{bcc: []}), do: body
-  defp prepare_bcc(body, %{bcc: bcc}), do: Map.put(body, "Bcc", prepare_recipients(bcc))
 
-  defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)
+  defp prepare_bcc(body, %{bcc: bcc}),
+    do: Map.put(body, "Bcc", prepare_recipients(bcc))
+
+  defp prepare_subject(body, %{subject: subject}),
+    do: Map.put(body, "Subject", subject)
 
   defp prepare_text(body, %{text_body: nil}), do: body
-  defp prepare_text(body, %{text_body: text_body}), do: Map.put(body, "TextPart", text_body)
+
+  defp prepare_text(body, %{text_body: text_body}),
+    do: Map.put(body, "TextPart", text_body)
 
   defp prepare_html(body, %{html_body: nil}), do: body
-  defp prepare_html(body, %{html_body: html_body}), do: Map.put(body, "HTMLPart", html_body)
+
+  defp prepare_html(body, %{html_body: html_body}),
+    do: Map.put(body, "HTMLPart", html_body)
 
   defp prepare_variables(body, %{provider_options: %{variables: variables}}) do
     Map.put(body, "Variables", variables)
@@ -143,20 +176,34 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp prepare_variables(body, _email), do: body
 
-  defp prepare_template(body, %{provider_options: %{template_id: template_id} = provider_options}) do
+  defp prepare_template(body, %{
+         provider_options: %{template_id: template_id} = provider_options
+       }) do
     body =
       body
       |> Map.put("TemplateID", template_id)
       |> Map.put("TemplateLanguage", true)
-      |> Map.put("TemplateErrorDeliver", !!provider_options[:template_error_deliver])
+      |> Map.put(
+        "TemplateErrorDeliver",
+        !!provider_options[:template_error_deliver]
+      )
 
     case provider_options[:template_error_reporting] do
       nil ->
         body
+
       {name, email} when is_binary(name) and is_binary(email) ->
-        Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => name})
+        Map.put(body, "TemplateErrorReporting", %{
+          "Email" => email,
+          "Name" => name
+        })
+
       email when is_binary(email) ->
-        Map.put(body, "TemplateErrorReporting", %{"Email" => email, "Name" => ""})
+        Map.put(body, "TemplateErrorReporting", %{
+          "Email" => email,
+          "Name" => ""
+        })
+
       map when is_map(map) ->
         Map.put(body, "TemplateErrorReporting", map)
     end
