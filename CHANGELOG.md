@@ -1,5 +1,12 @@
 ## Changelog
 
+## v0.24.3 - 2019-12-03
+
+### Fixed
+
+- TestAssertion: assert email sent in tasks
+- Mailjet: handle multiple `to` response
+
 ## v0.24.2 - 2019-10-29
 
 ### Fixed
