@@ -215,4 +215,29 @@ defmodule Swoosh.Adapters.PostmarkTest do
       end
     )
   end
+
+  test "deliver/1 with all fields and email tagging return :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("tony.stark@example.com")
+      |> put_provider_option(:tag, "top-secret")
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{
+        "To" => "tony.stark@example.com",
+        "From" => "\"Steve Rogers\" <steve.rogers@example.com>",
+        "Tag" => "top-secret"
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
 end

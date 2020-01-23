@@ -56,6 +56,14 @@ defmodule Swoosh.Integration.Adapters.PostmarkTest do
     assert_ok_response(email, config)
   end
 
+  test "tagging deliver", %{valid_email: valid_email, config: config} do
+    email =
+      valid_email
+      |> put_provider_option(:tag, "test-tag")
+
+    assert_ok_response(email, config)
+  end
+
   defp assert_ok_response(email, config),
     do: assert {:ok, _response} = Swoosh.Adapters.Postmark.deliver(email, config)
 end
