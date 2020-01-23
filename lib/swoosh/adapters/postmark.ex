@@ -32,6 +32,18 @@ defmodule Swoosh.Adapters.Postmark do
   You can also use `template_alias` instead of `template_id`, if you use Postmark's
   [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template)
   feature.
+
+  ## Example of sending emails with a tag
+
+  This will add a tag to the sent Postmark's email.
+
+      import Swoosh.Email
+
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:tag, "some tag")
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -91,6 +103,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_reply_to(email)
     |> prepare_template(email)
     |> prepare_custom_headers(email)
+    |> prepare_tag(email)
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
@@ -168,4 +181,10 @@ defmodule Swoosh.Adapters.Postmark do
     custom_headers = Enum.map(headers, fn {k, v} -> %{"Name" => k, "Value" => v} end)
     Map.put(body, "Headers", custom_headers)
   end
+
+  defp prepare_tag(body, %{provider_options: %{tag: tag_value}}) do
+    Map.put(body, "Tag", tag_value)
+  end
+
+  defp prepare_tag(body, _), do: body
 end
