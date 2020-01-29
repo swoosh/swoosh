@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.24.4 - 2020-01-29
+
+### Added
+
+- Support for tags in Postmark (thanks @millacas)
+
 ## v0.24.3 - 2019-12-03
 
 ### Fixed
