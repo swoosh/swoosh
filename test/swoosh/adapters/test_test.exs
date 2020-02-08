@@ -18,7 +18,7 @@ defmodule Swoosh.TestTest do
       |> deliver()
     end)
 
-    Process.sleep(10)
+    Process.sleep(100)
     assert_email_sent(subject: "Async Avengers!")
   end
 
@@ -33,7 +33,7 @@ defmodule Swoosh.TestTest do
       |> deliver()
     end)
 
-    Process.sleep(10)
+    Process.sleep(100)
     assert_email_sent(subject: "Async Super Avengers!")
   end
 end
