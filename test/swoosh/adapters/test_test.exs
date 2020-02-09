@@ -1,4 +1,4 @@
-defmodule Swoosh.TestTest do
+defmodule Swoosh.Adapters.TestTest do
   use ExUnit.Case, async: true
 
   import Swoosh.Email
