@@ -97,23 +97,8 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "assert email sent with wrong email", %{email: email} do
-    wrong_email = new() |> subject("Wrong, Avengers!")
-
-    message =
-      """
-      No message matching {:email, ^email} after 0ms.
-      The following variables were pinned:
-        email = #{inspect(wrong_email)}
-      Process mailbox:
-        {:email, #{inspect(email)}}
-      """
-      |> String.trim()
-
-    try do
-      assert_email_sent(wrong_email)
-    rescue
-      error in [ExUnit.AssertionError] ->
-        assert message == error.message
+    assert_raise ExUnit.AssertionError, fn ->
+      assert_email_sent(email |> subject("Wrong"))
     end
   end
 
