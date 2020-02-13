@@ -7,8 +7,8 @@ cache:
 branches:
   only:
     - master
-elixir: '1.9'
-otp_release: '22.0'
+elixir: '1.10'
+otp_release: '22.2'
 stages:
   - test
   - name: inch
@@ -16,6 +16,9 @@ stages:
 jobs:
   include:
     - stage: test
+    
+    - opt_release: '22.2'
+      elixir: '1.9'
 
     - otp_release: '21.2'
       elixir: '1.8'
@@ -24,9 +27,6 @@ jobs:
       elixir: '1.7'
 
     - otp_release: '21.2'
-      elixir: '1.6'
-
-    - otp_release: '20.3'
       elixir: '1.6'
 
     - stage: inch
