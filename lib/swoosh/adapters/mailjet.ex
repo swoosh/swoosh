@@ -63,15 +63,15 @@ defmodule Swoosh.Adapters.Mailjet do
     end
   end
 
-  # MessageHref: https://api.mailjet.com/v3/REST/message/#{message_id}
-  defp get_message_id(%{
-         "Messages" => [%{"To" => [%{"MessageID" => message_id}]}]
-       }) do
-    message_id
+  defp get_message_id(%{"Messages" => messages}) do
+    case Enum.map(messages, &get_message_id(&1)) do
+      [single_message_id] -> single_message_id
+      message_ids -> message_ids
+    end
   end
 
-  defp get_message_id(%{"Messages" => [%{"To" => messages}]}) do
-    Enum.map(messages, fn %{"MessageID" => message_id} -> message_id end)
+  defp get_message_id(%{"To" => [%{"MessageID" => message_id}]}) do
+    message_id
   end
 
   defp get_message_id(body) when is_binary(body) do
@@ -96,6 +96,7 @@ defmodule Swoosh.Adapters.Mailjet do
     emails
     |> Enum.map(&prepare_message/1)
     |> wrap_into_messages()
+    |> Swoosh.json_library().encode!()
   end
 
   defp prepare_body(email) do
