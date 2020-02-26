@@ -34,6 +34,40 @@ defmodule Swoosh.Adapters.MailjetTest do
     ]
   }
   """
+  @success_response_many """
+  {
+    "Messages":[
+      {
+        "Status":"success",
+        "CustomID":"",
+        "To":[
+          {
+            "Email":"michal@example.com",
+            "MessageUUID":"12345-12345-12345",
+            "MessageID":123456789,
+            "MessageHref":"https://api.mailjet.com/v3/REST/message/123456789"
+          }
+        ],
+        "Cc":[],
+        "Bcc":[]
+      },
+      {
+        "Status":"success",
+        "CustomID":"",
+        "To":[
+          {
+            "Email":"test@example.com",
+            "MessageUUID":"22222-22222-22222",
+            "MessageID":23456789,
+            "MessageHref":"https://api.mailjet.com/v3/REST/message/123456789"
+          }
+        ],
+        "Cc":[],
+        "Bcc":[]
+      }
+    ]
+  }
+  """
 
   setup do
     bypass = Bypass.open()
@@ -291,5 +325,92 @@ defmodule Swoosh.Adapters.MailjetTest do
     end)
 
     Mailjet.deliver(email, config)
+  end
+
+  test "deliver_many/2 - two valid emails result in two message IDs",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TemplateID" => @template_id,
+            "TemplateLanguage" => true,
+            "TemplateErrorDeliver" => true,
+            "TemplateErrorReporting" => %{
+              "Email" => @developer,
+              "Name" => ""
+            },
+            "Variables" => %{
+              "firstname" => @firstname,
+              "lastname" => @lastname
+            },
+            "Headers" => %{}
+          },
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TemplateID" => @template_id,
+            "TemplateLanguage" => true,
+            "TemplateErrorDeliver" => true,
+            "TemplateErrorReporting" => %{
+              "Email" => @developer,
+              "Name" => ""
+            },
+            "Variables" => %{
+              "firstname" => @firstname,
+              "lastname" => @lastname
+            },
+            "Headers" => %{}
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response_many)
+    end)
+
+    emails = [
+      email
+      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
+      |> put_provider_option(:template_id, @template_id)
+      |> put_provider_option(:template_error_deliver, true)
+      |> put_provider_option(:template_error_reporting, @developer),
+      email
+      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
+      |> put_provider_option(:template_id, @template_id)
+      |> put_provider_option(:template_error_deliver, true)
+      |> put_provider_option(:template_error_reporting, @developer)
+    ]
+
+    assert Mailjet.deliver_many(emails, config) == {:ok, %{id: [123_456_789, 23_456_789]}}
   end
 end
