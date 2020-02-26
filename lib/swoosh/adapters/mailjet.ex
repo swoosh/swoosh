@@ -37,7 +37,7 @@ defmodule Swoosh.Adapters.Mailjet do
 
     case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, %{id: get_message_id(body)}}
+        {:ok, parse_results(body)}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
         {:error, {error_code, Swoosh.json_library().decode!(body)}}
@@ -53,25 +53,34 @@ defmodule Swoosh.Adapters.Mailjet do
 
     case :hackney.post(url, headers, prepare_body(emails), [:with_body]) do
       {:ok, 200, _headers, body} ->
-        {:ok, %{id: get_message_id(body)}}
+        {:ok, parse_results(body)}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, Swoosh.json_library().decode!(body)}}
+        {:error, {error_code, parse_results(body)}}
 
       {:error, reason} ->
         {:error, reason}
     end
   end
 
-  defp get_message_id(%{"Messages" => messages}) do
-    case Enum.map(messages, &get_message_id(&1)) do
-      [single_message_id] -> single_message_id
-      message_ids -> message_ids
-    end
+  defp parse_results(%{"Messages" => results}) do
+    results =
+      Enum.map(results, fn
+        %{"Status" => "success"} = result -> get_message_id(result)
+        result -> result
+      end)
+
+    if length(results) === 1, do: Enum.at(results, 0), else: results
+  end
+
+  defp parse_results(body) when is_binary(body) do
+    body
+    |> Swoosh.json_library().decode!
+    |> parse_results()
   end
 
   defp get_message_id(%{"To" => [%{"MessageID" => message_id}]}) do
-    message_id
+    %{id: message_id}
   end
 
   defp get_message_id(body) when is_binary(body) do
@@ -88,6 +97,10 @@ defmodule Swoosh.Adapters.Mailjet do
       {"Authorization", "Basic #{auth(config)}"},
       {"Content-Type", "application/json"}
     ]
+  end
+
+  defp wrap_into_result_maps(message_results) do
+    Enum.map(message_results, &%{id: &1})
   end
 
   defp auth(config), do: Base.encode64("#{config[:api_key]}:#{config[:secret]}")

@@ -68,6 +68,38 @@ defmodule Swoosh.Adapters.MailjetTest do
     ]
   }
   """
+  @error_response_many """
+  {
+    "Messages": [
+      {
+        "Status":"success",
+        "CustomID":"",
+        "To":[
+          {
+            "Email":"michal@example.com",
+            "MessageUUID":"12345-12345-12345",
+            "MessageID":123456789,
+            "MessageHref":"https://api.mailjet.com/v3/REST/message/123456789"
+          }
+        ],
+        "Cc":[],
+        "Bcc":[]
+      },
+      {
+        "Errors":[
+            {
+            "ErrorCode": "mj-0013",
+            "ErrorIdentifier": "2978b962-32be-4007-a96e-0388451f1b7a",
+            "ErrorMessage": "\\"brokenemail\\" is an invalid email address.",
+            "ErrorRelatedTo": ["To[0].Email"],
+            "StatusCode": 400
+          }
+        ],
+        "Status": "error"
+      }
+    ]
+  }
+  """
 
   setup do
     bypass = Bypass.open()
@@ -411,6 +443,84 @@ defmodule Swoosh.Adapters.MailjetTest do
       |> put_provider_option(:template_error_reporting, @developer)
     ]
 
-    assert Mailjet.deliver_many(emails, config) == {:ok, %{id: [123_456_789, 23_456_789]}}
+    assert Mailjet.deliver_many(emails, config) ==
+             {:ok, [%{id: 123_456_789}, %{id: 23_456_789}]}
+  end
+
+  test "deliver_many/2 - one email results in error",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "Headers" => %{}
+          },
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => "brokenemail",
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "Headers" => %{}
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 400, @error_response_many)
+    end)
+
+    emails = [
+      email,
+      new()
+      |> from(@sender)
+      |> to("brokenemail")
+      |> subject(@subject)
+    ]
+
+    assert Mailjet.deliver_many(emails, config) ==
+             {:error,
+              {400,
+               [
+                 %{id: 123_456_789},
+                 %{
+                   "Errors" => [
+                     %{
+                       "ErrorCode" => "mj-0013",
+                       "ErrorIdentifier" => "2978b962-32be-4007-a96e-0388451f1b7a",
+                       "ErrorMessage" => "\"brokenemail\" is an invalid email address.",
+                       "ErrorRelatedTo" => ["To[0].Email"],
+                       "StatusCode" => 400
+                     }
+                   ],
+                   "Status" => "error"
+                 }
+               ]}}
   end
 end
