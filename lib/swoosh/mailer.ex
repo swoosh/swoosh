@@ -88,6 +88,13 @@ defmodule Swoosh.Mailer do
         end
       end
 
+      @spec deliver_many(list(%Swoosh.Email{}), Keyword.t()) :: {:ok, term} | {:error, term}
+      def deliver_many(emails, config \\ [])
+
+      def deliver_many(emails, config) do
+        Mailer.deliver_many(emails, parse_config(config))
+      end
+
       @on_load :validate_dependency
 
       @doc false
@@ -116,6 +123,13 @@ defmodule Swoosh.Mailer do
 
     :ok = adapter.validate_config(config)
     adapter.deliver(email, config)
+  end
+
+  def deliver_many(emails, config) do
+    adapter = Keyword.fetch!(config, :adapter)
+
+    :ok = adapter.validate_config(config)
+    adapter.deliver_many(emails, config)
   end
 
   @doc """

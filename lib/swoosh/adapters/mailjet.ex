@@ -47,6 +47,22 @@ defmodule Swoosh.Adapters.Mailjet do
     end
   end
 
+  def deliver_many(emails, config \\ []) when is_list(emails) do
+    headers = prepare_headers(config)
+    url = [base_url(config), "/", @api_endpoint]
+
+    case :hackney.post(url, headers, prepare_body(emails), [:with_body]) do
+      {:ok, 200, _headers, body} ->
+        {:ok, %{id: get_message_id(body)}}
+
+      {:ok, error_code, _headers, body} when error_code >= 400 ->
+        {:error, {error_code, Swoosh.json_library().decode!(body)}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   # MessageHref: https://api.mailjet.com/v3/REST/message/#{message_id}
   defp get_message_id(%{
          "Messages" => [%{"To" => [%{"MessageID" => message_id}]}]
@@ -76,7 +92,20 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp auth(config), do: Base.encode64("#{config[:api_key]}:#{config[:secret]}")
 
+  defp prepare_body(emails) when is_list(emails) do
+    emails
+    |> Enum.map(&prepare_message/1)
+    |> wrap_into_messages()
+  end
+
   defp prepare_body(email) do
+    email
+    |> prepare_message
+    |> wrap_into_messages
+    |> Swoosh.json_library().encode!()
+  end
+
+  defp prepare_message(email) do
     %{}
     |> prepare_from(email)
     |> prepare_to(email)
@@ -91,10 +120,9 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_template(email)
     |> prepare_custom_headers(email)
     |> prepare_custom_id(email)
-    |> wrap_into_messages
-    |> Swoosh.json_library().encode!()
   end
 
+  defp wrap_into_messages(body) when is_list(body), do: %{Messages: body}
   defp wrap_into_messages(body), do: %{Messages: [body]}
 
   defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}),
