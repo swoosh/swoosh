@@ -55,18 +55,17 @@ defmodule Swoosh.Adapters.Mailjet do
     end
   end
 
-  defp parse_results(%{"Messages" => [%{"Status" => "error"}]} = single_error) do
-    single_error
-  end
-
   defp parse_results(%{"Messages" => results}) do
     results =
       Enum.map(results, fn
         %{"Status" => "success"} = result -> get_message_id(result)
-        result -> result
+        per_message_error -> per_message_error
       end)
 
-    if length(results) === 1, do: Enum.at(results, 0), else: results
+    case results do
+      [single] -> single
+      multiple -> multiple
+    end
   end
 
   defp parse_results(body) when is_binary(body) do
