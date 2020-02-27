@@ -101,17 +101,11 @@ defmodule Swoosh.Adapters.Mailjet do
 
   defp auth(config), do: Base.encode64("#{config[:api_key]}:#{config[:secret]}")
 
-  defp prepare_body(emails) when is_list(emails) do
+  defp prepare_body(emails) do
     emails
+    |> List.wrap()
     |> Enum.map(&prepare_message/1)
-    |> wrap_into_messages()
-    |> Swoosh.json_library().encode!()
-  end
-
-  defp prepare_body(email) do
-    email
-    |> prepare_message
-    |> wrap_into_messages
+    |> wrap_messages()
     |> Swoosh.json_library().encode!()
   end
 
@@ -132,8 +126,7 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_custom_id(email)
   end
 
-  defp wrap_into_messages(body) when is_list(body), do: %{Messages: body}
-  defp wrap_into_messages(body), do: %{Messages: [body]}
+  defp wrap_messages(body) when is_list(body), do: %{Messages: body}
 
   defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}),
     do: Map.put(body, "CustomID", custom_id)
