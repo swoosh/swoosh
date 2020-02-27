@@ -83,6 +83,18 @@ defmodule Swoosh.Adapters.Mailjet do
     %{id: message_id}
   end
 
+  defp get_message_id(%{"To" => multiple_receivers}) do
+    %{
+      id:
+        Enum.map(
+          multiple_receivers,
+          fn %{"MessageID" => message_id} ->
+            message_id
+          end
+        )
+    }
+  end
+
   defp get_message_id(body) when is_binary(body) do
     body
     |> Swoosh.json_library().decode!
