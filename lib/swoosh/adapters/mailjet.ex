@@ -32,26 +32,18 @@ defmodule Swoosh.Adapters.Mailjet do
   @api_endpoint "send"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = prepare_headers(config)
-    url = [base_url(config), "/", @api_endpoint]
-
-    case :hackney.post(url, headers, prepare_body(email), [:with_body]) do
-      {:ok, 200, _headers, body} ->
-        {:ok, parse_results(body)}
-
-      {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, parse_results(body)}}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    send_request(prepare_body(email), config)
   end
 
   def deliver_many(emails, config \\ []) when is_list(emails) do
+    send_request(prepare_body(emails), config)
+  end
+
+  defp send_request(body, config) do
     headers = prepare_headers(config)
     url = [base_url(config), "/", @api_endpoint]
 
-    case :hackney.post(url, headers, prepare_body(emails), [:with_body]) do
+    case :hackney.post(url, headers, body, [:with_body]) do
       {:ok, 200, _headers, body} ->
         {:ok, parse_results(body)}
 
