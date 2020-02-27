@@ -119,11 +119,12 @@ defmodule Swoosh.Adapters.MailjetTest do
     {:ok, bypass: bypass, valid_email: valid_email, config: config}
   end
 
-  test "delivery/1 - valid email with html and text body results in message ID", %{
-    bypass: bypass,
-    config: config,
-    valid_email: email
-  } do
+  test "delivery/1 - valid email with html and text body results in message ID",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
 
@@ -211,7 +212,10 @@ defmodule Swoosh.Adapters.MailjetTest do
 
     email =
       email
-      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
+      |> put_provider_option(:variables, %{
+        firstname: @firstname,
+        lastname: @lastname
+      })
       |> put_provider_option(:template_id, @template_id)
       |> put_provider_option(:template_error_deliver, true)
       |> put_provider_option(:template_error_reporting, @developer)
@@ -294,18 +298,14 @@ defmodule Swoosh.Adapters.MailjetTest do
     end)
 
     error_result = %{
-      "Messages" => [
+      "Status" => "error",
+      "Errors" => [
         %{
-          "Status" => "error",
-          "Errors" => [
-            %{
-              "ErrorIdentifier" => "error id",
-              "ErrorCode" => "mj-0004",
-              "StatusCode" => 400,
-              "ErrorMessage" => ~s(Type mismatch. Expected type "array of emails".),
-              "ErrorRelatedTo" => ["HTMLPart", "TemplateID"]
-            }
-          ]
+          "ErrorIdentifier" => "error id",
+          "ErrorCode" => "mj-0004",
+          "StatusCode" => 400,
+          "ErrorMessage" => ~s(Type mismatch. Expected type "array of emails".),
+          "ErrorRelatedTo" => ["HTMLPart", "TemplateID"]
         }
       ]
     }
@@ -324,8 +324,7 @@ defmodule Swoosh.Adapters.MailjetTest do
         "ErrorIdentifier":"error id",
         "ErrorCode":"mj-0002",
         "StatusCode":400,
-        "ErrorMessage":
-        "Malformed JSON, please review the syntax and properties types."
+        "ErrorMessage": "Malformed JSON, please review the syntax and properties types."
       }
       """
 
@@ -336,7 +335,8 @@ defmodule Swoosh.Adapters.MailjetTest do
       "ErrorIdentifier" => "error id",
       "ErrorCode" => "mj-0002",
       "StatusCode" => 400,
-      "ErrorMessage" => "Malformed JSON, please review the syntax and properties types."
+      "ErrorMessage" =>
+        "Malformed JSON, please review the syntax and properties types."
     }
 
     assert Mailjet.deliver(email, config) == {:error, {400, error_result}}
@@ -422,7 +422,10 @@ defmodule Swoosh.Adapters.MailjetTest do
     emails = [
       email,
       email
-      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
+      |> put_provider_option(:variables, %{
+        firstname: @firstname,
+        lastname: @lastname
+      })
       |> put_provider_option(:template_id, @template_id)
       |> put_provider_option(:template_error_deliver, true)
       |> put_provider_option(:template_error_reporting, @developer)
@@ -498,8 +501,10 @@ defmodule Swoosh.Adapters.MailjetTest do
                    "Errors" => [
                      %{
                        "ErrorCode" => "mj-0013",
-                       "ErrorIdentifier" => "2978b962-32be-4007-a96e-0388451f1b7a",
-                       "ErrorMessage" => "\"brokenemail\" is an invalid email address.",
+                       "ErrorIdentifier" =>
+                         "2978b962-32be-4007-a96e-0388451f1b7a",
+                       "ErrorMessage" =>
+                         "\"brokenemail\" is an invalid email address.",
                        "ErrorRelatedTo" => ["To[0].Email"],
                        "StatusCode" => 400
                      }
