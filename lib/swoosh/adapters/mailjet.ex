@@ -40,7 +40,7 @@ defmodule Swoosh.Adapters.Mailjet do
         {:ok, parse_results(body)}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, Swoosh.json_library().decode!(body)}}
+        {:error, {error_code, parse_results(body)}}
 
       {:error, reason} ->
         {:error, reason}
@@ -63,6 +63,10 @@ defmodule Swoosh.Adapters.Mailjet do
     end
   end
 
+  defp parse_results(%{"Messages" => [%{"Status" => "error"}]} = single_error) do
+    single_error
+  end
+
   defp parse_results(%{"Messages" => results}) do
     results =
       Enum.map(results, fn
@@ -77,6 +81,10 @@ defmodule Swoosh.Adapters.Mailjet do
     body
     |> Swoosh.json_library().decode!
     |> parse_results()
+  end
+
+  defp parse_results(global_error) do
+    global_error
   end
 
   defp get_message_id(%{"To" => [%{"MessageID" => message_id}]}) do
@@ -97,10 +105,6 @@ defmodule Swoosh.Adapters.Mailjet do
       {"Authorization", "Basic #{auth(config)}"},
       {"Content-Type", "application/json"}
     ]
-  end
-
-  defp wrap_into_result_maps(message_results) do
-    Enum.map(message_results, &%{id: &1})
   end
 
   defp auth(config), do: Base.encode64("#{config[:api_key]}:#{config[:secret]}")

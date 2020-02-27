@@ -382,17 +382,6 @@ defmodule Swoosh.Adapters.MailjetTest do
               }
             ],
             "Subject" => @subject,
-            "TemplateID" => @template_id,
-            "TemplateLanguage" => true,
-            "TemplateErrorDeliver" => true,
-            "TemplateErrorReporting" => %{
-              "Email" => @developer,
-              "Name" => ""
-            },
-            "Variables" => %{
-              "firstname" => @firstname,
-              "lastname" => @lastname
-            },
             "Headers" => %{}
           },
           %{
@@ -431,11 +420,7 @@ defmodule Swoosh.Adapters.MailjetTest do
     end)
 
     emails = [
-      email
-      |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
-      |> put_provider_option(:template_id, @template_id)
-      |> put_provider_option(:template_error_deliver, true)
-      |> put_provider_option(:template_error_reporting, @developer),
+      email,
       email
       |> put_provider_option(:variables, %{firstname: @firstname, lastname: @lastname})
       |> put_provider_option(:template_id, @template_id)
