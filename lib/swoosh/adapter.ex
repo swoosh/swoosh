@@ -68,8 +68,4 @@ defmodule Swoosh.Adapter do
        do: :ok,
        else: {:error, required_deps}
   end
-
-  def deliver_many(_, _) do
-    {:error, :not_implemented}
-  end
 end
