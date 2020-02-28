@@ -8,17 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        elixir: [1.10.2, 1.9, 1.8, 1.7, 1.6]
+        elixir: [1.10.2, 1.9, 1.8]
         otp: [22.2, 21.3, 20.3]
         exclude:
-          - elixir: 1.6
-            otp: 22.2
-          - elixir: 1.6
-            otp: 21.3
-          - elixir: 1.7
-            otp: 22.2
-          - elixir: 1.7
-            otp: 21.3
           - elixir: 1.10.2
             otp: 20.3
     steps:
