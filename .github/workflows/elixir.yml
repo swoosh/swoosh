@@ -15,6 +15,8 @@ jobs:
             otp: 22.2
           - elixir: 1.7
             otp: 22.2
+          - elixir: 1.10.2
+            otp: 20.3
     steps:
     - uses: actions/checkout@v2
     - name: Setup elixir
