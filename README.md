@@ -55,33 +55,20 @@ end
 
 ## Installation
 
-1.  Add swoosh to your list of dependencies in `mix.exs`:
+- Add swoosh to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:swoosh, "~> 0.24"}]
+      [{:swoosh, "~> 0.25"}]
     end
     ```
 
-2.  (Optional - only for Elixir &lt; 1.4) Ensure swoosh is started before your application:
+- (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
 
     ```elixir
-    def application do
-      [applications: [:swoosh]]
-    end
-    ```
-
-3.  (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
-
-    ```elixir
-    # You only need to do this if you are using Elixir < 1.4
-    def application do
-      [applications: [:swoosh, :gen_smtp]]
-    end
-
     def deps do
       [
-        {:swoosh, "~> 0.24"},
+        {:swoosh, "~> 0.25"},
         {:gen_smtp, "~> 0.13"}
       ]
     end

@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.25.0 - 2020-03-17
+
+### Added
+
+- `deliver_many` with Mailjet implementation (thanks @panmichal)
+
 ## v0.24.4 - 2020-01-29
 
 ### Added
