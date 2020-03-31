@@ -37,7 +37,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     |> prepare_from(email)
   end
 
-  defp prepare_subject(headers, %{subject: subject}), do: [{"Subject", subject} | headers]
+  defp prepare_subject(headers, %{subject: subject}) when is_binary(subject), do: [{"Subject", subject} | headers]
 
   defp prepare_from(headers, %{from: from}), do: [{"From", render_recipient(from)} | headers]
 
