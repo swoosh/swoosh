@@ -1,5 +1,16 @@
 ## Changelog
 
+## v0.25.1 - 2020-03-17
+
+### Added
+
+- Accept `provider_options`: `options` for SparkPost (thanks @florish)
+
+### Changed
+
+- Guard `subject` in SMTP, raise when it's not a binary
+  - this replaces the cryptic error message from `:mimemail` with a clearer one
+
 ## v0.25.0 - 2020-03-17
 
 ### Added
