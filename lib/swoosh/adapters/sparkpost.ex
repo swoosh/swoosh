@@ -33,7 +33,9 @@ defmodule Swoosh.Adapters.SparkPost do
       })
   
   ## Setting SparkPost transmission options
-  
+
+  Full options can be found at [SparkPost Transmissions API Docs](https://developers.sparkpost.com/api/transmissions/#header-request-body)
+
       import Swoosh.Email
       
       new()
