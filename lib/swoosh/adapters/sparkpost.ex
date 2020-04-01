@@ -31,6 +31,23 @@ defmodule Swoosh.Adapters.SparkPost do
         first_name: "Peter",
         last_name: "Parker"
       })
+  
+  ## Setting SparkPost transmission options
+
+  Full options can be found at [SparkPost Transmissions API Docs](https://developers.sparkpost.com/api/transmissions/#header-request-body)
+
+      import Swoosh.Email
+      
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")   
+      |> put_provider_option(:options, %{
+        click_tracking: false,
+        open_tracking: false,
+        transactional: true,
+        inline_css: true
+      })
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -96,6 +113,7 @@ defmodule Swoosh.Adapters.SparkPost do
     |> prepare_attachments(email)
     |> prepare_template_id(email)
     |> prepare_substitutions(email)
+    |> prepare_options(email)
   end
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
@@ -171,6 +189,12 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp prepare_substitutions(body, _email), do: body
+
+  defp prepare_options(body, %{provider_options: %{options: options}}) do
+    Map.put(body, :options, options)
+  end
+
+  defp prepare_options(body, _email), do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     custom_headers = Map.merge(body.content.headers, headers)
