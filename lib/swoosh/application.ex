@@ -21,10 +21,11 @@ defmodule Swoosh.Application do
           {{:ok, _}, {:ok, _}} ->
             Logger.info("Running Swoosh mailbox preview server with Cowboy using http on port #{port}")
             [Plug.Cowboy.child_spec(scheme: :http, plug: Plug.Swoosh.MailboxPreview, options: [port: port]) | children]
+
           _ ->
             Logger.warn("Could not start preview server on port #{port}. Please ensure plug and cowboy" <>
               " are in your dependency list.")
-            []
+            children
         end
       else
         children
