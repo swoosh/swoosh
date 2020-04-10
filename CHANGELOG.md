@@ -1,5 +1,11 @@
 ## Changelog
 
+## v0.25.2 - 2020-04-10
+
+### Fixed
+
+- `Swoosh.Adapters.Local.Storage.Memory` start logic (thanks @wojtekmach)
+
 ## v0.25.1 - 2020-04-01
 
 ### Added
