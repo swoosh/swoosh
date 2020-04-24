@@ -52,7 +52,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "text-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -82,7 +83,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "html-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -112,7 +114,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with all fields returns :ok", %{
@@ -170,7 +173,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with custom variables returns :ok", %{
@@ -236,7 +240,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with template_id returns :ok", %{
@@ -279,7 +284,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with substitutions returns :ok", %{
@@ -322,7 +328,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with dynamic_template_data returns :ok", %{
@@ -365,7 +372,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with custom headers returns :ok", %{
@@ -414,7 +422,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with 429 response", %{
@@ -525,7 +534,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with asm returns :ok", %{bypass: bypass, config: config} do
@@ -571,7 +581,8 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 
   test "delivery/1 with mail_settings returns :ok", %{
@@ -618,6 +629,7 @@ defmodule Swoosh.Adapters.SendgridTest do
       respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
     end)
 
-    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+    assert Sendgrid.deliver(email, config) ==
+             {:ok, %{id: "123-xyz", body: %{"message" => "success"}}}
   end
 end
