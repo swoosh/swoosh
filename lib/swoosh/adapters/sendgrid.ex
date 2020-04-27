@@ -31,6 +31,11 @@ defmodule Swoosh.Adapters.Sendgrid do
   @base_url "https://api.sendgrid.com/v3"
   @api_endpoint "/mail/send"
 
+  @doc """
+  Sendgrid return JSON on successful requests, so we parse that JSON for you.
+
+  For reference: [Sendgrid API docs](https://sendgrid.com/docs/API_Reference/api_v3.html)
+  """
   def deliver(%Email{} = email, config \\ []) do
     headers = [
       {"Content-Type", "application/json"},
