@@ -1,5 +1,12 @@
 ## Changelog
 
+## v0.25.3 - 2020-04-28
+
+### Changed
+
+- SendGrid adapter now retuns response body in addtion to message id (thanks @sadir)
+  - Contributions to other adapters to make this change are welcome!
+
 ## v0.25.2 - 2020-04-10
 
 ### Fixed
