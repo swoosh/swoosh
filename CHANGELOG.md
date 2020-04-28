@@ -4,7 +4,7 @@
 
 ### Changed
 
-- SendGrid adapter now retuns response body in addtion to message id (thanks @sadir)
+- SendGrid adapter now returns response body in addtion to message id (thanks @sadir)
   - Contributions to other adapters to make this change are welcome!
 
 ## v0.25.2 - 2020-04-10
