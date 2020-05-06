@@ -53,6 +53,8 @@ defmodule Sample.UserController do
 end
 ```
 
+See [Mailer docs](https://hexdocs.pm/swoosh/0.25.4/Swoosh.Mailer.html) for more configuration options.
+
 ## Installation
 
 - Add swoosh to your list of dependencies in `mix.exs`:
