@@ -4,6 +4,8 @@ defmodule Swoosh.Application do
   require Logger
 
   def start(_type, _args) do
+    Swoosh.ApiClient.init()
+
     children =
       if Application.get_env(:swoosh, :local, true) do
         [Swoosh.Adapters.Local.Storage.Memory]
