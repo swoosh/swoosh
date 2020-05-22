@@ -39,7 +39,8 @@ defmodule Swoosh.Mixfile do
           Plug.Conn.Query,
           Plug.Cowboy,
           Mail,
-          Mail.Renderers.RFC2822
+          Mail.Renderers.RFC2822,
+          {IEx, :started?, 0}
         ]
       ]
     ]
@@ -47,7 +48,7 @@ defmodule Swoosh.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :xmerl],
       mod: {Swoosh.Application, []},
       env: [json_library: Jason, api_client: Swoosh.ApiClient.Hackney]
     ]

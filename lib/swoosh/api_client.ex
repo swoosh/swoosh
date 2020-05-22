@@ -24,7 +24,7 @@ defmodule Swoosh.ApiClient do
   @callback post(url, headers, body, Swoosh.Email.t) ::
               {:ok, status, headers, body} | {:error, term()}
 
-  @optional_callback init: 1
+  @optional_callbacks init: 0
 
   @doc """
   API used by adapters to post to a given URL with headers, body, and e-mail.
