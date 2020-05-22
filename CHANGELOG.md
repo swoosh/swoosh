@@ -1,5 +1,14 @@
 ## Changelog
 
+## v0.25.5 - 2020-05-22
+
+### Changed
+
+Thanks @josevalim
+
+- `Swoosh.ApiClient` now defines a behavior, developers can define their own Swoosh API client
+- As a result, hackney becomes an optional dependency. A new API client can be defined to use other http clients.
+
 ## v0.25.4 - 2020-04-29
 
 ### Fixed

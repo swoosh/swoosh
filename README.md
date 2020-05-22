@@ -65,6 +65,16 @@ See [Mailer docs](https://hexdocs.pm/swoosh/0.25.4/Swoosh.Mailer.html) for more 
     end
     ```
 
+- (Optional-ish) Most Adapters (Non SMTP ones) use `Swoosh.ApiClient` to talk to the service provider.
+  Swoosh comes with `Swoosh.ApiClient.Hackney`. if you want to use the default, include `:hackney` as a dependency as well.
+  Otherwise, define a new API client that uses the HTTP client you like, and config swoosh to use the new API Client.
+  See `Swoosh.ApiClient` and `Swoosh.ApiClient.Hackney` for details.
+
+    ```elixir
+    config :swoosh, :api_client, MyApp.ApiClient
+    ```
+
+
 - (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
 
     ```elixir
