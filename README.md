@@ -188,12 +188,14 @@ file as an argument and we will do the rest. It also works with a `%Plug.Upload{
 
 All built-in adapters have support for attachments.
 
-    new()
-    |> to("peter@example.com")
-    |> from({"Jarvis", "jarvis@example.com"})
-    |> subject("Invoice May")
-    |> text_body("Here is the invoice for your superhero services in May.")
-    |> attachment("/Users/jarvis/invoice-peter-may.pdf")
+```elixir
+new()
+|> to("peter@example.com")
+|> from({"Jarvis", "jarvis@example.com"})
+|> subject("Invoice May")
+|> text_body("Here is the invoice for your superhero services in May.")
+|> attachment("/Users/jarvis/invoice-peter-may.pdf")
+```
 
 ## Testing
 
