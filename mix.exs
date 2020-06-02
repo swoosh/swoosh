@@ -7,7 +7,7 @@ defmodule Swoosh.Mixfile do
     [
       app: :swoosh,
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
