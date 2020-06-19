@@ -86,6 +86,10 @@ defmodule Swoosh.Adapters.Sendgrid do
   defp prepare_from(body, %{from: from}),
     do: Map.put(body, :from, from |> email_item)
 
+  defp prepare_personalizations(body, %{provider_options: %{personalizations: personalizations}}) do
+    Map.put(body, :personalizations, personalizations)
+  end
+
   defp prepare_personalizations(body, email) do
     personalizations =
       %{}
