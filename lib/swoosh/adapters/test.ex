@@ -24,7 +24,7 @@ defmodule Swoosh.Adapters.Test do
       send(pid, {:email, email})
     end
 
-    {:ok, %{}}
+    {:ok, email}
   end
 
   defp pids do
