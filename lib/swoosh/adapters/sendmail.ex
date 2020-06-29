@@ -22,12 +22,13 @@ defmodule Swoosh.Adapters.Sendmail do
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers
 
+  @impl true
   def deliver(%Email{} = email, config) do
     body = Helpers.body(email, config)
     port = Port.open({:spawn, cmd(email, config)}, [:binary])
     Port.command(port, body)
     Port.close(port)
-    :ok
+    {:ok, %{}}
   end
 
   @doc false
