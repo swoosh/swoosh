@@ -69,6 +69,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   @base_headers %{"Content-Type" => "application/x-www-form-urlencoded"}
   @version "2010-12-01"
 
+  @impl true
   def deliver(%Email{} = email, config \\ []) do
     query = email |> prepare_body(config) |> encode_body
     url = base_url(config)
