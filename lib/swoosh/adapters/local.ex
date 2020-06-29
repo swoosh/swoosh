@@ -21,6 +21,7 @@ defmodule Swoosh.Adapters.Local do
 
   use Swoosh.Adapter
 
+  @impl true
   def deliver(%Swoosh.Email{} = email, config) do
     driver = storage_driver(config)
     %Swoosh.Email{headers: %{"Message-ID" => id}} = driver.push(email)
