@@ -39,6 +39,7 @@ defmodule Swoosh.Adapters.SMTP do
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers
 
+  @impl true
   def deliver(%Email{} = email, config) do
     sender = Helpers.sender(email)
     recipients = all_recipients(email)
