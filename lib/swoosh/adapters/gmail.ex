@@ -41,6 +41,7 @@ defmodule Swoosh.Adapters.Gmail do
   @base_url "https://www.googleapis.com/upload/gmail/v1"
   @api_endpoint "/users/me/messages/send"
 
+  @impl true
   def deliver(%Email{} = email, config) do
     url = [base_url(config), @api_endpoint]
     
