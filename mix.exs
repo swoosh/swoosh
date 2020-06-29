@@ -1,13 +1,13 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "0.25.6"
+  @version "1.0.0"
 
   def project do
     [
       app: :swoosh,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
