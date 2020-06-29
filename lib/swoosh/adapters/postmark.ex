@@ -54,6 +54,7 @@ defmodule Swoosh.Adapters.Postmark do
   @base_url "https://api.postmarkapp.com"
   @api_endpoint "/email"
 
+  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     params = email |> prepare_body |> Swoosh.json_library().encode!
