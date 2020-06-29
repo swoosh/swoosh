@@ -19,6 +19,7 @@ defmodule Swoosh.Adapters.Test do
 
   use Swoosh.Adapter
 
+  @impl true
   def deliver(email, _config) do
     for pid <- pids() do
       send(pid, {:email, email})
