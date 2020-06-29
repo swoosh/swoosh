@@ -25,6 +25,7 @@ defmodule Swoosh.Adapters.Dyn do
   @base_url "https://emailapi.dynect.net"
   @api_endpoint "rest/json/send"
 
+  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
     url = [base_url(config), "/", @api_endpoint]
