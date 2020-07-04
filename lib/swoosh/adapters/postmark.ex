@@ -65,7 +65,10 @@ defmodule Swoosh.Adapters.Postmark do
         {:ok, %{id: Swoosh.json_library().decode!(body)["MessageID"]}}
 
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library().decode!(body)}}
+        case Swoosh.json_library().decode(body) do
+          {:ok, error} -> {:error, {code, error}}
+          {:error, _} -> {:error, {code, body}}
+        end
 
       {:error, reason} ->
         {:error, reason}
