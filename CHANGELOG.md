@@ -1,6 +1,6 @@
 ## Changelog
 
-It's about time, v1.0 is here.
+Swoosh has been very stable for a very long time. It's about time, v1.0 is here.
 
 ## BREAKING
 
