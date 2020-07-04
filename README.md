@@ -53,7 +53,7 @@ defmodule Sample.UserController do
 end
 ```
 
-See [Mailer docs](https://hexdocs.pm/swoosh/0.25.4/Swoosh.Mailer.html) for more configuration options.
+See [Mailer docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html) for more configuration options.
 
 ## Installation
 
@@ -61,7 +61,7 @@ See [Mailer docs](https://hexdocs.pm/swoosh/0.25.4/Swoosh.Mailer.html) for more 
 
     ```elixir
     def deps do
-      [{:swoosh, "~> 0.25"}]
+      [{:swoosh, "~> 1.0"}]
     end
     ```
 
@@ -80,7 +80,7 @@ See [Mailer docs](https://hexdocs.pm/swoosh/0.25.4/Swoosh.Mailer.html) for more 
     ```elixir
     def deps do
       [
-        {:swoosh, "~> 0.25"},
+        {:swoosh, "~> 1.0"},
         {:gen_smtp, "~> 0.13"}
       ]
     end
