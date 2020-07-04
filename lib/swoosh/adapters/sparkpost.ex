@@ -68,7 +68,10 @@ defmodule Swoosh.Adapters.SparkPost do
         {:ok, Swoosh.json_library().decode!(body)}
 
       {:ok, code, _headers, body} when code > 399 ->
-        {:error, {code, Swoosh.json_library().decode!(body)}}
+        case Swoosh.json_library().decode(body) do
+          {:ok, error} -> {:error, {code, error}}
+          {:error, _} -> {:error, {code, body}}
+        end
 
       {:error, reason} ->
         {:error, reason}
