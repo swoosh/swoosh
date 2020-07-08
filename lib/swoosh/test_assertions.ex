@@ -15,12 +15,12 @@ defmodule Swoosh.TestAssertions do
   @doc ~S"""
   Asserts any email was sent.
   """
-  @spec assert_email_sent() :: true | no_return
+  @spec assert_email_sent() :: tuple | no_return
   def assert_email_sent do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(Email.t() | Keyword.t()) :: true | no_return
+  @spec assert_email_sent(Email.t() | Keyword.t()) :: :ok | tuple | no_return
 
   @doc ~S"""
   Asserts `email` was sent.
@@ -50,8 +50,11 @@ defmodule Swoosh.TestAssertions do
     Enum.each(params, &assert_equal(email, &1))
   end
 
-  defp assert_equal(email, {:subject, value}), do: assert(email.subject == value)
-  defp assert_equal(email, {:from, value}), do: assert(email.from == format_recipient(value))
+  defp assert_equal(email, {:subject, value}),
+    do: assert(email.subject == value)
+
+  defp assert_equal(email, {:from, value}),
+    do: assert(email.from == format_recipient(value))
 
   defp assert_equal(email, {:reply_to, value}),
     do: assert(email.reply_to == format_recipient(value))
@@ -59,21 +62,32 @@ defmodule Swoosh.TestAssertions do
   defp assert_equal(email, {:to, value}) when is_list(value),
     do: assert(email.to == Enum.map(value, &format_recipient/1))
 
-  defp assert_equal(email, {:to, value}), do: assert(format_recipient(value) in email.to)
+  defp assert_equal(email, {:to, value}),
+    do: assert(format_recipient(value) in email.to)
 
   defp assert_equal(email, {:cc, value}) when is_list(value),
     do: assert(email.cc == Enum.map(value, &format_recipient/1))
 
-  defp assert_equal(email, {:cc, value}), do: assert(format_recipient(value) in email.cc)
+  defp assert_equal(email, {:cc, value}),
+    do: assert(format_recipient(value) in email.cc)
 
   defp assert_equal(email, {:bcc, value}) when is_list(value),
     do: assert(email.bcc == Enum.map(value, &format_recipient/1))
 
-  defp assert_equal(email, {:bcc, value}), do: assert(format_recipient(value) in email.bcc)
-  defp assert_equal(email, {:text_body, %Regex{} = value}), do: assert(email.text_body =~ value)
-  defp assert_equal(email, {:text_body, value}), do: assert(email.text_body == value)
-  defp assert_equal(email, {:html_body, %Regex{} = value}), do: assert(email.html_body =~ value)
-  defp assert_equal(email, {:html_body, value}), do: assert(email.html_body == value)
+  defp assert_equal(email, {:bcc, value}),
+    do: assert(format_recipient(value) in email.bcc)
+
+  defp assert_equal(email, {:text_body, %Regex{} = value}),
+    do: assert(email.text_body =~ value)
+
+  defp assert_equal(email, {:text_body, value}),
+    do: assert(email.text_body == value)
+
+  defp assert_equal(email, {:html_body, %Regex{} = value}),
+    do: assert(email.html_body =~ value)
+
+  defp assert_equal(email, {:html_body, value}),
+    do: assert(email.html_body == value)
 
   @doc ~S"""
   Asserts no emails were sent.
@@ -88,7 +102,7 @@ defmodule Swoosh.TestAssertions do
   Asserts email with `attributes` was not sent.
 
   Performs pattern matching using the given pattern, equivalent to `pattern = email`.
-  
+
   When a list of attributes is given, they will be converted to a pattern.
 
   It converts list fields (`:to`, `:cc`, `:bcc`) to a single element list if a single value is
@@ -115,11 +129,13 @@ defmodule Swoosh.TestAssertions do
     Enum.reduce(attributes, %{}, &email_pattern(&2, &1))
   end
 
-  defp email_pattern(%{} = pattern, {key, value}) when key in [:from, :reply_to] do
+  defp email_pattern(%{} = pattern, {key, value})
+       when key in [:from, :reply_to] do
     Map.put(pattern, key, format_recipient(value))
   end
 
-  defp email_pattern(%{} = pattern, {key, value}) when key in [:to, :cc, :bcc] do
+  defp email_pattern(%{} = pattern, {key, value})
+       when key in [:to, :cc, :bcc] do
     Map.put(pattern, key, value |> List.wrap() |> Enum.map(&format_recipient/1))
   end
 
