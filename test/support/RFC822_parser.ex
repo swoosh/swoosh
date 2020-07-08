@@ -6,7 +6,8 @@ defmodule Plug.Parsers.RFC822 do
   @behaviour Plug.Parsers
 
   def init(opts) do
-    {body_reader, opts} = Keyword.pop(opts, :body_reader, {Plug.Conn, :read_body, []})
+    {body_reader, opts} =
+      Keyword.pop(opts, :body_reader, {Plug.Conn, :read_body, []})
 
     {body_reader, nil, opts}
   end
@@ -22,12 +23,7 @@ defmodule Plug.Parsers.RFC822 do
   end
 
   defp decode({:ok, body, conn}, nil) do
-    case Mail.Parsers.RFC2822.parse(body) do
-      %Mail.Message{} = parsed ->
-        {:ok, parsed, conn}
-
-      error ->
-        raise Plug.Parsers.ParseError, "Malformed body #{error}"
-    end
+    parsed = %Mail.Message{} = Mail.Parsers.RFC2822.parse(body)
+    {:ok, parsed, conn}
   end
 end

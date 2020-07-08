@@ -96,12 +96,6 @@ defmodule Swoosh.Adapters.Mailjet do
     }
   end
 
-  defp get_message_id(body) when is_binary(body) do
-    body
-    |> Swoosh.json_library().decode!
-    |> get_message_id()
-  end
-
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp prepare_headers(config) do
