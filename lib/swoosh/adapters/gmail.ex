@@ -18,6 +18,10 @@ defmodule Swoosh.Adapters.Gmail do
         adapter: Swoosh.Adapters.Gmail,
         access_token: {:system, GMAIL_API_ACCESS_TOKEN}
 
+      # To deal with token refresh, it could be a better idea to pass the access token
+      # in via deliver config explicitly, if you don't update the environment variable
+      # periodically. e.g.
+      MyMailer.deliver(my_email, access_token: my_access_token)
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
