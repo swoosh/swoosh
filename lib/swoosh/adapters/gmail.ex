@@ -4,10 +4,6 @@ defmodule Swoosh.Adapters.Gmail do
 
   For reference [Gmail API docs](https://developers.google.com/gmail/api)
 
-  You don't need to set `from` address as google will set it for you.
-  If you still want to include it, make sure it matches the account or
-  it will be ignored.
-
   ## Dependency
 
   Gmail adapter requires `Mail` dependency to format message as RFC 2822 message.
@@ -20,6 +16,7 @@ defmodule Swoosh.Adapters.Gmail do
       # config/congig.exs
       config :sample, Smaple.Mailer
         adapter: Swoosh.Adapters.Gmail,
+        access_token: {:system, GMAIL_API_ACCESS_TOKEN}
 
 
       # lib/sample/mailer.ex
