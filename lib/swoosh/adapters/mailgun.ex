@@ -23,11 +23,15 @@ defmodule Swoosh.Adapters.Mailgun do
 
   ## Provider options
 
-  - :template_name
-  - :custom_vars (v:)
-  - :sending_options (o:)
-  - :recipient_vars
-  - :tags (o:tag, added before `:sending_options`)
+  - `:custom_vars` (v:)
+  - `:sending_options` (o:)
+  - `:template_name` (template)
+  - `:recipient_vars` (recipient-variables)
+  - `:tags` (o:tag, added before `:sending_options`)
+  
+  ## Custom headers
+  
+  Headers added via `Email.header/3` will be translated to (h:) values that Mailgun recognizes.
   """
 
   use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
