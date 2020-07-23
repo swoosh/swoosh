@@ -85,6 +85,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_custom_vars(email)
+    |> prepare_sending_options(email)
     |> prepare_recipient_vars(email)
     |> prepare_tags(email)
     |> prepare_custom_headers(email)
