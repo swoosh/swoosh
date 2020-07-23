@@ -24,9 +24,10 @@ defmodule Swoosh.Adapters.Mailgun do
   ## Provider options
 
   - :template_name
-  - :custom_vars
+  - :custom_vars (v:)
+  - :sending_options (o:)
   - :recipient_vars
-  - :tags
+  - :tags (o:tag, added before `:sending_options`)
   """
 
   use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
