@@ -103,6 +103,14 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_custom_vars(body, _email), do: body
 
+  defp prepare_sending_options(body, %{provider_options: %{sending_options: sending_options}}) do
+    Enum.reduce(sending_options, body, fn {k, v}, body ->
+      Map.put(body, "o:#{k}", encode_variable(v))
+    end)
+  end
+
+  defp prepare_sending_options(body, _email), do: body
+
   defp prepare_recipient_vars(body, %{provider_options: %{recipient_vars: recipient_vars}}) do
     Map.put(body, "recipient-variables", encode_variable(recipient_vars))
   end
