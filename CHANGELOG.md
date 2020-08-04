@@ -1,5 +1,13 @@
 ## Changelog
 
+### 1.0.1
+
+### Added
+
+- Mailgun sending options, [see docs](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html)
+
+### 1.0.0
+
 Swoosh has been very stable for a very long time. It's about time, v1.0 is here.
 
 ## BREAKING
