@@ -7,9 +7,11 @@ defmodule Swoosh.Adapters.Gmail do
   ## Dependency
 
   Gmail adapter requires `Mail` dependency to format message as RFC 2822 message.
+  
+      {:mail, ">= 0.0.0"}
 
   Because `Mail` library removes Bcc headers, they are being added after email is
-  rendered.
+  rendered, in adapter code.
 
   ## Example
 
