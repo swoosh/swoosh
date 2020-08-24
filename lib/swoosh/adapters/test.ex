@@ -28,6 +28,17 @@ defmodule Swoosh.Adapters.Test do
     {:ok, %{}}
   end
 
+  @impl true
+  def deliver_many(emails, _config) do
+    for pid <- pids() do
+      send(pid, {:emails, emails})
+    end
+
+    {:ok, %{}}
+  end
+
+  # Essentially finds all of the processes that tried to send an email (in the test)
+  # and sends an email to that process.
   defp pids do
     Enum.uniq([self() | List.wrap(Process.get(:"$callers"))])
   end

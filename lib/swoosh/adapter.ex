@@ -30,7 +30,9 @@ defmodule Swoosh.Adapter do
   @callback deliver(%Swoosh.Email{}, config) :: {:ok, term} | {:error, term}
 
   @doc """
-  Delivers multiple emails with the given config
+  Delivers multiple emails with the given config in one request. Some email providers allow multiple
+  messages to be sent in one HTTP request, for example Mailjet allow this. Check your provider's
+  documentation to see if that is possible.
   """
   @callback deliver_many(list(%Swoosh.Email{}), config) ::
               {:ok, term} | {:error, term}
