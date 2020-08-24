@@ -60,8 +60,7 @@ defmodule Swoosh.Adapters.TestTest do
         deliver_many([chalmers, mother])
       end)
 
-      Process.sleep(100)
-      assert_received({:emails, emails})
+      assert_receive {:emails, emails}
       assert [chalmers, mother] = emails
       assert chalmers.from == {"", "skinner@example.com"}
       assert chalmers.to == [{"", "super_nintendo_chalmers@example.com"}]
@@ -91,8 +90,7 @@ defmodule Swoosh.Adapters.TestTest do
         deliver_many([tony, mike])
       end)
 
-      Process.sleep(100)
-      assert_received({:emails, emails})
+      assert_receive {:emails, emails}
       assert [chalmers, mother] = emails
       assert chalmers.from == {"", "tony.stark@example.com"}
       assert chalmers.to == [{"", "steve.rogers@example.com"}]
