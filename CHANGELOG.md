@@ -1,5 +1,11 @@
 ## Changelog
 
+## 1.0.2
+
+### Added
+
+- `deliver_many` implementation for TestAdapter (Thanks @Adzz, #503)
+
 ## 1.0.1
 
 ### Added
