@@ -9,7 +9,7 @@ defmodule Swoosh.EmailTest do
     assert %Email{} = new()
   end
 
-  test "new with arguments create an email with fiels populated" do
+  test "new with arguments create an email with fields populated" do
     email = new(subject: "Hello, Avengers!")
     assert email.subject == "Hello, Avengers!"
   end
