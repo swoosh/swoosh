@@ -1,5 +1,12 @@
 ## Changelog
 
+## 1.0.3
+
+## Changes
+
+- Add CSRF token to dev preview mailbox (fixes #381) @DanielDent (#513)
+
+
 ## 1.0.2
 
 ### Added
