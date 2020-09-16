@@ -104,6 +104,7 @@
               </div>
             <% else %>
               <form method="POST" action="<%= to_absolute_url(@conn, "clear") %>">
+                <input name="_csrf_token" type="hidden" value="<%= Plug.CSRFProtection.get_csrf_token() %>">
                 <button class="btn btn-primary btn-block" type="submit">Delete Message Queue</button>
               </form>
               <%= for email <- @emails do %>
