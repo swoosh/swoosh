@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Mailgun do
   @moduledoc ~S"""
   An adapter that sends email using the Mailgun API.
 
-  For reference: [Mailgun API docs](https://documentation.mailgun.com/api-sending.html#sending)
+  For reference: [Mailgun API docs](https://documentation.mailgun.com/en/latest/api-sending.html#sending)
 
   ## Dependency
 
