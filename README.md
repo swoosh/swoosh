@@ -156,7 +156,7 @@ Taking the example from above the "Getting Started" section, your code would loo
     <title><%= @email.subject %></title>
   </head>
   <body>
-    <%= render @view_module, @view_template, assigns %>
+    <%= @inner_content %>
   </body>
 </html>
 
