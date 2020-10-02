@@ -159,6 +159,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> prepare_header_date(current_date_time)
     |> prepare_header_length(query)
     |> prepare_header_authorization(query, current_date_time, config)
+    |> prepare_header_security_token(config)
     |> Map.to_list()
   end
 
@@ -229,6 +230,13 @@ defmodule Swoosh.Adapters.AmazonSES do
     "#{@encoding} Credential=#{credential}, SignedHeaders=#{signed_header_list}, Signature=#{
       signature
     }"
+  end
+
+  defp prepare_header_security_token(headers, config) do
+    case config[:security_token] do
+      nil -> headers
+      token -> Map.put(headers, "X-Amz-Security-Token", token)
+    end
   end
 
   defp generate_signature(string_to_sign, date_time, region, secret) do
