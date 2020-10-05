@@ -67,11 +67,11 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
        }, config) do
     case {text_body, html_body} do
       {text_body, nil} ->
-        headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
+        headers = add_content_type_header(headers, "text/plain; charset=\"utf-8\"")
         {"text", "plain", headers, text_body}
 
       {nil, html_body} ->
-        headers = [{"Content-Type", "text/html; charset=\"utf-8\""} | headers]
+        headers = add_content_type_header(headers, "text/html; charset=\"utf-8\"")
         {"text", "html", headers, html_body}
 
       {text_body, html_body} ->
@@ -111,17 +111,27 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     subtype_string = to_string(subtype)
     transfer_encoding =
       Keyword.get(config, :transfer_encoding, "quoted-printable")
-
+    headers = add_content_type_header(
+      [{"Content-Transfer-Encoding", transfer_encoding}],
+      "text/#{subtype_string}; charset=\"utf-8\""
+    )
     {"text", subtype_string,
-     [
-       {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
-       {"Content-Transfer-Encoding", transfer_encoding}
-     ],
+      headers,
      [
        {"content-type-params", [{"charset", "utf-8"}]},
        {"disposition", "inline"},
        {"disposition-params", []}
      ], content}
+  end
+
+  defp add_content_type_header(headers, value) do
+    existing_content_type_header = Enum.find(headers, fn(element) ->
+      match?({"Content-Type", _}, element)
+    end)
+    case existing_content_type_header do
+      nil -> [{"Content-Type", value} | headers]
+      _ -> headers
+    end
   end
 
   defp prepare_attachment(
