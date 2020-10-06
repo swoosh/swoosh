@@ -109,14 +109,15 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_part(subtype, content, config) do
     subtype_string = to_string(subtype)
-    transfer_encoding =
-      Keyword.get(config, :transfer_encoding, "quoted-printable")
-    headers = add_content_type_header(
-      [{"Content-Transfer-Encoding", transfer_encoding}],
-      "text/#{subtype_string}; charset=\"utf-8\""
-    )
-    {"text", subtype_string,
-      headers,
+    transfer_encoding = Keyword.get(config, :transfer_encoding, "quoted-printable")
+
+    headers =
+      add_content_type_header(
+        [{"Content-Transfer-Encoding", transfer_encoding}],
+        "text/#{subtype_string}; charset=\"utf-8\""
+      )
+
+    {"text", subtype_string, headers,
      [
        {"content-type-params", [{"charset", "utf-8"}]},
        {"disposition", "inline"},
@@ -125,12 +126,12 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   end
 
   defp add_content_type_header(headers, value) do
-    existing_content_type_header = Enum.find(headers, fn(element) ->
-      match?({"Content-Type", _}, element)
-    end)
-    case existing_content_type_header do
-      nil -> [{"Content-Type", value} | headers]
-      _ -> headers
+    if Enum.find(headers, fn {header_name, _} ->
+         String.downcase(header_name) == "content-type"
+       end) do
+      headers
+    else
+      [{"Content-Type", value} | headers]
     end
   end
 
