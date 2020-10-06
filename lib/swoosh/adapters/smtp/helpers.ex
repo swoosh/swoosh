@@ -37,7 +37,8 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     |> prepare_from(email)
   end
 
-  defp prepare_subject(headers, %{subject: subject}) when is_binary(subject), do: [{"Subject", subject} | headers]
+  defp prepare_subject(headers, %{subject: subject}) when is_binary(subject),
+    do: [{"Subject", subject} | headers]
 
   defp prepare_from(headers, %{from: from}), do: [{"From", render_recipient(from)} | headers]
 
@@ -60,11 +61,15 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     Map.to_list(additional_headers) ++ headers
   end
 
-  defp prepare_parts(headers, %{
-         attachments: [],
-         html_body: html_body,
-         text_body: text_body
-       }, config) do
+  defp prepare_parts(
+         headers,
+         %{
+           attachments: [],
+           html_body: html_body,
+           text_body: text_body
+         },
+         config
+       ) do
     case {text_body, html_body} do
       {text_body, nil} ->
         headers = add_content_type_header(headers, "text/plain; charset=\"utf-8\"")
@@ -79,15 +84,20 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
           prepare_part(:plain, text_body, config),
           prepare_part(:html, html_body, config)
         ]
+
         {"multipart", "alternative", headers, parts}
     end
   end
 
-  defp prepare_parts(headers, %{
-         attachments: attachments,
-         html_body: html_body,
-         text_body: text_body
-       }, config) do
+  defp prepare_parts(
+         headers,
+         %{
+           attachments: attachments,
+           html_body: html_body,
+           text_body: text_body
+         },
+         config
+       ) do
     content_part =
       case {prepare_part(:plain, text_body, config), prepare_part(:html, html_body, config)} do
         {text_part, nil} ->
