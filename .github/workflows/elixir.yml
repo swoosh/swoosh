@@ -18,6 +18,15 @@ jobs:
           elixir-version: ${{ matrix.elixir }}
           otp-version: ${{ matrix.otp }}
 
+      - name: Restore dependencies cache
+        uses: actions/cache@v2
+        with:
+          path:
+            - deps
+            - _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
       - name: Install Dependencies
         run: mix deps.get
 
