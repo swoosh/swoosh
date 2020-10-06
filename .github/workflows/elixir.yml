@@ -21,9 +21,9 @@ jobs:
       - name: Restore dependencies cache
         uses: actions/cache@v2
         with:
-          path:
-            - deps
-            - _build
+          path: |
+            deps
+            _build
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
 
