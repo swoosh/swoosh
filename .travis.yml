@@ -8,7 +8,7 @@ branches:
   only:
     - master
 elixir: '1.10'
-otp_release: '23.0'
+otp_release: '23.1'
 stages:
   - test
   - name: inch
