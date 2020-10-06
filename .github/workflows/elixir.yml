@@ -4,23 +4,22 @@ on: push
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        elixir: [1.10.2, 1.9, 1.8]
-        otp: [22.2, 21.3, 20.3]
-        exclude:
-          - elixir: 1.10.2
-            otp: 20.3
+        elixir: [1.10.4, 1.9, 1.8]
+        otp: [23.1, 22.3, 21.3]
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup elixir
-      uses: actions/setup-elixir@v1
-      with:
-        elixir-version: ${{ matrix.elixir }}
-        otp-version: ${{ matrix.otp }}
-    - name: Install Dependencies
-      run: mix deps.get
-    - name: Run Tests
-      run: mix test
+      - uses: actions/checkout@v2
+
+      - name: Setup elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+
+      - name: Install Dependencies
+        run: mix deps.get
+
+      - name: Run Tests
+        run: mix test
