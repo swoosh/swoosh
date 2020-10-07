@@ -33,6 +33,10 @@ defmodule Swoosh.Adapters.Postmark do
   [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template)
   feature.
 
+  When sending batch emails using `deliver_many` do not mix emails using templates with
+  non-template emails. The use of tempaltes impacts the API endpoint used and so the batch email
+  collection should be of the same format.
+
   ## Example of sending emails with a tag
 
   This will add a tag to the sent Postmark's email.
