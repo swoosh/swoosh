@@ -72,12 +72,12 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
        ) do
     case {text_body, html_body} do
       {text_body, nil} ->
-        headers = add_content_type_header(headers, "text/plain; charset=\"utf-8\"")
-        {"text", "plain", headers, text_body}
+        {"text", "plain", add_content_type_header(headers, "text/plain; charset=\"utf-8\""),
+         text_body}
 
       {nil, html_body} ->
-        headers = add_content_type_header(headers, "text/html; charset=\"utf-8\"")
-        {"text", "html", headers, html_body}
+        {"text", "html", add_content_type_header(headers, "text/html; charset=\"utf-8\""),
+         html_body}
 
       {text_body, html_body} ->
         parts = [
@@ -121,13 +121,11 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     subtype_string = to_string(subtype)
     transfer_encoding = Keyword.get(config, :transfer_encoding, "quoted-printable")
 
-    headers =
-      add_content_type_header(
-        [{"Content-Transfer-Encoding", transfer_encoding}],
-        "text/#{subtype_string}; charset=\"utf-8\""
-      )
-
-    {"text", subtype_string, headers,
+    {"text", subtype_string,
+     [
+       {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
+       {"Content-Transfer-Encoding", transfer_encoding}
+     ],
      [
        {"content-type-params", [{"charset", "utf-8"}]},
        {"disposition", "inline"},
