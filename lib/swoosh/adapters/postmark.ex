@@ -177,6 +177,7 @@ defmodule Swoosh.Adapters.Postmark do
   defp put_in_body({:template_model, val}, body_acc), do: Map.put(body_acc, "TemplateModel", val)
   defp put_in_body({:template_id, val}, body_acc), do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body({:template_alias, val}, body_acc), do: Map.put(body_acc, "TemplateAlias", val)
+  defp put_in_body({:message_stream, val}, body_acc), do: Map.put(body_acc, "MessageStream", val)
   defp put_in_body(_, body_acc), do: body_acc
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
