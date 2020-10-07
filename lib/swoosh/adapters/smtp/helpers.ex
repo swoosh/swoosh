@@ -37,7 +37,8 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     |> prepare_from(email)
   end
 
-  defp prepare_subject(headers, %{subject: subject}) when is_binary(subject), do: [{"Subject", subject} | headers]
+  defp prepare_subject(headers, %{subject: subject}) when is_binary(subject),
+    do: [{"Subject", subject} | headers]
 
   defp prepare_from(headers, %{from: from}), do: [{"From", render_recipient(from)} | headers]
 
@@ -60,34 +61,43 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     Map.to_list(additional_headers) ++ headers
   end
 
-  defp prepare_parts(headers, %{
-         attachments: [],
-         html_body: html_body,
-         text_body: text_body
-       }, config) do
+  defp prepare_parts(
+         headers,
+         %{
+           attachments: [],
+           html_body: html_body,
+           text_body: text_body
+         },
+         config
+       ) do
     case {text_body, html_body} do
       {text_body, nil} ->
-        headers = [{"Content-Type", "text/plain; charset=\"utf-8\""} | headers]
-        {"text", "plain", headers, text_body}
+        {"text", "plain", add_content_type_header(headers, "text/plain; charset=\"utf-8\""),
+         text_body}
 
       {nil, html_body} ->
-        headers = [{"Content-Type", "text/html; charset=\"utf-8\""} | headers]
-        {"text", "html", headers, html_body}
+        {"text", "html", add_content_type_header(headers, "text/html; charset=\"utf-8\""),
+         html_body}
 
       {text_body, html_body} ->
         parts = [
           prepare_part(:plain, text_body, config),
           prepare_part(:html, html_body, config)
         ]
+
         {"multipart", "alternative", headers, parts}
     end
   end
 
-  defp prepare_parts(headers, %{
-         attachments: attachments,
-         html_body: html_body,
-         text_body: text_body
-       }, config) do
+  defp prepare_parts(
+         headers,
+         %{
+           attachments: attachments,
+           html_body: html_body,
+           text_body: text_body
+         },
+         config
+       ) do
     content_part =
       case {prepare_part(:plain, text_body, config), prepare_part(:html, html_body, config)} do
         {text_part, nil} ->
@@ -109,8 +119,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_part(subtype, content, config) do
     subtype_string = to_string(subtype)
-    transfer_encoding =
-      Keyword.get(config, :transfer_encoding, "quoted-printable")
+    transfer_encoding = Keyword.get(config, :transfer_encoding, "quoted-printable")
 
     {"text", subtype_string,
      [
@@ -122,6 +131,16 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
        {"disposition", "inline"},
        {"disposition-params", []}
      ], content}
+  end
+
+  defp add_content_type_header(headers, value) do
+    if Enum.find(headers, fn {header_name, _} ->
+         String.downcase(header_name) == "content-type"
+       end) do
+      headers
+    else
+      [{"Content-Type", value} | headers]
+    end
   end
 
   defp prepare_attachment(
