@@ -240,4 +240,88 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
+
+  test "deliver_many/1 with two emails not using templates returns :ok", %{
+    bypass: bypass,
+    config: config
+  } do
+    email_to_steve =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Broadcast message: Thanos is here!")
+      |> html_body("<h1>Assemble!</h1>")
+      |> text_body("Assemble!")
+
+    email_to_natasha =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Natasha Romanova", "natasha.romanova@example.com"})
+      |> subject("Broadcast message: Thanos is here!")
+      |> html_body("<h1>Assemble!</h1>")
+      |> text_body("Assemble!")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      expected_body_params = %{
+        "_json" => [
+          %{
+            "Subject" => "Broadcast message: Thanos is here!",
+            "To" => "\"Steve Rogers\" <steve.rogers@example.com>",
+            "From" => "\"T Stark\" <tony.stark@example.com>",
+            "TextBody" => "Assemble!",
+            "HtmlBody" => "<h1>Assemble!</h1>"
+          },
+          %{
+            "Subject" => "Broadcast message: Thanos is here!",
+            "To" => "\"Natasha Romanova\" <natasha.romanova@example.com>",
+            "From" => "\"T Stark\" <tony.stark@example.com>",
+            "TextBody" => "Assemble!",
+            "HtmlBody" => "<h1>Assemble!</h1>"
+          }
+        ]
+      }
+
+      assert expected_body_params == conn.body_params
+      assert "/email/batch" == conn.request_path
+      assert "POST" == conn.method
+
+      success_response = """
+      [
+        {
+          "ErrorCode": 0,
+          "Message": "OK",
+          "MessageID": "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+          "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+          "To": "steve.rogers@example.com"
+        },
+        {
+          "ErrorCode": 0,
+          "Message": "OK",
+          "MessageID": "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+          "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+          "To": "natasha.romanova@example.com"
+        }
+      ]
+      """
+
+      Plug.Conn.resp(conn, 200, success_response)
+    end)
+
+    assert Postmark.deliver_many([email_to_steve, email_to_natasha], config) ==
+             {:ok,
+              [
+                %{
+                  id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+                  error_code: 0,
+                  message: "OK"
+                },
+                %{
+                  id: "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+                  error_code: 0,
+                  message: "OK"
+                }
+              ]}
+  end
 end

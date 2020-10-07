@@ -52,7 +52,6 @@ defmodule Swoosh.Adapters.Postmark do
   import Swoosh.Email.Render
 
   @base_url "https://api.postmarkapp.com"
-  @api_endpoint "/email"
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
@@ -63,6 +62,37 @@ defmodule Swoosh.Adapters.Postmark do
     case Swoosh.ApiClient.post(url, headers, params, email) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Swoosh.json_library().decode!(body)["MessageID"]}}
+
+      {:ok, code, _headers, body} when code > 399 ->
+        case Swoosh.json_library().decode(body) do
+          {:ok, error} -> {:error, {code, error}}
+          {:error, _} -> {:error, {code, body}}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  @impl true
+  def deliver_many(emails, config \\ []) when is_list(emails) do
+    headers = prepare_headers(config)
+    body = emails |> prepare_body |> Swoosh.json_library().encode!
+    url = [base_url(config), api_endpoint(List.first(emails), true)]
+
+    # Could not use `Swoosh.ApiClient.post` here since I have more than one email
+    case :hackney.post(url, headers, body, [:with_body]) do
+      {:ok, 200, _headers, body} ->
+        results =
+          Enum.map(Swoosh.json_library().decode!(body), fn email_result ->
+            %{
+              id: email_result["MessageID"],
+              error_code: email_result["ErrorCode"],
+              message: email_result["Message"]
+            }
+          end)
+
+        {:ok, results}
 
       {:ok, code, _headers, body} when code > 399 ->
         case Swoosh.json_library().decode(body) do
@@ -86,13 +116,26 @@ defmodule Swoosh.Adapters.Postmark do
     ]
   end
 
-  defp api_endpoint(%{provider_options: %{template_id: _, template_model: _}}),
-    do: @api_endpoint <> "/withTemplate"
+  defp api_endpoint(email, batch \\ false) do
+    case {email_uses_template?(%Email{} = email), batch} do
+      {true, true} -> "/email/batchWithTemplate"
+      {true, false} -> "/email/withTemplate"
+      {false, true} -> "/email/batch"
+      {false, false} -> "/email"
+    end
+  end
 
-  defp api_endpoint(%{provider_options: %{template_alias: _, template_model: _}}),
-    do: @api_endpoint <> "/withTemplate"
+  defp email_uses_template?(%Email{} = email) do
+    case email do
+      %{provider_options: %{template_id: _, template_model: _}} -> true
+      %{provider_options: %{template_alias: _, template_model: _}} -> true
+      _ -> false
+    end
+  end
 
-  defp api_endpoint(_email), do: @api_endpoint
+  defp prepare_body(emails) when is_list(emails) do
+    Enum.map(emails, &prepare_body/1)
+  end
 
   defp prepare_body(email) do
     %{}
