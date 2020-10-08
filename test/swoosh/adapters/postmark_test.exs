@@ -237,6 +237,43 @@ defmodule Swoosh.Adapters.PostmarkTest do
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
+  test "delivery/2 with defined message stream returns :ok", %{
+    bypass: bypass,
+    config: config
+  } do
+    config = Keyword.merge(config, message_stream: "test-stream-name")
+
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to("avengers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Subject" => "Hello, Avengers!",
+        "To" => "avengers@example.com",
+        "From" => "\"T Stark\" <tony.stark@example.com>",
+        "HtmlBody" => "<h1>Hello</h1>",
+        "TextBody" => "Hello",
+        "MessageStream" => "test-stream-name"
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Postmark.deliver(email, config) ==
+             {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
   test "deliver_many/1 with two emails not using templates returns :ok", %{
     bypass: bypass,
     config: config
