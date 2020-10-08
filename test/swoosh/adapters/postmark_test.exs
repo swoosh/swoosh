@@ -83,7 +83,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "delivery/1 with all fields for template id returns :ok", %{bypass: bypass, config: config} do
-    config         = Keyword.merge(config, template: true)
     template_model = %{
       name:    "Tony Stark",
       company: "Avengers",
@@ -118,7 +117,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
   end
 
   test "delivery/1 with all fields for template alias returns :ok", %{bypass: bypass, config: config} do
-    config         = Keyword.merge(config, template: true)
     template_model = %{
       name:    "Tony Stark",
       company: "Avengers",
@@ -202,7 +200,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
 
   test "validate_config/1 with valid config", %{config: config} do
     assert :ok = config |> Postmark.validate_config()
-    assert :ok = config |> Keyword.put_new(:template, true) |> Postmark.validate_config()
   end
 
   test "validate_config/1 with invalid config" do
