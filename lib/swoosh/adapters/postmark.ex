@@ -60,7 +60,7 @@ defmodule Swoosh.Adapters.Postmark do
   @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params = email |> prepare_body |> Swoosh.json_library().encode!
+    params = email |> prepare_body(config) |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
     case Swoosh.ApiClient.post(url, headers, params, email) do
@@ -81,7 +81,7 @@ defmodule Swoosh.Adapters.Postmark do
   @impl true
   def deliver_many(emails, config \\ []) when is_list(emails) do
     headers = prepare_headers(config)
-    body = emails |> prepare_body |> Swoosh.json_library().encode!
+    body = emails |> prepare_body(config) |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(List.first(emails), true)]
 
     # Could not use `Swoosh.ApiClient.post` here since I have more than one email
@@ -137,8 +137,13 @@ defmodule Swoosh.Adapters.Postmark do
     end
   end
 
-  defp prepare_body(emails) when is_list(emails) do
-    Enum.map(emails, &prepare_body/1)
+  defp prepare_body(emails, config) when is_list(emails) do
+    %{"Messages" => Enum.map(emails, &prepare_body/1)}
+    |> prepare_message_stream(config)
+  end
+
+  defp prepare_body(%Email{} = email, config) do
+    prepare_body(email) |> prepare_message_stream(config)
   end
 
   defp prepare_body(email) do
@@ -158,6 +163,13 @@ defmodule Swoosh.Adapters.Postmark do
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
+  defp prepare_message_stream(body, config) do
+    if Keyword.has_key?(config, :message_stream) do
+      Map.put(body, "MessageStream", config[:message_stream])
+    else
+      body
+    end
+  end
 
   defp prepare_to(body, %{to: to}), do: Map.put(body, "To", render_recipient(to))
 
@@ -224,7 +236,6 @@ defmodule Swoosh.Adapters.Postmark do
   defp put_in_body({:template_model, val}, body_acc), do: Map.put(body_acc, "TemplateModel", val)
   defp put_in_body({:template_id, val}, body_acc), do: Map.put(body_acc, "TemplateId", val)
   defp put_in_body({:template_alias, val}, body_acc), do: Map.put(body_acc, "TemplateAlias", val)
-  defp put_in_body({:message_stream, val}, body_acc), do: Map.put(body_acc, "MessageStream", val)
   defp put_in_body(_, body_acc), do: body_acc
 
   defp prepare_custom_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
