@@ -53,7 +53,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> to("wasp.avengers@example.com")
       |> to({"Steve Rogers", "steve.rogers@example.com"})
       |> subject("Hello, Avengers!")
-      |> html_body("<h1>Hello</h1>")
       |> cc({"Bruce Banner", "hulk.smash@example.com"})
       |> cc("thor.odinson@example.com")
       |> bcc({"Clinton Francis Barton", "hawk.eye@example.com"})
