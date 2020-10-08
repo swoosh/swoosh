@@ -29,6 +29,19 @@ defmodule Swoosh.Adapters.Local do
     {:ok, %{id: id}}
   end
 
+  @impl true
+  def deliver_many(emails, config) when is_list(emails) do
+    driver = storage_driver(config)
+
+    sent_email_ids =
+      Enum.map(emails, fn email ->
+        %Swoosh.Email{headers: %{"Message-ID" => id}} = driver.push(email)
+        %{id: id}
+      end)
+
+    {:ok, sent_email_ids}
+  end
+
   defp storage_driver(config) do
     config[:storage_driver] || Swoosh.Adapters.Local.Storage.Memory
   end
