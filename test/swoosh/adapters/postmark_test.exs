@@ -274,10 +274,12 @@ defmodule Swoosh.Adapters.PostmarkTest do
              {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
-  test "deliver_many/1 with two emails not using templates returns :ok", %{
+  test "deliver_many/2 with two emails not using templates and custom stream returns :ok", %{
     bypass: bypass,
     config: config
   } do
+    config = Keyword.merge(config, message_stream: "test-stream-name")
+
     email_to_steve =
       new()
       |> from({"T Stark", "tony.stark@example.com"})
@@ -313,7 +315,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
             "TextBody" => "Assemble!",
             "HtmlBody" => "<h1>Assemble!</h1>"
           }
-        ]
+        ],
+        "MessageStream" => "test-stream-name"
       }
 
       assert expected_body_params == conn.body_params
