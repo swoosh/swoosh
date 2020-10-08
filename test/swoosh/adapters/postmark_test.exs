@@ -261,7 +261,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       conn = parse(conn)
 
       expected_body_params = %{
-        "_json" => [
+        "Messages" => [
           %{
             "Subject" => "Broadcast message: Thanos is here!",
             "To" => "\"Steve Rogers\" <steve.rogers@example.com>",
