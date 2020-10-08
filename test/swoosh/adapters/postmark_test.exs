@@ -360,4 +360,98 @@ defmodule Swoosh.Adapters.PostmarkTest do
                 }
               ]}
   end
+
+  test "deliver_many/2 with two emails using templates and custom stream returns :ok", %{
+    bypass: bypass,
+    config: config
+  } do
+    config = Keyword.merge(config, message_stream: "test-stream-name")
+
+    template_model = %{
+      threat: "Thanos",
+      company: "Avengers",
+    }
+
+    email_to_steve =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> put_provider_option(:template_alias, "welcome")
+      |> put_provider_option(:template_model, template_model)
+
+    email_to_natasha =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Natasha Romanova", "natasha.romanova@example.com"})
+      |> put_provider_option(:template_alias, "welcome")
+      |> put_provider_option(:template_model, template_model)
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      expected_body_params = %{
+        "Messages" => [
+          %{
+            "To" => "\"Steve Rogers\" <steve.rogers@example.com>",
+            "From" => "\"T Stark\" <tony.stark@example.com>",
+            "TemplateAlias" => "welcome",
+            "TemplateModel" => %{
+              "company" => "Avengers",
+              "threat"    => "Thanos"
+            }
+          },
+          %{
+            "To" => "\"Natasha Romanova\" <natasha.romanova@example.com>",
+            "From" => "\"T Stark\" <tony.stark@example.com>",
+            "TemplateAlias" => "welcome",
+            "TemplateModel" => %{
+              "company" => "Avengers",
+              "threat"    => "Thanos"
+            }
+          }
+        ],
+        "MessageStream" => "test-stream-name"
+      }
+
+      assert expected_body_params == conn.body_params
+      assert "/email/batchWithTemplates" == conn.request_path
+      assert "POST" == conn.method
+
+      success_response = """
+      [
+        {
+          "ErrorCode": 0,
+          "Message": "OK",
+          "MessageID": "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+          "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+          "To": "steve.rogers@example.com"
+        },
+        {
+          "ErrorCode": 0,
+          "Message": "OK",
+          "MessageID": "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+          "SubmittedAt": "2010-11-26T12:01:05.1794748-05:00",
+          "To": "natasha.romanova@example.com"
+        }
+      ]
+      """
+
+      Plug.Conn.resp(conn, 200, success_response)
+    end)
+
+    assert Postmark.deliver_many([email_to_steve, email_to_natasha], config) ==
+             {:ok,
+              [
+                %{
+                  id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
+                  error_code: 0,
+                  message: "OK"
+                },
+                %{
+                  id: "e2ecbbfc-fe12-463d-b933-9fe22915106d",
+                  error_code: 0,
+                  message: "OK"
+                }
+              ]}
+  end
 end
