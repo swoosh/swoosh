@@ -142,7 +142,7 @@ defmodule Swoosh.Adapters.Postmark do
       %{"Messages" => Enum.map(emails, &prepare_body/1)}
     |> prepare_message_stream(config)
     else
-      list = Enum.map(emails, fn email ->
+      Enum.map(emails, fn email ->
         prepare_body(email, config)
       end)
     end
