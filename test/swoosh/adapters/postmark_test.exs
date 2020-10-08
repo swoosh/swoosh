@@ -300,23 +300,24 @@ defmodule Swoosh.Adapters.PostmarkTest do
       conn = parse(conn)
 
       expected_body_params = %{
-        "Messages" => [
+        "_json" => [
           %{
             "Subject" => "Broadcast message: Thanos is here!",
             "To" => "\"Steve Rogers\" <steve.rogers@example.com>",
             "From" => "\"T Stark\" <tony.stark@example.com>",
             "TextBody" => "Assemble!",
-            "HtmlBody" => "<h1>Assemble!</h1>"
+            "HtmlBody" => "<h1>Assemble!</h1>",
+            "MessageStream" => "test-stream-name"
           },
           %{
             "Subject" => "Broadcast message: Thanos is here!",
             "To" => "\"Natasha Romanova\" <natasha.romanova@example.com>",
             "From" => "\"T Stark\" <tony.stark@example.com>",
             "TextBody" => "Assemble!",
-            "HtmlBody" => "<h1>Assemble!</h1>"
+            "HtmlBody" => "<h1>Assemble!</h1>",
+            "MessageStream" => "test-stream-name"
           }
-        ],
-        "MessageStream" => "test-stream-name"
+        ]
       }
 
       assert expected_body_params == conn.body_params

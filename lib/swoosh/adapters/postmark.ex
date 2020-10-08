@@ -138,8 +138,14 @@ defmodule Swoosh.Adapters.Postmark do
   end
 
   defp prepare_body(emails, config) when is_list(emails) do
-    %{"Messages" => Enum.map(emails, &prepare_body/1)}
+    if email_uses_template?(List.first(emails)) do
+      %{"Messages" => Enum.map(emails, &prepare_body/1)}
     |> prepare_message_stream(config)
+    else
+      list = Enum.map(emails, fn email ->
+        prepare_body(email, config)
+      end)
+    end
   end
 
   defp prepare_body(%Email{} = email, config) do
