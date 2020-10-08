@@ -122,7 +122,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp api_endpoint(email, batch \\ false) do
     case {email_uses_template?(%Email{} = email), batch} do
-      {true, true} -> "/email/batchWithTemplate"
+      {true, true} -> "/email/batchWithTemplates"
       {true, false} -> "/email/withTemplate"
       {false, true} -> "/email/batch"
       {false, false} -> "/email"
