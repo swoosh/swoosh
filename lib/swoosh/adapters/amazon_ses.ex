@@ -73,7 +73,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   def deliver(%Email{} = email, config \\ []) do
     query = email |> prepare_body(config) |> encode_body
     url = base_url(config)
-    headers = prepare_headers(@base_headers, query, config)
+    headers = prepare_headers(@base_headers, query, config, email.provider_options)
 
     case Swoosh.ApiClient.post(url, headers, query, email) do
       {:ok, 200, _headers, body} ->
@@ -151,7 +151,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> URI.encode()
   end
 
-  defp prepare_headers(headers, query, config) do
+  defp prepare_headers(headers, query, config, provider_options) do
     current_date_time = DateTime.utc_now()
 
     headers
@@ -159,7 +159,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> prepare_header_date(current_date_time)
     |> prepare_header_length(query)
     |> prepare_header_authorization(query, current_date_time, config)
-    |> prepare_header_security_token(config)
+    |> prepare_header_security_token(provider_options)
     |> Map.to_list()
   end
 
@@ -232,12 +232,11 @@ defmodule Swoosh.Adapters.AmazonSES do
     }"
   end
 
-  defp prepare_header_security_token(headers, config) do
-    case config[:security_token] do
-      nil -> headers
-      token -> Map.put(headers, "X-Amz-Security-Token", token)
-    end
+  defp prepare_header_security_token(headers, %{security_token: token}) do
+    Map.put(headers, "X-Amz-Security-Token", token)
   end
+  
+  defp prepare_header_security_token(headers, _provider_options), do: headers
 
   defp generate_signature(string_to_sign, date_time, region, secret) do
     ("AWS4" <> secret)
