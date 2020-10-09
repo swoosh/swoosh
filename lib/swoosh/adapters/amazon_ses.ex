@@ -51,6 +51,14 @@ defmodule Swoosh.Adapters.AmazonSES do
       |> text_body("Hello")
       |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
       |> put_provider_option(:configuration_set_name, "configuration_set_name1")
+
+  ## IAM role
+
+  In case you use IAM role for authenticating AWS requests, you can fetch
+  temporary `access_key` and `secret_key` from that role, but you also need to
+  include additional `X-Amz-Security-Token` header to that request.
+
+  You can do that by adding `security_token` to `provider_options`.
   """
 
   use Swoosh.Adapter,
