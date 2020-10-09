@@ -1,5 +1,11 @@
 ## Changelog
 
+## 1.0.5
+
+### Changes
+
+Allow `:gen_smtp` 1.0
+
 ## 1.0.4
 
 ### 🚀 Features
@@ -18,7 +24,6 @@
 ### Changes
 
 - Add CSRF token to dev preview mailbox (fixes #381) @DanielDent (#513)
-
 
 ## 1.0.2
 
