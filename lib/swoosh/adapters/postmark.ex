@@ -139,8 +139,9 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_body(emails, config) when is_list(emails) do
     if email_uses_template?(List.first(emails)) do
-      %{"Messages" => Enum.map(emails, &prepare_body/1)}
-    |> prepare_message_stream(config)
+      %{"Messages" => Enum.map(emails, fn e ->
+        prepare_body(e, config)
+      end)}
     else
       Enum.map(emails, fn email ->
         prepare_body(email, config)
@@ -169,6 +170,7 @@ defmodule Swoosh.Adapters.Postmark do
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
+
   defp prepare_message_stream(body, config) do
     if Keyword.has_key?(config, :message_stream) do
       Map.put(body, "MessageStream", config[:message_stream])

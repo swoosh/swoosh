@@ -399,7 +399,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
             "TemplateModel" => %{
               "company" => "Avengers",
               "threat"    => "Thanos"
-            }
+            },
+            "MessageStream" => "test-stream-name"
           },
           %{
             "To" => "\"Natasha Romanova\" <natasha.romanova@example.com>",
@@ -408,10 +409,11 @@ defmodule Swoosh.Adapters.PostmarkTest do
             "TemplateModel" => %{
               "company" => "Avengers",
               "threat"    => "Thanos"
-            }
+            },
+            "MessageStream" => "test-stream-name"
           }
         ],
-        "MessageStream" => "test-stream-name"
+
       }
 
       assert expected_body_params == conn.body_params
