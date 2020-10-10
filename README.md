@@ -1,15 +1,24 @@
 # Swoosh
 
-[![Build Status](https://travis-ci.org/swoosh/swoosh.svg?branch=master)](https://travis-ci.org/swoosh/swoosh)
-[![Inline docs](http://inch-ci.org/github/swoosh/swoosh.svg?branch=master&style=flat)](http://inch-ci.org/github/swoosh/swoosh)
+[![hex.pm](https://img.shields.io/hexpm/v/swoosh.svg)](https://hex.pm/packages/swoosh)
+[![hex.pm](https://img.shields.io/hexpm/dt/swoosh.svg)](https://hex.pm/packages/swoosh)
+[![hex.pm](https://img.shields.io/hexpm/l/swoosh.svg)](https://hex.pm/packages/swoosh)
+[![github.com](https://img.shields.io/github/last-commit/swoosh/swoosh.svg)](https://github.com/swoosh/swoosh)
+[![inch-ci.org](http://inch-ci.org/github/swoosh/swoosh.svg?branch=master&style=flat)](http://inch-ci.org/github/swoosh/swoosh)
 
 Compose, deliver and test your emails easily in Elixir.
 
-We have applied the lessons learned from projects like Plug, Ecto and Phoenix in designing clean and composable APIs,
-with clear separation of concerns between modules. Out of the box it comes with adapters for Sendgrid, Mandrill,
+We have applied the lessons learned from projects like Plug, Ecto and Phoenix
+in designing clean and composable APIs, with clear separation of concerns
+between modules. Out of the box it comes with adapters for SendGrid, Mandrill,
 Mailgun, Postmark and SparkPost, as well as SMTP.
 
-The complete documentation for Swoosh is located [here](https://hexdocs.pm/swoosh).
+The complete documentation for Swoosh is located
+[here](https://hexdocs.pm/swoosh).
+
+## Requirements
+
+Elixir 1.8+ and Erlang OTP 22+
 
 ## Getting started
 
@@ -38,7 +47,8 @@ defmodule Sample.UserEmail do
 end
 
 # In an IEx session
-Sample.UserEmail.welcome(%{name: "Tony Stark", email: "tony.stark@example.com"}) |> Sample.Mailer.deliver
+Sample.UserEmail.welcome(%{name: "Tony Stark", email: "tony.stark@example.com"})
+|> Sample.Mailer.deliver
 
 # Or in a Phoenix controller
 defmodule Sample.UserController do
@@ -53,7 +63,8 @@ defmodule Sample.UserController do
 end
 ```
 
-See [Mailer docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html) for more configuration options.
+See [Mailer docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html) for more
+configuration options.
 
 ## Installation
 
@@ -65,17 +76,20 @@ See [Mailer docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html) for more configu
     end
     ```
 
-- (Optional-ish) Most Adapters (Non SMTP ones) use `Swoosh.ApiClient` to talk to the service provider.
-  Swoosh comes with `Swoosh.ApiClient.Hackney`. if you want to use the default, include `:hackney` as a dependency as well.
-  Otherwise, define a new API client that uses the HTTP client you like, and config swoosh to use the new API Client.
-  See `Swoosh.ApiClient` and `Swoosh.ApiClient.Hackney` for details.
+- (Optional-ish) Most Adapters (Non SMTP ones) use `Swoosh.ApiClient` to talk
+  to the service provider.  Swoosh comes with `Swoosh.ApiClient.Hackney`. if you
+  want to use the default, include `:hackney` as a dependency as well.
+  Otherwise, define a new API client that uses the HTTP client you like, and
+  config swoosh to use the new API Client.  See `Swoosh.ApiClient` and
+  `Swoosh.ApiClient.Hackney` for details.
 
     ```elixir
     config :swoosh, :api_client, MyApp.ApiClient
     ```
 
-
-- (Optional) If you are using `Swoosh.Adapters.SMTP`, `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to add `gen_smtp` to your deps and list of applications:
+- (Optional) If you are using `Swoosh.Adapters.SMTP`,
+  `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to
+   add `gen_smtp` to your deps and list of applications:
 
     ```elixir
     def deps do
@@ -88,13 +102,14 @@ See [Mailer docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html) for more configu
 
 ## Adapters
 
-Swoosh supports the most popular transactional email providers out of the box and also has a SMTP adapter. Below is the
-list of the adapters currently included:
+Swoosh supports the most popular transactional email providers out of the box
+and also has a SMTP adapter. Below is the list of the adapters currently
+included:
 
 | Provider   | Swoosh adapter                                                                                |
 | ---------- | --------------------------------------------------------------------------------------------- |
 | SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)           |
-| Sendgrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)   |
+| SendGrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)   |
 | Sendmail   | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)   |
 | Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)   |
 | Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)     |
@@ -106,7 +121,8 @@ list of the adapters currently included:
 | SocketLabs | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)             |
 | Gmail      | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)             |
 
-Configure which adapter you want to use by updating your `config/config.exs` file:
+Configure which adapter you want to use by updating your `config/config.exs`
+file:
 
 ```elixir
 config :sample, Sample.Mailer,
@@ -114,16 +130,19 @@ config :sample, Sample.Mailer,
   # adapter config (api keys, etc.)
 ```
 
-Check the documentation of the adapter you want to use for more specific configurations and instructions.
+Check the documentation of the adapter you want to use for more specific
+configurations and instructions.
 
-Adding new adapters is super easy and we are definitely looking for contributions on that front. Get in touch if you want
-to help!
+Adding new adapters is super easy and we are definitely looking for
+contributions on that front. Get in touch if you want to help!
 
 ## Async Emails
 
-Swoosh does not make any special arrangements for sending emails in a non-blocking manner.
+Swoosh does not make any special arrangements for sending emails in a
+non-blocking manner.
 
-To send asynchronous emails in Swoosh, one can simply leverage Elixir's standard library:
+To send asynchronous emails in Swoosh, one can simply leverage Elixir's
+standard library:
 
 ```elixir
 Task.start(fn ->
@@ -133,21 +152,30 @@ Task.start(fn ->
 end)
 ```
 
-Please take a look at the official docs for [Task](https://hexdocs.pm/elixir/Task.html) and [Task.Supervisor](https://hexdocs.pm/elixir/Task.Supervisor.html) for further options.
+Please take a look at the official docs for
+[Task](https://hexdocs.pm/elixir/Task.html) and
+[Task.Supervisor](https://hexdocs.pm/elixir/Task.Supervisor.html) for further
+options.
 
-Note: it is not to say that `Task.start` is enough to cover the whole async aspect of sending emails. It is more to say that
-the implementation of sending emails is very application specific. For example, the simple example above might be sufficient
-for some small applications but not so much for more mission critial applications. Runtime errors, network errors and errors
-from the service provider all need to be considered and handled, maybe differently as well. Whether to retry, how many times
-you want to retry, what to do when everything fails, these questions all have different answers in different context.
+Note: it is not to say that `Task.start` is enough to cover the whole async
+aspect of sending emails. It is more to say that the implementation of sending
+emails is very application specific. For example, the simple example above
+might be sufficient for some small applications but not so much for more
+mission critical applications. Runtime errors, network errors and errors from
+the service provider all need to be considered and handled, maybe differently
+as well. Whether to retry, how many times you want to retry, what to do when
+everything fails, these questions all have different answers in different
+context.
 
 ## Phoenix integration
 
-If you are looking to use Swoosh in your Phoenix project, make sure to check out the
-[phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) project. It contains a set of functions that make it easy to
-render the text and HTML bodies using Phoenix views, templates and layouts.
+If you are looking to use Swoosh in your Phoenix project, make sure to check
+out the [phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) project. It
+contains a set of functions that make it easy to render the text and HTML
+bodies using Phoenix views, templates and layouts.
 
-Taking the example from above the "Getting Started" section, your code would look something like this:
+Taking the example from above the "Getting Started" section, your code would
+look something like this:
 
 ```elixir
 # web/templates/layout/email.html.eex
@@ -179,12 +207,17 @@ defmodule Sample.UserEmail do
 end
 ```
 
-Feels familiar doesn't it? Head to the [phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) repo for more details.
+Feels familiar doesn't it? Head to the
+[phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) repo for more
+details.
 
 ## Attachments
 
-You can attach files to your email using the `Swoosh.Email.attachment/2` function. Just give the path of your
-file as an argument and we will do the rest. It also works with a `%Plug.Upload{}` struct, or a `%Swoosh.Attachment{}` struct, which can be constructed using `Swoosh.Attachment.new` detailed here in the [docs](https://hexdocs.pm/swoosh/Swoosh.Attachment.html#new/2).
+You can attach files to your email using the `Swoosh.Email.attachment/2`
+function. Just give the path of your file as an argument and we will do the
+rest. It also works with a `%Plug.Upload{}` struct, or a `%Swoosh.Attachment{}`
+struct, which can be constructed using `Swoosh.Attachment.new` detailed here in
+the [docs](https://hexdocs.pm/swoosh/Swoosh.Attachment.html#new/2).
 
 All built-in adapters have support for attachments.
 
@@ -199,8 +232,9 @@ new()
 
 ## Testing
 
-In your `config/test.exs` file set your mailer's adapter to `Swoosh.Adapters.Test` so that you can use the assertions
-provided by Swoosh in `Swoosh.TestAssertions` module.
+In your `config/test.exs` file set your mailer's adapter to
+`Swoosh.Adapters.Test` so that you can use the assertions provided by Swoosh in
+`Swoosh.TestAssertions` module.
 
 ```elixir
 defmodule Sample.UserTest do
@@ -218,11 +252,13 @@ end
 
 ## Mailbox preview in the browser
 
-Swoosh ships with a Plug that allows you to preview the emails in the local (in-memory) mailbox. It's particularly
-convenient in development when you want to check what your email will look like while testing the various flows of your
+Swoosh ships with a Plug that allows you to preview the emails in the local
+(in-memory) mailbox. It's particularly convenient in development when you want
+to check what your email will look like while testing the various flows of your
 application.
 
-For email to reach this mailbox you will need to set your `Mailer` adapter to `Swoosh.Adapters.Local`:
+For email to reach this mailbox you will need to set your `Mailer` adapter to
+`Swoosh.Adapters.Local`:
 
 ```elixir
 # in config/dev.exs
@@ -236,7 +272,9 @@ config :swoosh, serve_mailbox: true
 config :swoosh, serve_mailbox: true, preview_port: 4001
 ```
 
-If you dont want to run the preview server as part of your app as shown above, in your Phoenix project you can also `forward` directly to the plug if you so choose, like this:
+If you don't want to run the preview server as part of your app as shown above,
+in your Phoenix project you can also `forward` directly to the plug if you so
+choose, like this:
 
 ```elixir
 # in web/router.ex
@@ -249,7 +287,9 @@ if Mix.env == :dev do
 end
 ```
 
-And finally you can also use the following Mix task to start the mailbox preview server independently  though note that it won't display/process emails being sent from outside its own process (great for testing within iex).
+And finally you can also use the following Mix task to start the mailbox
+preview server independently  though note that it won't display/process emails
+being sent from outside its own process (great for testing within `iex`).
 
 ```console
 $ mix swoosh.mailbox.server
@@ -261,8 +301,9 @@ If you are curious, this is how it looks:
 
 ### Production
 
-Swoosh starts a memory storage process for local adapter by default. Normally it does no harm being left around in production.
-However, if it is causing problems, or you don't like having it around, it can be disabled like so:
+Swoosh starts a memory storage process for local adapter by default. Normally
+it does no harm being left around in production.  However, if it is causing
+problems, or you don't like having it around, it can be disabled like so:
 
 ```elixir
 # config/prod.exs
@@ -271,12 +312,14 @@ config :swoosh, local: false
 
 ## Documentation
 
-Documentation is written into the library, you will find it in the source code, accessible from `iex` and of course, it
-all gets published to [hexdocs](http://hexdocs.pm/swoosh).
+Documentation is written into the library, you will find it in the source code,
+accessible from `iex` and of course, it all gets published to
+[hexdocs](http://hexdocs.pm/swoosh).
 
 ## Contributing
 
-We are grateful for any contributions. Before you submit an issue or a pull request, remember to:
+We are grateful for any contributions. Before you submit an issue or a pull
+request, remember to:
 
 -   Look at our [Contributing guidelines](CONTRIBUTING.md)
 -   Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
