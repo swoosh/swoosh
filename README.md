@@ -9,8 +9,8 @@ Compose, deliver and test your emails easily in Elixir.
 
 We have applied the lessons learned from projects like Plug, Ecto and Phoenix
 in designing clean and composable APIs, with clear separation of concerns
-between modules. Out of the box it comes with adapters for SendGrid, Mandrill,
-Mailgun, Postmark and SparkPost, as well as SMTP.
+between modules. Out of the box it comes with 12 adapters, including SendGrid, Mandrill,
+Mailgun, Postmark, SMTP... see [Adapters below](#adapters)
 
 The complete documentation for Swoosh is located
 [here](https://hexdocs.pm/swoosh).
