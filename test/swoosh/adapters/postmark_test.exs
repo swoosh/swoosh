@@ -301,6 +301,8 @@ defmodule Swoosh.Adapters.PostmarkTest do
       conn = parse(conn)
 
       expected_body_params = %{
+        # Plug puts parsed params under the "_json" key when the
+        # structure is not a map; otherwise it's just the keys themselves,
         "_json" => [
           %{
             "Subject" => "Broadcast message: Thanos is here!",
