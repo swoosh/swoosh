@@ -60,7 +60,7 @@ defmodule Swoosh.Adapters.Postmark do
   @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
-    params = email |> prepare_body(config) |> Swoosh.json_library().encode!
+    params = email |> prepare_body() |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(email)]
 
     case Swoosh.ApiClient.post(url, headers, params, email) do
@@ -81,7 +81,7 @@ defmodule Swoosh.Adapters.Postmark do
   @impl true
   def deliver_many(emails, config \\ []) when is_list(emails) do
     headers = prepare_headers(config)
-    body = emails |> prepare_body(config) |> Swoosh.json_library().encode!
+    body = emails |> prepare_body() |> Swoosh.json_library().encode!
     url = [base_url(config), api_endpoint(List.first(emails), true)]
 
     # Could not use `Swoosh.ApiClient.post` here since I have more than one email
@@ -137,20 +137,12 @@ defmodule Swoosh.Adapters.Postmark do
     end
   end
 
-  defp prepare_body(emails, config) when is_list(emails) do
+  defp prepare_body(emails) when is_list(emails) do
     if email_uses_template?(List.first(emails)) do
-      %{"Messages" => Enum.map(emails, fn e ->
-        prepare_body(e, config)
-      end)}
+      %{"Messages" => Enum.map(emails, &prepare_body/1)}
     else
-      Enum.map(emails, fn email ->
-        prepare_body(email, config)
-      end)
+      Enum.map(emails, &prepare_body/1)
     end
-  end
-
-  defp prepare_body(%Email{} = email, config) do
-    prepare_body(email) |> prepare_message_stream(config)
   end
 
   defp prepare_body(email) do
@@ -167,18 +159,10 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_template(email)
     |> prepare_custom_headers(email)
     |> prepare_tag(email)
+    |> prepare_message_stream(email)
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
-
-  defp prepare_message_stream(body, config) do
-    if Keyword.has_key?(config, :message_stream) do
-      Map.put(body, "MessageStream", config[:message_stream])
-    else
-      body
-    end
-  end
-
   defp prepare_to(body, %{to: to}), do: Map.put(body, "To", render_recipient(to))
 
   defp prepare_cc(body, %{cc: []}), do: body
@@ -258,4 +242,10 @@ defmodule Swoosh.Adapters.Postmark do
   end
 
   defp prepare_tag(body, _), do: body
+
+  defp prepare_message_stream(body, %{provider_options: %{message_stream: value}}),
+    do: Map.put(body, "MessageStream", value)
+
+  defp prepare_message_stream(body, _), do: body
+
 end

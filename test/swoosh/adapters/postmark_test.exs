@@ -241,7 +241,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
     bypass: bypass,
     config: config
   } do
-    config = Keyword.merge(config, message_stream: "test-stream-name")
 
     email =
       new()
@@ -250,6 +249,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
+      |> put_provider_option(:message_stream, "test-stream-name")
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -278,7 +278,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
     bypass: bypass,
     config: config
   } do
-    config = Keyword.merge(config, message_stream: "test-stream-name")
 
     email_to_steve =
       new()
@@ -287,6 +286,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> subject("Broadcast message: Thanos is here!")
       |> html_body("<h1>Assemble!</h1>")
       |> text_body("Assemble!")
+      |> put_provider_option(:message_stream, "test-stream-name")
 
     email_to_natasha =
       new()
@@ -295,6 +295,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> subject("Broadcast message: Thanos is here!")
       |> html_body("<h1>Assemble!</h1>")
       |> text_body("Assemble!")
+      |> put_provider_option(:message_stream, "test-stream-name")
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -366,8 +367,6 @@ defmodule Swoosh.Adapters.PostmarkTest do
     bypass: bypass,
     config: config
   } do
-    config = Keyword.merge(config, message_stream: "test-stream-name")
-
     template_model = %{
       threat: "Thanos",
       company: "Avengers",
@@ -379,6 +378,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> to({"Steve Rogers", "steve.rogers@example.com"})
       |> put_provider_option(:template_alias, "welcome")
       |> put_provider_option(:template_model, template_model)
+      |> put_provider_option(:message_stream, "test-stream-name")
 
     email_to_natasha =
       new()
@@ -386,6 +386,7 @@ defmodule Swoosh.Adapters.PostmarkTest do
       |> to({"Natasha Romanova", "natasha.romanova@example.com"})
       |> put_provider_option(:template_alias, "welcome")
       |> put_provider_option(:template_model, template_model)
+      |> put_provider_option(:message_stream, "test-stream-name")
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
