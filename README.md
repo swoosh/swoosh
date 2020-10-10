@@ -4,7 +4,6 @@
 [![hex.pm](https://img.shields.io/hexpm/dt/swoosh.svg)](https://hex.pm/packages/swoosh)
 [![hex.pm](https://img.shields.io/hexpm/l/swoosh.svg)](https://hex.pm/packages/swoosh)
 [![github.com](https://img.shields.io/github/last-commit/swoosh/swoosh.svg)](https://github.com/swoosh/swoosh)
-[![inch-ci.org](http://inch-ci.org/github/swoosh/swoosh.svg?branch=master&style=flat)](http://inch-ci.org/github/swoosh/swoosh)
 
 Compose, deliver and test your emails easily in Elixir.
 
