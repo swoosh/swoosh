@@ -1,11 +1,29 @@
 ## Changelog
 
+## 1.0.5
+
+### Changes
+
+Allow `:gen_smtp` 1.0
+
+## 1.0.4
+
+### 🚀 Features
+
+- Use provider options to pass in security token @princemaple (#524)
+- Add support for custom Content-Type header @princemaple (#522)
+- Add support for temporary credentials in AmazonSES @riiwo (#518)
+
+### 📝 Documentation
+
+- Updates readme instructions for setting up layout @joshnuss (#517)
+- Fix broken link to mailgun documentation @savtrip (#516)
+
 ## 1.0.3
 
-## Changes
+### Changes
 
 - Add CSRF token to dev preview mailbox (fixes #381) @DanielDent (#513)
-
 
 ## 1.0.2
 

@@ -51,6 +51,14 @@ defmodule Swoosh.Adapters.AmazonSES do
       |> text_body("Hello")
       |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
       |> put_provider_option(:configuration_set_name, "configuration_set_name1")
+
+  ## IAM role
+
+  In case you use IAM role for authenticating AWS requests, you can fetch
+  temporary `access_key` and `secret_key` from that role, but you also need to
+  include additional `X-Amz-Security-Token` header to that request.
+
+  You can do that by adding `security_token` to `provider_options`.
   """
 
   use Swoosh.Adapter,
@@ -73,7 +81,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   def deliver(%Email{} = email, config \\ []) do
     query = email |> prepare_body(config) |> encode_body
     url = base_url(config)
-    headers = prepare_headers(@base_headers, query, config)
+    headers = prepare_headers(@base_headers, query, config, email.provider_options)
 
     case Swoosh.ApiClient.post(url, headers, query, email) do
       {:ok, 200, _headers, body} ->
@@ -151,7 +159,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> URI.encode()
   end
 
-  defp prepare_headers(headers, query, config) do
+  defp prepare_headers(headers, query, config, provider_options) do
     current_date_time = DateTime.utc_now()
 
     headers
@@ -159,6 +167,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> prepare_header_date(current_date_time)
     |> prepare_header_length(query)
     |> prepare_header_authorization(query, current_date_time, config)
+    |> prepare_header_security_token(provider_options)
     |> Map.to_list()
   end
 
@@ -230,6 +239,12 @@ defmodule Swoosh.Adapters.AmazonSES do
       signature
     }"
   end
+
+  defp prepare_header_security_token(headers, %{security_token: token}) do
+    Map.put(headers, "X-Amz-Security-Token", token)
+  end
+  
+  defp prepare_header_security_token(headers, _provider_options), do: headers
 
   defp generate_signature(string_to_sign, date_time, region, secret) do
     ("AWS4" <> secret)

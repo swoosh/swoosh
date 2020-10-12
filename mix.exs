@@ -1,7 +1,8 @@
 defmodule Swoosh.Mixfile do
   use Mix.Project
 
-  @version "1.0.3"
+  @source_url "https://github.com/swoosh/swoosh"
+  @version "1.0.5"
 
   def project do
     [
@@ -20,13 +21,18 @@ defmodule Swoosh.Mixfile do
 
       # Docs
       name: "Swoosh",
-      source_url: "https://github.com/swoosh/swoosh",
-      homepage_url: "https://github.com/swoosh/swoosh",
+      source_url: @source_url,
+      homepage_url: @source_url,
       docs: [
         source_ref: "v#{@version}",
         main: "Swoosh",
         canonical: "http://hexdocs.pm/swoosh",
-        source_url: "https://github.com/swoosh/swoosh"
+        source_url: @source_url,
+        extras: [
+          "CHANGELOG.md",
+          "CODE_OF_CONDUCT.md",
+          "CONTRIBUTING.md",
+        ]
       ],
 
       # Suppress warnings
@@ -62,8 +68,8 @@ defmodule Swoosh.Mixfile do
       {:mime, "~> 1.1"},
       {:jason, "~> 1.0"},
       {:hackney, "~> 1.9", optional: true},
-      {:gen_smtp, "~> 0.13", optional: true},
-      {:cowboy, "~> 1.0.1 or ~> 1.1 or ~> 2.4", optional: true},
+      {:gen_smtp, "~> 0.13 or ~> 1.0", optional: true},
+      {:cowboy, "~> 1.1 or ~> 2.4", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
       {:bypass, "~> 1.0", only: :test},
       {:ex_doc, "~> 0.16", only: :docs, runtime: false},
@@ -99,7 +105,8 @@ defmodule Swoosh.Mixfile do
 
   defp description do
     """
-    Compose, deliver and test your emails easily in Elixir. Supports SMTP, Sendgrid, Mandrill, Postmark and Mailgun out of the box.
+    Compose, deliver and test your emails easily in Elixir. Supports SMTP,
+    Sendgrid, Mandrill, Postmark and Mailgun out of the box.
     Preview your mails in the browser. Great integration with Phoenix.
     """
   end
@@ -108,7 +115,10 @@ defmodule Swoosh.Mixfile do
     [
       maintainers: ["Steve Domin", "Baris Balic", "Po Chen"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/swoosh/swoosh"}
+      links: %{
+        "Changelog" => "#{@source_url}/blob/master/CHANGELOG.md",
+        "GitHub" => @source_url
+      }
     ]
   end
 end
