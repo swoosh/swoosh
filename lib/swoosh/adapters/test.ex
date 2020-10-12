@@ -29,10 +29,6 @@ defmodule Swoosh.Adapters.Test do
   end
 
   @impl true
-  def deliver_many([], _config) do
-    {:ok, []}
-  end
-
   def deliver_many(emails, _config) do
     for pid <- pids() do
       send(pid, {:emails, emails})
