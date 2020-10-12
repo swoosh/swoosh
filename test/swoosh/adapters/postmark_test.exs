@@ -365,6 +365,10 @@ defmodule Swoosh.Adapters.PostmarkTest do
               ]}
   end
 
+  test "deliver_many/2 with empty email list returns :ok" do
+    assert Postmark.deliver_many([], []) == {:ok, []}
+  end
+
   test "deliver_many/2 with two emails using templates and custom stream returns :ok", %{
     bypass: bypass,
     config: config
