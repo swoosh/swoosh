@@ -37,7 +37,13 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   @impl true
-  def deliver_many(emails, config \\ []) when is_list(emails) do
+  def deliver_many(emails, config \\ [])
+
+  def deliver_many([], _config) do
+    {:ok, "No emails to send."}
+  end
+
+  def deliver_many(emails, config) when is_list(emails) do
     send_request(prepare_body(emails), config)
   end
 

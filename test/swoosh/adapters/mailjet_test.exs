@@ -359,6 +359,10 @@ defmodule Swoosh.Adapters.MailjetTest do
     Mailjet.deliver(email, config)
   end
 
+  test "delivery_many/2 when passing in an empty list short circuits" do
+    assert Mailjet.deliver_many([], []) == {:ok, "No emails to send."}
+  end
+
   test "deliver_many/2 - two valid emails result in two message IDs",
        %{
          bypass: bypass,
