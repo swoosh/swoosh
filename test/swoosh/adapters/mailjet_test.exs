@@ -335,8 +335,7 @@ defmodule Swoosh.Adapters.MailjetTest do
       "ErrorIdentifier" => "error id",
       "ErrorCode" => "mj-0002",
       "StatusCode" => 400,
-      "ErrorMessage" =>
-        "Malformed JSON, please review the syntax and properties types."
+      "ErrorMessage" => "Malformed JSON, please review the syntax and properties types."
     }
 
     assert Mailjet.deliver(email, config) == {:error, {400, error_result}}
@@ -360,7 +359,7 @@ defmodule Swoosh.Adapters.MailjetTest do
   end
 
   test "delivery_many/2 when passing in an empty list short circuits" do
-    assert Mailjet.deliver_many([], []) == {:ok, "No emails to send."}
+    assert Mailjet.deliver_many([], []) == {:ok, []}
   end
 
   test "deliver_many/2 - two valid emails result in two message IDs",
@@ -505,10 +504,8 @@ defmodule Swoosh.Adapters.MailjetTest do
                    "Errors" => [
                      %{
                        "ErrorCode" => "mj-0013",
-                       "ErrorIdentifier" =>
-                         "2978b962-32be-4007-a96e-0388451f1b7a",
-                       "ErrorMessage" =>
-                         "\"brokenemail\" is an invalid email address.",
+                       "ErrorIdentifier" => "2978b962-32be-4007-a96e-0388451f1b7a",
+                       "ErrorMessage" => "\"brokenemail\" is an invalid email address.",
                        "ErrorRelatedTo" => ["To[0].Email"],
                        "StatusCode" => 400
                      }
