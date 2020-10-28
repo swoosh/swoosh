@@ -15,7 +15,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     {message_config, config} = Keyword.split(config, [:transfer_encoding])
     {type, subtype, headers, parts} = prepare_message(email, message_config)
     {encoding_config, _config} = Keyword.split(config, [:dkim])
-    :mimemail.encode({type, subtype, headers, [], parts}, encoding_config)
+    :mimemail.encode({type, subtype, headers, %{}, parts}, encoding_config)
   end
 
   @doc false
