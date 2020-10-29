@@ -19,7 +19,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   end
 
   gen_smtp_major =
-    if Code.ensure_loaded?(:gen_smtp) do
+    if Code.ensure_loaded?(:gen_smtp_application) do
       Application.load(:gen_smtp)
       :gen_smtp |> Application.spec(:vsn) |> to_string() |> Version.parse!() |> Map.get(:major)
     else
