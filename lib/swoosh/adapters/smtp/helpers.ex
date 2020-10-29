@@ -19,6 +19,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   end
 
   defp mime_encode(type, subtype, headers, parts, encoding_config) do
+    :ok = Application.ensure_loaded(:gen_smtp)
     parameters =
       case Application.spec(:gen_smtp, :vsn) do
         [?1 | _] -> %{}
