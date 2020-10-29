@@ -1,6 +1,8 @@
 ## Changelog
 
-## 1.0.7
+## 1.0.8
+
+retired 1.0.7 which has compilation bug for users not having `gen_smtp` installed
 
 ### Bugfix
 
