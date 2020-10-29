@@ -18,9 +18,13 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     mime_encode(type, subtype, headers, parts, encoding_config)
   end
 
-  Application.load(:gen_smtp)
   gen_smtp_major =
-    :gen_smtp |> Application.spec(:vsn) |> to_string() |> Version.parse!() |> Map.get(:major)
+    if Code.ensure_loaded?(:gen_smtp) do
+      Application.load(:gen_smtp)
+      :gen_smtp |> Application.spec(:vsn) |> to_string() |> Version.parse!() |> Map.get(:major)
+    else
+      0
+    end
 
   @parameters if(gen_smtp_major >= 1, do: %{}, else: [])
 
