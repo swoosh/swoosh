@@ -48,4 +48,29 @@ defmodule Swoosh.Email.RecipientTest do
       end
     end
   end
+
+  test "format tuple" do
+    assert Recipient.format({"Hulk", "hulk@avengers.org"}) == {"Hulk", "hulk@avengers.org"}
+    assert Recipient.format({nil, "hulk@avengers.org"}) == {"", "hulk@avengers.org"}
+  end
+
+  test "raise when format malformed tuple" do
+    assert_raise ArgumentError, fn -> Recipient.format({nil, ""}) end
+    assert_raise ArgumentError, fn -> Recipient.format({"Thanos", ""}) end
+    assert_raise ArgumentError, fn -> Recipient.format({"Thanos", nil}) end
+  end
+
+  test "format string" do
+    assert Recipient.format("vision@avengers.org") == {"", "vision@avengers.org"}
+  end
+
+  test "raise when format empty string" do
+    assert_raise ArgumentError, fn -> Recipient.format("") end
+  end
+
+  test "raise when format nil / unimplemented type" do
+    assert_raise Protocol.UndefinedError,
+                 ~r/Swoosh\.Email\.Recipient needs to be implemented/,
+                 fn -> Recipient.format(nil) end
+  end
 end

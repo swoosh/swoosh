@@ -89,11 +89,11 @@ defimpl Swoosh.Email.Recipient, for: Any do
 end
 
 defimpl Swoosh.Email.Recipient, for: Tuple do
-  def format({name, address}) when name in [nil, ""] and is_binary(address) do
+  def format({name, address}) when name in [nil, ""] and is_binary(address) and address != "" do
     {"", address}
   end
 
-  def format({name, address}) when is_binary(name) and is_binary(address) do
+  def format({name, address}) when is_binary(name) and is_binary(address) and address != "" do
     {name, address}
   end
 
@@ -101,13 +101,19 @@ defimpl Swoosh.Email.Recipient, for: Tuple do
     raise ArgumentError, """
     Unexpected tuple format, #{inspect(tuple)} cannot be formatted into a Recipeint.
 
-    The expected format is {name :: String.t() | nil, address :: String.t()}
+    The expected format is {name :: String.t() | nil, address :: String.t()}, where address cannot be empty.
     """
   end
 end
 
 defimpl Swoosh.Email.Recipient, for: BitString do
-  def format(address) when is_binary(address) and address != "" do
+  def format("") do
+    raise ArgumentError, """
+    Cannot format empty string into a Recipeint.
+    """
+  end
+
+  def format(address) when is_binary(address) do
     {"", address}
   end
 end
