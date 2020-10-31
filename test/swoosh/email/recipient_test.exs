@@ -73,4 +73,24 @@ defmodule Swoosh.Email.RecipientTest do
                  ~r/Swoosh\.Email\.Recipient needs to be implemented/,
                  fn -> Recipient.format(nil) end
   end
+
+  test "test with email" do
+    import Swoosh.Email
+
+    assert %Swoosh.Email{
+             from: {"Admin", "admin@avengers.org"},
+             to: [{"", "random@villain.me"}],
+             cc: [{"Thor", "thor@avengers.org"}, {"", "ironman@avengers.org"}],
+             bcc: [{"Minion Bob", "hahaha@minions.org"}, {"", "thanos@villain.me"}],
+             subject: "Peace, love, not war"
+           } =
+             new()
+             |> subject("Peace, love, not war")
+             |> from(%Avenger{name: "Admin", email: "admin@avengers.org"})
+             |> to(%Villian{email: "random@villain.me", we_dont_care_about_their_names: "Random"})
+             |> cc("ironman@avengers.org")
+             |> cc({"Thor", "thor@avengers.org"})
+             |> bcc({nil, "thanos@villain.me"})
+             |> bcc(%Minion{banana: "hahaha@minions.org", wulala: "Bob"})
+  end
 end

@@ -193,9 +193,6 @@ defmodule Swoosh.Email do
   @doc """
   Sets a recipient in the `from` field.
 
-  The recipient must be either; a tuple specifying the name and address of the recipient; a string specifying the
-  address of the recipient.
-
   ## Examples
 
       iex> new() |> from({"Steve Rogers", "steve.rogers@example.com"})
@@ -208,17 +205,13 @@ defmodule Swoosh.Email do
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: []}
   """
-  @spec from(t, mailbox | address) :: t
+  @spec from(t, Recipient.t()) :: t
   def from(%__MODULE__{} = email, from) do
-    from = Recipient.format(from)
-    %{email | from: from}
+    %{email | from: Recipient.format(from)}
   end
 
   @doc """
   Sets a recipient in the `reply_to` field.
-
-  The recipient must be either; a tuple specifying the name and address of the recipient; a string specifying the
-  address of the recipient.
 
   ## Examples
 
@@ -232,10 +225,9 @@ defmodule Swoosh.Email do
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
   """
-  @spec reply_to(t, mailbox | address) :: t
+  @spec reply_to(t, Recipient.t()) :: t
   def reply_to(%__MODULE__{} = email, reply_to) do
-    reply_to = Recipient.format(reply_to)
-    %{email | reply_to: reply_to}
+    %{email | reply_to: Recipient.format(reply_to)}
   end
 
   @doc """
@@ -289,27 +281,21 @@ defmodule Swoosh.Email do
   @doc """
   Adds new recipients in the `bcc` field.
 
-  The recipient must be; a tuple specifying the name and address of the recipient; a string specifying the
-  address of the recipient; or an array comprised of a combination of either.
-
       iex> new() |> bcc("steve.rogers@example.com")
       %Swoosh.Email{assigns: %{}, attachments: [], bcc: [{"", "steve.rogers@example.com"}],
        cc: [], from: nil, headers: %{}, html_body: nil,
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
   """
-  @spec bcc(t, mailbox | address | [mailbox | address]) :: t
-  def bcc(%__MODULE__{bcc: bcc} = email, recipients) when is_list(recipients) do
+  @spec bcc(t, Recipient.t() | [Recipient.t()]) :: t
+  def bcc(%__MODULE__{bcc: bcc} = email, recipients) do
     recipients =
       recipients
+      |> List.wrap()
       |> Enum.map(&Recipient.format(&1))
       |> Enum.concat(bcc)
 
     %{email | bcc: recipients}
-  end
-
-  def bcc(%__MODULE__{} = email, recipient) do
-    bcc(email, [recipient])
   end
 
   @doc """
@@ -317,20 +303,13 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `bcc` recipients.
   """
-  @spec put_bcc(t, mailbox | address | [mailbox | address]) :: t
-  def put_bcc(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    %{email | bcc: Enum.map(recipients, &Recipient.format(&1))}
-  end
-
-  def put_bcc(%__MODULE__{} = email, recipient) do
-    put_bcc(email, [recipient])
+  @spec put_bcc(t, Recipient.t() | [Recipient.t()]) :: t
+  def put_bcc(%__MODULE__{} = email, recipients) do
+    %{email | bcc: recipients |> List.wrap() |> Enum.map(&Recipient.format(&1))}
   end
 
   @doc """
   Adds new recipients in the `cc` field.
-
-  The recipient must be; a tuple specifying the name and address of the recipient; a string specifying the
-  address of the recipient; or an array comprised of a combination of either.
 
   ## Examples
 
@@ -340,18 +319,15 @@ defmodule Swoosh.Email do
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: []}
   """
-  @spec cc(t, mailbox | address | [mailbox | address]) :: t
-  def cc(%__MODULE__{cc: cc} = email, recipients) when is_list(recipients) do
+  @spec cc(t, Recipient.t() | [Recipient.t()]) :: t
+  def cc(%__MODULE__{cc: cc} = email, recipients) do
     recipients =
       recipients
+      |> List.wrap()
       |> Enum.map(&Recipient.format(&1))
       |> Enum.concat(cc)
 
     %{email | cc: recipients}
-  end
-
-  def cc(%__MODULE__{} = email, recipient) do
-    cc(email, [recipient])
   end
 
   @doc """
@@ -359,20 +335,13 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `cc` recipients.
   """
-  @spec put_cc(t, mailbox | address | [mailbox | address]) :: t
-  def put_cc(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    %{email | cc: Enum.map(recipients, &Recipient.format(&1))}
-  end
-
-  def put_cc(%__MODULE__{} = email, recipient) do
-    put_cc(email, [recipient])
+  @spec put_cc(t, Recipient.t() | [Recipient.t()]) :: t
+  def put_cc(%__MODULE__{} = email, recipients) do
+    %{email | cc: recipients |> List.wrap() |> Enum.map(&Recipient.format(&1))}
   end
 
   @doc """
   Adds new recipients in the `to` field.
-
-  The recipient must be; a tuple specifying the name and address of the recipient; a string specifying the
-  address of the recipient; or an array comprised of a combination of either.
 
   ## Examples
 
@@ -382,18 +351,15 @@ defmodule Swoosh.Email do
        private: %{}, provider_options: %{}, reply_to: nil, subject: "",
        text_body: nil, to: [{"", "steve.rogers@example.com"}]}
   """
-  @spec to(t, mailbox | address | [mailbox | address]) :: t
-  def to(%__MODULE__{to: to} = email, recipients) when is_list(recipients) do
+  @spec to(t, Recipient.t() | [Recipient.t()]) :: t
+  def to(%__MODULE__{to: to} = email, recipients) do
     recipients =
       recipients
+      |> List.wrap()
       |> Enum.map(&Recipient.format(&1))
       |> Enum.concat(to)
 
     %{email | to: recipients}
-  end
-
-  def to(%__MODULE__{} = email, recipient) do
-    to(email, [recipient])
   end
 
   @doc """
@@ -401,13 +367,9 @@ defmodule Swoosh.Email do
 
   It will replace any previously added `to` recipients.
   """
-  @spec put_to(t, mailbox | address | [mailbox | address]) :: t
-  def put_to(%__MODULE__{} = email, recipients) when is_list(recipients) do
-    %{email | to: Enum.map(recipients, &Recipient.format(&1))}
-  end
-
-  def put_to(%__MODULE__{} = email, recipient) do
-    put_to(email, [recipient])
+  @spec put_to(t, Recipient.t() | [Recipient.t()]) :: t
+  def put_to(%__MODULE__{} = email, recipients) do
+    %{email | to: recipients |> List.wrap() |> Enum.map(&Recipient.format(&1))}
   end
 
   @doc """
