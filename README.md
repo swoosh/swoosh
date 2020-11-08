@@ -135,6 +135,20 @@ configurations and instructions.
 Adding new adapters is super easy and we are definitely looking for
 contributions on that front. Get in touch if you want to help!
 
+## Recipient
+
+The Recipient Protocol enables you to easily make your structs compatible
+with Swoosh functions.
+
+```elixir
+defmodule MyUser do
+  @derive {Swoosh.Email.Recipient, name: :name, address: :email}
+  defstruct [:name, :email, :other_props]
+end
+```
+
+Now you can directly pass `%MyUser{}` to `from`, `to`, `cc`, `bcc`, etc.
+
 ## Async Emails
 
 Swoosh does not make any special arrangements for sending emails in a
