@@ -157,7 +157,7 @@ defmodule Swoosh.Adapters.SparkPost do
   end
 
   defp raw_email_addresses(mailboxes) do
-    mailboxes |> Enum.map(fn {_name, address} -> address end) |> Enum.join(",")
+    mailboxes |> Enum.map_join(",", fn {_name, address} -> address end)
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body

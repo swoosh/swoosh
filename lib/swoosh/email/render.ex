@@ -9,7 +9,6 @@ defmodule Swoosh.Email.Render do
 
   def render_recipient(list) when is_list(list) do
     list
-    |> Enum.map(&render_recipient/1)
-    |> Enum.join(", ")
+    |> Enum.map_join(", ", &render_recipient/1)
   end
 end

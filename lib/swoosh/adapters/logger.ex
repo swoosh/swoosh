@@ -60,13 +60,17 @@ defmodule Swoosh.Adapters.Logger do
       {_key, value} when is_list(value) -> !Enum.empty?(value)
       {_key, value} -> value
     end)
-    |> Enum.map(fn {key, value} -> String.capitalize(key) <> ": " <> render_recipient(value) end)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", fn {key, value} ->
+      String.capitalize(key) <> ": " <> render_recipient(value)
+    end)
   end
 
   defp render_headers(email) do
-    Enum.map(email.headers, fn {key, value} -> "#{key}: #{value}" end)
-    |> Enum.join("\n")
+    Enum.map_join(
+      email.headers,
+      "\n",
+      fn {key, value} -> "#{key}: #{value}" end
+    )
   end
 
   defp render_bodies(email) do

@@ -82,7 +82,7 @@ defmodule Swoosh.Adapters.SMTP do
           raise ArgumentError, """
           #{key} is not configured properly,
           got: #{value}, expected one of the followings:
-          #{valid_values |> Enum.map(&inspect/1) |> Enum.join(", ")}
+          #{valid_values |> Enum.map_join(", ", &inspect/1)}
           """
         end
 
