@@ -148,6 +148,7 @@ end
 ```
 
 Now you can directly pass `%MyUser{}` to `from`, `to`, `cc`, `bcc`, etc.
+See `Swoosh.Email.Recipient` for more details.
 
 ## Async Emails
 
