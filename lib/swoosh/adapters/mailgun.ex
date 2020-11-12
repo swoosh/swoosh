@@ -28,9 +28,9 @@ defmodule Swoosh.Adapters.Mailgun do
   - `:template_name` (template)
   - `:recipient_vars` (recipient-variables)
   - `:tags` (o:tag, added before `:sending_options`)
-  
+
   ## Custom headers
-  
+
   Headers added via `Email.header/3` will be translated to (h:) values that Mailgun recognizes.
   """
 
@@ -102,9 +102,7 @@ defmodule Swoosh.Adapters.Mailgun do
   # %{"my_var" => %{"my_message_id": 123},
   #   "my_other_var" => %{"my_other_id": 1, "stuff": 2}}
   defp prepare_custom_vars(body, %{provider_options: %{custom_vars: custom_vars}}) do
-    Enum.reduce(custom_vars, body, fn {k, v}, body ->
-      Map.put(body, "v:#{k}", encode_variable(v))
-    end)
+    Map.put(body, "h:X-Mailgun-Variables", Swoosh.json_library().encode!(custom_vars))
   end
 
   defp prepare_custom_vars(body, _email), do: body

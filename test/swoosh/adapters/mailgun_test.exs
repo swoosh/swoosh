@@ -73,7 +73,7 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "from" => ~s("T Stark" <tony.stark@example.com>),
                       "text" => "Hello",
                       "html" => "<h1>Hello</h1>",
-                      "v:key" => "value",
+                      "h:X-Mailgun-Variables" => "{\"key\":\"value\"}",
                       "template" => "avengers-templates"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
@@ -92,7 +92,7 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
-      |> put_provider_option(:custom_vars, %{my_var: %{my_message_id: 123}, my_other_var: %{my_other_id: 1, stuff: 2}})
+      |> put_provider_option(:custom_vars, %{my_var: [%{my_message_id: 123}], my_other_var: %{my_other_id: 1, stuff: 2}})
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
@@ -101,8 +101,7 @@ defmodule Swoosh.Adapters.MailgunTest do
                       "to" => "steve.rogers@example.com",
                       "from" => "tony.stark@example.com",
                       "html" => "<h1>Hello</h1>",
-                      "v:my_var" => "{\"my_message_id\":123}",
-                      "v:my_other_var" => "{\"my_other_id\":1,\"stuff\":2}"}
+                      "h:X-Mailgun-Variables" => "{\"my_other_var\":{\"my_other_id\":1,\"stuff\":2},\"my_var\":[{\"my_message_id\":123}]}"}
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method
