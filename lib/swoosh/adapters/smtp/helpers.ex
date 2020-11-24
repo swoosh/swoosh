@@ -21,7 +21,12 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   gen_smtp_major =
     if Code.ensure_loaded?(:gen_smtp_application) do
       Application.load(:gen_smtp)
-      :gen_smtp |> Application.spec(:vsn) |> to_string() |> Version.parse!() |> Map.get(:major)
+
+      :gen_smtp
+      |> Application.spec(:vsn)
+      |> to_string()
+      |> Version.parse!()
+      |> Map.get(:major)
     else
       0
     end
@@ -121,7 +126,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
           html_part
 
         {text_part, html_part} ->
-          {"multipart", "alternative", [], [], [text_part, html_part]}
+          {"multipart", "alternative", [], @parameters, [text_part, html_part]}
       end
 
     attachment_parts = Enum.map(attachments, &prepare_attachment(&1))
@@ -131,6 +136,19 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_part(_subtype, nil, _config), do: nil
 
+  @content_params if(gen_smtp_major >= 1,
+                    do: %{
+                      content_type_params: [{"charset", "utf-8"}],
+                      disposition: "inline",
+                      disposition_params: []
+                    },
+                    else: [
+                      {"content-type-params", [{"charset", "utf-8"}]},
+                      {"disposition", "inline"},
+                      {"disposition-params", []}
+                    ]
+                  )
+
   defp prepare_part(subtype, content, config) do
     subtype_string = to_string(subtype)
     transfer_encoding = Keyword.get(config, :transfer_encoding, "quoted-printable")
@@ -139,12 +157,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
      [
        {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
        {"Content-Transfer-Encoding", transfer_encoding}
-     ],
-     [
-       {"content-type-params", [{"charset", "utf-8"}]},
-       {"disposition", "inline"},
-       {"disposition-params", []}
-     ], content}
+     ], @content_params, content}
   end
 
   defp add_content_type_header(headers, value) do
@@ -177,10 +190,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
             {"Content-Transfer-Encoding", "base64"}
             | custom_headers
           ],
-          [
-            {"disposition", "attachment"},
-            {"disposition-params", [{"filename", filename}]}
-          ],
+          attachment_content_params(:attachment, filename),
           content
         }
 
@@ -193,13 +203,43 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
             {"Content-Id", "<#{filename}>"}
             | custom_headers
           ],
-          [
-            {"content-type-params", []},
-            {"disposition", "inline"},
-            {"disposition-params", []}
-          ],
+          attachment_content_params(:inline),
           content
         }
+    end
+  end
+
+  if gen_smtp_major >= 1 do
+    defp attachment_content_params(:attachment, filename) do
+      %{
+        disposition: "attachment",
+        disposition_params: [{"filename", filename}]
+      }
+    end
+  else
+    defp attachment_content_params(:attachment, filename) do
+      [
+        {"disposition", "attachment"},
+        {"disposition-params", [{"filename", filename}]}
+      ]
+    end
+  end
+
+  if gen_smtp_major >= 1 do
+    defp attachment_content_params(:inline) do
+      %{
+        content_type_params: [],
+        disposition: "inline",
+        disposition_params: []
+      }
+    end
+  else
+    defp attachment_content_params(:inline) do
+      [
+        {"content-type-params", []},
+        {"disposition", "inline"},
+        {"disposition-params", []}
+      ]
     end
   end
 end
