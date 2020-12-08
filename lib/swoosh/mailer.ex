@@ -63,11 +63,10 @@ defmodule Swoosh.Mailer do
   """
 
   alias Swoosh.DeliveryError
+  alias Swoosh.Mailer
 
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
-      alias Swoosh.Mailer
-
       @otp_app Keyword.fetch!(opts, :otp_app)
       @mailer_config opts
 
@@ -144,7 +143,7 @@ defmodule Swoosh.Mailer do
     Application.get_env(otp_app, mailer, [])
     |> Keyword.merge(mailer_config)
     |> Keyword.merge(dynamic_config)
-    |> Swoosh.Mailer.interpolate_env_vars()
+    |> Mailer.interpolate_env_vars()
   end
 
   @doc """
@@ -178,7 +177,7 @@ defmodule Swoosh.Mailer do
         :abort
 
       {:error, deps} when is_list(deps) ->
-        Logger.error(Swoosh.Mailer.missing_deps_message(adapter, deps))
+        Logger.error(Mailer.missing_deps_message(adapter, deps))
         :abort
     end
   end
