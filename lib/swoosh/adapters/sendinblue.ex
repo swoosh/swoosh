@@ -57,6 +57,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_to(email)
     |> prepare_template_id(email)
     |> prepare_params(email)
+    |> prepare_attachments(email)
   end
 
   defp prepare_from(body, %{from: {name, email}}),
@@ -90,4 +91,18 @@ defmodule Swoosh.Adapters.Sendinblue do
   end
 
   defp prepare_params(body, _), do: body
+
+  defp prepare_attachments(body, %{attachments: []}), do: body
+
+  defp prepare_attachments(body, %{attachments: attachments}) do
+    attachments =
+      Enum.map(attachments, fn attachment ->
+        %{
+          name: attachment.filename,
+          content: Swoosh.Attachment.get_content(attachment, :base64)
+        }
+      end)
+
+    Map.put(body, :attachment, attachments)
+  end
 end
