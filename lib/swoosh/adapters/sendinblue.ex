@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Sendinblue do
   @moduledoc ~S"""
   An adapter that sends email using the Sendinblue API (Transactional emails only).
 
-  For reference: [Sendinblue API docs](https://developers.sendinblue.com/docs/send-a-transactional-email)
+  For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference#transactional-emails)
 
   ## Example
 
