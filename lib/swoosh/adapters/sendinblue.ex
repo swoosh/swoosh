@@ -55,54 +55,82 @@ defmodule Swoosh.Adapters.Sendinblue do
     %{}
     |> prepare_from(email)
     |> prepare_to(email)
+    |> prepare_cc(email)
+    |> prepare_bcc(email)
+    |> prepare_text_content(email)
+    |> prepare_html_content(email)
     |> prepare_template_id(email)
     |> prepare_params(email)
+    |> prepare_tags(email)
     |> prepare_attachments(email)
   end
 
   defp prepare_from(body, %{from: {name, email}}),
-    do: Map.put(body, :sender, %{name: name, email: email})
+    do: Map.put(body, "sender", %{name: name, email: email})
 
   defp prepare_from(body, _), do: body
 
-  defp prepare_to(body, %{to: to}) when is_list(to),
-    do: Enum.reduce(to, body, &prepare_to(&2, &1))
+  defp prepare_to(body, %{to: to}) do
+    Map.put(body, "to", Enum.map(to, &prepare_recipient/1))
+  end
 
-  defp prepare_to(body, {name, email}) when name in [nil, ""] and not is_map_key(body, :to),
-    do: Map.put(body, :to, [%{email: email}])
+  defp prepare_cc(body, %{cc: cc}) do
+    Map.put(body, "cc", Enum.map(cc, &prepare_recipient/1))
+  end
 
-  defp prepare_to(body, {name, email}) when not is_map_key(body, :to),
-    do: Map.put(body, :to, [%{name: name, email: email}])
+  defp prepare_bcc(body, %{bcc: bcc}) do
+    Map.put(body, "bcc", Enum.map(bcc, &prepare_recipient/1))
+  end
 
-  defp prepare_to(body, {name, email}) when name in [nil, ""],
-    do: Map.update!(body, :to, &[%{email: email} | &1])
+  defp prepare_text_content(body, %{text_body: nil}), do: body
 
-  defp prepare_to(body, {name, email}),
-    do: Map.update!(body, :to, &[%{name: name, email: email} | &1])
+  defp prepare_text_content(body, %{text_body: text_content}) do
+    Map.put(body, "textContent", text_content)
+  end
+
+  defp prepare_html_content(body, %{html_body: nil}), do: body
+
+  defp prepare_html_content(body, %{html_body: html_content}) do
+    Map.put(body, "htmlContent", html_content)
+  end
 
   defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
-    Map.put(body, :templateId, template_id)
+    Map.put(body, "templateId", template_id)
   end
 
   defp prepare_template_id(body, _), do: body
 
-  defp prepare_params(body, %{provider_options: %{params: params}}) do
-    Map.put(body, :params, params)
+  defp prepare_params(body, %{provider_options: %{params: params}}) when is_map(params) do
+    Map.put(body, "params", params)
   end
 
   defp prepare_params(body, _), do: body
 
+  defp prepare_tags(body, %{provider_options: %{tags: tags}}) when is_list(tags) do
+    Map.put(body, "tags", tags)
+  end
+
+  defp prepare_tags(body, _), do: body
+
   defp prepare_attachments(body, %{attachments: []}), do: body
 
   defp prepare_attachments(body, %{attachments: attachments}) do
-    attachments =
-      Enum.map(attachments, fn attachment ->
-        %{
-          name: attachment.filename,
-          content: Swoosh.Attachment.get_content(attachment, :base64)
+    Map.put(
+      body,
+      "attachment",
+      Enum.map(
+        attachments,
+        &%{
+          name: &1.filename,
+          content: Swoosh.Attachment.get_content(&1, :base64)
         }
-      end)
-
-    Map.put(body, :attachment, attachments)
+      )
+    )
   end
+
+  defp prepare_recipient({name, email}) when name in [nil, ""],
+    do: %{email: email}
+
+  defp prepare_recipient({name, email}),
+    do: %{name: name, email: email}
 end
