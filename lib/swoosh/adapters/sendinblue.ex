@@ -61,6 +61,7 @@ defmodule Swoosh.Adapters.Sendinblue do
   defp prepare_payload(email) do
     %{}
     |> prepare_from(email)
+    |> prepare_subject(email)
     |> prepare_to(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
@@ -80,6 +81,9 @@ defmodule Swoosh.Adapters.Sendinblue do
     do: Map.put(body, "sender", %{name: name, email: email})
 
   defp prepare_from(body, _), do: body
+
+  defp prepare_subject(body, %{subject: subject}),
+    do: Map.put(body, "subject", subject)
 
   defp prepare_to(body, %{to: to}) do
     Map.put(body, "to", Enum.map(to, &prepare_recipient/1))
