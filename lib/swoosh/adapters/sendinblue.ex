@@ -81,7 +81,7 @@ defmodule Swoosh.Adapters.Sendinblue do
   defp prepare_from(body, %{from: {name, email}}),
     do: Map.put(body, "sender", %{name: name, email: email})
 
-  defp prepare_from(body, _), do: body
+  defp prepare_from(body, %{from: {_, "TEMPLATE"}}), do: body
 
   defp prepare_reply_to(body, %{reply_to: {name, email}}),
     do: Map.put(body, "replyTo", %{name: name, email: email})
