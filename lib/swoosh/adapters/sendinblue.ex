@@ -15,6 +15,12 @@ defmodule Swoosh.Adapters.Sendinblue do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Provider Options
+
+  - `template_id`
+  - `params` (map)
+  - `tags` (list)
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
