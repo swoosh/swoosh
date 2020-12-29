@@ -66,6 +66,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_text_content(email)
     |> prepare_html_content(email)
     |> prepare_template_id(email)
+    |> prepare_headers(email)
     |> prepare_params(email)
     |> prepare_tags(email)
     |> prepare_attachments(email)
@@ -105,6 +106,12 @@ defmodule Swoosh.Adapters.Sendinblue do
   end
 
   defp prepare_template_id(body, _), do: body
+
+  defp prepare_headers(body, %{headers: map}) when map_size(map) == 0, do: body
+
+  defp prepare_headers(body, %{headers: headers}) do
+    Map.put(body, "headers", headers)
+  end
 
   defp prepare_params(body, %{provider_options: %{params: params}}) when is_map(params) do
     Map.put(body, "params", params)
