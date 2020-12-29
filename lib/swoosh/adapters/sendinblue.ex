@@ -16,6 +16,12 @@ defmodule Swoosh.Adapters.Sendinblue do
         use Swoosh.Mailer, otp_app: :sample
       end
 
+  ## Using sender from template
+
+      YOUR_EMAIL
+      |> from("TEMPLATE")  # literally "TEMPLATE"
+      |> put_provider_option(:template_id, YOUR_TEMPLATE_ID)
+
   ## Provider Options
 
   - `sender_id` (integer)
