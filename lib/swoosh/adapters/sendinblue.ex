@@ -65,6 +65,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_to(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
+    |> prepare_reply_to(email)
     |> prepare_text_content(email)
     |> prepare_html_content(email)
     |> prepare_template_id(email)
@@ -81,6 +82,12 @@ defmodule Swoosh.Adapters.Sendinblue do
     do: Map.put(body, "sender", %{name: name, email: email})
 
   defp prepare_from(body, _), do: body
+
+  defp prepare_reply_to(body, %{reply_to: {name, email}}),
+    do: Map.put(body, "replyTo", %{name: name, email: email})
+
+  defp prepare_reply_to(body, %{reply_to: nil}),
+    do: body
 
   defp prepare_subject(body, %{subject: subject}),
     do: Map.put(body, "subject", subject)
