@@ -18,7 +18,8 @@ defmodule Swoosh.Adapters.Sendinblue do
 
   ## Provider Options
 
-  - `template_id`
+  - `sender_id` (integer)
+  - `template_id` (integer)
   - `params` (map)
   - `tags` (list)
   """
@@ -71,6 +72,9 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_tags(email)
     |> prepare_attachments(email)
   end
+
+  defp prepare_from(body, %{from: {_name, email}, provider_options: %{sender_id: sender_id}}),
+    do: Map.put(body, "sender", %{id: sender_id, email: email})
 
   defp prepare_from(body, %{from: {name, email}}),
     do: Map.put(body, "sender", %{name: name, email: email})
