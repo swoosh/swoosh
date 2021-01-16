@@ -25,30 +25,23 @@ defmodule Swoosh.Adapters.SendinblueTest do
     {:ok, bypass: bypass, config: config, valid_email: valid_email}
   end
 
-  defp assert_request_is_valid(conn, body_params) do
-    assert body_params == conn.body_params
-    assert "/v3/smtp/email" == conn.request_path
-    assert "POST" == conn.method
-  end
-
   defp make_response(conn) do
     conn
     |> Plug.Conn.resp(200, "{\"messageId\": \"#{@example_message_id}\"}")
   end
 
   test "successful delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
-        "sender" => %{"email" => "tony.stark@example.com"},
-        "to" => [%{"email" => "steve.rogers@example.com"}],
-        "htmlContent" => "<h1>Hello</h1>",
-        "textContent" => "Hello",
-        "subject" => "Hello, Avengers!"
-      }
+      assert conn.body_params == %{
+          "sender" => %{"email" => "tony.stark@example.com"},
+          "to" => [%{"email" => "steve.rogers@example.com"}],
+          "htmlContent" => "<h1>Hello</h1>",
+          "textContent" => "Hello",
+          "subject" => "Hello, Avengers!"
+        }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -63,17 +56,16 @@ defmodule Swoosh.Adapters.SendinblueTest do
       |> subject("Hello, Avengers!")
       |> text_body("Hello")
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
-        "sender" => %{"email" => "tony.stark@example.com"},
-        "to" => [%{"email" => "steve.rogers@example.com"}],
-        "textContent" => "Hello",
-        "subject" => "Hello, Avengers!"
-      }
+      assert conn.body_params == %{
+          "sender" => %{"email" => "tony.stark@example.com"},
+          "to" => [%{"email" => "steve.rogers@example.com"}],
+          "textContent" => "Hello",
+          "subject" => "Hello, Avengers!"
+        }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -88,17 +80,16 @@ defmodule Swoosh.Adapters.SendinblueTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
+      assert conn.body_params == %{
         "sender" => %{"email" => "tony.stark@example.com"},
         "to" => [%{"email" => "steve.rogers@example.com"}],
         "htmlContent" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!"
       }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -119,10 +110,10 @@ defmodule Swoosh.Adapters.SendinblueTest do
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
+      assert conn.body_params == %{
         "sender" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
         "replyTo" => %{"email" => "hulk.smash@example.com"},
         "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
@@ -139,7 +130,6 @@ defmodule Swoosh.Adapters.SendinblueTest do
         "subject" => "Hello, Avengers!"
       }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -154,17 +144,16 @@ defmodule Swoosh.Adapters.SendinblueTest do
       |> subject("Hello, Avengers!")
       |> put_provider_option(:template_id, 42)
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
+      assert conn.body_params == %{
         "sender" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
         "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
         "subject" => "Hello, Avengers!",
         "templateId" => 42
       }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -184,10 +173,10 @@ defmodule Swoosh.Adapters.SendinblueTest do
           another_one: 99
         })
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
+      assert conn.body_params == %{
         "sender" => %{"email" => "tony.stark@example.com"},
         "to" => [%{"email" => "steve.rogers@example.com"}],
         "textContent" => "Hello",
@@ -199,7 +188,6 @@ defmodule Swoosh.Adapters.SendinblueTest do
         },
       }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -219,10 +207,10 @@ defmodule Swoosh.Adapters.SendinblueTest do
       |> text_body("Hello")
       |> put_provider_option(:template_id, "Welcome")
 
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       conn = parse(conn)
 
-      body_params = %{
+      assert conn.body_params == %{
         "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
         "textContent" => "Hello",
         "htmlContent" => "<h1>Hello</h1>",
@@ -230,7 +218,6 @@ defmodule Swoosh.Adapters.SendinblueTest do
         "templateId" => "Welcome"
       }
 
-      assert_request_is_valid(conn, body_params)
       make_response(conn)
     end)
 
@@ -266,7 +253,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
   end
 
   test "delivery/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
-    Bypass.expect_once(bypass, fn conn ->
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
       assert "/v3/smtp/email" == conn.request_path
       assert "POST" == conn.method
       Plug.Conn.resp(conn, 500, "")
@@ -280,12 +267,14 @@ defmodule Swoosh.Adapters.SendinblueTest do
   end
 
   test "validate_config/1 with invalid config" do
-    assert_raise ArgumentError,
-                 """
-                 expected [:api_key] to be set, got: []
-                 """,
-                 fn ->
-                   Sendinblue.validate_config([])
-                 end
+    assert_raise(
+      ArgumentError,
+      """
+      expected [:api_key] to be set, got: []
+      """,
+      fn ->
+        Sendinblue.validate_config([])
+      end
+    )
   end
 end
