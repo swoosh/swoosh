@@ -37,6 +37,8 @@ defmodule Swoosh.Adapters.Sendinblue do
   @base_url "https://api.sendinblue.com/v3"
   @api_endpoint "/smtp/email"
 
+  defp base_url(config), do: config[:base_url] || @base_url
+
   @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = [
@@ -47,11 +49,11 @@ defmodule Swoosh.Adapters.Sendinblue do
     ]
 
     body = email |> prepare_payload() |> Swoosh.json_library().encode!
-    url = [@base_url, @api_endpoint]
+    url = [base_url(config), @api_endpoint]
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, code, _headers, body} when code >= 200 and code <= 399 ->
-        {:ok, body}
+        {:ok, %{id: extract_message_id(body)}}
 
       {:ok, code, _headers, body} when code >= 400 ->
         case Swoosh.json_library().decode(body) do
@@ -62,6 +64,12 @@ defmodule Swoosh.Adapters.Sendinblue do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  defp extract_message_id(body) do
+    body
+    |> Swoosh.json_library().decode!()
+    |> Map.get("messageId")
   end
 
   defp prepare_payload(email) do
@@ -99,9 +107,13 @@ defmodule Swoosh.Adapters.Sendinblue do
     Map.put(payload, "to", Enum.map(to, &prepare_recipient/1))
   end
 
+  defp prepare_cc(payload, %{cc: []}), do: payload
+
   defp prepare_cc(payload, %{cc: cc}) do
     Map.put(payload, "cc", Enum.map(cc, &prepare_recipient/1))
   end
+
+  defp prepare_bcc(payload,  %{bcc: []}), do: payload
 
   defp prepare_bcc(payload, %{bcc: bcc}) do
     Map.put(payload, "bcc", Enum.map(bcc, &prepare_recipient/1))
