@@ -67,11 +67,11 @@ defmodule Swoosh.Adapters.Sendinblue do
   defp prepare_payload(email) do
     %{}
     |> prepare_from(email)
-    |> prepare_subject(email)
+    |> prepare_reply_to(email)
     |> prepare_to(email)
     |> prepare_cc(email)
     |> prepare_bcc(email)
-    |> prepare_reply_to(email)
+    |> prepare_subject(email)
     |> prepare_text_content(email)
     |> prepare_html_content(email)
     |> prepare_template_id(email)
@@ -84,19 +84,16 @@ defmodule Swoosh.Adapters.Sendinblue do
   defp prepare_from(body, %{from: {_name, email}, provider_options: %{sender_id: sender_id}}),
     do: Map.put(body, "sender", %{id: sender_id, email: email})
 
-  defp prepare_from(body, %{from: {name, email}}),
-    do: Map.put(body, "sender", %{name: name, email: email})
-
   defp prepare_from(body, %{from: {_, "TEMPLATE"}}), do: body
 
-  defp prepare_reply_to(body, %{reply_to: {name, email}}),
-    do: Map.put(body, "replyTo", %{name: name, email: email})
+  defp prepare_from(body, %{from: from}),
+    do: Map.put(body, "sender", prepare_recipient(from))
 
   defp prepare_reply_to(body, %{reply_to: nil}),
     do: body
 
-  defp prepare_subject(body, %{subject: subject}),
-    do: Map.put(body, "subject", subject)
+  defp prepare_reply_to(body, %{reply_to: reply_to}),
+    do: Map.put(body, "replyTo", prepare_recipient(reply_to))
 
   defp prepare_to(body, %{to: to}) do
     Map.put(body, "to", Enum.map(to, &prepare_recipient/1))
@@ -109,6 +106,11 @@ defmodule Swoosh.Adapters.Sendinblue do
   defp prepare_bcc(body, %{bcc: bcc}) do
     Map.put(body, "bcc", Enum.map(bcc, &prepare_recipient/1))
   end
+
+  defp prepare_subject(body, %{subject: subject}),
+    do: Map.put(body, "subject", subject)
+
+  defp prepare_subject(body, _), do: body
 
   defp prepare_text_content(body, %{text_body: nil}), do: body
 
