@@ -25,6 +25,6 @@ defmodule Swoosh.Integration.Adapters.SendinblueTest do
       |> text_body("This email was sent by the Swoosh library automation testing")
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
 
-    assert {:ok, %{"messageId": _}} = Swoosh.Adapters.Sendinblue.deliver(email, config)
+    assert {:ok, %{id: _}} = Swoosh.Adapters.Sendinblue.deliver(email, config)
   end
 end
