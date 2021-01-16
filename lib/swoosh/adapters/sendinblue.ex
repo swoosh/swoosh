@@ -81,78 +81,78 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_attachments(email)
   end
 
-  defp prepare_from(body, %{from: {_name, email}, provider_options: %{sender_id: sender_id}}),
-    do: Map.put(body, "sender", %{id: sender_id, email: email})
+  defp prepare_from(payload, %{from: {_name, email}, provider_options: %{sender_id: sender_id}}),
+    do: Map.put(payload, "sender", %{id: sender_id, email: email})
 
-  defp prepare_from(body, %{from: {_, "TEMPLATE"}}), do: body
+  defp prepare_from(payload, %{from: {_, "TEMPLATE"}}), do: payload
 
-  defp prepare_from(body, %{from: from}),
-    do: Map.put(body, "sender", prepare_recipient(from))
+  defp prepare_from(payload, %{from: from}),
+    do: Map.put(payload, "sender", prepare_recipient(from))
 
-  defp prepare_reply_to(body, %{reply_to: nil}),
-    do: body
+  defp prepare_reply_to(payload, %{reply_to: nil}),
+    do: payload
 
-  defp prepare_reply_to(body, %{reply_to: reply_to}),
-    do: Map.put(body, "replyTo", prepare_recipient(reply_to))
+  defp prepare_reply_to(payload, %{reply_to: reply_to}),
+    do: Map.put(payload, "replyTo", prepare_recipient(reply_to))
 
-  defp prepare_to(body, %{to: to}) do
-    Map.put(body, "to", Enum.map(to, &prepare_recipient/1))
+  defp prepare_to(payload, %{to: to}) do
+    Map.put(payload, "to", Enum.map(to, &prepare_recipient/1))
   end
 
-  defp prepare_cc(body, %{cc: cc}) do
-    Map.put(body, "cc", Enum.map(cc, &prepare_recipient/1))
+  defp prepare_cc(payload, %{cc: cc}) do
+    Map.put(payload, "cc", Enum.map(cc, &prepare_recipient/1))
   end
 
-  defp prepare_bcc(body, %{bcc: bcc}) do
-    Map.put(body, "bcc", Enum.map(bcc, &prepare_recipient/1))
+  defp prepare_bcc(payload, %{bcc: bcc}) do
+    Map.put(payload, "bcc", Enum.map(bcc, &prepare_recipient/1))
   end
 
-  defp prepare_subject(body, %{subject: subject}),
-    do: Map.put(body, "subject", subject)
+  defp prepare_subject(payload, %{subject: subject}),
+    do: Map.put(payload, "subject", subject)
 
-  defp prepare_subject(body, _), do: body
+  defp prepare_subject(payload, _), do: payload
 
-  defp prepare_text_content(body, %{text_body: nil}), do: body
+  defp prepare_text_content(payload, %{text_body: nil}), do: payload
 
-  defp prepare_text_content(body, %{text_body: text_content}) do
-    Map.put(body, "textContent", text_content)
+  defp prepare_text_content(payload, %{text_body: text_content}) do
+    Map.put(payload, "textContent", text_content)
   end
 
-  defp prepare_html_content(body, %{html_body: nil}), do: body
+  defp prepare_html_content(payload, %{html_body: nil}), do: payload
 
-  defp prepare_html_content(body, %{html_body: html_content}) do
-    Map.put(body, "htmlContent", html_content)
+  defp prepare_html_content(payload, %{html_body: html_content}) do
+    Map.put(payload, "htmlContent", html_content)
   end
 
-  defp prepare_template_id(body, %{provider_options: %{template_id: template_id}}) do
-    Map.put(body, "templateId", template_id)
+  defp prepare_template_id(payload, %{provider_options: %{template_id: template_id}}) do
+    Map.put(payload, "templateId", template_id)
   end
 
-  defp prepare_template_id(body, _), do: body
+  defp prepare_template_id(payload, _), do: payload
 
-  defp prepare_headers(body, %{headers: map}) when map_size(map) == 0, do: body
+  defp prepare_headers(payload, %{headers: map}) when map_size(map) == 0, do: payload
 
-  defp prepare_headers(body, %{headers: headers}) do
-    Map.put(body, "headers", headers)
+  defp prepare_headers(payload, %{headers: headers}) do
+    Map.put(payload, "headers", headers)
   end
 
-  defp prepare_params(body, %{provider_options: %{params: params}}) when is_map(params) do
-    Map.put(body, "params", params)
+  defp prepare_params(payload, %{provider_options: %{params: params}}) when is_map(params) do
+    Map.put(payload, "params", params)
   end
 
-  defp prepare_params(body, _), do: body
+  defp prepare_params(payload, _), do: payload
 
-  defp prepare_tags(body, %{provider_options: %{tags: tags}}) when is_list(tags) do
-    Map.put(body, "tags", tags)
+  defp prepare_tags(payload, %{provider_options: %{tags: tags}}) when is_list(tags) do
+    Map.put(payload, "tags", tags)
   end
 
-  defp prepare_tags(body, _), do: body
+  defp prepare_tags(payload, _), do: payload
 
-  defp prepare_attachments(body, %{attachments: []}), do: body
+  defp prepare_attachments(payload, %{attachments: []}), do: payload
 
-  defp prepare_attachments(body, %{attachments: attachments}) do
+  defp prepare_attachments(payload, %{attachments: attachments}) do
     Map.put(
-      body,
+      payload,
       "attachment",
       Enum.map(
         attachments,
