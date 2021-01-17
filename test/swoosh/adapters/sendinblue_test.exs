@@ -225,7 +225,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
   end
 
   test "delivery/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
-    error = "{ \"code\": \"too_many_requests\", \"message\": \"The expected rate limit is exceeded.\"}"
+    error = ~s/{"code": "too_many_requests", "message": "The expected rate limit is exceeded."}/
 
     Bypass.expect_once(bypass, &Plug.Conn.resp(&1, 429, error))
 
@@ -239,7 +239,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
   end
 
   test "delivery/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
-    error = "{ \"code\": \"invalid_parameter\", \"message\": \"error message explained.\"}"
+    error = ~s/{"code": "invalid_parameter", "message": "error message explained."}/
 
     Bypass.expect_once(bypass, &Plug.Conn.resp(&1, 400, error))
 
