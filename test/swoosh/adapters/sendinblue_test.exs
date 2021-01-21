@@ -194,7 +194,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
     assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
-  test "delivery/1 with template_id using template's from returns :ok", %{
+  test "delivery/1 with template_id using template's sender returns :ok", %{
     bypass: bypass,
     config: config
   } do
@@ -215,6 +215,36 @@ defmodule Swoosh.Adapters.SendinblueTest do
         "textContent" => "Hello",
         "htmlContent" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",
+        "templateId" => "Welcome"
+      }
+
+      make_response(conn)
+    end)
+
+    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+  end
+
+  test "delivery/1 with template_id using template's subject returns :ok", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("TEMPLATE")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:template_id, "Welcome")
+
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
+      conn = parse(conn)
+
+      assert conn.body_params == %{
+        "sender" => %{"email" => "tony.stark@example.com"},
+        "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
+        "textContent" => "Hello",
+        "htmlContent" => "<h1>Hello</h1>",
         "templateId" => "Welcome"
       }
 
