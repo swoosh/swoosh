@@ -232,7 +232,6 @@ defmodule Swoosh.Adapters.SendinblueTest do
       new()
       |> from("tony.stark@example.com")
       |> to({"Steve Rogers", "steve.rogers@example.com"})
-      |> subject("TEMPLATE")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
       |> put_provider_option(:template_id, "Welcome")
