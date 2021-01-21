@@ -1,5 +1,11 @@
 ## Changelog
 
+## 1.2.1
+
+### 🧰 Maintenance
+
+- Export macros of `Swoosh.TestAssertions` as `locals_without_parens` for the formatter @LostKobrakai (#561)
+
 ## 1.2.0
 
 ### ✨ Features

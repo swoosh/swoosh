@@ -2,7 +2,7 @@ defmodule Swoosh.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/swoosh/swoosh"
-  @version "1.2.0"
+  @version "1.2.1"
 
   def project do
     [
@@ -116,7 +116,7 @@ defmodule Swoosh.Mixfile do
       maintainers: ["Steve Domin", "Baris Balic", "Po Chen"],
       licenses: ["MIT"],
       links: %{
-        "Changelog" => "#{@source_url}/blob/master/CHANGELOG.md",
+        "Changelog" => "#{@source_url}/blob/main/CHANGELOG.md",
         "GitHub" => @source_url
       }
     ]

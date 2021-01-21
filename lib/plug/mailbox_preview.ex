@@ -47,6 +47,15 @@ if Code.ensure_loaded?(Plug) do
       |> send_resp(302, '')
     end
 
+    get "/json" do
+      emails = Enum.map(conn.assigns.storage_driver.all(), &render_email_json/1)
+      response = Swoosh.json_library().encode_to_iodata!(%{data: emails})
+
+      conn
+      |> put_resp_content_type("application/json")
+      |> send_resp(200, response)
+    end
+
     get "/" do
       emails = conn.assigns.storage_driver.all()
       conn
@@ -96,6 +105,33 @@ if Code.ensure_loaded?(Plug) do
       conn
       |> put_resp_content_type("text/html")
       |> send_resp(200, template(emails: emails, email: email, conn: conn))
+    end
+
+    defp render_email_json(email) do
+      %{
+        subject: email.subject,
+        from: Render.render_recipient(email.from),
+        to: Enum.map(email.to, &Render.render_recipient/1),
+        cc: Enum.map(email.cc, &Render.render_recipient/1),
+        bcc: Enum.map(email.bcc, &Render.render_recipient/1),
+        reply_to: Render.render_recipient(email.reply_to),
+        sent_at: Map.get(email.private, :sent_at),
+        text_body: email.text_body,
+        html_body: email.html_body,
+        headers: email.headers,
+        provider_options: Enum.map(email.provider_options, fn {k, v} -> %{key: k, value: inspect(v)} end),
+        attachments: Enum.map(email.attachments, &render_attachment_json/1)
+      }
+    end
+
+    defp render_attachment_json(attachment) do
+      %{
+        filename: attachment.filename,
+        content_type: attachment.content_type,
+        path: attachment.path,
+        type: attachment.type,
+        headers: Map.new(attachment.headers)
+      }
     end
 
     defp handle_errors(conn, %{kind: _kind, reason: _reason, stack: _stack}) do

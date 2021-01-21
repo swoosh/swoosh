@@ -69,35 +69,35 @@ configuration options.
 
 - Add swoosh to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [{:swoosh, "~> 1.0"}]
-    end
-    ```
+  ```elixir
+  def deps do
+    [{:swoosh, "~> 1.0"}]
+  end
+  ```
 
 - (Optional-ish) Most Adapters (Non SMTP ones) use `Swoosh.ApiClient` to talk
-  to the service provider.  Swoosh comes with `Swoosh.ApiClient.Hackney`. if you
+  to the service provider. Swoosh comes with `Swoosh.ApiClient.Hackney`. if you
   want to use the default, include `:hackney` as a dependency as well.
   Otherwise, define a new API client that uses the HTTP client you like, and
-  config swoosh to use the new API Client.  See `Swoosh.ApiClient` and
+  config swoosh to use the new API Client. See `Swoosh.ApiClient` and
   `Swoosh.ApiClient.Hackney` for details.
 
-    ```elixir
-    config :swoosh, :api_client, MyApp.ApiClient
-    ```
+  ```elixir
+  config :swoosh, :api_client, MyApp.ApiClient
+  ```
 
 - (Optional) If you are using `Swoosh.Adapters.SMTP`,
   `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to
-   add `gen_smtp` to your deps and list of applications:
+  add `gen_smtp` to your deps and list of applications:
 
-    ```elixir
-    def deps do
-      [
-        {:swoosh, "~> 1.0"},
-        {:gen_smtp, "~> 0.13"}
-      ]
-    end
-    ```
+  ```elixir
+  def deps do
+    [
+      {:swoosh, "~> 1.0"},
+      {:gen_smtp, "~> 0.13"}
+    ]
+  end
+  ```
 
 ## Adapters
 
@@ -105,21 +105,21 @@ Swoosh supports the most popular transactional email providers out of the box
 and also has a SMTP adapter. Below is the list of the adapters currently
 included:
 
-| Provider   | Swoosh adapter                                                                                   |
-| ---------- | ---------------------------------------------------------------------------------------------    |
-| SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)              |
-| SendGrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)      |
-| Sendinblue | [Swoosh.Adapters.Sendinblue](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendinblue.html#content)  |
-| Sendmail   | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)      |
-| Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)      |
-| Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)        |
-| Mailjet    | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)        |
-| Postmark   | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)      |
-| SparkPost  | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)    |
-| Amazon SES | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)    |
-| Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)                |
-| SocketLabs | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)  |
-| Gmail      | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)            |
+| Provider   | Swoosh adapter                                                                                  |
+| ---------- | ----------------------------------------------------------------------------------------------- |
+| SMTP       | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)             |
+| SendGrid   | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)     |
+| Sendinblue | [Swoosh.Adapters.Sendinblue](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendinblue.html#content) |
+| Sendmail   | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)     |
+| Mandrill   | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)     |
+| Mailgun    | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)       |
+| Mailjet    | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)       |
+| Postmark   | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)     |
+| SparkPost  | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)   |
+| Amazon SES | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)   |
+| Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)               |
+| SocketLabs | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content) |
+| Gmail      | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)           |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
@@ -303,7 +303,7 @@ end
 ```
 
 And finally you can also use the following Mix task to start the mailbox
-preview server independently  though note that it won't display/process emails
+preview server independently though note that it won't display/process emails
 being sent from outside its own process (great for testing within `iex`).
 
 ```console
@@ -312,12 +312,19 @@ $ mix swoosh.mailbox.server
 
 If you are curious, this is how it looks:
 
-![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/master/images/mailbox-preview.png)
+![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/main/images/mailbox-preview.png)
+
+
+The preview is also available as a JSON endpoint.
+
+```sh
+$ curl http://localhost:4000/dev/mailbox/json
+```
 
 ### Production
 
 Swoosh starts a memory storage process for local adapter by default. Normally
-it does no harm being left around in production.  However, if it is causing
+it does no harm being left around in production. However, if it is causing
 problems, or you don't like having it around, it can be disabled like so:
 
 ```elixir
@@ -336,10 +343,10 @@ accessible from `iex` and of course, it all gets published to
 We are grateful for any contributions. Before you submit an issue or a pull
 request, remember to:
 
--   Look at our [Contributing guidelines](CONTRIBUTING.md)
--   Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
--   Do a quick search in the issue tracker to make sure the issues hasn't been reported yet.
--   Look and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Be nice and have fun!
+- Look at our [Contributing guidelines](CONTRIBUTING.md)
+- Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
+- Do a quick search in the issue tracker to make sure the issues hasn't been reported yet.
+- Look and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Be nice and have fun!
 
 ### Running tests
 
@@ -356,4 +363,4 @@ Clone the repo and fetch its dependencies:
 
 ## LICENSE
 
-See [LICENSE](https://github.com/swoosh/swoosh/blob/master/LICENSE.txt)
+See [LICENSE](https://github.com/swoosh/swoosh/blob/main/LICENSE.txt)

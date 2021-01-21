@@ -49,11 +49,10 @@ defmodule Swoosh.MailerTest do
              defmodule WontWorkAdapterMailer do
                use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
              end
-           end) =~ ~r/Elixir.NotExistAdapter does not exist/
 
-    assert_raise UndefinedFunctionError, fn ->
-      WontWorkAdapterMailer.deliver(email)
-    end
+             refute function_exported?(WontWorkAdapterMailer, :deliver, 1)
+             refute function_exported?(WontWorkAdapterMailer, :deliver, 2)
+           end) =~ ~r/Elixir.NotExistAdapter does not exist/
   end
 
   test "should raise if deliver!/2 is called with invalid from", %{valid_email: valid_email} do
