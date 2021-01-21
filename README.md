@@ -314,6 +314,13 @@ If you are curious, this is how it looks:
 
 ![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/main/images/mailbox-preview.png)
 
+
+The preview is also available as a JSON endpoint.
+
+```sh
+$ curl http://localhost:4000/dev/mailbox/json
+```
+
 ### Production
 
 Swoosh starts a memory storage process for local adapter by default. Normally
