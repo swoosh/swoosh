@@ -16,11 +16,10 @@ defmodule Swoosh.Adapters.Sendinblue do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Using sender or subject from template
+  ## Using sender from template
 
       YOUR_EMAIL
       |> from("TEMPLATE")  # literally "TEMPLATE"
-      |> subject("TEMPLATE")
       |> put_provider_option(:template_id, YOUR_TEMPLATE_ID)
 
   ## Provider Options
@@ -120,7 +119,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     Map.put(payload, "bcc", Enum.map(bcc, &prepare_recipient/1))
   end
 
-  defp prepare_subject(payload, %{subject: "TEMPLATE"}), do: payload
+  defp prepare_subject(payload, %{subject: ""}), do: payload
 
   defp prepare_subject(payload, %{subject: subject}),
     do: Map.put(payload, "subject", subject)
