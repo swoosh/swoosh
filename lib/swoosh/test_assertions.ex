@@ -12,6 +12,34 @@ defmodule Swoosh.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
+  @doc """
+  Sets Swoosh test adapter to global mode.
+
+  In global mode, emails can be consumed by any process.
+
+  An ExUnit case where tests use Swoosh in global mode cannot be `async: true`.
+
+  ## Examples
+
+      setup :set_swoosh_global
+
+  """
+  def set_swoosh_global(context \\ %{}) do
+    if Map.get(context, :async) do
+      raise "Swoosh cannot be set to global mode when the ExUnit case is async. " <>
+              "If you want to use Swoosh in global mode, remove \"async: true\" when using ExUnit.Case"
+    else
+      Application.put_env(:swoosh, :shared_test_process, self())
+
+      ExUnit.Callbacks.on_exit(fn ->
+        Application.delete_env(:swoosh, :shared_test_process)
+      end)
+
+      :ok
+    end
+  end
+
+
   @doc ~S"""
   Asserts any email was sent.
   """

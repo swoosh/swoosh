@@ -40,6 +40,10 @@ defmodule Swoosh.Adapters.Test do
   # Essentially finds all of the processes that tried to send an email (in the test)
   # and sends an email to that process.
   defp pids do
-    Enum.uniq([self() | List.wrap(Process.get(:"$callers"))])
+    if pid = Application.get_env(:swoosh, :shared_test_process) do
+      [pid]
+    else
+      Enum.uniq([self() | List.wrap(Process.get(:"$callers"))])
+    end
   end
 end
