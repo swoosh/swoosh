@@ -15,7 +15,8 @@ defmodule Swoosh.TestAssertions do
   @doc """
   Sets Swoosh test adapter to global mode.
 
-  In global mode, emails can be consumed by any process.
+  In global mode, emails are consumed by the current test process,
+  doesn't matter which process sent it.
 
   An ExUnit case where tests use Swoosh in global mode cannot be `async: true`.
 
