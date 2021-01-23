@@ -21,8 +21,19 @@ defmodule Swoosh.TestAssertions do
 
   ## Examples
 
-      setup :set_swoosh_global
+      defmodule MyTest do
+        use ExUnit.Case, async: false
 
+        import Swoosh.Email
+        import Swoosh.TestAssertions
+
+        setup :set_swoosh_global
+
+        test "it sends email" do
+          # ...
+          assert_email_sent(subject: "Hi Avengers!")
+        end
+      end
   """
   def set_swoosh_global(context \\ %{}) do
     if Map.get(context, :async) do
