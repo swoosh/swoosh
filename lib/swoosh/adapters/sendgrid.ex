@@ -79,7 +79,6 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_custom_headers(email)
     |> prepare_mail_settings(email)
     |> prepare_tracking_settings(email)
-    |> IO.inspect(label: "prepare_body")
   end
 
   defp email_item({"", email}), do: %{email: email}
