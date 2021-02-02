@@ -403,6 +403,7 @@ defmodule Swoosh.Adapters.SendgridTest do
         substitutions: %{"-name-" => "Steve Rogers"}
       }])
       |> put_provider_option(:mail_settings, %{sandbox_mode: %{enable: true}})
+      |> put_provider_option(:tracking_settings, %{subscription_tracking: %{enable: false}})
 
     Bypass.expect bypass, fn conn ->
       conn = parse(conn)
@@ -416,6 +417,11 @@ defmodule Swoosh.Adapters.SendgridTest do
                       "mail_settings" => %{
                         "sandbox_mode" => %{
                           "enable" => true
+                        }
+                      },
+                      "tracking_settings" => %{
+                        "subscription_tracking" => %{
+                          "enable" => false
                         }
                       }
                     }
@@ -449,6 +455,39 @@ defmodule Swoosh.Adapters.SendgridTest do
                       "mail_settings" => %{
                         "sandbox_mode" => %{
                           "enable" => true
+                        }
+                      }
+                    }
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
+    end
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
+  test "deliver/1 with tracking_settings returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:tracking_settings, %{subscription_tracking: %{enable: false}})
+
+    Bypass.expect bypass, fn conn ->
+      conn = parse(conn)
+      body_params = %{"from" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+                      "personalizations" => [%{
+                        "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}]
+                      }],
+                      "content" => [%{"type" => "text/plain", "value" => "Hello"}, %{"type" => "text/html", "value" => "<h1>Hello</h1>"}],
+                      "subject" => "Hello, Avengers!",
+                      "tracking_settings" => %{
+                        "subscription_tracking" => %{
+                          "enable" => false
                         }
                       }
                     }

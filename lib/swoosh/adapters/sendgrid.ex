@@ -78,6 +78,8 @@ defmodule Swoosh.Adapters.Sendgrid do
     |> prepare_asm(email)
     |> prepare_custom_headers(email)
     |> prepare_mail_settings(email)
+    |> prepare_tracking_settings(email)
+    |> IO.inspect(label: "prepare_body")
   end
 
   defp email_item({"", email}), do: %{email: email}
@@ -226,4 +228,13 @@ defmodule Swoosh.Adapters.Sendgrid do
   end
 
   defp prepare_mail_settings(body, _), do: body
+
+  defp prepare_tracking_settings(body, %{
+         provider_options: %{tracking_settings: tracking_settings}
+       }) do
+    Map.put(body, :tracking_settings, tracking_settings)
+  end
+
+  defp prepare_tracking_settings(body, _), do: body
+
 end
