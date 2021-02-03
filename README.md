@@ -297,7 +297,7 @@ if Mix.env == :dev do
   scope "/dev" do
     pipe_through [:browser]
 
-    forward "/mailbox", Plug.Swoosh.MailboxPreview, [base_path: "/dev/mailbox"]
+    forward "/mailbox", Plug.Swoosh.MailboxPreview
   end
 end
 ```
@@ -313,7 +313,6 @@ $ mix swoosh.mailbox.server
 If you are curious, this is how it looks:
 
 ![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/main/images/mailbox-preview.png)
-
 
 The preview is also available as a JSON endpoint.
 

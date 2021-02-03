@@ -3,10 +3,10 @@ if Code.ensure_loaded?(Plug) do
     @moduledoc """
     Plug that serves pages useful for previewing emails in development.
 
-    It takes one option at initialization:
+    It takes one optional configuration at initialization:
 
       * `base_path` - sets the base URL path where this module is plugged. Defaults
-        to `/`.
+        to `conn.script_name`.
 
     ## Examples
 
@@ -14,7 +14,7 @@ if Code.ensure_loaded?(Plug) do
         defmodule Sample.Router do
           scope "/dev" do
             pipe_through [:browser]
-            forward "/mailbox", Plug.Swoosh.MailboxPreview, [base_path: "/dev/mailbox"]
+            forward "/mailbox", Plug.Swoosh.MailboxPreview
           end
         end
     """
@@ -37,7 +37,7 @@ if Code.ensure_loaded?(Plug) do
     def call(conn, opts) do
       conn =
         conn
-        |> assign(:base_path, opts[:base_path] || "/")
+        |> assign(:base_path, opts[:base_path] || Enum.join(["/" | conn.script_name]))
         |> assign(:storage_driver, opts[:storage_driver] || Memory)
 
       super(conn, opts)
