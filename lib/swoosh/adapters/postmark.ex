@@ -25,7 +25,6 @@ defmodule Swoosh.Adapters.Postmark do
       new()
       |> from({"T Stark", "tony.stark@example.com"})
       |> to({"Steve Rogers", "steve.rogers@example.com"})
-      |> subject("Hello, Avengers!")
       |> put_provider_option(:template_id, "123456")
       |> put_provider_option(:template_model, %{name: "Steve", email: "steve@avengers.com"})
 
