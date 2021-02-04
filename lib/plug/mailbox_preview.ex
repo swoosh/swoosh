@@ -37,7 +37,7 @@ if Code.ensure_loaded?(Plug) do
     def call(conn, opts) do
       conn =
         conn
-        |> assign(:base_path, opts[:base_path] || Enum.join(["/" | conn.script_name]))
+        |> assign(:base_path, opts[:base_path] || Path.join(["/" | conn.script_name]))
         |> assign(:storage_driver, opts[:storage_driver] || Memory)
 
       super(conn, opts)
