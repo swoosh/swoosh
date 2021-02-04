@@ -3,11 +3,6 @@ if Code.ensure_loaded?(Plug) do
     @moduledoc """
     Plug that serves pages useful for previewing emails in development.
 
-    It takes one optional configuration at initialization:
-
-      * `base_path` - sets the base URL path where this module is plugged. Defaults
-        to `conn.script_name`.
-
     ## Examples
 
         # in a Phoenix router
@@ -37,7 +32,7 @@ if Code.ensure_loaded?(Plug) do
     def call(conn, opts) do
       conn =
         conn
-        |> assign(:base_path, opts[:base_path] || Path.join(["/" | conn.script_name]))
+        |> assign(:base_path, Path.join(["/" | conn.script_name]))
         |> assign(:storage_driver, opts[:storage_driver] || Memory)
 
       super(conn, opts)
