@@ -55,7 +55,7 @@ defmodule Swoosh.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger, :xmerl],
+      extra_applications: [:logger, :xmerl, :crypto],
       mod: {Swoosh.Application, []},
       env: [json_library: Jason, api_client: Swoosh.ApiClient.Hackney]
     ]
