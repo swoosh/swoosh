@@ -51,7 +51,6 @@ defmodule Swoosh.TestAssertions do
     end
   end
 
-
   @doc ~S"""
   Asserts any email was sent.
   """
@@ -60,12 +59,13 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(Email.t() | Keyword.t()) :: :ok | tuple | no_return
+  @spec assert_email_sent(Email.t() | Keyword.t() | (Email.t() -> boolean())) :: :ok | tuple | no_return
 
   @doc ~S"""
   Asserts `email` was sent.
 
-  You pass a keyword list to match on specific params.
+  You can pass a keyword list to match on specific params
+  or an anonymous function that returns a boolean.
 
   ## Examples
 
@@ -80,6 +80,9 @@ defmodule Swoosh.TestAssertions do
 
       # assert an email with specific field(s) was sent
       iex> assert_email_sent subject: "Hello, Avengers!"
+
+      # assert an email that satisfies a condition
+      iex> assert_email_sent fn email -> length(email.to) == 2 end
   """
   def assert_email_sent(%Email{} = email) do
     assert_received {:email, ^email}
@@ -88,6 +91,11 @@ defmodule Swoosh.TestAssertions do
   def assert_email_sent(params) when is_list(params) do
     assert_received {:email, email}
     Enum.each(params, &assert_equal(email, &1))
+  end
+
+  def assert_email_sent(fun) when is_function(fun, 1) do
+    assert_received {:email, email}
+    assert fun.(email)
   end
 
   defp assert_equal(email, {:subject, value}),
