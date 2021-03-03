@@ -60,6 +60,12 @@ defmodule Swoosh.TestAssertionsTest do
     )
   end
 
+  test "assert email sent with condition" do
+    assert_email_sent(fn email ->
+      length(email.cc) == 2
+    end)
+  end
+
   test "assert email sent with wrong subject" do
     assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent(subject: "Hello, X-Men!")
@@ -99,6 +105,14 @@ defmodule Swoosh.TestAssertionsTest do
   test "assert email sent with wrong email", %{email: email} do
     assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent(email |> subject("Wrong"))
+    end
+  end
+
+  test "assert email sent with wrong condition" do
+    assert_raise ExUnit.AssertionError, fn ->
+      assert_email_sent(fn email ->
+        email.to == "loki.odinson@example.com"
+      end)
     end
   end
 
