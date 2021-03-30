@@ -7,7 +7,7 @@ defmodule Swoosh.Adapters.Gmail do
   ## Dependency
 
   Gmail adapter requires `Mail` dependency to format message as RFC 2822 message.
-  
+
       {:mail, ">= 0.0.0"}
 
   Because `Mail` library removes Bcc headers, they are being added after email is
@@ -47,12 +47,12 @@ defmodule Swoosh.Adapters.Gmail do
   @impl true
   def deliver(%Email{} = email, config) do
     url = [base_url(config), @api_endpoint]
-    
+
     headers = [
       {"Authorization", "Bearer #{config[:access_token]}"},
       {"Content-Type", "message/rfc822"}
     ]
-    
+
     body = prepare_body(email)
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
@@ -101,6 +101,7 @@ defmodule Swoosh.Adapters.Gmail do
     |> prepare_html(email)
     |> prepare_attachments(email)
     |> prepare_reply_to(email)
+    |> prepare_custom_headers(email)
     |> Mail.Renderers.RFC2822.render()
     # When message is rendered, bcc header will be removed and we need to prepend bcc list to the
     # begining of the message. Gmail will handle it from there.
@@ -143,4 +144,12 @@ defmodule Swoosh.Adapters.Gmail do
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: reply_to}), do: Mail.put_reply_to(body, reply_to)
+
+  defp prepare_custom_headers(body, %{headers: nil}), do: body
+
+  defp prepare_custom_headers(body, %{headers: headers}) do
+    Enum.reduce(headers, body, fn {key, value}, acc ->
+      Mail.Message.put_header(acc, key, value)
+    end)
+  end
 end
