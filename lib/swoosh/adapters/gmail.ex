@@ -145,7 +145,7 @@ defmodule Swoosh.Adapters.Gmail do
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
   defp prepare_reply_to(body, %{reply_to: reply_to}), do: Mail.put_reply_to(body, reply_to)
 
-  defp prepare_custom_headers(body, %{headers: nil}), do: body
+  defp prepare_custom_headers(body, %{headers: headers}) when headers == %{}, do: body
 
   defp prepare_custom_headers(body, %{headers: headers}) do
     Enum.reduce(headers, body, fn {key, value}, acc ->
