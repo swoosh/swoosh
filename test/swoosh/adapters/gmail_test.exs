@@ -77,6 +77,7 @@ defmodule Swoosh.Adapters.GmailTest do
       |> reply_to("iron.stark@example.com")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
+      |> header("X-Avengers", "Assemble")
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -92,6 +93,7 @@ defmodule Swoosh.Adapters.GmailTest do
         From: "T Stark" <tony.stark@example.com>\r
         Content-Type: multipart/alternative; boundary="#{boundary}"\r
         Cc: "" <thor.odinson@example.com>\r
+        X-Avengers: Assemble\r
         \r
         --#{boundary}\r
         Content-Type: text/plain\r
