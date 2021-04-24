@@ -45,28 +45,29 @@ defmodule Swoosh.Adapters.AmazonSESTest do
   end
 
   setup context do
-    bypass = Bypass.open
+    bypass = Bypass.open()
     config = Keyword.put(context[:config], :host, "http://localhost:#{bypass.port}")
 
     %{bypass: bypass, config: config}
   end
 
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
-    Bypass.expect bypass, fn conn ->
+    Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/"
 
       body_params = %{
         "Action" => "SendRawEmail",
-        "Version" => "2010-12-01",
+        "Version" => "2010-12-01"
       }
+
       assert body_params["Action"] == conn.body_params["Action"]
       assert body_params["Version"] == conn.body_params["Version"]
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
-    end
+    end)
 
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
@@ -82,9 +83,10 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
       |> put_provider_option(:configuration_set_name, "configuration_set_name1")
 
-    Bypass.expect bypass, fn conn ->
+    Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/"
+
       body_params = %{
         "Action" => "SendRawEmail",
         "Version" => "2010-12-01",
@@ -102,7 +104,7 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
-    end
+    end)
 
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
@@ -121,12 +123,13 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       |> text_body("Hello")
       |> html_body("<h1>Hello</h1>")
 
-    Bypass.expect bypass, fn conn ->
+    Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/"
+
       body_params = %{
         "Action" => "SendRawEmail",
-        "Version" => "2010-12-01",
+        "Version" => "2010-12-01"
       }
 
       assert body_params["Action"] == conn.body_params["Action"]
@@ -135,13 +138,17 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 200, @success_response)
-    end
+    end)
 
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
-  test "a sent email that returns a api error parses correctly", %{bypass: bypass, config: config, valid_email: email} do
-    Bypass.expect bypass, fn conn ->
+  test "a sent email that returns a api error parses correctly", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
       expected_path = "/"
 
@@ -149,9 +156,10 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       assert "POST" == conn.method
 
       Plug.Conn.resp(conn, 500, @error_response)
-    end
+    end)
 
-    assert AmazonSES.deliver(email, config) == {:error, %{code: "ErrorCode", message: "Error Message"}}
+    assert AmazonSES.deliver(email, config) ==
+             {:error, %{code: "ErrorCode", message: "Error Message"}}
   end
 
   test "validate_config/1 with valid config", %{config: config} do
@@ -159,10 +167,12 @@ defmodule Swoosh.Adapters.AmazonSESTest do
   end
 
   test "validate_config/1 with invalid config" do
-    assert_raise ArgumentError, """
-    expected [:secret, :access_key, :region] to be set, got: []
-    """, fn ->
-      AmazonSES.validate_config([])
-    end
+    assert_raise ArgumentError,
+                 """
+                 expected [:secret, :access_key, :region] to be set, got: []
+                 """,
+                 fn ->
+                   AmazonSES.validate_config([])
+                 end
   end
 end
