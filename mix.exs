@@ -36,6 +36,7 @@ defmodule Swoosh.Mixfile do
           Plug.Conn.Query,
           Plug.Cowboy,
           Mail,
+          Mail.Message,
           Mail.Renderers.RFC2822,
           {IEx, :started?, 0}
         ]
