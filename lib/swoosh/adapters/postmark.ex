@@ -47,6 +47,14 @@ defmodule Swoosh.Adapters.Postmark do
       |> to({"Steve Rogers", "steve.rogers@example.com"})
       |> subject("Hello, Avengers!")
       |> put_provider_option(:tag, "some tag")
+
+  ## Provider Options
+
+  - `:metadata` (map)
+  - `:tag` (string)
+  - `:template_id` (string)
+  - `:template_alias` (string)
+  - `:template_model` (map)
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
