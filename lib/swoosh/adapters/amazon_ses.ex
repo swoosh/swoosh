@@ -264,7 +264,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp encrypt_value(secret, unencrypted_data),
-    do: :crypto.mac(:hmac, :sha3_256, secret, unencrypted_data)
+    do: :crypto.mac(:hmac, :sha256, secret, unencrypted_data)
 
   defp amz_date(dt) do
     date_string =
