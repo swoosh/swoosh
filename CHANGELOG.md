@@ -1,5 +1,17 @@
 ## Changelog
 
+## 1.3.9
+
+- Fix AWS SES adapter @lucacorti (#603) (regression from 1.3.8)
+
+## 1.3.8
+
+- Support OTP 24
+
+## 1.3.7
+
+- Suppress warning caused by `Mail.Message.put_header` @princemaple (#597)
+
 ## 1.3.5
 
 - Support custom headers in the Gmail adapter @reichert621 (#587)

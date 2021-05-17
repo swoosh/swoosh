@@ -93,3 +93,62 @@ defmodule Swoosh.ApiClient.Hackney do
     )
   end
 end
+
+if Code.ensure_loaded?(Finch) do
+  defmodule Swoosh.ApiClient.Finch do
+    @moduledoc """
+    Finch-based ApiClient for Swoosh.
+
+    In order to use `Finch` API client, you must start `Finch` and provide a :name.
+    Often in your supervision tree:
+
+        children = [
+          {Finch, name: Swoosh.Finch}
+        ]
+
+    Or, in rare cases, dynamically:
+
+        Finch.start_link(name: Swoosh.Finch)
+    """
+
+    require Logger
+
+    @behaviour Swoosh.ApiClient
+
+    @impl true
+    def init do
+      unless Code.ensure_loaded?(Finch) do
+        Logger.error("""
+        Could not find finch dependency.
+
+        Please add :finch to your dependencies:
+
+            {:finch, "~> 0.6"}
+
+        Or set your own Swoosh.ApiClient:
+
+            config :swoosh, :api_client, MyAPIClient
+        """)
+
+        raise "missing finch dependency"
+      end
+
+      _ = Application.ensure_all_started(:finch)
+      :ok
+    end
+
+    @impl true
+    def post(url, headers, body, %Swoosh.Email{}) do
+      url = IO.iodata_to_binary(url)
+      request = Finch.build(:post, url, headers, body)
+
+      case Finch.request(request, Swoosh.Finch) do
+        {:ok, %Finch.Response{} = response} ->
+          {:ok, response.status, response.headers, response.body}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+    end
+  end
+end

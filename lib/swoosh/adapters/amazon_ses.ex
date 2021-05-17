@@ -10,14 +10,11 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   Ensure sure you have the dependency added in your mix.exs file.
 
-      # You only need to do this if you are using Elixir < 1.4
-      def application do
-        [applications: [:swoosh, :gen_smtp]]
-      end
-
       def deps do
-        [{:swoosh, "~> 0.10.0"},
-         {:gen_smtp, "~> 0.13.0"}]
+        [
+          {:swoosh, "~> 1.0"},
+          {:gen_smtp, "~> 1.0"}
+        ]
       end
 
   See Also:
@@ -232,18 +229,15 @@ defmodule Swoosh.Adapters.AmazonSES do
   defp prepare_authorization(config, signed_header_list, date_time, signature) do
     date = amz_date(date_time)
 
-    credential =
-      "#{config[:access_key]}/#{date}/#{config[:region]}/#{@service_name}/aws4_request"
+    credential = "#{config[:access_key]}/#{date}/#{config[:region]}/#{@service_name}/aws4_request"
 
-    "#{@encoding} Credential=#{credential}, SignedHeaders=#{signed_header_list}, Signature=#{
-      signature
-    }"
+    "#{@encoding} Credential=#{credential}, SignedHeaders=#{signed_header_list}, Signature=#{signature}"
   end
 
   defp prepare_header_security_token(headers, %{security_token: token}) do
     Map.put(headers, "X-Amz-Security-Token", token)
   end
-  
+
   defp prepare_header_security_token(headers, _provider_options), do: headers
 
   defp generate_signature(string_to_sign, date_time, region, secret) do
@@ -270,7 +264,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp encrypt_value(secret, unencrypted_data),
-    do: :crypto.hmac(:sha256, secret, unencrypted_data)
+    do: :crypto.mac(:hmac, :sha256, secret, unencrypted_data)
 
   defp amz_date(dt) do
     date_string =

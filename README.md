@@ -17,7 +17,7 @@ The complete documentation for Swoosh is located
 
 ## Requirements
 
-Elixir 1.8+ and Erlang OTP 22+
+Elixir 1.9+ and Erlang OTP 22+
 
 ## Getting started
 

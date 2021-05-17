@@ -2,13 +2,13 @@ defmodule Swoosh.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/swoosh/swoosh"
-  @version "1.3.5"
+  @version "1.3.9"
 
   def project do
     [
       app: :swoosh,
       version: @version,
-      elixir: "~> 1.8",
+      elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       consolidate_protocols: Mix.env() != :test,
       build_embedded: Mix.env() == :prod,
@@ -36,6 +36,7 @@ defmodule Swoosh.Mixfile do
           Plug.Conn.Query,
           Plug.Cowboy,
           Mail,
+          Mail.Message,
           Mail.Renderers.RFC2822,
           {IEx, :started?, 0}
         ]
@@ -59,6 +60,7 @@ defmodule Swoosh.Mixfile do
       {:mime, "~> 1.1"},
       {:jason, "~> 1.0"},
       {:hackney, "~> 1.9", optional: true},
+      {:finch, "~> 0.6", optional: true},
       {:gen_smtp, "~> 0.13 or ~> 1.0", optional: true},
       {:cowboy, "~> 1.1 or ~> 2.4", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},

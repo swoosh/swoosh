@@ -11,13 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        elixir: [1.11, 1.10.4, 1.9, 1.8]
-        otp: [23.2, 22.3, 21.3]
+        elixir: ['1.11', '1.10', '1.9']
+        otp: ['24.0', '23.2', '22.3']
+        exclude:
+          - elixir: '1.9'
+            otp: '24.0'
+          - elixir: '1.10'
+            otp: '24.0'
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup elixir
-        uses: erlef/setup-elixir@v1
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
         with:
           elixir-version: ${{ matrix.elixir }}
           otp-version: ${{ matrix.otp }}
