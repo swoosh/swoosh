@@ -288,6 +288,13 @@ config :swoosh, serve_mailbox: true
 config :swoosh, serve_mailbox: true, preview_port: 4001
 ```
 
+When using `serve_mailbox: true` make sure to have `plug_cowboy` as a
+dependency of your app.
+
+```elixir
+{:plug_cowboy, ">= 1.0.0"}
+```
+
 In your Phoenix project you can `forward` directly to the plug
 without spinning up a separate webserver, like this:
 
