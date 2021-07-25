@@ -75,7 +75,7 @@ defmodule Swoosh.Mailer do
       def deliver(email, config \\ [])
 
       def deliver(email, config) do
-        Mailer.deliver(email, parse_config(config))
+        Mailer.deliver(email, parse_config(config)) |> instrument(:sent)
       end
 
       @spec deliver!(Swoosh.Email.t(), Keyword.t()) :: term | no_return
@@ -93,6 +93,7 @@ defmodule Swoosh.Mailer do
 
       def deliver_many(emails, config) do
         Mailer.deliver_many(emails, parse_config(config))
+        |> instrument(:sent_many, %{count: length(emails)})
       end
 
       @on_load :validate_dependency
@@ -105,6 +106,16 @@ defmodule Swoosh.Mailer do
 
       defp parse_config(config) do
         Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
+      end
+
+      defp instrument(response={tag, term}, key, metadata \\ %{}) do
+        status = if(tag == :ok, do: :success, else: :failure)
+        event = [:swoosh, key, status]
+        metadata = Map.merge(metadata, %{mailer: __MODULE__})
+
+        :telemetry.execute(event, %{}, metadata)
+
+        response
       end
     end
   end
