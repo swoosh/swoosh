@@ -76,33 +76,33 @@ defmodule Swoosh.Mailer do
 
   You can capture events by calling `:telemetry.attach/4` or `:telemetry.attach_many/4`. Here's an example:
 
-  ```
-  # tracks the number of emails sent successfully/errored
-  defmodule MyHandler do
-    def handle_event([:swoosh, :deliver, :stop], _measurements, metadata, _config) do
-      StatsD.increment("mail.sent.success", 1, %{mailer: metadata.mailer})
-    end
+      # tracks the number of emails sent successfully/errored
+      defmodule MyHandler do
+        def handle_event([:swoosh, :deliver, :stop], _measurements, metadata, _config) do
+          StatsD.increment("mail.sent.success", 1, %{mailer: metadata.mailer})
+        end
 
-    def handle_event([:swoosh, :deliver, :exception], _measurements, metadata, _config) do
-      StatsD.increment("mail.sent.failure", 1, %{mailer: metadata.mailer})
-    end
+        def handle_event([:swoosh, :deliver, :exception], _measurements, metadata, _config) do
+          StatsD.increment("mail.sent.failure", 1, %{mailer: metadata.mailer})
+        end
 
-    def handle_event([:swoosh, :deliver_many, :stop], _measurements, metadata, _config) do
-      StatsD.increment("mail.sent.success", length(metadata.emails), %{mailer: metadata.mailer})
-    end
+        def handle_event([:swoosh, :deliver_many, :stop], _measurements, metadata, _config) do
+          StatsD.increment("mail.sent.success", length(metadata.emails), %{mailer: metadata.mailer})
+        end
 
-    def handle_event([:swoosh, :deliver_many, :exception], _measurements, metadata, _config) do
-      StatsD.increment("mail.sent.failure", length(metadata.emails), %{mailer: metadata.mailer})
-    end
-  end
+        def handle_event([:swoosh, :deliver_many, :exception], _measurements, metadata, _config) do
+          StatsD.increment("mail.sent.failure", length(metadata.emails), %{mailer: metadata.mailer})
+        end
+      end
 
-  :telemetry.attach_many("my-handler", [
-     [:swoosh, :deliver, :stop],
-     [:swoosh, :deliver, :exception],
-     [:swoosh, :deliver_many, :stop],
-     [:swoosh, :deliver_many, :exception],
-   ], &MyHandler.handle_event/4, nil)
-  ```
+  in `c:Application.start/2` callback:
+
+      :telemetry.attach_many("my-handler", [
+         [:swoosh, :deliver, :stop],
+         [:swoosh, :deliver, :exception],
+         [:swoosh, :deliver_many, :stop],
+         [:swoosh, :deliver_many, :exception],
+       ], &MyHandler.handle_event/4, nil)
   """
 
   alias Swoosh.DeliveryError
