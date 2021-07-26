@@ -382,6 +382,8 @@ The following events are emitted:
 - `[:swoosh, :deliver_many, :stop]`: occurs when `Mailer.deliver_many/2` completes.
 - `[:swoosh, :deliver_many, :exception]`: occurs when `Mailer.deliver_many/2` throws an exception.
 
+View [example in docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html#module-telemetry)
+
 ## Documentation
 
 Documentation is written into the library, you will find it in the source code,
