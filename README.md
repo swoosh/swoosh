@@ -371,6 +371,17 @@ problems, or you don't like having it around, it can be disabled like so:
 config :swoosh, local: false
 ```
 
+## Telemetry
+
+The following events are emitted:
+
+- `[:swoosh, :deliver, :start]`: occurs when `Mailer.deliver/2` begins.
+- `[:swoosh, :deliver, :stop]`: occurs when `Mailer.deliver/2` completes.
+- `[:swoosh, :deliver, :exception]`: occurs when `Mailer.deliver/2` throws an exception.
+- `[:swoosh, :deliver_many, :start]`: occurs when `Mailer.deliver_many/2` begins.
+- `[:swoosh, :deliver_many, :stop]`: occurs when `Mailer.deliver_many/2` completes.
+- `[:swoosh, :deliver_many, :exception]`: occurs when `Mailer.deliver_many/2` throws an exception.
+
 ## Documentation
 
 Documentation is written into the library, you will find it in the source code,
