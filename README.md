@@ -203,10 +203,10 @@ as well. Whether to retry, how many times you want to retry, what to do when
 everything fails, these questions all have different answers in different
 context.
 
-If the email was to any extent mission critial, a safer solution than `Task.start`
+If the email was to any extent mission critical, a safer solution than `Task.start`
 would be required to make sure that the email gets delivered.
 Adding a job queue to your system would be a good choice.
-Elixir ecosystem has many
+Elixir's ecosystem has many
 [job queue libraries](https://hex.pm/packages?search=job+queue&sort=recent_downloads).
 
 - [Oban](https://hexdocs.pm/oban/Oban.html) is the current community favourite.
