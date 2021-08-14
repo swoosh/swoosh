@@ -7,7 +7,7 @@ defmodule Swoosh.Adapters.SocketLabs do
   ## Example
 
       # config/congig.exs
-      config :sample, Smaple.Mailer
+      config :sample, Sample.Mailer
         adapter: Swoosh.Adapters.SocketLabs,
         server_id: "",
         api_key: ""

@@ -111,9 +111,9 @@ defmodule Swoosh.Adapters.DynTest do
 
   test "deliver/1 with 500 response", %{bypass: bypass, valid_email: email, config: config} do
     Bypass.expect bypass, fn conn ->
-      Plug.Conn.resp(conn, 500, "{\"messge\": \"error\"}")
+      Plug.Conn.resp(conn, 500, "{\"message\": \"error\"}")
     end
-    assert Dyn.deliver(email, config) == {:error, "Error: \"{\\\"messge\\\": \\\"error\\\"}\""}
+    assert Dyn.deliver(email, config) == {:error, "Error: \"{\\\"message\\\": \\\"error\\\"}\""}
   end
 
   test "validate_config/1 with valid config", %{config: config} do

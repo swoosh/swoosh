@@ -33,7 +33,7 @@ defmodule Swoosh.Adapters.Postmark do
   feature.
 
   When sending batch emails using `deliver_many` do not mix emails using templates with
-  non-template emails. The use of tempaltes impacts the API endpoint used and so the batch email
+  non-template emails. The use of templates impacts the API endpoint used and so the batch email
   collection should be of the same format.
 
   ## Example of sending emails with a tag
