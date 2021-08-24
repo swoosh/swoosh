@@ -176,21 +176,13 @@ See `Swoosh.Email.Recipient` for more details.
 ## Async Emails
 
 Swoosh does not make any special arrangements for sending emails in a
-non-blocking manner. In many ways, this should not be a concern in Elixir
-for two reasons:
+non-blocking manner. Opposite to some stacks, sending emails, talking
+to third party apps, etc in Elixir do not block or interfere with other
+requests, so you should resort to async emails only when necessary.
 
-1. Nowadays most applications use a third-party service to send emails
-   over HTTPS and their response times are relatively fast;
-
-2. Opposite to some stacks, sending emails, talking to third party apps, etc
-   in Elixir do not block or interfere with other requests, so there is
-   no reason to default to async emails - unless it is explicitly needed
-
-If you do want to send asynchronous emails in Swoosh, one can simply leverage
-Elixir's standard library.
-
-First add a Task supervisor to your application root, usually at
-`lib/my_app/application.ex`:
+One simple way to deliver emails asynchronously is by leveraging Elixir's
+standard library. First add a Task supervisor to your application root,
+usually at `lib/my_app/application.ex`:
 
 ```elixir
 def start(_, _) do
@@ -220,16 +212,10 @@ Please take a look at the official docs for
 [Task.Supervisor](https://hexdocs.pm/elixir/Task.Supervisor.html) for further
 options.
 
-One of the downsides of sending email asynchronously is that, if it fails,
-an error won't be reported to the user. Runtime errors, network errors and
-errors from the service provider all need to be considered and handled,
-maybe differently as well. Whether to retry, how many times you want to
-retry, what to do when everything fails, these questions all have different
-answers in different context.
-
-If the email was to any extent mission critical, a safer solution than using
-`Task` would be required to make sure that the email gets delivered.
-Adding a job queue to your system would be a good choice.
+One of the downsides of sending email asynchronously is that failures won't
+be reported to the user, who won't have an opportunity to try again immediately,
+and tasks by default do not retry on errors. Therefore, if the email must be
+delivered asynchronously, a safer solution would be to use a queue or job system.
 Elixir's ecosystem has many
 [job queue libraries](https://hex.pm/packages?search=job+queue&sort=recent_downloads).
 
