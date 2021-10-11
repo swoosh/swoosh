@@ -69,9 +69,14 @@ if Code.ensure_loaded?(Plug) do
     get "/:id/html" do
       email = conn.assigns.storage_driver.get(id)
 
+      html_body = case Regex.scan(~r/\"cid:([^\"]*)\"/, email.html_body) do
+        [] -> email.html_body
+        inline_attachment_refs -> replace_inline_references(email, inline_attachment_refs)
+      end
+
       conn
       |> put_resp_content_type("text/html")
-      |> send_resp(200, email.html_body)
+      |> send_resp(200, html_body)
     end
 
     get "/:id/attachments/:index" do
@@ -153,6 +158,13 @@ if Code.ensure_loaded?(Plug) do
         "" -> "n/a"
         recipient -> Plug.HTML.html_escape(recipient)
       end
+    end
+
+    defp replace_inline_references(%{html_body: html_body, attachments: attachments}, inline_attachment_refs) do
+      Enum.reduce(inline_attachment_refs, html_body, fn [_, ref], body ->
+        attachment_index = Enum.find_index(attachments, &(&1.filename == ref))
+        String.replace(body, "cid:#{ref}", "attachments/#{attachment_index}")
+      end)
     end
   end
 end
