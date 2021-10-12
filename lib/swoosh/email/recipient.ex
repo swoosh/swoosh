@@ -99,7 +99,7 @@ defimpl Swoosh.Email.Recipient, for: Tuple do
 
   def format(tuple) do
     raise ArgumentError, """
-    Unexpected tuple format, #{inspect(tuple)} cannot be formatted into a Recipeint.
+    Unexpected tuple format, #{inspect(tuple)} cannot be formatted into a Recipient.
 
     The expected format is {name :: String.t() | nil, address :: String.t()}, where address cannot be empty.
     """
@@ -109,7 +109,7 @@ end
 defimpl Swoosh.Email.Recipient, for: BitString do
   def format("") do
     raise ArgumentError, """
-    Cannot format empty string into a Recipeint.
+    Cannot format empty string into a Recipient.
     """
   end
 
