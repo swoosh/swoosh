@@ -33,7 +33,6 @@ jobs:
             deps
             _build
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}-${{ matrix.otp }}
-          restore-keys: ${{ runner.os }}-mix-
 
       - name: Install Dependencies
         if: steps.cache-elixir-deps.outputs.cache-hit != 'true'
