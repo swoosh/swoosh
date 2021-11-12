@@ -167,7 +167,7 @@
 
             <div class="body">
               <%= if @email.text_body do %>
-                <h5>Text body:</h3>
+                <h5>Text body:</h5>
                 <pre class="body-text"><%= @email.text_body %></pre>
               <% end %>
               <%= if @email.html_body do %>
