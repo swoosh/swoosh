@@ -181,7 +181,7 @@
                 </iframe>
               <% end %>
               <%= if length(@email.attachments) > 0 do %>
-                <h5>Attachments:</h3>
+                <h5>Attachments:</h5>
                 <ul>
                   <%= for {attachment, index} <- Enum.with_index(@email.attachments) do %>
                     <li>
