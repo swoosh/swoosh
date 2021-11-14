@@ -3,12 +3,19 @@ defmodule Swoosh.Adapters.SMTP do
   An adapter that sends email using the SMTP protocol.
 
   Underneath this adapter uses the
-  [gen_smtp](https://github.com/Vagabond/gen_smtp) library.
+  [gen_smtp](https://github.com/Vagabond/gen_smtp) library, add it to your mix.exs file.
 
   ## Example
       # mix.exs
       def application do
         [applications: [:swoosh, :gen_smtp]]
+      end
+
+      def deps do
+        [
+         {:swoosh, "~> 1.3"},
+         {:gen_smtp, "~> 1.1}
+        ]
       end
 
       # config/config.exs
