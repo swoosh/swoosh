@@ -7,10 +7,6 @@ defmodule Swoosh.Adapters.SMTP do
 
   ## Example
       # mix.exs
-      def application do
-        [applications: [:swoosh, :gen_smtp]]
-      end
-
       def deps do
         [
          {:swoosh, "~> 1.3"},
