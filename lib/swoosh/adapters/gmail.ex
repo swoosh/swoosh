@@ -16,9 +16,9 @@ defmodule Swoosh.Adapters.Gmail do
   ## Example
 
       # config/congig.exs
-      config :sample, Sample.Mailer
+      config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Gmail,
-        access_token: {:system, GMAIL_API_ACCESS_TOKEN}
+        access_token: {:system, "GMAIL_API_ACCESS_TOKEN"}
 
       # To deal with token refresh, it could be a better idea to pass the access token
       # in via deliver config explicitly, if you don't update the environment variable
