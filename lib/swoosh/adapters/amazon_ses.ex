@@ -1,14 +1,14 @@
 defmodule Swoosh.Adapters.AmazonSES do
   @moduledoc ~S"""
-  An adapter that sends email using the Amazon Simple Email Service Query API.
+  An adapter that sends email using the Amazon Simple Email Service (SES) Query API.
 
   This email adapter makes use of the Amazon SES SendRawEmail action and generates
   a SMTP style message containing the information to be emailed. This allows for
   greater more customizable email message and ensures the capability to add
-  attachments. As a result, however, the `gen_smtp` dependency is required in order
+  attachments. As a result, however, the `:gen_smtp` dependency is required in order
   to correctly generate the SMTP message that will be sent.
 
-  Ensure sure you have the dependency added in your mix.exs file.
+  Ensure sure you have the dependency added in your mix.exs file:
 
       def deps do
         [
@@ -17,13 +17,13 @@ defmodule Swoosh.Adapters.AmazonSES do
         ]
       end
 
-  See Also:
+  See also:
 
   [Amazon SES Query Api Docs](http://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html)
 
   [Amazon SES SendRawEmail Documentation](http://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html)
 
-  ## Example
+  ## Examples
 
       # config/config.exs
       config :sample, Sample.Mailer,
@@ -49,13 +49,20 @@ defmodule Swoosh.Adapters.AmazonSES do
       |> put_provider_option(:tags, [%{name: "name1", value: "test1"}])
       |> put_provider_option(:configuration_set_name, "configuration_set_name1")
 
+  ## Provider Options
+
+    * `:tags` (list[map]) - a list of key/value pairs of a tag
+    * `:configuration_set_name` (string) - the name of the configuration set
+    * `:security_token` (string) - temporary security token obtained through
+      AWS Security Token Service (AWS STS)
+
   ## IAM role
 
   In case you use IAM role for authenticating AWS requests, you can fetch
-  temporary `access_key` and `secret_key` from that role, but you also need to
+  temporary `:access_key` and `:secret_key` from that role, but you also need to
   include additional `X-Amz-Security-Token` header to that request.
 
-  You can do that by adding `security_token` to `provider_options`.
+  You can do that by adding `:security_token` to `:provider_options`.
   """
 
   use Swoosh.Adapter,
