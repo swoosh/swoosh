@@ -20,6 +20,43 @@ defmodule Swoosh.Adapters.Mailjet do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Using with provider options
+
+      import Swoosh.Email
+
+      new()
+      |> from({"Billi Wang", "billi_wang@example.com"})
+      |> to({"Nai Nai", "nainai@example.com"})
+      |> reply_to("a24@example.com")
+      |> cc({"Haiyan Wang", "haiyan_wang@example.com"})
+      |> cc("lujian@example.com")
+      |> bcc({"Hao Hao", "haohao@example.com"})
+      |> bcc("aiko@example.com")
+      |> subject("Hello, Nai Nai!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:template_id, 123)
+      |> put_provider_option(:template_error_deliver, true)
+      |> put_provider_option(:template_error_reporting, "developer@example.com")
+      |> put_provider_option(:variables, %{firstname: "lulu", lastname: "wang"})
+
+  ## Provider options
+
+    * `:template_id` (integer) - `TemplateID`, unique template id of the
+      template to be use as emai content
+
+    * `:template_error_deliver` (boolean) - `TemplateErrorDeliver`,
+      send even if error in template if `true`, otherwise stop email delivery
+      immediately upon error
+
+    * `:template_error_reporting` (string | tuple) - `TemplateErrorReporting`,
+      email address or a tuple of name and email address of a recipient to send a
+      carbon copy upon error
+
+    * `:variables` (map) - `Variables`, custom key-value variable for the email
+      content
+
   """
 
   use Swoosh.Adapter,

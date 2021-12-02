@@ -46,7 +46,7 @@ defmodule Swoosh.Adapters.Mailgun do
   ## Provider options
 
     * `:custom_vars` (map) - used to translate to `v:my-var`, now
-      `h:X-Mailgun-Variables`, add custome data to email
+      `h:X-Mailgun-Variables`, add custom data to email
 
     * `:recipient_vars` (map) - `recipient-variables`, assign
       custom variable for each email recipient
