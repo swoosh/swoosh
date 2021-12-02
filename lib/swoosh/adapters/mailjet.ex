@@ -44,7 +44,7 @@ defmodule Swoosh.Adapters.Mailjet do
   ## Provider options
 
     * `:template_id` (integer) - `TemplateID`, unique template id of the
-      template to be use as emai content
+      template to be used as email content
 
     * `:template_error_deliver` (boolean) - `TemplateErrorDeliver`,
       send even if error in template if `true`, otherwise stop email delivery
