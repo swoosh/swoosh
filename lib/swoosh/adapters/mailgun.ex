@@ -21,17 +21,47 @@ defmodule Swoosh.Adapters.Mailgun do
         use Swoosh.Mailer, otp_app: :sample
       end
 
+  ## Using with provider options
+
+      import Swoosh.Email
+
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("wasp.avengers@example.com")
+      |> reply_to("office.avengers@example.com")
+      |> cc({"Bruce Banner", "hulk.smash@example.com"})
+      |> cc("thor.odinson@example.com")
+      |> bcc({"Clinton Francis Barton", "hawk.eye@example.com"})
+      |> bcc("beast.avengers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:custom_vars, %{"key" => "value"})
+      |> put_provider_option(:recipient_vars, %{"steve.rogers@example.com": %{var1: 123}, "juan.diaz@example.com": %{var1: 456}})
+      |> put_provider_option(:sending_options, %{dkim: "yes", tracking: "no"})
+      |> put_provider_option(:tags, ["worldwide-peace", "unity"])
+      |> put_provider_option(:template_name, "avengers-templates")
+
   ## Provider options
 
-  - `:custom_vars` (used to translate to `v:`, now `h:X-Mailgun-Variables`)
-  - `:sending_options` (`o:`)
-  - `:template_name` (template)
-  - `:recipient_vars` (recipient-variables)
-  - `:tags` (`o:tag`, was added in before `:sending_options`)
+    * `:custom_vars` (map) - used to translate to `v:my-var`, now
+      `h:X-Mailgun-Variables`, add custome data to email
+
+    * `:recipient_vars` (map | list[map]) - `recipient-variables`, assign
+      custom variable for each email recipient
+
+    * `:sending_options` (map) - `o:my-key`, all the sending options
+
+    * `:tags` (list[string]) - `o:tag`, was added in before `:sending_options`,
+      kept for backward compatibility, use `:sending_options` instead
+
+    * `:template_name` (string) - `template`, name of template created at Mailgun
 
   ## Custom headers
 
-  Headers added via `Email.header/3` will be translated to (h:) values that Mailgun recognizes.
+  Headers added via `Email.header/3` will be translated to (`h:`) values that
+  Mailgun recognizes.
   """
 
   use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
