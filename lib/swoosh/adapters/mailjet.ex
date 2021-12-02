@@ -50,7 +50,7 @@ defmodule Swoosh.Adapters.Mailjet do
       send even if error in template if `true`, otherwise stop email delivery
       immediately upon error
 
-    * `:template_error_reporting` (string | tuple) - `TemplateErrorReporting`,
+    * `:template_error_reporting` (string | tuple | map) - `TemplateErrorReporting`,
       email address or a tuple of name and email address of a recipient to send a
       carbon copy upon error
 
