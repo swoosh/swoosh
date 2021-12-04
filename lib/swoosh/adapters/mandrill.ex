@@ -20,16 +20,54 @@ defmodule Swoosh.Adapters.Mandrill do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Example of using the `send-template` endpoint
+  ## Using with provider options
 
       import Swoosh.Email
 
       new()
-      |> from({"T Stark", "tony.stark@example.com"})
-      |> to({"Steve Rogers", "steve.rogers@example.com"})
-      |> subject("Hello, Avengers!")
-      |> put_provider_option(:template_name, "welcome")
-      |> put_provider_option(:template_content, [%{"name" => "START_DATE", "content" => "Next Monday"}])
+      |> from({"Rachel Chu", "rachel.chu@example.com"})
+      |> to({"Nick Young", "nick.young@example.com"})
+      |> to("astrid.leongteo@example.com")
+      |> reply_to("sk.starlight@example.com")
+      |> cc({"Goh Peik Lin", "goh.peiklin@example.com"})
+      |> cc("goh.wyemun@example.com")
+      |> bcc({"Eleanor Sung-Young", "eleanor.sungyoung@example.com"})
+      |> bcc("shang.suyi@example.com")
+      |> subject("Hello, People!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:global_merge_vars, [
+        %{"name" => "a", "content" => "b"},
+        %{"name" => "c", "content" => "d"}
+      ])
+      |> put_provider_option(:merge_vars, [
+        %{"rcpt" => "a@example.com", "vars" => %{"name" => "a", "content" => "b"}},
+        %{"rcpt" => "b@example.com", "vars" => %{"name" => "b", "content" => "b"}},
+      ])
+      |> put_provider_option(:merge_language, "mailchimp"),
+      |> put_provider_option(:metadata, %{"website" => "www.example.com"})
+      |> put_provider_option(:template_name, "welcome-user")
+      |> put_provider_option(:template_content, [%{"name => "a", "content" => "b"}])
+
+  ## Provider options
+
+    * `:global_merge_vars` (list[map]) - a list of a map of `:name` and
+      `:content` global variables for all recipients
+
+    * `:merge_language` (string) - merge tag language to use when evaluating
+      merge tags, and possible values are `mailchimp` or `handlebars`
+
+    * `:merge_vars` (list[map]) - a list of map of `:rcpt` and `vars` for each
+      recipent, which will override `:global_merge_vars`
+
+    * `:metadata` (map) - a map of up to 10 fields for a user metadata
+
+    * `:template_content` (list[map]) - a list of a map of `:name` and
+      `:content` to be sent within a template
+
+    * `:template_name` (string) - a name of slug of the template belongs to a
+      user
+
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
