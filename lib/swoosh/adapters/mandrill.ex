@@ -51,18 +51,18 @@ defmodule Swoosh.Adapters.Mandrill do
 
   ## Provider options
 
-    * `:global_merge_vars` (list[map]) - a list of a map of `:name` and
+    * `:global_merge_vars` (list[map]) - a list of maps of `:name` and
       `:content` global variables for all recipients
 
     * `:merge_language` (string) - merge tag language to use when evaluating
       merge tags, and possible values are `mailchimp` or `handlebars`
 
-    * `:merge_vars` (list[map]) - a list of map of `:rcpt` and `vars` for each
+    * `:merge_vars` (list[map]) - a list of maps of `:rcpt` and `vars` for each
       recipent, which will override `:global_merge_vars`
 
     * `:metadata` (map) - a map of up to 10 fields for a user metadata
 
-    * `:template_content` (list[map]) - a list of a map of `:name` and
+    * `:template_content` (list[map]) - a list of maps of `:name` and
       `:content` to be sent within a template
 
     * `:template_name` (string) - a name of slug of the template belongs to a
