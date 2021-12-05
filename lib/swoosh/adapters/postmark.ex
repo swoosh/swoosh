@@ -29,12 +29,11 @@ defmodule Swoosh.Adapters.Postmark do
       |> put_provider_option(:template_model, %{name: "Steve", email: "steve@avengers.com"})
 
   You can also use `template_alias` instead of `template_id`, if you use Postmark's
-  [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template)
-  feature.
+  [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template) feature.
 
-  When sending batch emails using `deliver_many` do not mix emails using templates with
-  non-template emails. The use of templates impacts the API endpoint used and so the batch email
-  collection should be of the same format.
+  When sending batch emails using `:deliver_many` do not mix emails using
+  templates with non-template emails. The use of templates impacts the API
+  endpoint used and so the batch email collection should be of the same format.
 
   ## Example of sending emails with a tag
 
@@ -50,11 +49,19 @@ defmodule Swoosh.Adapters.Postmark do
 
   ## Provider Options
 
-  - `:metadata` (map)
-  - `:tag` (string)
-  - `:template_id` (string)
-  - `:template_alias` (string)
-  - `:template_model` (map)
+    * `:metadata` (map) - `Metadata`, add metadata to an email
+
+    * `:tag` (string) - `Tag`, to categorize outgoing email
+
+    * `:template_id` (string) - `TemplateId`, the template used when sending
+      email and only required if `:template_alias` is not specified
+
+    * `:template_alias` (string), `TemplateAlias`, the alias of a template used
+      when sending email and only required if `:template_id` is not specified
+
+    * `:template_model` (map), `TemplateModel`, a map of key/value field to be
+      used in the `HtmlBody`, `TextBody`, and `Subject` field in the template
+
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
