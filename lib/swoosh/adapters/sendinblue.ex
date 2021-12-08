@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Sendinblue do
   @moduledoc ~S"""
   An adapter that sends email using the Sendinblue API (Transactional emails only).
 
-  For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference#transactional-emails)
+  For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference/sendtransacemail)
 
   ## Example
 
@@ -16,18 +16,34 @@ defmodule Swoosh.Adapters.Sendinblue do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Using sender from template
+  ## Using with provider options
 
-      YOUR_EMAIL
-      |> from("TEMPLATE")  # literally "TEMPLATE"
-      |> put_provider_option(:template_id, YOUR_TEMPLATE_ID)
+      import Swoosh.Email
+
+      new()
+      |> from("nora@example.com")
+      |> to("shushu@example.com")
+      |> subject("Hello, Wally!")
+      |> text_body("Hello")
+      |> put_provider_option(:id, 42)
+      |> put_provider_option(:template_id, 42)
+      |> put_provider_option(:params, %{param1: "a", param2: 123})
+      |> put_provider_option(:tag, %{foo: 1, bar: 2})
 
   ## Provider Options
 
-  - `sender_id` (integer)
-  - `template_id` (integer)
-  - `params` (map)
-  - `tags` (list)
+    * `sender_id` (integer) - `sender`, the sender `id` where this library will
+      add email obtained from the `from/1`
+
+    * `template_id` (integer) - `templateId`, the Id of the `active`
+      transactional email template
+
+    * `params` (map) - `params`, a map of key/value attributes to customize the
+      template
+
+    * `tags` (list[string]) - `tags`, a list of tag for each email for easy
+      filtering
+
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
