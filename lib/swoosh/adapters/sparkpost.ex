@@ -55,7 +55,7 @@ defmodule Swoosh.Adapters.SparkPost do
 
     * `:template_id` (string) - id of the template to use
 
-    * `:substitution_data` - (map) - data passed to the template language in
+    * `:substitution_data` (map) - data passed to the template language in
       the content, and take precendence over the other data like `:metadata`
 
   """
