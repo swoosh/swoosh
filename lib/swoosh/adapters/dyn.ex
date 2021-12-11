@@ -15,6 +15,23 @@ defmodule Swoosh.Adapters.Dyn do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Sending sample email
+
+      import Swoosh.Email
+
+      new()
+      |> from({"Christine", "christine@example.com"})
+      |> to({"constance", "constance@example.com"})
+      |> to("ming_fleetfoot@example.com")
+      |> bcc([
+        {"Dr. Xander Bravestone", "dr.xander_bravestone@example.com"},
+        {"Prof. Sheldon Oberon", "prof.sheldon.oberon@example.com"}
+      ])
+      |> subject("Hello, People!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+
   """
   use Swoosh.Adapter, required_config: [:api_key]
 
