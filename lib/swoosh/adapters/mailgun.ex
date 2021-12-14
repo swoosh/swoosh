@@ -7,7 +7,13 @@ defmodule Swoosh.Adapters.Mailgun do
   ## Dependency
 
   Mailgun adapter requires `Plug` to work properly.
-
+  
+  ## Configuration options
+  
+  * `:api_key` - the API key used with Mailgun
+  * `:domain` - the domain you will be sending emails from
+  * `:base_url` - the url to use as the API endpoint. For EU domains, use https://api.eu.mailgun.net/v3
+  
   ## Example
 
       # config/config.exs
