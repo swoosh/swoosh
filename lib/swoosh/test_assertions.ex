@@ -15,7 +15,7 @@ defmodule Swoosh.TestAssertions do
 
   For feature/E2E tests, you should use `Swoosh.Adapters.Local` adapter.
   In your test, instead of calling `assert_email_sent`, you should navigate to the
-  preview url and use your E2E tool (e.g. `wallaby`) to make sure the email is in the inbox.
+  preview url with your E2E tool (e.g. `wallaby`) and test that the email is in the inbox.
   """
 
   import ExUnit.Assertions
