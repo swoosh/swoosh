@@ -93,36 +93,22 @@ defmodule Swoosh.Adapters.OhMySmtp do
   defp prepare_attachments(body, %{attachments: []}), do: body
 
   defp prepare_attachments(body, %{attachments: attachments}) do
-    {normal_attachments, inline_attachments} =
-      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
-
     attachments =
-      Enum.concat(
-        process_attachments(normal_attachments),
-        process_attachments(inline_attachments, inline: true)
-      )
+      Enum.map(attachments, fn %{content_type: content_type, filename: name} = attachment ->
+        attachment_object = %{
+          name: name,
+          content: Swoosh.Attachment.get_content(attachment, :base64),
+          content_type: content_type
+        }
 
-    body
-    |> Map.put("attachments", attachments)
-  end
+        if attachment.type == :inline do
+          Map.put(attachment_object, :cid, name)
+        else
+          attachment_object
+        end
+      end)
 
-  defp process_attachments(attachments, options \\ []) do
-    inline = Keyword.get(options, :inline, false)
-
-    attachments
-    |> Enum.map(fn %{content_type: content_type, filename: name} = attachment ->
-      attachment_object = %{
-        name: name,
-        content: Swoosh.Attachment.get_content(attachment, :base64),
-        content_type: content_type
-      }
-
-      if inline do
-        Map.put(attachment_object, :cid, name)
-      else
-        attachment_object
-      end
-    end)
+    Map.put(body, "attachments", attachments)
   end
 
   defp endpoint(config), do: config[:endpoint] || @endpoint
