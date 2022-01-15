@@ -295,6 +295,44 @@ defmodule Swoosh.Adapters.PostmarkTest do
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
+  test "deliver/1 with inline attachment uses correct CID", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("tony.stark@example.com")
+      |> attachment(
+        Swoosh.Attachment.new("test/support/attachment.txt", type: :inline, cid: "attachment-cid")
+      )
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      attachment_content =
+        "test/support/attachment.txt"
+        |> File.read!()
+        |> Base.encode64()
+
+      body_params = %{
+        "To" => "tony.stark@example.com",
+        "From" => "\"Steve Rogers\" <steve.rogers@example.com>",
+        "Attachments" => [%{
+          "Name" => "attachment.txt",
+          "ContentType" => "text/plain",
+          "Content" => attachment_content,
+          "ContentID" => "cid:attachment-cid"
+        }]
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
   test "delivery/2 with defined message stream returns :ok", %{
     bypass: bypass,
     config: config

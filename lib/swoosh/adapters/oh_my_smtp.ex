@@ -102,7 +102,7 @@ defmodule Swoosh.Adapters.OhMySmtp do
         }
 
         if attachment.type == :inline do
-          Map.put(attachment_object, :cid, name)
+          Map.put(attachment_object, :cid, attachment.cid)
         else
           attachment_object
         end

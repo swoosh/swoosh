@@ -51,6 +51,18 @@ defmodule Swoosh.AttachmentTest do
   test "create an attachment that should be sent as an inline-attachment" do
     attachment = Attachment.new("/data/file.png", type: :inline)
     assert attachment.type == :inline
+    assert attachment.cid == "file.png"
+  end
+
+  test "create an inline attachment with a custom CID" do
+    attachment = Attachment.new("/data/file.png", type: :inline, cid: "my-cid")
+    assert attachment.type == :inline
+    assert attachment.cid == "my-cid"
+  end
+
+  test "does not set cid for regular (non-inline) attachments" do
+    attachment = Attachment.new("/data/file.png")
+    assert is_nil(attachment.cid)
   end
 
   test "create an attachment with custom headers" do

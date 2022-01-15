@@ -129,7 +129,9 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
       |> from({"T Stark", "tony.stark@example.com"})
       |> to({"Steve Rogers", "steve.rogers@example.com"})
       |> subject("Hello, Avengers!")
-      |> attachment(Swoosh.Attachment.new("test/support/attachment.txt", type: :inline))
+      |> attachment(
+        Swoosh.Attachment.new("test/support/attachment.txt", type: :inline, cid: "attachment-cid")
+      )
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -148,7 +150,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
             "name" => "attachment.txt",
             "content" => attachment_content,
             "content_type" => "text/plain",
-            "cid" => "attachment.txt"
+            "cid" => "attachment-cid"
           }
         ]
       }

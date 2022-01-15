@@ -472,28 +472,28 @@ defmodule Swoosh.Email do
        reply_to: nil, subject: "", text_body: nil, to: [],
        attachments: [%Swoosh.Attachment{path: "/data/att.zip",
         content_type: "application/zip", filename: "att.zip",
-        type: :attachment, data: nil, headers: []}]}
+        type: :attachment, data: nil, headers: [], cid: nil}]}
       iex> new() |> attachment(Swoosh.Attachment.new("/data/att.zip"))
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
        attachments: [%Swoosh.Attachment{path: "/data/att.zip",
         content_type: "application/zip", filename: "att.zip",
-        type: :attachment, data: nil, headers: []}]}
+        type: :attachment, data: nil, headers: [], cid: nil}]}
       iex> new() |> attachment(%Plug.Upload{path: "/data/abcdefg", content_type: "test/type", filename: "att.zip"})
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
        attachments: [%Swoosh.Attachment{path: "/data/abcdefg",
         content_type: "test/type", filename: "att.zip",
-        type: :attachment, data: nil, headers: []}]}
+        type: :attachment, data: nil, headers: [], cid: nil}]}
       iex> new() |> attachment(Swoosh.Attachment.new("/data/att.png", type: :inline))
       %Swoosh.Email{assigns: %{}, bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: nil, subject: "", text_body: nil, to: [],
        attachments: [%Swoosh.Attachment{path: "/data/att.png",
         content_type: "image/png", filename: "att.png",
-        type: :inline, data: nil, headers: []}]}
+        type: :inline, data: nil, headers: [], cid: "att.png"}]}
   """
   @spec attachment(t, binary | Swoosh.Attachment.t()) :: t
   def attachment(%__MODULE__{attachments: attachments} = email, path) when is_binary(path) do

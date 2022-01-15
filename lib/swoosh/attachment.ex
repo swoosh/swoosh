@@ -24,7 +24,7 @@ defmodule Swoosh.Attachment do
       |> VillainMailer.deliver()
   """
 
-  defstruct filename: nil, content_type: nil, path: nil, data: nil, type: :attachment, headers: []
+  defstruct filename: nil, content_type: nil, path: nil, data: nil, type: :attachment, cid: nil, headers: []
 
   @type t :: %__MODULE__{
           filename: String.t(),
@@ -32,6 +32,7 @@ defmodule Swoosh.Attachment do
           path: String.t() | nil,
           data: binary | nil,
           type: :inline | :attachment,
+          cid: String.t() | nil,
           headers: [{String.t(), String.t()}]
         }
 
@@ -63,6 +64,10 @@ defmodule Swoosh.Attachment do
   Gives you something like this:
 
       <img src="cid:file.png">
+
+  You can optionally override this default by passing in the cid option:
+
+      Attachment.new("/data/file.png", type: :inline, cid: "custom-cid")
   """
   @spec new(binary | struct | {:data, binary}, Keyword.t() | map) :: %__MODULE__{}
   def new(path, opts \\ [])
@@ -92,12 +97,15 @@ defmodule Swoosh.Attachment do
 
   def new(path, opts) do
     attachment = struct!(__MODULE__, opts)
+    filename = attachment.filename || Path.basename(path)
+    cid = if attachment.type == :inline, do: attachment.cid || filename, else: nil
 
     %{
       attachment
       | path: path,
-        filename: attachment.filename || Path.basename(path),
-        content_type: attachment.content_type || MIME.from_path(path)
+        filename: filename,
+        content_type: attachment.content_type || MIME.from_path(path),
+        cid: cid
     }
   end
 

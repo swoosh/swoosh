@@ -211,7 +211,7 @@ defmodule Swoosh.Adapters.Postmark do
         attachment_data
 
       :inline ->
-        Map.put(attachment_data, "ContentID", "cid:#{attachment.filename}")
+        Map.put(attachment_data, "ContentID", "cid:#{attachment.cid}")
     end
   end
 
