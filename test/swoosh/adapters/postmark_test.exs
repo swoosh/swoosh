@@ -315,12 +315,14 @@ defmodule Swoosh.Adapters.PostmarkTest do
       body_params = %{
         "To" => "tony.stark@example.com",
         "From" => "\"Steve Rogers\" <steve.rogers@example.com>",
-        "Attachments" => [%{
-          "Name" => "attachment.txt",
-          "ContentType" => "text/plain",
-          "Content" => attachment_content,
-          "ContentID" => "cid:attachment-cid"
-        }]
+        "Attachments" => [
+          %{
+            "Name" => "attachment.txt",
+            "ContentType" => "text/plain",
+            "Content" => attachment_content,
+            "ContentID" => "cid:attachment-cid"
+          }
+        ]
       }
 
       assert body_params == conn.body_params

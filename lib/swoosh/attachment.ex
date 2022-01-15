@@ -24,7 +24,13 @@ defmodule Swoosh.Attachment do
       |> VillainMailer.deliver()
   """
 
-  defstruct filename: nil, content_type: nil, path: nil, data: nil, type: :attachment, cid: nil, headers: []
+  defstruct filename: nil,
+            content_type: nil,
+            path: nil,
+            data: nil,
+            type: :attachment,
+            cid: nil,
+            headers: []
 
   @type t :: %__MODULE__{
           filename: String.t(),
