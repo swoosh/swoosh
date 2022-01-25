@@ -97,6 +97,7 @@ defmodule Swoosh.TestAssertions do
       iex> assert_email_sent fn email -> length(email.to) == 2 end
   """
   def assert_email_sent(%Email{} = email) do
+    email = Swoosh.Adapters.Test.clean_assigns(email)
     assert_received {:email, ^email}
   end
 

@@ -64,6 +64,20 @@ defmodule Swoosh.TestAssertionsTest do
     end)
   end
 
+  test "assert email sent with differing assigns" do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to(["steve.rogers@example.com", "bruce.banner@example.com"])
+      |> html_body("some html")
+      |> text_body("some text")
+      |> assign(:user, %{assoc: :not_loaded})
+
+    deliver(email)
+
+    assert_email_sent(assign(email, :user, %{assoc: %{}}))
+  end
+
   test "assert email sent with wrong subject" do
     assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent(subject: "Hello, X-Men!")
