@@ -112,7 +112,9 @@ defmodule Swoosh.Adapters.Postmark do
             %{
               id: email_result["MessageID"],
               error_code: email_result["ErrorCode"],
-              message: email_result["Message"]
+              message: email_result["Message"],
+              to: email_result["To"],
+              submitted_at: email_result["SubmittedAt"]
             }
           end)
 

@@ -451,12 +451,16 @@ defmodule Swoosh.Adapters.PostmarkTest do
                 %{
                   id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
                   error_code: 0,
-                  message: "OK"
+                  message: "OK",
+                  to: "steve.rogers@example.com",
+                  submitted_at: "2010-11-26T12:01:05.1794748-05:00"
                 },
                 %{
                   id: "e2ecbbfc-fe12-463d-b933-9fe22915106d",
                   error_code: 0,
-                  message: "OK"
+                  message: "OK",
+                  to: "natasha.romanova@example.com",
+                  submitted_at: "2010-11-26T12:01:05.1794748-05:00"
                 }
               ]}
   end
@@ -550,12 +554,16 @@ defmodule Swoosh.Adapters.PostmarkTest do
                 %{
                   id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817",
                   error_code: 0,
-                  message: "OK"
+                  message: "OK",
+                  to: "steve.rogers@example.com",
+                  submitted_at: "2010-11-26T12:01:05.1794748-05:00"
                 },
                 %{
                   id: "e2ecbbfc-fe12-463d-b933-9fe22915106d",
                   error_code: 0,
-                  message: "OK"
+                  message: "OK",
+                  to: "natasha.romanova@example.com",
+                  submitted_at: "2010-11-26T12:01:05.1794748-05:00"
                 }
               ]}
   end
