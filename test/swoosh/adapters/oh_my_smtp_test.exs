@@ -1,8 +1,8 @@
-defmodule Swoosh.Adapters.OhMySmtpTest do
+defmodule Swoosh.Adapters.MailPaceTest do
   use Swoosh.AdapterCase, async: true
 
   import Swoosh.Email
-  alias Swoosh.Adapters.OhMySmtp
+  alias Swoosh.Adapters.MailPace
 
   @success_response '{"id":404021,"status":"queued"}'
 
@@ -42,7 +42,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
     end)
 
     assert {:ok, Swoosh.json_library().decode!(@success_response)} ==
-             OhMySmtp.deliver(email, config)
+             MailPace.deliver(email, config)
   end
 
   test "deliver/1 with all fields returns :ok", %{bypass: bypass, config: config} do
@@ -81,7 +81,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
     end)
 
     assert {:ok, Swoosh.json_library().decode!(@success_response)} ==
-             OhMySmtp.deliver(email, config)
+             MailPace.deliver(email, config)
   end
 
   test "deliver/1 with an attachment", %{bypass: bypass, config: config} do
@@ -120,7 +120,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
     end)
 
     assert {:ok, Swoosh.json_library().decode!(@success_response)} ==
-             OhMySmtp.deliver(email, config)
+             MailPace.deliver(email, config)
   end
 
   test "deliver/1 with an inline attachment", %{bypass: bypass, config: config} do
@@ -162,7 +162,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
     end)
 
     assert {:ok, Swoosh.json_library().decode!(@success_response)} ==
-             OhMySmtp.deliver(email, config)
+             MailPace.deliver(email, config)
   end
 
   test "deliver/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
@@ -170,7 +170,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
       Plug.Conn.resp(conn, 422, "{}")
     end)
 
-    assert {:error, {422, %{}}} = OhMySmtp.deliver(email, config)
+    assert {:error, {422, %{}}} = MailPace.deliver(email, config)
   end
 
   test "deliver/1 with 5xx response", %{bypass: bypass, valid_email: email, config: config} do
@@ -178,11 +178,11 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
       Plug.Conn.resp(conn, 500, "{}")
     end)
 
-    assert {:error, {500, %{}}} = OhMySmtp.deliver(email, config)
+    assert {:error, {500, %{}}} = MailPace.deliver(email, config)
   end
 
   test "validate_config/1 with valid config", %{config: config} do
-    assert OhMySmtp.validate_config(config) == :ok
+    assert MailPace.validate_config(config) == :ok
   end
 
   test "validate_config/1 with invalid config" do
@@ -191,7 +191,7 @@ defmodule Swoosh.Adapters.OhMySmtpTest do
                  expected [:api_key] to be set, got: []
                  """,
                  fn ->
-                   OhMySmtp.validate_config([])
+                   MailPace.validate_config([])
                  end
   end
 end
