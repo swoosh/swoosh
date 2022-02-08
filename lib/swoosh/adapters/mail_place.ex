@@ -3,13 +3,13 @@ defmodule Swoosh.Adapters.MailPace do
 
   An adapter that sends email using the MailPace API.
 
-  For reference: [OhMySMTP API docs](https://docs.ohmysmtp.com/reference/overview)
+  For reference: [MailPace API docs](https://docs.mailpace.com/reference/overview/)
 
   ## Example
 
       # config/config.exs
       config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.OhMySmtp,
+        adapter: Swoosh.Adapters.MailPace,
         api_key: "my-api-key"
 
       # lib/sample/mailer.ex
@@ -23,10 +23,9 @@ defmodule Swoosh.Adapters.MailPace do
   alias Swoosh.Email
   import Swoosh.Email.Render
 
-  @endpoint "https://app.ohmysmtp.com/api/v1/send"
+  @endpoint "https://app.mailpace.com/api/v1/send"
 
   @impl true
-  @deprecated "Use Swoosh.Adapter.MailPace.deliver/2 instead"
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     params = email |> prepare_body() |> Swoosh.json_library().encode!
@@ -49,7 +48,7 @@ defmodule Swoosh.Adapters.MailPace do
   defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"OhMySMTP-Server-Token", config[:api_key]},
+      {"MailPace-Server-Token", config[:api_key]},
       {"Content-Type", "application/json"},
       {"Accept", "application/json"}
     ]
