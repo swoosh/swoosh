@@ -1,5 +1,11 @@
 defmodule Swoosh.Adapters.OhMySmtp do
   @moduledoc ~S"""
+  
+  **deprecated**
+  
+  > Moving from OhMySMTP to MailPace
+  > https://docs.mailpace.com/guide/moving_from_ohmysmtp
+  
   An adapter that sends email using the OhMySMTP API.
 
   For reference: [OhMySMTP API docs](https://docs.ohmysmtp.com/reference/overview)
