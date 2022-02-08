@@ -1,11 +1,11 @@
 defmodule Swoosh.Adapters.OhMySmtp do
   @moduledoc ~S"""
-  
+
   **deprecated**
-  
+
   > Moving from OhMySMTP to MailPace
   > https://docs.mailpace.com/guide/moving_from_ohmysmtp
-  
+
   An adapter that sends email using the OhMySMTP API.
 
   For reference: [OhMySMTP API docs](https://docs.ohmysmtp.com/reference/overview)
@@ -31,6 +31,7 @@ defmodule Swoosh.Adapters.OhMySmtp do
   @endpoint "https://app.ohmysmtp.com/api/v1/send"
 
   @impl true
+  @deprecated "Use Swoosh.Adapter.MailPlace.deliver/2 instead"
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     params = email |> prepare_body() |> Swoosh.json_library().encode!
