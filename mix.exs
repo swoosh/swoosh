@@ -99,7 +99,8 @@ defmodule Swoosh.Mixfile do
           Swoosh.ApiClient.Hackney
         ],
         Plug: Plug.Swoosh.MailboxPreview,
-        Test: Swoosh.TestAssertions
+        Test: Swoosh.TestAssertions,
+        Deprecated: Swoosh.Adapters.OhMySmtp
       ]
     ]
   end
@@ -111,6 +112,7 @@ defmodule Swoosh.Mixfile do
       [_, module] = Regex.run(~r/\Adefmodule (.+) do/, content)
       module |> String.split(".") |> Module.concat()
     end)
+    |> Kernel.--([Swoosh.Adapters.OhMySmtp])
   end
 
   defp aliases do
