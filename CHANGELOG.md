@@ -1,5 +1,9 @@
 ## Changelog
 
+## 1.6.3
+
+- Migrate OhMySmtp to Mailpace @princemaple (#672)
+
 ## 1.6.2
 
 - SMTP can now utilize the new `:cid` addition in attachments, if `:cid` is `nil` it will fallback

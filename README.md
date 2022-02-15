@@ -142,7 +142,7 @@ included:
 | Dyn        | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)               |
 | SocketLabs | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content) |
 | Gmail      | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)           |
-| OhMySMTP   | [Swoosh.Adapters.OhMySmtp](https://hexdocs.pm/swoosh/Swoosh.Adapters.OhMySmtp.html#content)     |
+| MailPace   | [Swoosh.Adapters.MailPace](https://hexdocs.pm/swoosh/Swoosh.Adapters.MailPace.html#content)     |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
