@@ -48,6 +48,9 @@ defmodule Swoosh.Adapters.Postmark do
       |> put_provider_option(:tag, "some tag")
 
   ## Provider Options
+  
+    * `:message_stream` (string) – `MessageStream`, configure the message stream
+      for the email
 
     * `:metadata` (map) - `Metadata`, add metadata to an email
 
