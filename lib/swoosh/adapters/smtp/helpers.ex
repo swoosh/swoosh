@@ -75,7 +75,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   defp prepare_reply_to(headers, %{reply_to: reply_to}),
     do: [{"Reply-To", render_recipient(reply_to)} | headers]
 
-  defp prepare_mime_version(headers), do: [{"Mime-Version", "1.0"} | headers]
+  defp prepare_mime_version(headers), do: [{"MIME-Version", "1.0"} | headers]
 
   defp prepare_additional_headers(headers, %{headers: additional_headers}) do
     Map.to_list(additional_headers) ++ headers

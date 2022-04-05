@@ -27,7 +27,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"From", "tony@stark.com"},
                 {"To", "steve@rogers.com"},
                 {"Subject", "Hello, Avengers!"},
-                {"Mime-Version", "1.0"}
+                {"MIME-Version", "1.0"}
               ], "Hello"}
   end
 
@@ -54,7 +54,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"Bcc", "beast@avengers.com, \"Clinton Francis Barton\" <hawk@eye.com>"},
                 {"Subject", "Hello, Avengers!"},
                 {"Reply-To", "black@widow.com"},
-                {"Mime-Version", "1.0"},
+                {"MIME-Version", "1.0"},
                 {"X-Custom-ID", "4f034001"},
                 {"X-Feedback-ID", "403f4983b02a"}
               ], "Hello"}
@@ -70,7 +70,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"From", "tony@stark.com"},
                 {"To", "\"Bruce Banner\" <bruce@banner.com>, steve@rogers.com"},
                 {"Subject", "Hello, Avengers!"},
-                {"Mime-Version", "1.0"}
+                {"MIME-Version", "1.0"}
               ], "Hello"}
   end
 
@@ -89,7 +89,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"To", "\"Bruce Banner\" <bruce@banner.com>, steve@rogers.com"},
                 {"Cc", "thor@odinson.com"},
                 {"Subject", "Hello, Avengers!"},
-                {"Mime-Version", "1.0"}
+                {"MIME-Version", "1.0"}
               ], "Hello"}
   end
 
@@ -103,7 +103,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"From", "tony@stark.com"},
                 {"To", "steve@rogers.com"},
                 {"Subject", "Hello, Avengers!"},
-                {"Mime-Version", "1.0"}
+                {"MIME-Version", "1.0"}
               ], "<h1>Hello</h1>"}
   end
 
@@ -114,7 +114,7 @@ defmodule Swoosh.Email.SMTPTest do
                 {"From", "tony@stark.com"},
                 {"To", "steve@rogers.com"},
                 {"Subject", "Hello, Avengers!"},
-                {"Mime-Version", "1.0"}
+                {"MIME-Version", "1.0"}
               ],
               [
                 {"text", "plain",
