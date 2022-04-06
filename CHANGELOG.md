@@ -1,5 +1,10 @@
 ## Changelog
 
+## 1.6.4
+
+- Add message_stream documentation to Postmark adapter @ntodd (#674)
+- Rename Mime-Version header to MIME-Version @tcitworld (#681)
+
 ## 1.6.3
 
 - Migrate OhMySmtp to Mailpace @princemaple (#672)
