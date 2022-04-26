@@ -16,9 +16,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSESTest do
   """
 
   setup_all do
-    config = [
-      region: "us-east-1"
-    ]
+    config = []
 
     valid_email =
       new()
@@ -43,10 +41,12 @@ defmodule Swoosh.Adapters.ExAwsAmazonSESTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Application.put_env(:ex_aws, :access_key_id, "FAKE")
     Application.put_env(:ex_aws, :secret_access_key, "FAKE")
+    Application.put_env(:ex_aws, :region, "us-east-1")
 
     on_exit(fn ->
       Application.put_env(:ex_aws, :access_key_id, nil)
-      Application.put_env(:ex_aws, :secret_access_key,nil)
+      Application.put_env(:ex_aws, :secret_access_key, nil)
+      Application.put_env(:ex_aws, :region, nil)
     end)
 
     Bypass.expect(bypass, fn conn ->
@@ -59,15 +59,5 @@ defmodule Swoosh.Adapters.ExAwsAmazonSESTest do
 
   test "validate_config/1 with valid config", %{config: config} do
     assert ExAwsAmazonSES.validate_config(config) == :ok
-  end
-
-  test "validate_config/1 with invalid config" do
-    assert_raise ArgumentError,
-                 """
-                 expected [:region] to be set, got: []
-                 """,
-                 fn ->
-                   ExAwsAmazonSES.validate_config([])
-                 end
   end
 end

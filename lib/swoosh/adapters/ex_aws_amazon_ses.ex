@@ -17,11 +17,11 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
       # config/config.exs
       config :ex_aws,
         access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
-        secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role]
+        secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
+        region: "us-east-1"
 
       config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.ExAWSAmazonSES,
-        region: "region-endpoint"
+        adapter: Swoosh.Adapters.ExAWSAmazonSES
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -52,7 +52,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
 
   use Swoosh.Adapter,
     required_deps: [gen_stmp: :mimemail, ex_aws: ExAws.Config],
-    required_config: [:region]
+    required_config: []
 
   alias Swoosh.Email
   alias Swoosh.Adapters.AmazonSES
@@ -69,9 +69,13 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   end
 
   defp add_credentials(config, credentials) do
-    Keyword.merge(config,
-      access_key: credentials.access_key_id,
-      secret: credentials.secret_access_key
+    Keyword.merge(
+      [
+        access_key: credentials.access_key_id,
+        secret: credentials.secret_access_key,
+        region: credentials.region
+      ],
+      config
     )
   end
 
