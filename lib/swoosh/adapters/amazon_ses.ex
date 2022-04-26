@@ -63,6 +63,10 @@ defmodule Swoosh.Adapters.AmazonSES do
   include additional `X-Amz-Security-Token` header to that request.
 
   You can do that by adding `:security_token` to `:provider_options`.
+
+  If you don't have a static `:access_key` and `:secret_key` for your
+  application, you can use the `ExAwsAmazonSES` adapter to fetch credentials
+  on-demand as specified in your application's `:ex_aws` configuration.
   """
 
   use Swoosh.Adapter,
