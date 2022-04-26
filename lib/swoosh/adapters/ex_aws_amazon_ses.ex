@@ -11,6 +11,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   See also:
 
   [IAM Roles for EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
+  [IAM roles for ECS tasks](https://docs.aws.amazon.com/AmazonECS/latest/userguide/task-iam-roles.html)
 
   ## Example
 
