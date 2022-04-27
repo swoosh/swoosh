@@ -1,12 +1,12 @@
 defmodule Swoosh.Adapters.ExAwsAmazonSES do
   @moduledoc ~S"""
-  An adapter that wraps the `AmazonSES` adapter to use credentials from `ExAws`.
+  An adapter that wraps `Swoosh.Adapters.AmazonSES` to use credentials from `ExAws`.
 
-  You may prefer this adapter of the `AmazonSES` adapter if you have already
+  You may prefer this adapter to `Swoosh.Adapters.AmazonSES` if you have already
   configured ExAws for your project and are using instance role credentials.
 
-  This allows you to use automatically managed, short-lived credentials, rather
-  than provisioning a static access key / secret key pair.
+  This allows you to use automatically managed, short-lived credentials, rather than provisioning
+  a static access key / secret key pair.
 
   See also:
 

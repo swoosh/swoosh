@@ -1,5 +1,13 @@
 ## Changelog
 
+## 1.6.5
+
+- Add `Swoosh.Adapters.ExAwsAmazonSES` adapter @ascandella (#684)
+
+## 🧰 Maintenance
+
+- Bump gen_smtp from 1.1.1 to 1.2.0 @dependabot (#682)
+
 ## 1.6.4
 
 - Add message_stream documentation to Postmark adapter @ntodd (#674)
