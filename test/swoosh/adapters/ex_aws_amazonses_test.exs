@@ -50,7 +50,13 @@ defmodule Swoosh.Adapters.ExAwsAmazonSESTest do
     end)
 
     Bypass.expect(bypass, fn conn ->
-      Plug.Conn.resp(conn, 200, @success_response)
+      import Plug.Conn
+
+      [authorization_header] = get_req_header(conn, "authorization")
+      assert "AWS4-HMAC-SHA256 Credential=FAKE/" <> _ = authorization_header
+      assert authorization_header =~ "us-east-1"
+
+      resp(conn, 200, @success_response)
     end)
 
     assert ExAwsAmazonSES.deliver(email, config) ==
