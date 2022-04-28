@@ -1,5 +1,9 @@
 ## Changelog
 
+## 1.6.6
+
+- Suppress warning about `ExAws.Config` introduced in 1.6.5 as optional dependency
+
 ## 1.6.5
 
 - Add `Swoosh.Adapters.ExAwsAmazonSES` adapter @ascandella (#684)
