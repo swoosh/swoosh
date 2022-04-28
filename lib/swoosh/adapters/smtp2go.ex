@@ -20,7 +20,7 @@ defmodule Swoosh.Adapters.SMTP2GO do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Using with provider options
+  ## Usage
 
       import Swoosh.Email
 
@@ -33,6 +33,18 @@ defmodule Swoosh.Adapters.SMTP2GO do
       |> subject("I'm Ironman")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
+
+  with template:
+
+      import Swoosh.Email
+
+      new()
+      |> from({"Tony", "ironman@example.com"})
+      |> to({"Thanos", "thanos@example.com"})
+      |> subject("I'm Ironman")
+      |> put_provider_option(:template_id, "123456")
+      |> put_provider_option(:template_data, %{"var1" => "value1"})
+
   """
 
   use Swoosh.Adapter,
@@ -48,7 +60,7 @@ defmodule Swoosh.Adapters.SMTP2GO do
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
-    body = email |> prepare_body(config) |> IO.inspect() |> Swoosh.json_library().encode!()
+    body = email |> prepare_body(config) |> Swoosh.json_library().encode!()
     headers = prepare_headers(config)
     url = [base_url(config), "/", @api_endpoint]
 
@@ -152,8 +164,12 @@ defmodule Swoosh.Adapters.SMTP2GO do
   defp prepare_subject(body, %{subject: subject}),
     do: Map.put(body, "subject", subject)
 
+  defp prepare_text(body, %{text_body: nil}), do: body
+
   defp prepare_text(body, %{text_body: text_body}),
-    do: Map.put(body, "text_body", text_body || "")
+    do: Map.put(body, "text_body", text_body)
+
+  defp prepare_html(body, %{html_body: nil}), do: body
 
   defp prepare_html(body, %{html_body: html_body}),
     do: Map.put(body, "html_body", html_body || "")
