@@ -36,6 +36,7 @@ defmodule Swoosh.Mixfile do
           :hackney,
           :gen_smtp_client,
           :mimemail,
+          ExAws.Config,
           Finch,
           Plug.Adapters.Cowboy,
           Plug.Conn.Query,
