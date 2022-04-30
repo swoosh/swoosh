@@ -4,10 +4,6 @@ defmodule Swoosh.Adapters.SMTP2GO do
 
   For reference: [SMTP2GO API docs](https://apidoc.smtp2go.com/documentation/#/POST%20/email/send)
 
-  ## Dependency
-
-  Mailjet adapter requires `Plug` to work properly.
-
   ## Example
 
       # config/config.exs
