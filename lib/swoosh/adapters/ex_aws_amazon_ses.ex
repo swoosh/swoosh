@@ -22,7 +22,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
         region: "us-east-1"
 
       config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.ExAWSAmazonSES
+        adapter: Swoosh.Adapters.ExAwsAmazonSES
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
