@@ -69,9 +69,7 @@ defmodule Swoosh.Adapters.SMTP do
   @config_keys Map.keys(@config_transformations)
 
   def gen_smtp_config(config) do
-    Enum.reduce(config, [], fn {key, value}, config_acc ->
-      [enforce_type!(key, value) | config_acc]
-    end)
+    Enum.map(config, fn {key, value} -> enforce_type!(key, value) end)
   end
 
   defp enforce_type!(key, value) when key in @config_keys and is_binary(value) do
