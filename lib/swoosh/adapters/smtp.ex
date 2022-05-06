@@ -61,10 +61,10 @@ defmodule Swoosh.Adapters.SMTP do
   @config_transformations %{
     port: &String.to_integer/1,
     retries: &String.to_integer/1,
-    ssl: {&String.to_existing_atom/1, [true, false]},
-    tls: {&String.to_existing_atom/1, [:always, :never, :if_available]},
-    auth: {&String.to_existing_atom/1, [:always, :never, :if_available]},
-    no_mx_lookups: {&String.to_existing_atom/1, [true, false]}
+    ssl: {&String.to_atom/1, [true, false]},
+    tls: {&String.to_atom/1, [:always, :never, :if_available]},
+    auth: {&String.to_atom/1, [:always, :never, :if_available]},
+    no_mx_lookups: {&String.to_atom/1, [true, false]}
   }
   @config_keys Map.keys(@config_transformations)
 
