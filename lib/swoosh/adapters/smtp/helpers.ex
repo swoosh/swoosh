@@ -62,6 +62,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_from(headers, %{from: from}), do: [{"From", render_recipient(from)} | headers]
 
+  defp prepare_to(headers, %{to: []}), do: headers
   defp prepare_to(headers, %{to: to}), do: [{"To", render_recipient(to)} | headers]
 
   defp prepare_cc(headers, %{cc: []}), do: headers
