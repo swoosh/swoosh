@@ -24,7 +24,7 @@ jobs:
             elixir: '1.13'
             otp: '24.x'
           - elixir: '1.13'
-            opt: '25.x'
+            otp: '25.x'
 
     steps:
       - uses: actions/checkout@v2
