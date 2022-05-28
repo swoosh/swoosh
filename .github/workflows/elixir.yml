@@ -23,6 +23,8 @@ jobs:
           - lint: lint
             elixir: '1.13'
             otp: '24.x'
+          - elixir: '1.13'
+            otp: '25.x'
 
     steps:
       - uses: actions/checkout@v2
