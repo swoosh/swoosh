@@ -13,14 +13,18 @@ jobs:
     strategy:
       matrix:
         elixir: ['1.13', '1.12', '1.11', '1.10']
-        otp: ['25.x', '24.x', '23.x']
+        otp: ['24.x', '23.x', '22.x']
         exclude:
           - elixir: '1.10'
             otp: '24.x'
+          - elixir: '1.13'
+            otp: '22.x'
         include:
           - lint: lint
             elixir: '1.13'
             otp: '24.x'
+          - elixir: '1.13'
+            opt: '25.x'
 
     steps:
       - uses: actions/checkout@v2
