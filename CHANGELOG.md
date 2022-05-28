@@ -1,5 +1,22 @@
 ## Changelog
 
+## 1.7.0
+
+### ✨ Features
+
+- SMTP: Allow send email without 'To' @Danielwsx64 (#694)
+- Add SMTP2GO adapter @princemaple (#687)
+
+### 🧰 Maintenance
+
+- Bump ex\_aws from 2.3.1 to 2.3.2 @dependabot (#692)
+- Bump finch from 0.11.0 to 0.12.0 @dependabot (#690)
+- Bump ex\_doc from 0.28.3 to 0.28.4 @dependabot (#688)
+
+### 📝 Documentation
+
+- fix module name in ExAwsAmazonSES module doc @SteffenDE (#689)
+
 ## 1.6.6
 
 - Suppress warning about `ExAws.Config` introduced in 1.6.5 as optional dependency
