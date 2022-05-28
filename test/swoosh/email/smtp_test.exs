@@ -31,6 +31,19 @@ defmodule Swoosh.Email.SMTPTest do
               ], "Hello"}
   end
 
+  test "simple email without to", %{valid_email: email} do
+    email = email |> html_body(nil) |> put_to(nil)
+
+    assert Helpers.prepare_message(email, []) ==
+             {"text", "plain",
+              [
+                {"Content-Type", "text/plain; charset=\"utf-8\""},
+                {"From", "tony@stark.com"},
+                {"Subject", "Hello, Avengers!"},
+                {"MIME-Version", "1.0"}
+              ], "Hello"}
+  end
+
   test "simple email with all basic fields", %{valid_email: email} do
     email =
       email
