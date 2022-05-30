@@ -10,7 +10,9 @@ defmodule Swoosh.Adapters.Sendgrid do
     :asm,
     :categories,
     :mail_settings,
-    :tracking_settings
+    :tracking_settings,
+    :send_at,
+    :batch_id
   ]
 
   @moduledoc ~s"""
