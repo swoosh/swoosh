@@ -644,8 +644,11 @@ defmodule Swoosh.Adapters.SendgridTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
-      |> put_provider_option(:batch_id, "AsdFgHjklQweRTYuIopzXcVBNm0aSDfGHjklmZcVbNMqWert1znmOP2asDFjkl")
-      |> put_provider_option(:send_at, 1617260400)
+      |> put_provider_option(
+        :batch_id,
+        "AsdFgHjklQweRTYuIopzXcVBNm0aSDfGHjklmZcVbNMqWert1znmOP2asDFjkl"
+      )
+      |> put_provider_option(:send_at, 1_617_260_400)
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -663,7 +666,7 @@ defmodule Swoosh.Adapters.SendgridTest do
         ],
         "subject" => "Hello, Avengers!",
         "batch_id" => "AsdFgHjklQweRTYuIopzXcVBNm0aSDfGHjklmZcVbNMqWert1znmOP2asDFjkl",
-        "send_at"  => 1617260400
+        "send_at" => 1_617_260_400
       }
 
       assert body_params == conn.body_params
