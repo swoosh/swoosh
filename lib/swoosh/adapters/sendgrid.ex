@@ -10,7 +10,9 @@ defmodule Swoosh.Adapters.Sendgrid do
     :asm,
     :categories,
     :mail_settings,
-    :tracking_settings
+    :tracking_settings,
+    :send_at,
+    :batch_id
   ]
 
   @moduledoc ~s"""
@@ -60,6 +62,8 @@ defmodule Swoosh.Adapters.Sendgrid do
       |> put_provider_option(:tracking_settings, %{
         subscription_tracking: %{enable: false}
       })
+      |> put_provider_option(:batch_id, "AsdFgHjklQweRTYuIopzXcVBNm0aSDfGHjklmZcVbNMqWert1znmOP2asDFjkl")
+      |> put_provider_option(:send_at, 1617260400)
 
   ## Provider Options
 
@@ -88,6 +92,12 @@ defmodule Swoosh.Adapters.Sendgrid do
 
     * `:tracking_settings` (map) - collection of settings to track the metrics
       of responses of email recipients
+
+    * `:send_at` (integer) - A unix timestamp allowing you to specify when
+      you want your email to be delivered.
+
+    * `:batch_id` (string) - An ID representing a batch of emails to be sent at
+      the same time. It also enables you to cancel or pause the delivery of that batch
 
   ## Sandbox mode
 
