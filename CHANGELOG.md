@@ -1,5 +1,15 @@
 ## Changelog
 
+## 1.7.1
+
+### ✨ Features
+
+- sendgrid add support for scheduling emails @shravanjoopally (#696)
+
+### 🧰 Maintenance
+
+- Test otp 25 @princemaple (#695)
+
 ## 1.7.0
 
 ### ✨ Features
