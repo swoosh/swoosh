@@ -79,7 +79,11 @@ defmodule Swoosh.Mailer do
       # tracks the number of emails sent successfully/errored
       defmodule MyHandler do
         def handle_event([:swoosh, :deliver, :stop], _measurements, metadata, _config) do
-          StatsD.increment("mail.sent.success", 1, %{mailer: metadata.mailer})
+          if Map.get(metadata, :error) do
+            StatsD.increment("mail.sent.failure", 1, %{mailer: metadata.mailer})
+          else
+            StatsD.increment("mail.sent.success", 1, %{mailer: metadata.mailer})
+          end
         end
 
         def handle_event([:swoosh, :deliver, :exception], _measurements, metadata, _config) do
@@ -87,7 +91,11 @@ defmodule Swoosh.Mailer do
         end
 
         def handle_event([:swoosh, :deliver_many, :stop], _measurements, metadata, _config) do
-          StatsD.increment("mail.sent.success", length(metadata.emails), %{mailer: metadata.mailer})
+          if Map.get(metadata, :error) do
+            StatsD.increment("mail.sent.failure", length(metadata.emails), %{mailer: metadata.mailer})
+          else
+            StatsD.increment("mail.sent.success", length(metadata.emails), %{mailer: metadata.mailer})
+          end
         end
 
         def handle_event([:swoosh, :deliver_many, :exception], _measurements, metadata, _config) do
