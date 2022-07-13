@@ -1,5 +1,19 @@
 ## Changelog
 
+## 1.7.2
+
+### ✨ Features
+
+- add schedule\_at provider param for sendinblue @moperacz (#700)
+
+### 📝 Documentation
+
+- Update Telemetry example to mention errors on `:stop` @lucasmazza (#698)
+
+### 🧰 Maintenance
+
+- Bump ex\_aws from 2.3.2 to 2.3.3 @dependabot (#699)
+
 ## 1.7.1
 
 ### ✨ Features
