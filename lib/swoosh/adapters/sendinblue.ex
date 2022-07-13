@@ -29,6 +29,7 @@ defmodule Swoosh.Adapters.Sendinblue do
       |> put_provider_option(:template_id, 42)
       |> put_provider_option(:params, %{param1: "a", param2: 123})
       |> put_provider_option(:tag, %{foo: 1, bar: 2})
+      |> put_provider_option(:schedule_at, ~U[2022-11-15 11:00:00Z])
 
   ## Provider Options
 
@@ -43,6 +44,8 @@ defmodule Swoosh.Adapters.Sendinblue do
 
     * `tags` (list[string]) - `tags`, a list of tag for each email for easy
       filtering
+
+    * `schedule_at` (UTC DateTime) - `schedule_at`, a UTC date-time on which the email has to schedule
 
   """
 
@@ -103,6 +106,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     |> prepare_params(email)
     |> prepare_tags(email)
     |> prepare_attachments(email)
+    |> prepare_schedule_at(email)
   end
 
   defp prepare_from(payload, %{from: {_name, email}, provider_options: %{sender_id: sender_id}}),
@@ -193,6 +197,12 @@ defmodule Swoosh.Adapters.Sendinblue do
       )
     )
   end
+
+  defp prepare_schedule_at(payload, %{provider_options: %{schedule_at: schedule_at}}) do
+    Map.put(payload, "scheduledAt", schedule_at)
+  end
+
+  defp prepare_schedule_at(payload, _), do: payload
 
   defp prepare_recipient({name, email}) when name in [nil, ""],
     do: %{email: email}

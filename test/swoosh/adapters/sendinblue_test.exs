@@ -253,6 +253,36 @@ defmodule Swoosh.Adapters.SendinblueTest do
     assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
+  test "deliver/1 with scheduled_at returns :ok", %{bypass: bypass, config: config} do
+    now_plus_one_hour = DateTime.now!("Etc/UTC") |> DateTime.add(3600, :second)
+
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:schedule_at, now_plus_one_hour)
+
+    Bypass.expect_once(bypass, "POST", "/v3/smtp/email", fn conn ->
+      conn = parse(conn)
+
+      assert %{
+               "sender" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+               "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
+               "subject" => "Hello, Avengers!",
+               "scheduledAt" => now_plus_one_hour_sent
+             } = conn.body_params
+
+      {:ok, parsed_sent_schedule_date, 0} = DateTime.from_iso8601(now_plus_one_hour_sent)
+
+      assert parsed_sent_schedule_date == now_plus_one_hour
+
+      make_response(conn)
+    end)
+
+    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+  end
+
   test "deliver/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
     error = ~s/{"code": "too_many_requests", "message": "The expected rate limit is exceeded."}/
 
