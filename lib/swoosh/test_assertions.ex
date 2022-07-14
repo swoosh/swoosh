@@ -177,10 +177,8 @@ defmodule Swoosh.TestAssertions do
   `%{attributes...} = email`.
   """
   defmacro refute_email_sent(attributes) when is_list(attributes) do
-    expr = attributes |> email_pattern() |> Macro.escape()
-
     quote do
-      refute_email_sent(unquote(expr))
+      refute_email_sent(%{unquote_splicing(Enum.map(attributes, &email_pattern/1))})
     end
   end
 
@@ -190,22 +188,16 @@ defmodule Swoosh.TestAssertions do
     end
   end
 
-  defp email_pattern(attributes) when is_list(attributes) do
-    Enum.reduce(attributes, %{}, &email_pattern(&2, &1))
+  defp email_pattern({key, value}) when key in [:from, :reply_to] do
+    {key, Recipient.format(value)}
   end
 
-  defp email_pattern(%{} = pattern, {key, value})
-       when key in [:from, :reply_to] do
-    Map.put(pattern, key, Recipient.format(value))
+  defp email_pattern({key, value}) when key in [:to, :cc, :bcc] do
+    {key, value |> List.wrap() |> Enum.map(&Recipient.format/1)}
   end
 
-  defp email_pattern(%{} = pattern, {key, value})
-       when key in [:to, :cc, :bcc] do
-    Map.put(pattern, key, value |> List.wrap() |> Enum.map(&Recipient.format/1))
-  end
-
-  defp email_pattern(%{} = pattern, {key, value}) do
-    Map.put(pattern, key, value)
+  defp email_pattern({key, value}) do
+    {key, value}
   end
 
   @doc ~S"""

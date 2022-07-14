@@ -300,12 +300,12 @@ defmodule Swoosh.TestAssertionsTest do
   end
 
   test "refute email sent with specific header" do
-    refute_email_sent(headers: unquote(%{"Revengers" => "Gather"}))
+    refute_email_sent(headers: %{"Revengers" => "Gather"})
   end
 
   test "refute email sent with expected header" do
     assert_raise ExUnit.AssertionError, fn ->
-      refute_email_sent(headers: unquote(%{"Avengers" => "Assemble"}))
+      refute_email_sent(headers: %{"Avengers" => "Assemble"})
     end
   end
 
