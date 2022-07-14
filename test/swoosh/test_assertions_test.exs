@@ -17,6 +17,7 @@ defmodule Swoosh.TestAssertionsTest do
       |> to(["steve.rogers@example.com", "bruce.banner@example.com"])
       |> cc(["natasha.romanoff@example.com", "stephen.strange@example.com"])
       |> bcc("loki.odinson@example.com")
+      |> header("Avengers", "Assemble")
       |> subject("Hello, Avengers!")
       |> html_body("some html")
       |> text_body("some text")
@@ -97,6 +98,12 @@ defmodule Swoosh.TestAssertionsTest do
   test "assert email sent with wrong bcc" do
     assert_raise ExUnit.AssertionError, fn ->
       assert_email_sent(bcc: "bruce.banner@example.com")
+    end
+  end
+
+  test "assert email sent with wrong header" do
+    assert_raise ExUnit.AssertionError, fn ->
+      assert_email_sent(headers: %{"Revengers" => "Gather"})
     end
   end
 
@@ -289,6 +296,16 @@ defmodule Swoosh.TestAssertionsTest do
   test "refute email sent with expected bcc (list)" do
     assert_raise ExUnit.AssertionError, fn ->
       refute_email_sent(bcc: ["loki.odinson@example.com"])
+    end
+  end
+
+  test "refute email sent with specific header" do
+    refute_email_sent(headers: unquote(%{"Revengers" => "Gather"}))
+  end
+
+  test "refute email sent with expected header" do
+    assert_raise ExUnit.AssertionError, fn ->
+      refute_email_sent(headers: unquote(%{"Avengers" => "Assemble"}))
     end
   end
 
