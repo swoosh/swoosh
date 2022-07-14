@@ -1,5 +1,11 @@
 ## Changelog
 
+## 1.7.3
+
+### ✨ Features
+
+- Support assertions for headers @MatheusBuss (#702)
+
 ## 1.7.2
 
 ### ✨ Features
