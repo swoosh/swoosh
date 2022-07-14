@@ -151,6 +151,9 @@ defmodule Swoosh.TestAssertions do
   defp assert_equal(email, {:html_body, value}),
     do: assert(email.html_body == value)
 
+  defp assert_equal(email, {:headers, value}),
+    do: assert(email.headers == value)
+
   @doc ~S"""
   Asserts no emails were sent.
   """
