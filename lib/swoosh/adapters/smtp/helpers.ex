@@ -215,6 +215,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   if gen_smtp_major >= 1 do
     defp attachment_content_params(:attachment, filename) do
       %{
+        content_type_params: [],
         disposition: "attachment",
         disposition_params: [{"filename", filename}]
       }
@@ -222,6 +223,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   else
     defp attachment_content_params(:attachment, filename) do
       [
+        {"content-type-params", []},
         {"disposition", "attachment"},
         {"disposition-params", [{"filename", filename}]}
       ]
