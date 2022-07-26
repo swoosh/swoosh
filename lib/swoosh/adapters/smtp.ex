@@ -82,7 +82,7 @@ defmodule Swoosh.Adapters.SMTP do
         else
           raise ArgumentError, """
           #{key} is not configured properly,
-          got: #{value}, expected one of the followings:
+          got: #{value}, expected one of the following:
           #{valid_values |> Enum.map_join(", ", &inspect/1)}
           """
         end

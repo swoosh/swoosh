@@ -1,4 +1,4 @@
-## Changelog
+# Changelog
 
 ## 1.7.3
 
@@ -70,8 +70,8 @@
 
 ## 1.6.2
 
-- SMTP can now utilize the new `:cid` addition in attachments, if `:cid` is `nil` it will fallback
-  to original behavior and use `:filename`
+- SMTP can now utilize the new `:cid` addition in attachments, if `:cid` is
+  `nil` it will fallback to original behavior and use `:filename`
 - Fixed filename for inline images sent via SMTP
 
 ## 1.6.1
@@ -163,13 +163,15 @@ You can configure what API Client to use by setting the config. Swoosh comes wit
 config :swoosh, :api_client, MyAPIClient
 ```
 
-It defaults to use `:hackney` with `Swoosh.ApiClient.Hackney`. To use `Finch`, add the below config
+It defaults to use `:hackney` with `Swoosh.ApiClient.Hackney`. To use `Finch`,
+add the below config
 
 ```elixir
 config :swoosh, :api_client, Swoosh.ApiClient.Finch
 ```
 
-To use `Swoosh.ApiClient.Finch` you also need to start `Finch`, either in your supervision tree
+To use `Swoosh.ApiClient.Finch` you also need to start `Finch`, either in your
+supervision tree
 
 ```elixir
 children = [
@@ -183,8 +185,8 @@ or somehow manually, and very rarely dynamically
 Finch.start_link(name: Swoosh.Finch)
 ```
 
-If a name different from `Swoosh.Finch` is used, or you want to use an existing Finch instance,
-you can provide the name via the config.
+If a name different from `Swoosh.Finch` is used, or you want to use an existing
+Finch instance, you can provide the name via the config.
 
 ```elixir
 config :swoosh,
