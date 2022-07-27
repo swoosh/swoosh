@@ -15,7 +15,7 @@ defmodule Swoosh.Adapters.Gmail do
 
   ## Example
 
-      # config/congig.exs
+      # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Gmail,
         access_token: {:system, "GMAIL_API_ACCESS_TOKEN"}
