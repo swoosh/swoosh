@@ -91,8 +91,9 @@ configuration options.
   Swoosh also accepts [`Finch`](https://hex.pm/packages/finch) out-of-the-box.
   See `Swoosh.ApiClient.Finch` for details.
 
-  If you need to integrate with another HTTP client, it's easy to define a new API client.
-  Follow the `Swoosh.ApiClient` behaviour and configure Swoosh to use it:
+  If you need to integrate with another HTTP client, it's easy to define a new
+  API client.  Follow the `Swoosh.ApiClient` behaviour and configure Swoosh to
+  use it:
 
   ```elixir
   config :swoosh, :api_client, MyApp.ApiClient
@@ -105,8 +106,9 @@ configuration options.
   config :swoosh, :api_client, false
   ```
 
-  This is the case when you are using `Swoosh.Adapters.Local`, `Swoosh.Adapters.Test` and
-  adapters that are SMTP based, that don't require an API client.
+  This is the case when you are using `Swoosh.Adapters.Local`,
+  `Swoosh.Adapters.Test` and adapters that are SMTP based, that don't require
+  an API client.
 
 - (Optional) If you are using `Swoosh.Adapters.SMTP`,
   `Swoosh.Adapters.Sendmail` or `Swoosh.Adapters.AmazonSES`, you also need to
@@ -223,7 +225,8 @@ Elixir's ecosystem has many
 
 - [Oban](https://hexdocs.pm/oban/Oban.html) is the current community favourite.
   It uses PostgreSQL for storage and coordination.
-- [Exq](https://hexdocs.pm/exq/readme.html) uses Redis and is compatible with Resque / Sidekiq.
+- [Exq](https://hexdocs.pm/exq/readme.html) uses Redis and is compatible with
+  Resque / Sidekiq.
 
 ## Phoenix integration
 
@@ -236,7 +239,8 @@ Taking the example from above the "Getting Started" section, your code would
 look something like this:
 
 > web/templates/layout/email.html.eex
-```
+
+```html
 <html>
   <head>
     <title><%= @email.subject %></title>
@@ -248,6 +252,7 @@ look something like this:
 ```
 
 > web/templates/email/welcome.html.eex
+
 ```html
 <div>
   <h1>Welcome to Sample, <%= @username %>!</h1>
@@ -255,6 +260,7 @@ look something like this:
 ```
 
 > web/emails/user_email.ex
+
 ```elixir
 defmodule Sample.UserEmail do
   use Phoenix.Swoosh, view: Sample.EmailView, layout: {Sample.LayoutView, :email}
@@ -305,7 +311,8 @@ defmodule Sample.UserTest do
   import Swoosh.TestAssertions
 
   test "send email on user signup" do
-    # Assuming `create_user` creates a new user then sends out a `Sample.UserEmail.welcome` email
+    # Assuming `create_user` creates a new user then sends out a
+    # `Sample.UserEmail.welcome` email
     user = create_user(%{username: "ironman", email: "tony.stark@example.com"})
     assert_email_sent Sample.UserEmail.welcome(user)
   end
@@ -368,7 +375,7 @@ And finally you can also use the following Mix task to start the mailbox
 preview server independently:
 
 ```console
-$ mix swoosh.mailbox.server
+mix swoosh.mailbox.server
 ```
 
 _Note_: the mailbox preview won't display emails
@@ -383,7 +390,7 @@ If you are curious, this is how it the mailbox preview looks like:
 The preview is also available as a JSON endpoint.
 
 ```sh
-$ curl http://localhost:4000/dev/mailbox/json
+curl http://localhost:4000/dev/mailbox/json
 ```
 
 ### Production
@@ -406,7 +413,8 @@ The following events are emitted:
 - `[:swoosh, :deliver, :exception]`: occurs when `Mailer.deliver/2` throws an exception.
 - `[:swoosh, :deliver_many, :start]`: occurs when `Mailer.deliver_many/2` begins.
 - `[:swoosh, :deliver_many, :stop]`: occurs when `Mailer.deliver_many/2` completes.
-- `[:swoosh, :deliver_many, :exception]`: occurs when `Mailer.deliver_many/2` throws an exception.
+- `[:swoosh, :deliver_many, :exception]`: occurs when `Mailer.deliver_many/2`
+  throws an exception.
 
 View [example in docs](https://hexdocs.pm/swoosh/Swoosh.Mailer.html#module-telemetry)
 
@@ -422,22 +430,28 @@ We are grateful for any contributions. Before you submit an issue or a pull
 request, remember to:
 
 - Look at our [Contributing guidelines](CONTRIBUTING.md)
-- Not use the issue tracker for help or support requests (try StackOverflow, IRC or Slack instead)
-- Do a quick search in the issue tracker to make sure the issues hasn't been reported yet.
+- Not use the issue tracker for help or support requests (try StackOverflow,
+  IRC or Slack instead)
+- Do a quick search in the issue tracker to make sure the issues hasn't been
+  reported yet.
 - Look and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Be nice and have fun!
 
 ### Running tests
 
 Clone the repo and fetch its dependencies:
 
-    $ git clone https://github.com/swoosh/swoosh.git
-    $ cd swoosh
-    $ mix deps.get
-    $ mix test
+```sh
+git clone https://github.com/swoosh/swoosh.git
+cd swoosh
+mix deps.get
+mix test
+```
 
 ### Building docs
 
-    $ MIX_ENV=docs mix docs
+```sh
+MIX_ENV=docs mix docs
+```
 
 ## LICENSE
 
