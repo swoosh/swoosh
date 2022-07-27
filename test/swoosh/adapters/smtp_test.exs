@@ -54,7 +54,7 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert_raise ArgumentError,
                  """
                  ssl is not configured properly,
-                 got: INVALID, expected one of the followings:
+                 got: INVALID, expected one of the following:
                  true, false
                  """,
                  fn ->
@@ -66,7 +66,7 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert_raise ArgumentError,
                  """
                  auth is not configured properly,
-                 got: INVALID, expected one of the followings:
+                 got: INVALID, expected one of the following:
                  :always, :never, :if_available
                  """,
                  fn ->
@@ -78,7 +78,7 @@ defmodule Swoosh.Adapters.SMTPTest do
     assert_raise ArgumentError,
                  """
                  tls is not configured properly,
-                 got: INVALID, expected one of the followings:
+                 got: INVALID, expected one of the following:
                  :always, :never, :if_available
                  """,
                  fn ->
