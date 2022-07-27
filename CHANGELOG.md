@@ -55,7 +55,7 @@
 
 - Add `Swoosh.Adapters.ExAwsAmazonSES` adapter @ascandella (#684)
 
-## 🧰 Maintenance
+### 🧰 Maintenance
 
 - Bump gen_smtp from 1.1.1 to 1.2.0 @dependabot (#682)
 
