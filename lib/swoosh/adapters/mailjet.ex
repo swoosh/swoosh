@@ -208,7 +208,8 @@ defmodule Swoosh.Adapters.Mailjet do
     %{
       "ContentType" => attachment.content_type,
       "Filename" => attachment.filename,
-      "Base64Content" => Attachment.get_content(attachment, :base64)
+      "Base64Content" => Attachment.get_content(attachment, :base64),
+      "ContentId" => attachment.cid || attachment.filename
     }
   end
 
