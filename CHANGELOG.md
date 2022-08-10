@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.7.4
+
+### ✨ Features
+
+- Set attachment's ContentId in Mailjet @marcinkoziej (#709)
+
+### 🧰 Maintenance
+
+- Bump mime from 2.0.2 to 2.0.3 @dependabot (#708)
+- Bump finch from 0.12.0 to 0.13.0 @dependabot (#707)
+
+### 📝 Documentation
+
+- Fix typos in gmail and socket labs adapters @zusoomro (#706)
+- Fix markdown issues and typos @kianmeng (#705)
+
 ## 1.7.3
 
 ### ✨ Features
