@@ -28,7 +28,7 @@ defmodule Swoosh.Adapters.Sendinblue do
       |> put_provider_option(:id, 42)
       |> put_provider_option(:template_id, 42)
       |> put_provider_option(:params, %{param1: "a", param2: 123})
-      |> put_provider_option(:tag, %{foo: 1, bar: 2})
+      |> put_provider_option(:tags, ["tag_1", "tag_2"])
       |> put_provider_option(:schedule_at, ~U[2022-11-15 11:00:00Z])
 
   ## Provider Options
@@ -42,7 +42,7 @@ defmodule Swoosh.Adapters.Sendinblue do
     * `params` (map) - `params`, a map of key/value attributes to customize the
       template
 
-    * `tags` (list[string]) - `tags`, a list of tag for each email for easy
+    * `tags` (list[string]) - `tags`, a list of tags for each email for easy
       filtering
 
     * `schedule_at` (UTC DateTime) - `schedule_at`, a UTC date-time on which the email has to schedule
