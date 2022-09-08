@@ -17,7 +17,7 @@ defmodule Swoosh.Application do
 
   defp runtime_children(children, :local) do
     if Application.get_env(:swoosh, :local, true) do
-      [Swoosh.Adapters.Local.Storage.Memory | children]
+      [Swoosh.Adapters.Local.Storage.Manager | children]
     else
       children
     end

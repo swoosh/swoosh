@@ -12,15 +12,8 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
   @doc """
   Starts the server
   """
-  def start_link(args \\ []) do
-    case GenServer.start_link(__MODULE__, args, name: {:global, __MODULE__}) do
-      {:ok, pid} ->
-        {:ok, pid}
-
-      {:error, {:already_started, pid}} ->
-        Process.link(pid)
-        {:ok, pid}
-    end
+  def start(args \\ []) do
+    GenServer.start(__MODULE__, args, name: {:global, __MODULE__})
   end
 
   @doc """
