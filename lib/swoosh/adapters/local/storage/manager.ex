@@ -24,6 +24,7 @@ defmodule Swoosh.Adapters.Local.Storage.Manager do
   def handle_info({:DOWN, _, :process, _, _reason}, _) do
     # Try to either restart the global GenServer or monitor the newly
     # created one.
+    Process.sleep(:rand.uniform(1800) + 200)
     {:noreply, restart_or_monitor()}
   end
 
