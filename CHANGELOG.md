@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.0
+
+### ✨ Features
+
+- Prevent crashes caused by the memory GenServer restarts @KiKoS0 (#717)
+
+### 🧰 Maintenance
+
+- Bump ex\_aws from 2.3.4 to 2.4.0 @dependabot (#715)
+
 ## 1.7.5
 
 Bump to require Elixir 1.11. Now official support has been updated to Elixir 1.11+ with OTP 23+

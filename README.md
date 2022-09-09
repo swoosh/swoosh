@@ -79,7 +79,7 @@ configuration options.
 
   ```elixir
   def deps do
-    [{:swoosh, "~> 1.6"}]
+    [{:swoosh, "~> 1.8"}]
   end
   ```
 
