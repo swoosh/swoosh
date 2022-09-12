@@ -89,19 +89,11 @@ defmodule Swoosh.MailerTest do
     end
 
     assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
-      Map.put(valid_email, :from, {"name", nil}) |> FakeMailer.deliver!()
+      Map.put(valid_email, :to, {"address", nil}) |> FakeMailer.deliver!()
     end
 
     assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
-      Map.put(valid_email, :from, {"name", ""}) |> FakeMailer.deliver!()
-    end
-
-    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
-      Map.put(valid_email, :from, {"address", nil}) |> FakeMailer.deliver!()
-    end
-
-    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
-      Map.put(valid_email, :from, {"address", ""}) |> FakeMailer.deliver!()
+      Map.put(valid_email, :to, {"address", ""}) |> FakeMailer.deliver!()
     end
   end
 

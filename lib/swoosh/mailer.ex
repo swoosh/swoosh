@@ -188,6 +188,15 @@ defmodule Swoosh.Mailer do
     {:error, :from_not_set}
   end
 
+  def deliver(%Swoosh.Email{to: nil}, _config) do
+    {:error, :to_not_set}
+  end
+
+  def deliver(%Swoosh.Email{to: {_name, address}}, _config)
+      when address in ["", nil] do
+    {:error, :to_not_set}
+  end
+
   def deliver(%Swoosh.Email{} = email, config) do
     adapter = Keyword.fetch!(config, :adapter)
 

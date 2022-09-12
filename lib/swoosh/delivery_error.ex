@@ -7,6 +7,7 @@ defmodule Swoosh.DeliveryError do
   end
 
   defp format_error(:from_not_set, _), do: "expected \"from\" to be set"
+  defp format_error(:to_not_set, _), do: "expected \"to\" to be set"
   defp format_error(:invalid_email, _), do: "expected %Swoosh.Email{}"
 
   defp format_error(:unsupported_feature, feature),
