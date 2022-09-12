@@ -83,6 +83,28 @@ defmodule Swoosh.MailerTest do
     end
   end
 
+  test "should raise if deliver!/2 is called with invalid to", %{valid_email: valid_email} do
+    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
+      Map.put(valid_email, :to, nil) |> FakeMailer.deliver!()
+    end
+
+    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
+      Map.put(valid_email, :from, {"name", nil}) |> FakeMailer.deliver!()
+    end
+
+    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
+      Map.put(valid_email, :from, {"name", ""}) |> FakeMailer.deliver!()
+    end
+
+    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
+      Map.put(valid_email, :from, {"address", nil}) |> FakeMailer.deliver!()
+    end
+
+    assert_raise DeliveryError, "delivery error: expected \"to\" to be set", fn ->
+      Map.put(valid_email, :from, {"address", ""}) |> FakeMailer.deliver!()
+    end
+  end
+
   test "config from environment variables", %{valid_email: email} do
     System.put_env("MAILER_TEST_SMTP_USERNAME", "userenv")
     System.put_env("MAILER_TEST_SMTP_PASSWORD", "passwordenv")
