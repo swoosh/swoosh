@@ -31,11 +31,11 @@ defmodule Swoosh.Adapter do
 
   @doc """
   Delivers multiple emails with the given config in one request. Some email providers allow multiple
-  messages to be sent in one HTTP request, for example Mailjet allow this. Check your provider's
-  documentation to see if that is possible.
+  messages to be sent in one HTTP request, for example Mailjet and Postmark allow this. Check your
+  provider's documentation to see if that is possible.
   """
   @callback deliver_many(list(%Swoosh.Email{}), config) ::
-              {:ok, term} | {:error, term}
+              {:ok, list(term)} | {:error, term}
 
   @callback validate_config(config) :: :ok | no_return
   @callback validate_dependency() :: :ok | [module | {atom, module}]
