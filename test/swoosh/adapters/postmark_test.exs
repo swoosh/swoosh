@@ -295,6 +295,58 @@ defmodule Swoosh.Adapters.PostmarkTest do
     assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
   end
 
+  test "deliver/1 with track_opens option returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("tony.stark@example.com")
+      |> put_provider_option(:track_opens, false)
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "To" => "tony.stark@example.com",
+        "From" => "\"Steve Rogers\" <steve.rogers@example.com>",
+        "TrackOpens" => false
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
+  test "deliver/1 with track_links option returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("tony.stark@example.com")
+      |> put_provider_option(:track_links, "HtmlAndText")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "To" => "tony.stark@example.com",
+        "From" => "\"Steve Rogers\" <steve.rogers@example.com>",
+        "TrackLinks" => "HtmlAndText"
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
+
   test "deliver/1 with inline attachment uses correct CID", %{bypass: bypass, config: config} do
     email =
       new()
