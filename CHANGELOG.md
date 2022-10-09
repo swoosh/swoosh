@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.1
+
+### ✨ Features
+
+- Postmark: Support per email tracking options @Wijnand (#722)
+
+### 🧰 Maintenance
+
+- Bump jason from 1.3.0 to 1.4.0 @dependabot (#719)
+
 ## 1.8.0
 
 ### ✨ Features

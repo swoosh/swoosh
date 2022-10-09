@@ -65,6 +65,10 @@ defmodule Swoosh.Adapters.Postmark do
     * `:template_model` (map), `TemplateModel`, a map of key/value field to be
       used in the `HtmlBody`, `TextBody`, and `Subject` field in the template
 
+    * `:track_opens` (boolean) - `TrackOpens`, specify if open tracking needs to be enabled for this email.
+
+    * `:track_links` (string) - `TrackOpens`, specify if link tracking needs to be enabled for this email.
+       Valid values are: `None`, `HtmlAndText`, `HtmlOnly`, `TextOnly`
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -186,6 +190,8 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_tag(email)
     |> prepare_metadata(email)
     |> prepare_message_stream(email)
+    |> prepare_track_opens(email)
+    |> prepare_track_links(email)
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
@@ -280,4 +286,14 @@ defmodule Swoosh.Adapters.Postmark do
     do: Map.put(body, "MessageStream", value)
 
   defp prepare_message_stream(body, _), do: body
+
+  defp prepare_track_opens(body, %{provider_options: %{track_opens: value}}),
+    do: Map.put(body, "TrackOpens", value)
+
+  defp prepare_track_opens(body, _), do: body
+
+  defp prepare_track_links(body, %{provider_options: %{track_links: value}}),
+    do: Map.put(body, "TrackLinks", value)
+
+  defp prepare_track_links(body, _), do: body
 end
