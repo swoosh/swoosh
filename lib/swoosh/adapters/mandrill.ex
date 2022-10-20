@@ -47,7 +47,7 @@ defmodule Swoosh.Adapters.Mandrill do
       |> put_provider_option(:merge_language, "mailchimp"),
       |> put_provider_option(:metadata, %{"website" => "www.example.com"})
       |> put_provider_option(:template_name, "welcome-user")
-      |> put_provider_option(:template_content, [%{"name => "a", "content" => "b"}])
+      |> put_provider_option(:template_content, [%{"name" => "a", "content" => "b"}])
 
   ## Provider options
 
