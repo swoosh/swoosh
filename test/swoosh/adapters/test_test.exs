@@ -5,13 +5,13 @@ defmodule Swoosh.Adapters.TestTest do
   import Swoosh.TestAssertions
 
   defp deliver(%Swoosh.Email{} = email) do
-    {:ok, _} = Swoosh.Adapters.Test.deliver(email, nil)
-    email
+    {:ok, response} = Swoosh.Adapters.Test.deliver(email, nil)
+    response
   end
 
-  defp deliver_many(emails = [_ | _]) do
-    {:ok, _} = Swoosh.Adapters.Test.deliver_many(emails, nil)
-    emails
+  defp deliver_many(emails = [%Swoosh.Email{} | _]) do
+    {:ok, responses} = Swoosh.Adapters.Test.deliver_many(emails, nil)
+    responses
   end
 
   test "send email in a task" do
@@ -43,7 +43,26 @@ defmodule Swoosh.Adapters.TestTest do
   end
 
   describe "deliver_many/2" do
-    test "We can deliver_many from a task" do
+    test "returns a list of responses with equal length to the input list of emails" do
+      johnny =
+        new()
+        |> from("johnny@example.com")
+        |> to("mark@example.com")
+        |> subject("Oh hi Mark")
+
+      mark =
+        new()
+        |> from("mark@example.com")
+        |> to("johnny@example.com")
+        |> subject("Did you hit her?")
+
+      responses = deliver_many([johnny, mark])
+
+      assert is_list(responses)
+      assert length(responses) == 2
+    end
+
+    test "we can deliver_many from a task" do
       Task.start(fn ->
         chalmers =
           new()
