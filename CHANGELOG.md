@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.8.2
+
+### ✨ Features
+
+- Swoosh.Adapters.Test.delivery\_many/2 returns a list @markthequark (#721)
+
+### 📝 Documentation
+
+- Add missing double quote to mandrill template content sample @alvarezloaiciga (#726)
+
+### 🧰 Maintenance
+
+- Bump ex\_doc from 0.28.5 to 0.29.0 @dependabot (#725)
+
 ## 1.8.1
 
 ### ✨ Features
