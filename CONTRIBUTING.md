@@ -9,7 +9,7 @@ also.
 
 We classify bugs as any unexpected behaviour that occurs based on the code in
 the project, and we really appreciate it when users take the time to
-[create an issue](https://github.com/soosh/swoosh/issues).
+[create an issue](https://github.com/swoosh/swoosh/issues).
 
 Please take time to add as much detail as you can to any bug reports, consider
 including things like the version of Elixir you are using, which adapter you
