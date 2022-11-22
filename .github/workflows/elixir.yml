@@ -3,48 +3,5 @@ name: Elixir CI
 on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        elixir: ['1.14', '1.13', '1.12', '1.11']
-        otp: ['25.x', '24.x', '23.x']
-        exclude:
-          - elixir: '1.11'
-            otp: '25.x'
-          - elixir: '1.12'
-            otp: '25.x'
-        include:
-          - lint: lint
-            elixir: '1.13'
-            otp: '24.x'
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup BEAM
-        uses: erlef/setup-beam@v1
-        with:
-          elixir-version: ${{ matrix.elixir }}
-          otp-version: ${{ matrix.otp }}
-
-      - name: Restore dependencies cache
-        uses: actions/cache@v3
-        id: cache-elixir-deps
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-mix-${{ matrix.otp }}-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-mix-${{ matrix.otp }}-
-
-      - name: Install Dependencies
-        if: steps.cache-elixir-deps.outputs.cache-hit != 'true'
-        run: MIX_ENV=test mix do deps.get, deps.compile, compile
-
-      - run: mix format --check-formatted
-        if: matrix.lint
-
-      - name: Run Tests
-        run: mix test
+  test:
+    uses: swoosh/actions/.github/workflows/test.yml@main
