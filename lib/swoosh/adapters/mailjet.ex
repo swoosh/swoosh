@@ -70,7 +70,7 @@ defmodule Swoosh.Adapters.Mailjet do
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
-    send_request(prepare_body(email), email, config)
+    send_request(:single, prepare_body(email), email, config)
   end
 
   @impl true
@@ -81,46 +81,44 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   def deliver_many(emails, config) when is_list(emails) do
-    send_request(prepare_body(emails), emails, config)
+    send_request(:many, prepare_body(emails), emails, config)
   end
 
-  defp send_request(body, email_or_emails, config) do
+  defp send_request(type, body, email_or_emails, config) do
     email = email_or_emails |> List.wrap() |> List.first()
     headers = prepare_headers(config)
     url = [base_url(config), "/", @api_endpoint]
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
-        {:ok, parse_results(body)}
+        {:ok, parse_results(type, body)}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, parse_results(body)}}
+        {:error, {error_code, parse_results(type, body)}}
 
       {:error, reason} ->
         {:error, reason}
     end
   end
 
-  defp parse_results(%{"Messages" => results}) do
+  defp parse_results(type, %{"Messages" => results}) do
     results =
       Enum.map(results, fn
         %{"Status" => "success"} = result -> get_message_id(result)
         per_message_error -> per_message_error
       end)
 
-    case results do
-      [single] -> single
-      multiple -> multiple
+    case {type, results} do
+      {:single, [single]} -> single
+      {:many, list} -> list
     end
   end
 
-  defp parse_results(body) when is_binary(body) do
-    body
-    |> Swoosh.json_library().decode!
-    |> parse_results()
+  defp parse_results(type, body) when is_binary(body) do
+    parse_results(type, Swoosh.json_library().decode!(body))
   end
 
-  defp parse_results(global_error) do
+  defp parse_results(_type, global_error) do
     global_error
   end
 
