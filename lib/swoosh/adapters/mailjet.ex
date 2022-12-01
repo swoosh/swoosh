@@ -94,7 +94,7 @@ defmodule Swoosh.Adapters.Mailjet do
         {:ok, parse_results(type, body)}
 
       {:ok, error_code, _headers, body} when error_code >= 400 ->
-        {:error, {error_code, parse_results(body)}}
+        {:error, {error_code, parse_results(type, body)}}
 
       {:error, reason} ->
         {:error, reason}
@@ -114,13 +114,11 @@ defmodule Swoosh.Adapters.Mailjet do
     end
   end
 
-  defp parse_results(body) when is_binary(body) do
-    body
-    |> Swoosh.json_library().decode!
-    |> parse_results()
+  defp parse_results(type, body) when is_binary(body) do
+    parse_results(type, Swoosh.json_library().decode!(body))
   end
 
-  defp parse_results(global_error) do
+  defp parse_results(_type, global_error) do
     global_error
   end
 
