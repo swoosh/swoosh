@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.3
+
+**potential breaking change, fixing an unexpected behaivour**
+- Make return type of deliver\_many consistent @princemaple (#733)
+
+### 📝 Documentation
+- Fix typo in contributor guidelines @nickcampbell18 (#727)
+
 ## 1.8.2
 
 ### ✨ Features

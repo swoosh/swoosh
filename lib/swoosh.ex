@@ -2,7 +2,7 @@ defmodule Swoosh do
   @external_resource "README.md"
   @moduledoc File.read!("README.md") |> String.replace("# Swoosh\n\n", "", global: false)
 
-  @version "1.8.2"
+  @version "1.8.3"
 
   @doc false
   def version, do: @version
