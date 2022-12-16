@@ -237,25 +237,21 @@ defmodule Swoosh.Adapters.CustomerIOTest do
   end
 
   test "deliver/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
-    errors = "{\"errors\":[{\"field\": null, \"message\": \"too many requests\"}]}"
+    errors = "{\"meta\": \"too many requests\"}"
 
     Bypass.expect(bypass, &Plug.Conn.resp(&1, 429, errors))
 
-    response =
-      {:error, {429, %{"errors" => [%{"field" => nil, "message" => "too many requests"}]}}}
+    response = {:error, {429, %{"meta" => "too many requests"}}}
 
     assert CustomerIO.deliver(email, config) == response
   end
 
   test "deliver/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
-    errors =
-      "{\"errors\":[{\"field\": \"identifier1\", \"message\": \"error message explained\"}]}"
+    errors = "{\"meta\": \"error message explained\"}"
 
     Bypass.expect(bypass, &Plug.Conn.resp(&1, 400, errors))
 
-    response =
-      {:error,
-       {400, %{"errors" => [%{"field" => "identifier1", "message" => "error message explained"}]}}}
+    response = {:error, {400, %{"meta" => "error message explained"}}}
 
     assert CustomerIO.deliver(email, config) == response
   end
