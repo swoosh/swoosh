@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0
+
+### ✨ New Adapter
+
+- Add customer.io adapter @lucacorti (#734) 
+
 ## 1.8.3
 
 **potential breaking change, fixing an unexpected behaivour**
