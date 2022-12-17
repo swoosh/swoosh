@@ -115,10 +115,10 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "reply_to" => "hulk.smash@example.com",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
-        "bcc" => "Henry McCoy <beast.avengers@example.com>,thor.odinson@example.com",
+        "bcc" => ~s("Henry McCoy" <beast.avengers@example.com>, thor.odinson@example.com),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!"
@@ -148,8 +148,8 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",
@@ -180,8 +180,8 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",
@@ -214,8 +214,8 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",
@@ -294,8 +294,8 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",
@@ -326,8 +326,8 @@ defmodule Swoosh.Adapters.CustomerIOTest do
       conn = parse(conn)
 
       body_params = %{
-        "from" => "T Stark <tony.stark@example.com>",
-        "to" => "Steve Rogers <steve.rogers@example.com>",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",
         "subject" => "Hello, Avengers!",

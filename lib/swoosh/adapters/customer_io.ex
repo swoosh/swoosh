@@ -98,6 +98,8 @@ defmodule Swoosh.Adapters.CustomerIO do
 
   alias Swoosh.Email
 
+  import Swoosh.Email.Render
+
   @base_url "https://api.customer.io/v1"
   @api_endpoint "/send/email"
   @provider_options_body_fields [
@@ -157,20 +159,20 @@ defmodule Swoosh.Adapters.CustomerIO do
   end
 
   defp prepare_from(body, %Email{from: nil}), do: body
-  defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, email_item(from))
+  defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, render_recipient(from))
 
   defp prepare_to(body, %Email{to: to}),
-    do: Map.put(body, :to, Enum.map_join(to, ",", &email_item(&1)))
+    do: Map.put(body, :to, render_recipient(to))
 
   defp prepare_bcc(body, %Email{bcc: []}), do: body
 
   defp prepare_bcc(body, %Email{bcc: bcc}),
-    do: Map.put(body, :bcc, Enum.map_join(bcc, ",", &email_item(&1)))
+    do: Map.put(body, :bcc, render_recipient(bcc))
 
   defp prepare_reply_to(body, %Email{reply_to: nil}), do: body
 
   defp prepare_reply_to(body, %Email{reply_to: reply_to}),
-    do: Map.put(body, :reply_to, email_item(reply_to))
+    do: Map.put(body, :reply_to, render_recipient(reply_to))
 
   defp prepare_subject(body, %Email{subject: nil}), do: body
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
@@ -207,8 +209,4 @@ defmodule Swoosh.Adapters.CustomerIO do
   defp prepare_provider_options_body_fields(body, %Email{provider_options: provider_options}) do
     Map.merge(body, Map.take(provider_options, @provider_options_body_fields))
   end
-
-  defp email_item({"", address}), do: address
-  defp email_item({name, address}), do: name <> " <" <> address <> ">"
-  defp email_item(address), do: address
 end
