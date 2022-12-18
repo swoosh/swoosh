@@ -6,6 +6,10 @@ defmodule Swoosh do
 
   @doc false
   def version, do: @version
+  
+  defmodule Mispell do
+    def s, do: :s
+  end
 
   @doc false
   def json_library, do: Application.fetch_env!(:swoosh, :json_library)
