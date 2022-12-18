@@ -8,7 +8,7 @@ defmodule Swoosh.Email.RecipientTest do
     defstruct [:name, :email]
   end
 
-  defmodule Villian do
+  defmodule Villain do
     @derive {Recipient, address: :email}
     defstruct [:we_dont_care_about_their_names, :email]
   end
@@ -29,8 +29,8 @@ defmodule Swoosh.Email.RecipientTest do
   end
 
   test "derive address only" do
-    assert Recipient.format(%Villian{
-             we_dont_care_about_their_names: "Random Villian",
+    assert Recipient.format(%Villain{
+             we_dont_care_about_their_names: "Random Villain",
              email: "random@villain.me"
            }) == {"", "random@villain.me"}
   end
@@ -87,7 +87,7 @@ defmodule Swoosh.Email.RecipientTest do
              new()
              |> subject("Peace, love, not war")
              |> from(%Avenger{name: "Admin", email: "admin@avengers.org"})
-             |> to(%Villian{email: "random@villain.me", we_dont_care_about_their_names: "Random"})
+             |> to(%Villain{email: "random@villain.me", we_dont_care_about_their_names: "Random"})
              |> cc("ironman@avengers.org")
              |> cc({"Thor", "thor@avengers.org"})
              |> bcc({nil, "thanos@villain.me"})

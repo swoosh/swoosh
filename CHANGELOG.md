@@ -8,7 +8,7 @@
 
 ## 1.8.3
 
-**potential breaking change, fixing an unexpected behaivour**
+**potential breaking change, fixing an unexpected behaviour**
 - Make return type of deliver\_many consistent @princemaple (#733)
 
 ### 📝 Documentation
