@@ -1,0 +1,14 @@
+name: Spellcheck
+
+on: push
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3
+
+      - run: |
+          pip install codespell    
+          codespell -S deps
