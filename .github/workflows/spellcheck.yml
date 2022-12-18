@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: |
+      - name: Spell check
+        run: |
           pip install codespell    
           codespell -S deps,_build,.git,.elixir_ls -r "(?<!@)\\b[a-zA-Z0-9_'-]+\\b"
