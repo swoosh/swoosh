@@ -8,6 +8,7 @@ defmodule Swoosh.Adapters.ProtonBridge do
   [gen_smtp](https://github.com/Vagabond/gen_smtp) library, add it to your mix.exs file.
 
   ## Example
+
       # mix.exs
       def deps do
         [
