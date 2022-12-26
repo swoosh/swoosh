@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.9.1
+
+### ✨ Features
+
+- Add support for Protonmail Bridge @Raphexion (#739)
+
+### 📝 Documentation
+
+- Fix more typos @kianmeng (#736)
+
 ## 1.9.0
 
 ### ✨ New Adapter
