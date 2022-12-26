@@ -11,8 +11,8 @@ defmodule Swoosh.Adapters.ProtonBridge do
       # mix.exs
       def deps do
         [
-         {:swoosh, "~> 1.3"},
-         {:gen_smtp, "~> 1.1"}
+          {:swoosh, "~> 1.3"},
+          {:gen_smtp, "~> 1.1"}
         ]
       end
 
