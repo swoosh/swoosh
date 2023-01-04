@@ -3,7 +3,7 @@ defmodule Swoosh.Adapters.SMTP do
   An adapter that sends email using the SMTP protocol.
 
   Underneath this adapter uses the
-  [gen_smtp](https://github.com/Vagabond/gen_smtp) library, add it to your mix.exs file.
+  [gen_smtp](https://github.com/gen-smtp/gen_smtp) library, add it to your mix.exs file.
 
   ## Example
       # mix.exs
@@ -35,6 +35,12 @@ defmodule Swoosh.Adapters.SMTP do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ## Caveats
+
+  With `STARTTLS` you should omit the ssl configuration or set it to false.
+  
+  For more details, please see [gen_smtp docs](https://hexdocs.pm/gen_smtp/readme.html)
   """
 
   use Swoosh.Adapter, required_config: [:relay], required_deps: [gen_smtp: :gen_smtp_client]
