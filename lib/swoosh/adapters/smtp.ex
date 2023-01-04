@@ -6,6 +6,7 @@ defmodule Swoosh.Adapters.SMTP do
   [gen_smtp](https://github.com/gen-smtp/gen_smtp) library, add it to your mix.exs file.
 
   ## Example
+
       # mix.exs
       def deps do
         [
@@ -36,10 +37,10 @@ defmodule Swoosh.Adapters.SMTP do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Caveats
+  ## Note
 
   With `STARTTLS` you should omit the ssl configuration or set it to false.
-  
+
   For more details, please see [gen_smtp docs](https://hexdocs.pm/gen_smtp/readme.html)
   """
 
