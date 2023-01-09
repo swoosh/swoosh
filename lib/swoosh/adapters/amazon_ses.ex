@@ -17,6 +17,10 @@ defmodule Swoosh.Adapters.AmazonSES do
         ]
       end
 
+  **All API adapters require an API client.** Swoosh currently supports Hackney and Finch.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   See also:
 
   [Amazon SES Query Api Docs](http://docs.aws.amazon.com/ses/latest/APIReference/Welcome.html)
