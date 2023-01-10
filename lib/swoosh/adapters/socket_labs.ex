@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.SocketLabs do
 
   For reference: [SocketLabs API docs](https://inject.docs.socketlabs.com/v1/documentation/introduction)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Example
 
       # config/config.exs

@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.SparkPost do
 
   For reference: [SparkPost API docs](https://developers.sparkpost.com/api/)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Example
 
       # config/config.exs

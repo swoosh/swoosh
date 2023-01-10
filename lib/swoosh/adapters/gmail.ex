@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.Gmail do
 
   For reference: [Gmail API docs](https://developers.google.com/gmail/api)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Dependency
 
   Gmail adapter requires `Mail` dependency to format message as RFC 2822 message.
