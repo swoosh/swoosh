@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.Mailgun do
 
   For reference: [Mailgun API docs](https://documentation.mailgun.com/en/latest/api-sending.html#sending)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Dependency
 
   Mailgun adapter requires `Plug` to work properly.

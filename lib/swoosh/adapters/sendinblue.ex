@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.Sendinblue do
 
   For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference/sendtransacemail)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Example
 
       # config/config.exs

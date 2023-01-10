@@ -4,6 +4,10 @@ defmodule Swoosh.Adapters.SMTP2GO do
 
   For reference: [SMTP2GO API docs](https://apidoc.smtp2go.com/documentation/#/POST%20/email/send)
 
+  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
+  for details.
+
   ## Example
 
       # config/config.exs
