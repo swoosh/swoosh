@@ -176,6 +176,8 @@ defmodule Swoosh.Mailer do
           end
         end)
       end
+
+      defoverridable deliver: 2, deliver!: 2, deliver_many: 2
     end
   end
 

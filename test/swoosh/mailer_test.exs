@@ -131,6 +131,20 @@ defmodule Swoosh.MailerTest do
     end
   end
 
+  test "allows overriding default delivery functions", %{valid_email: email} do
+    defmodule OveriddenMailer do
+      use Swoosh.Mailer, otp_app: :swoosh, adapter: FakeAdapter
+
+      def deliver(%Swoosh.Email{to: []}, _config), do: {:error, :no_recipient}
+      def deliver(email, config), do: super(email, config)
+    end
+
+    email_without_recipient = %{email | to: []}
+
+    assert {:ok, _} = OveriddenMailer.deliver(email)
+    assert {:error, :no_recipient} = OveriddenMailer.deliver(email_without_recipient)
+  end
+
   test "raise when sending without an adapter configured", %{valid_email: email} do
     defmodule NoAdapterMailer do
       use Swoosh.Mailer, otp_app: :swoosh
