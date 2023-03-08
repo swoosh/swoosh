@@ -62,7 +62,7 @@ defmodule Swoosh.Adapters.Mandrill do
       merge tags, and possible values are `mailchimp` or `handlebars`
 
     * `:merge_vars` (list[map]) - a list of maps of `:rcpt` and `vars` for each
-      recipent, which will override `:global_merge_vars`
+      recipient, which will override `:global_merge_vars`
 
     * `:metadata` (map) - a map of up to 10 fields for a user metadata
 
