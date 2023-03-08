@@ -1,6 +1,8 @@
 defmodule Swoosh.Adapters.AmazonSES do
   @moduledoc ~S"""
   An adapter that sends email using the Amazon Simple Email Service (SES) Query API.
+  This adapter does not depend on `ExAws`; if you are already using it, you may
+  prefer `Swoosh.Adapters.ExAwsAmazonSES`.
 
   This email adapter makes use of the Amazon SES SendRawEmail action and generates
   a SMTP style message containing the information to be emailed. This allows for
