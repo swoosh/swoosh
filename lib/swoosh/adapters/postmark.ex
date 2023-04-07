@@ -69,6 +69,9 @@ defmodule Swoosh.Adapters.Postmark do
 
     * `:track_links` (string) - `TrackOpens`, specify if link tracking needs to be enabled for this email.
        Valid values are: `None`, `HtmlAndText`, `HtmlOnly`, `TextOnly`
+
+    * `:inline_css` (boolean) - `InlineCss`, specify if Postmark should apply the style blocks as inline
+      attributes to the rendered HTML content. Default is true.
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -192,6 +195,7 @@ defmodule Swoosh.Adapters.Postmark do
     |> prepare_message_stream(email)
     |> prepare_track_opens(email)
     |> prepare_track_links(email)
+    |> prepare_inline_css(email)
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, "From", render_recipient(from))
@@ -296,4 +300,9 @@ defmodule Swoosh.Adapters.Postmark do
     do: Map.put(body, "TrackLinks", value)
 
   defp prepare_track_links(body, _), do: body
+
+  defp prepare_inline_css(body, %{provider_options: %{inline_css: value}}),
+    do: Map.put(body, "InlineCss", value)
+
+  defp prepare_inline_css(body, _), do: body
 end
