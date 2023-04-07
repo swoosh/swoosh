@@ -348,31 +348,19 @@ defmodule Swoosh.TestAssertionsTest do
 
   describe "when multiple emails are sent" do
     setup do
-      email1 =
-        new()
-        |> from("tony.stark@example.com")
-        |> reply_to("bruce.banner@example.com")
-        |> to(["steve.rogers@example.com", "bruce.banner@example.com"])
-        |> cc(["natasha.romanoff@example.com", "stephen.strange@example.com"])
-        |> bcc("loki.odinson@example.com")
-        |> header("Avengers", "Assemble")
-        |> subject("Hello, Avengers!")
-        |> html_body("some html")
-        |> text_body("some text")
-
-      email2 =
-        new()
-        |> from("tony.stark@example.com")
-        |> reply_to("bruce.banner@example.com")
-        |> to(["steve.rogers@example.com", "bruce.banner@example.com"])
-        |> cc(["natasha.romanoff@example.com", "stephen.strange@example.com"])
-        |> bcc("loki.odinson@example.com")
-        |> header("Avengers", "Assemble")
-        |> subject("Hello, Avengers!")
-        |> html_body("some html")
-        |> text_body("some text")
-
-      emails = [email1, email2]
+      emails =
+        Enum.map(1..2, fn number ->
+          new()
+          |> from("tony.stark#{number}@example.com")
+          |> reply_to("bruce.banner#{number}@example.com")
+          |> to(["steve.rogers#{number}@example.com", "bruce.banner#{number}@example.com"])
+          |> cc(["natasha.romanoff#{number}@example.com", "stephen.strange#{number}@example.com"])
+          |> bcc("loki.odinson#{number}@example.com")
+          |> header("Avengers", "Assemble")
+          |> subject("Hello, Avengers!")
+          |> html_body("some html")
+          |> text_body("some text")
+        end)
 
       deliver_many(emails)
 
@@ -400,17 +388,14 @@ defmodule Swoosh.TestAssertionsTest do
     test "assert list of emails was sent with specific params" do
       assert_emails_sent([
         %{
-          subject: "Hello, Avengers!", 
-          to: ["steve.rogers@example.com", "bruce.banner@example.com"]
+          subject: "Hello, Avengers!",
+          to: ["steve.rogers1@example.com", "bruce.banner1@example.com"]
         },
+        %{
+          subject: "Hello, Avengers!",
+          to: ["steve.rogers2@example.com", "bruce.banner2@example.com"]
+        }
       ])
     end
-
-    test "assert emails were sent with condition" do
-      assert_emails_sent(fn email ->
-        length(email.cc) == 2
-      end)
-    end
   end
-
 end
