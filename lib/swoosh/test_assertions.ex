@@ -23,6 +23,8 @@ defmodule Swoosh.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
+  @type assert_email :: Email.t() | Keyword.t() | (Email.t() -> boolean())
+
   @doc """
   Sets Swoosh test adapter to global mode.
 
@@ -70,7 +72,7 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(Email.t() | Keyword.t() | (Email.t() -> boolean())) ::
+  @spec assert_email_sent(assert_email()) ::
           :ok | tuple | no_return
 
   @doc ~S"""
@@ -110,6 +112,37 @@ defmodule Swoosh.TestAssertions do
   def assert_email_sent(fun) when is_function(fun, 1) do
     assert_received {:email, email}
     assert fun.(email)
+  end
+
+  @doc ~S"""
+  Asserts any list of emails was sent.
+  """
+  @spec assert_emails_sent() :: tuple | no_return
+  def assert_emails_sent do
+    assert_receive {:emails, _}
+  end
+
+  @spec assert_emails_sent([assert_email()]) ::
+          :ok | tuple | no_return
+  def assert_emails_sent([%Swoosh.Email{} | _] = emails) do
+    assert_received {:emails, ^emails}
+  end
+
+  def assert_emails_sent([%{} | _] = params_map_list) do
+    assert_received {:emails, emails}
+
+    if length(emails) != length(params_map_list), do: raise "The arguments must have the same length"
+
+    emails
+    |> Enum.zip(params_map_list)
+    |> Enum.each(fn { email, params_map } ->
+       Enum.each(params_map, &assert_equal(email, &1))
+    end)
+  end
+
+  def assert_emails_sent(fun) when is_function(fun, 1) do
+    assert_received {:emails, emails}
+    assert Enum.all?(emails, &fun.(&1))
   end
 
   defp assert_equal(email, {:subject, value}),
