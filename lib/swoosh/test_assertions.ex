@@ -23,7 +23,7 @@ defmodule Swoosh.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
-  @type assert_email :: Email.t() | Keyword.t() | (Email.t() -> boolean())
+  @type email_assertion :: Email.t() | Keyword.t() | (Email.t() -> boolean())
 
   @doc """
   Sets Swoosh test adapter to global mode.
@@ -72,7 +72,7 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(assert_email()) ::
+  @spec assert_email_sent(email_assertion()) ::
           :ok | tuple | no_return
 
   @doc ~S"""
@@ -141,7 +141,7 @@ defmodule Swoosh.TestAssertions do
     assert_receive {:emails, _}
   end
 
-  @spec assert_emails_sent([assert_email()]) ::
+  @spec assert_emails_sent([email_assertion()]) ::
           :ok | tuple | no_return
   def assert_emails_sent([%Swoosh.Email{} | _] = emails) do
     assert_received {:emails, ^emails}
