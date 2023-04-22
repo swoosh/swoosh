@@ -150,8 +150,7 @@ defmodule Swoosh.TestAssertions do
   def assert_emails_sent([%{} | _] = params_map_list) do
     assert_received {:emails, emails}
 
-    if length(emails) != length(params_map_list),
-      do: raise("The arguments must have the same length")
+    assert length(emails) == length(params_map_list)
 
     emails
     |> Enum.zip(params_map_list)
