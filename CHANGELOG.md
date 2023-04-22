@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.10.0
+
+### ✨ Features
+
+- Add assert\_emails\_sent @geeksilva97 (#757)
+- Add postmark inline\_css option @matehat (#759)
+
+### 📝 Documentation
+
+- Make Adapters.ExAwsAmazonSES easier to discover @nathanl (#749)
+- Add notes about API Client @Shadowbeetle (#743)
+
+### 🧰 Maintenance
+
+- Move docs above maintainence @princemaple (#760)
+- Bump ex\_doc from 0.29.3 to 0.29.4 @dependabot (#756)
+- Bump ex\_aws from 2.4.1 to 2.4.2 @dependabot (#755)
+- Bump ex\_doc from 0.29.2 to 0.29.3 @dependabot (#753)
+- Bump plug\_cowboy from 2.6.0 to 2.6.1 @dependabot (#752)
+- Bump finch from 0.14.0 to 0.15.0 @dependabot (#751)
+- Bump ex\_doc from 0.29.1 to 0.29.2 @dependabot (#748)
+- Bump telemetry from 1.2.0 to 1.2.1 @dependabot (#745)
+- Bump telemetry from 1.1.0 to 1.2.0 @dependabot (#741)
+
 ## 1.9.1
 
 ### ✨ Features
