@@ -14,7 +14,7 @@
 
 ### 🧰 Maintenance
 
-- Move docs above maintainence @princemaple (#760)
+- Move docs above maintenance @princemaple (#760)
 - Bump ex\_doc from 0.29.3 to 0.29.4 @dependabot (#756)
 - Bump ex\_aws from 2.4.1 to 2.4.2 @dependabot (#755)
 - Bump ex\_doc from 0.29.2 to 0.29.3 @dependabot (#753)
