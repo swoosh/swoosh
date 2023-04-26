@@ -51,7 +51,11 @@ defmodule Swoosh.TestAssertionsTest do
     end
 
     test "assert email sent with some content matched by a regex" do
-      assert_email_sent(text_body: ~r/some text/, html_body: ~r/html$/)
+      assert_email_sent(
+        subject: ~r/Avengers/,
+        text_body: ~r/some text/,
+        html_body: ~r/html$/
+      )
     end
 
     test "assert email sent with specific params" do
