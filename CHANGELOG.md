@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.10.1
+
+### ✨ Features
+
+- Allow Regexp assertions for subjects @aronisstav (#764)
+
+### 🧰 Maintenance
+
+- Bump finch from 0.15.0 to 0.16.0 @dependabot (#762)
+
 ## 1.10.0
 
 ### ✨ Features
