@@ -159,6 +159,9 @@ defmodule Swoosh.TestAssertions do
     end)
   end
 
+  defp assert_equal(email, {:subject, %Regex{} = value}),
+    do: assert(email.subject =~ value)
+
   defp assert_equal(email, {:subject, value}),
     do: assert(email.subject == value)
 
