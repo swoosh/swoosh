@@ -31,7 +31,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
 
   ## Dependencies
 
-  In addition to the `:gen_stmp` dependency that the `AmazonSES` adapter
+  In addition to the `:gen_smtp` dependency that the `AmazonSES` adapter
   requires, this adapter also depends on `:ex_aws`.
 
   Ensure you have the dependencies added in your mix.exs file:
@@ -52,7 +52,7 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   """
 
   use Swoosh.Adapter,
-    required_deps: [gen_stmp: :mimemail, ex_aws: ExAws.Config],
+    required_deps: [gen_smtp: :mimemail, ex_aws: ExAws.Config],
     required_config: []
 
   alias Swoosh.Email
