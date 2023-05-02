@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.2
+
+### 🐛 Bug Fixes
+
+- Corrects typo in ex\_aws\_amazon\_ses.ex @paynegreen (#766)
+
 ## 1.10.1
 
 ### ✨ Features
