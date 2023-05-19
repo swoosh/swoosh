@@ -119,16 +119,20 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
          },
          config
        ) do
+    {inline_attachments, attachments} = Enum.split_with(attachments, &(&1.type == :inline))
+
     content_part =
       case {prepare_part(:plain, text_body, config), prepare_part(:html, html_body, config)} do
         {text_part, nil} ->
           text_part
 
         {nil, html_part} ->
-          html_part
+          html_with_line_attachments(html_part, inline_attachments)
 
         {text_part, html_part} ->
-          {"multipart", "alternative", [], @parameters, [text_part, html_part]}
+          html_part = html_with_line_attachments(html_part, inline_attachments)
+
+          {"multipart", "alternative", [], %{}, [text_part, html_part]}
       end
 
     attachment_parts = Enum.map(attachments, &prepare_attachment(&1))
@@ -160,6 +164,13 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
        {"Content-Type", "text/#{subtype_string}; charset=\"utf-8\""},
        {"Content-Transfer-Encoding", transfer_encoding}
      ], @content_params, content}
+  end
+
+  defp html_with_line_attachments(html_part, []), do: html_part
+
+  defp html_with_line_attachments(html_part, inline_attachments) do
+    attachment_parts = Enum.map(inline_attachments, &prepare_attachment(&1))
+    {"multipart", "related", [], %{}, [html_part | attachment_parts]}
   end
 
   defp add_content_type_header(headers, value) do
