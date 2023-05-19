@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10.3
+
+### 🐛 Bug Fixes
+
+#### SMTP
+
+- Fix inline attachment showing up twice as both inline and attachment @Hermanverschooten (#769)
+
+
 ## 1.10.2
 
 ### 🐛 Bug Fixes
