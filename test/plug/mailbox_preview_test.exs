@@ -21,7 +21,7 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
         |> text_body("Lorem ipsum dolor sit amet")
         |> html_body("<p>Lorem ipsum dolor sit amet</p>")
         |> header("X-Magic-Number", "7")
-        |> put_provider_option(:template_model, %{name: "Steve", email: "steve@avengers.com"})
+        |> put_provider_option(:template_model, template_model())
         |> attachment(
           Swoosh.Attachment.new("/data/file.png",
             headers: [{"Content-Type", "text/calendar; method=\"REQUEST\""}]
@@ -30,6 +30,10 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
         |> Swoosh.Email.put_private(:sent_at, "2021-01-21T18:34:20.615851Z"),
         %Swoosh.Email{}
       ]
+    end
+
+    def template_model do
+      %{name: "Steve", email: "steve@avengers.com"}
     end
   end
 
@@ -61,12 +65,7 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
                    "provider_options" => [
                      %{
                        "key" => "template_model",
-                       "value" =>
-                         if :erlang.system_info(:otp_release) >= '26' do
-                           "%{name: \"Steve\", email: \"steve@avengers.com\"}"
-                         else
-                           "%{email: \"steve@avengers.com\", name: \"Steve\"}"
-                         end
+                       "value" => inspect(StorageDriver.template_model())
                      }
                    ],
                    "attachments" => [
