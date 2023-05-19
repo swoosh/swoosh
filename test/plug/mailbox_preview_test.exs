@@ -61,7 +61,12 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
                    "provider_options" => [
                      %{
                        "key" => "template_model",
-                       "value" => "%{email: \"steve@avengers.com\", name: \"Steve\"}"
+                       "value" =>
+                         if :erlang.system_info(:otp_release) >= '26' do
+                           "%{name: \"Steve\", email: \"steve@avengers.com\"}"
+                         else
+                           "%{email: \"steve@avengers.com\", name: \"Steve\"}"
+                         end
                      }
                    ],
                    "attachments" => [

@@ -114,14 +114,26 @@ defmodule Swoosh.Adapters.MailgunTest do
       conn = parse(conn)
       expected_path = "/" <> config[:domain] <> "/messages"
 
-      body_params = %{
-        "subject" => "Hello, Avengers!",
-        "to" => "steve.rogers@example.com",
-        "from" => "tony.stark@example.com",
-        "html" => "<h1>Hello</h1>",
-        "h:X-Mailgun-Variables" =>
-          "{\"my_other_var\":{\"my_other_id\":1,\"stuff\":2},\"my_var\":[{\"my_message_id\":123}]}"
-      }
+      body_params =
+        if :erlang.system_info(:otp_release) >= '26' do
+          %{
+            "subject" => "Hello, Avengers!",
+            "to" => "steve.rogers@example.com",
+            "from" => "tony.stark@example.com",
+            "html" => "<h1>Hello</h1>",
+            "h:X-Mailgun-Variables" =>
+              "{\"my_var\":[{\"my_message_id\":123}],\"my_other_var\":{\"my_other_id\":1,\"stuff\":2}}"
+          }
+        else
+          %{
+            "subject" => "Hello, Avengers!",
+            "to" => "steve.rogers@example.com",
+            "from" => "tony.stark@example.com",
+            "html" => "<h1>Hello</h1>",
+            "h:X-Mailgun-Variables" =>
+              "{\"my_other_var\":{\"my_other_id\":1,\"stuff\":2},\"my_var\":[{\"my_message_id\":123}]}"
+          }
+        end
 
       assert body_params == conn.body_params
       assert expected_path == conn.request_path
@@ -189,7 +201,11 @@ defmodule Swoosh.Adapters.MailgunTest do
         "from" => "tony.stark@example.com",
         "html" => "<h1>Hello</h1>",
         "recipient-variables" =>
-          "{\"juan.diaz@example.com\":{\"var1\":456},\"steve.rogers@example.com\":{\"var1\":123}}"
+          if :erlang.system_info(:otp_release) >= '26' do
+            "{\"steve.rogers@example.com\":{\"var1\":123},\"juan.diaz@example.com\":{\"var1\":456}}"
+          else
+            "{\"juan.diaz@example.com\":{\"var1\":456},\"steve.rogers@example.com\":{\"var1\":123}}"
+          end
       }
 
       assert body_params == conn.body_params
