@@ -1,12 +1,14 @@
 defmodule Swoosh.X.TestAssertions do
   @moduledoc ~S"""
+  Experimental New TestAssertions Module that may replace the old new in v2.
+
   This module contains a set of assertions functions that you can import in your
   test cases.
 
   It is meant to be used with the
   [Swoosh.Adapters.Test](Swoosh.Adapters.Test.html) module.
 
-  **Note**: `Swoosh.TestAssertion` works for unit tests and basic integration tests.
+  **Note**: `Swoosh.X.TestAssertions` works for unit tests and basic integration tests.
   Unfortunately it's not going to work for feature/E2E tests.
   The mechanism of `assert_email_sent` is based on messaging sending between processes,
   and is expecting the calling process (the one that calls `assert_email_sent`) to be
@@ -37,7 +39,7 @@ defmodule Swoosh.X.TestAssertions do
         use ExUnit.Case, async: false
 
         import Swoosh.Email
-        import Swoosh.TestAssertions
+        import Swoosh.X.TestAssertions
 
         setup :set_swoosh_global
 
@@ -82,7 +84,7 @@ defmodule Swoosh.X.TestAssertions do
   ## Examples
 
       iex> alias Swoosh.Email
-      iex> import Swoosh.TestAssertions
+      iex> import Swoosh.X.TestAssertions
 
       iex> email = Email.new(subject: "Hello, Avengers!")
       iex> Swoosh.Adapters.Test.deliver(email, [])
