@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.0
+
+### ✨ Features
+
+- Add experimental new test assertion module @jakub-gonet (#747)
+
 ## 1.10.3
 
 ### 🐛 Bug Fixes
