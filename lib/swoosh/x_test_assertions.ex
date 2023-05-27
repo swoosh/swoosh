@@ -265,24 +265,6 @@ defmodule Swoosh.X.TestAssertions do
     """
   end
 
-  @doc ~S"""
-  Asserts no emails were sent.
-  """
-  @spec assert_no_email_sent() :: boolean | no_return
-  def assert_no_email_sent() do
-    refute_email_sent()
-  end
-
-  @doc ~S"""
-  Asserts `email` was not sent.
-
-  Performs exact matching of the email struct.
-  """
-  @spec assert_email_not_sent(Email.t()) :: boolean | no_return
-  def assert_email_not_sent(%Email{} = email) do
-    refute_email_sent(email)
-  end
-
   @doc """
   Removes and returns from mailbox all sent emails.
   """

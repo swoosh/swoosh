@@ -90,44 +90,6 @@ defmodule Swoosh.X.TestAssertionsTest do
     end
   end
 
-  test "assert email not sent with unexpected email" do
-    unexpected_email = new() |> subject("Testing Avenger")
-
-    assert_email_not_sent(unexpected_email)
-  end
-
-  test "assert email not sent with expected email", %{email: email} do
-    message = ~r/Expected[\s\S]+to not contain[\s\S]+but this email matched/
-
-    try do
-      assert_email_not_sent(email)
-    rescue
-      error in [ExUnit.AssertionError] -> assert error.message =~ message
-    end
-  end
-
-  test "assert no email sent" do
-    flush_emails()
-
-    assert_no_email_sent()
-  end
-
-  test "assert no email sent with email sent" do
-    assert_raise ExUnit.AssertionError, fn ->
-      assert_no_email_sent()
-    end
-  end
-
-  test "assert no email sent when sending an email" do
-    message = "Expected no emails to be sent but those emails were present"
-
-    try do
-      assert_no_email_sent()
-    rescue
-      error in [ExUnit.AssertionError] -> assert error.message =~ message
-    end
-  end
-
   test "refute email sent" do
     flush_emails()
 
