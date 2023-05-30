@@ -101,7 +101,10 @@ defmodule Swoosh.Mixfile do
           Swoosh.ApiClient.Hackney
         ],
         Plug: Plug.Swoosh.MailboxPreview,
-        Test: Swoosh.TestAssertions,
+        Test: [
+          Swoosh.TestAssertions,
+          Swoosh.X.TestAssertions
+        ],
         Deprecated: Swoosh.Adapters.OhMySmtp
       ]
     ]
