@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.11.1
+
+### 🐛 Bug Fixes
+
+- Do not include Bcc header in delivered email @adamu (#773) Thanks heaps for the discussion and PR!
+
+### 🧰 Maintenance
+
+- Bump mime from 2.0.3 to 2.0.5 @dependabot (#771)
+
 ## 1.11.0
 
 ### ✨ Features
