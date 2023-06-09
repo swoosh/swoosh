@@ -64,7 +64,6 @@ defmodule Swoosh.Email.SMTPTest do
                 {"From", "tony@stark.com"},
                 {"To", "\"Janet Pym\" <wasp@avengers.com>, steve@rogers.com"},
                 {"Cc", "thor@odinson.com, \"Bruce Banner\" <hulk@smash.com>"},
-                {"Bcc", "beast@avengers.com, \"Clinton Francis Barton\" <hawk@eye.com>"},
                 {"Subject", "Hello, Avengers!"},
                 {"Reply-To", "black@widow.com"},
                 {"MIME-Version", "1.0"},
@@ -256,5 +255,20 @@ defmodule Swoosh.Email.SMTPTest do
                     ]}
                  ]}
               ]}
+  end
+
+  test "message includes to and cc, but omits the bcc header according to RFC 5322" do
+    email =
+      new()
+      |> from("from@test.com")
+      |> to("to@test.com")
+      |> cc("cc@test.com")
+      |> bcc("bcc@test.com")
+
+    {_type, _subtype, headers, _parts} = Helpers.prepare_message(email, %{})
+
+    assert {"To", "to@test.com"} in headers
+    assert {"Cc", "cc@test.com"} in headers
+    refute {"Bcc", "bcc@test.com"} in headers
   end
 end

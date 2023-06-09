@@ -51,8 +51,8 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     |> prepare_mime_version()
     |> prepare_reply_to(email)
     |> prepare_subject(email)
-    |> prepare_bcc(email)
     |> prepare_cc(email)
+    # bcc is deliberately omitted: https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.3
     |> prepare_to(email)
     |> prepare_from(email)
   end
@@ -67,9 +67,6 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_cc(headers, %{cc: []}), do: headers
   defp prepare_cc(headers, %{cc: cc}), do: [{"Cc", render_recipient(cc)} | headers]
-
-  defp prepare_bcc(headers, %{bcc: []}), do: headers
-  defp prepare_bcc(headers, %{bcc: bcc}), do: [{"Bcc", render_recipient(bcc)} | headers]
 
   defp prepare_reply_to(headers, %{reply_to: nil}), do: headers
 
