@@ -42,7 +42,7 @@ defmodule Swoosh.Mailer do
         password: {:system, "SMTP_PASSWORD"},
         tls: :always
 
-  ## Examples
+  ## Usage
 
   Once configured you can use your mailer like this:
 
@@ -51,6 +51,8 @@ defmodule Swoosh.Mailer do
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, ...}
       iex> Mailer.deliver(email)
       :ok
+
+  ## Dynamic config
 
   You can also pass an extra config argument to `deliver/2` that will be merged
   with your Mailer's config:
