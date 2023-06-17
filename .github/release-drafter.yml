@@ -10,12 +10,12 @@ categories:
       - 'fix'
       - 'bugfix'
       - 'bug'
+  - title: '📝 Documentation'
+    label: 'docs'
   - title: '🧰 Maintenance'
     label:
       - 'chore'
       - 'dependencies'
-  - title: '📝 Documentation'
-    label: 'docs'
 exclude-labels:
   - 'skip-changelog'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'

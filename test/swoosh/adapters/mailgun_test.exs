@@ -99,16 +99,18 @@ defmodule Swoosh.Adapters.MailgunTest do
   end
 
   test "deliver/1 with custom variables returns :ok", %{bypass: bypass, config: config} do
+    custom_vars = %{
+      my_var: [%{my_message_id: 123}],
+      my_other_var: %{my_other_id: 1, stuff: 2}
+    }
+
     email =
       new()
       |> from("tony.stark@example.com")
       |> to("steve.rogers@example.com")
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
-      |> put_provider_option(:custom_vars, %{
-        my_var: [%{my_message_id: 123}],
-        my_other_var: %{my_other_id: 1, stuff: 2}
-      })
+      |> put_provider_option(:custom_vars, custom_vars)
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -119,8 +121,7 @@ defmodule Swoosh.Adapters.MailgunTest do
         "to" => "steve.rogers@example.com",
         "from" => "tony.stark@example.com",
         "html" => "<h1>Hello</h1>",
-        "h:X-Mailgun-Variables" =>
-          "{\"my_other_var\":{\"my_other_id\":1,\"stuff\":2},\"my_var\":[{\"my_message_id\":123}]}"
+        "h:X-Mailgun-Variables" => Swoosh.json_library().encode!(custom_vars)
       }
 
       assert body_params == conn.body_params
@@ -168,16 +169,18 @@ defmodule Swoosh.Adapters.MailgunTest do
   end
 
   test "deliver/1 with recipient variables returns :ok", %{bypass: bypass, config: config} do
+    recipient_vars = %{
+      "steve.rogers@example.com": %{var1: 123},
+      "juan.diaz@example.com": %{var1: 456}
+    }
+
     email =
       new()
       |> from("tony.stark@example.com")
       |> to(["steve.rogers@example.com", "juan.diaz@example.com"])
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
-      |> put_provider_option(:recipient_vars, %{
-        "steve.rogers@example.com": %{var1: 123},
-        "juan.diaz@example.com": %{var1: 456}
-      })
+      |> put_provider_option(:recipient_vars, recipient_vars)
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
@@ -188,8 +191,7 @@ defmodule Swoosh.Adapters.MailgunTest do
         "to" => "steve.rogers@example.com, juan.diaz@example.com",
         "from" => "tony.stark@example.com",
         "html" => "<h1>Hello</h1>",
-        "recipient-variables" =>
-          "{\"juan.diaz@example.com\":{\"var1\":456},\"steve.rogers@example.com\":{\"var1\":123}}"
+        "recipient-variables" => Swoosh.json_library().encode!(recipient_vars)
       }
 
       assert body_params == conn.body_params

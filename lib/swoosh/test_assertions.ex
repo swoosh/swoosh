@@ -23,6 +23,8 @@ defmodule Swoosh.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
+  @type email_assertion :: Email.t() | Keyword.t() | (Email.t() -> boolean())
+
   @doc """
   Sets Swoosh test adapter to global mode.
 
@@ -70,7 +72,7 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, _}
   end
 
-  @spec assert_email_sent(Email.t() | Keyword.t() | (Email.t() -> boolean())) ::
+  @spec assert_email_sent(email_assertion()) ::
           :ok | tuple | no_return
 
   @doc ~S"""
@@ -111,6 +113,54 @@ defmodule Swoosh.TestAssertions do
     assert_received {:email, email}
     assert fun.(email)
   end
+
+  @doc ~S"""
+  Asserts multiple emails were sent.
+
+  You can pass a list of maps to match on specific params per email
+
+  ## Examples
+
+      iex> alias Swoosh.Email
+      iex> import Swoosh.TestAssertions
+
+      iex> emails = Enum.map(1..2, fn n -> Email.new(subject: "Hello, Avengers #{n}!") end)
+      iex> Swoosh.Adapters.Test.deliver_many(emails, [])
+
+      # assert a specific email was sent
+      iex> assert_emails_sent(emails)
+
+      # assert the list of emails with specific field(s) that were sent
+      iex> assert_email_sent([
+        %{subject: "Hello, Avengers 1!"},
+        %{subject: "Hello, Avengers 2!"},
+      ])
+  """
+  @spec assert_emails_sent() :: tuple | no_return
+  def assert_emails_sent do
+    assert_receive {:emails, _}
+  end
+
+  @spec assert_emails_sent([email_assertion()]) ::
+          :ok | tuple | no_return
+  def assert_emails_sent([%Swoosh.Email{} | _] = emails) do
+    assert_received {:emails, ^emails}
+  end
+
+  def assert_emails_sent([%{} | _] = params_map_list) do
+    assert_received {:emails, emails}
+
+    assert length(emails) == length(params_map_list)
+
+    emails
+    |> Enum.zip(params_map_list)
+    |> Enum.each(fn {email, params_map} ->
+      Enum.each(params_map, &assert_equal(email, &1))
+    end)
+  end
+
+  defp assert_equal(email, {:subject, %Regex{} = value}),
+    do: assert(email.subject =~ value)
 
   defp assert_equal(email, {:subject, value}),
     do: assert(email.subject == value)
