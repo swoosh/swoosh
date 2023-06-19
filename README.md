@@ -14,7 +14,7 @@ The complete documentation for Swoosh is [available online at HexDocs](https://h
 
 ## Requirements
 
-Elixir 1.11+ and Erlang OTP 23+
+Elixir 1.12+ and Erlang OTP 24+
 
 ## Getting started
 
