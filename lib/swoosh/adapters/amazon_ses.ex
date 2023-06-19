@@ -168,7 +168,7 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   defp generate_raw_message_data(email, config) do
     email
-    |> SMTPHelper.body(config)
+    |> SMTPHelper.body([{:keep_bcc, true} | config])
     |> Base.encode64()
     |> URI.encode()
   end
