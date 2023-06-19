@@ -46,7 +46,7 @@ if Code.ensure_loaded?(Plug) do
 
       conn
       |> put_resp_header("location", conn.assigns.base_path)
-      |> send_resp(302, '')
+      |> send_resp(302, ~c"")
     end
 
     get "/json" do

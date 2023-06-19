@@ -4,7 +4,7 @@ defmodule Swoosh.Adapters.MailPaceTest do
   import Swoosh.Email
   alias Swoosh.Adapters.MailPace
 
-  @success_response '{"id":404021,"status":"queued"}'
+  @success_response ~c"{\"id\":404021,\"status\":\"queued\"}"
 
   setup do
     bypass = Bypass.open()
