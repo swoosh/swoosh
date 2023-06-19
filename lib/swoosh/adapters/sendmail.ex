@@ -24,7 +24,7 @@ defmodule Swoosh.Adapters.Sendmail do
 
   @impl true
   def deliver(%Email{} = email, config) do
-    body = Helpers.body(email, config)
+    body = Helpers.body(email, [{:keep_bcc, true} | config])
     port = Port.open({:spawn, cmd(email, config)}, [:binary])
     Port.command(port, body)
     Port.close(port)
