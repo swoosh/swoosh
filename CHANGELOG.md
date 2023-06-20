@@ -137,11 +137,11 @@
 
 Bump to require Elixir 1.11. Now official support has been updated to Elixir 1.11+ with OTP 23+
 
-## 📝 Documentation
+### 📝 Documentation
 
 - doc: correct tags example for Adapters.Sendinblue @03juan (#711)
 
-## 🧰 Maintenance
+### 🧰 Maintenance
 
 - Bump ex\_doc from 0.28.4 to 0.28.5 @dependabot (#712)
 - Bump ex\_aws from 2.3.3 to 2.3.4 @dependabot (#710)
