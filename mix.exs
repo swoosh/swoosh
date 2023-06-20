@@ -8,7 +8,7 @@ defmodule Swoosh.Mixfile do
     [
       app: :swoosh,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       consolidate_protocols: Mix.env() != :test,
       build_embedded: Mix.env() == :prod,
@@ -73,6 +73,7 @@ defmodule Swoosh.Mixfile do
       {:cowboy, "~> 1.1 or ~> 2.4", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
       {:ex_aws, "~> 2.1", optional: true},
+      {:ssl_verify_fun, ">= 0.0.0", only: :test, manager: :rebar3, override: true},
       {:bypass, "~> 2.1", only: :test},
       {:ex_doc, "~> 0.26", only: :docs, runtime: false}
     ]

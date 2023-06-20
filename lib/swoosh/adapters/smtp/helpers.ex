@@ -12,7 +12,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   @doc false
   def body(email, config) do
-    {message_config, config} = Keyword.split(config, [:transfer_encoding])
+    {message_config, config} = Keyword.split(config, [:transfer_encoding, :keep_bcc])
     {type, subtype, headers, parts} = prepare_message(email, message_config)
     {encoding_config, _config} = Keyword.split(config, [:dkim])
     mime_encode(type, subtype, headers, parts, encoding_config)
@@ -41,18 +41,26 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   @doc false
   def prepare_message(email, config) do
     email
-    |> prepare_headers()
+    |> prepare_headers(config)
     |> prepare_parts(email, config)
   end
 
-  defp prepare_headers(email) do
+  defp prepare_headers(email, config) do
     []
     |> prepare_additional_headers(email)
     |> prepare_mime_version()
     |> prepare_reply_to(email)
     |> prepare_subject(email)
     |> prepare_cc(email)
-    # bcc is deliberately omitted: https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.3
+    |> then(fn headers ->
+      # bcc is deliberately omitted unless explicitly asked to keep, for service providers
+      # https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.3
+      if config[:keep_bcc] do
+        prepare_bcc(headers, email)
+      else
+        headers
+      end
+    end)
     |> prepare_to(email)
     |> prepare_from(email)
   end
@@ -67,6 +75,9 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   defp prepare_cc(headers, %{cc: []}), do: headers
   defp prepare_cc(headers, %{cc: cc}), do: [{"Cc", render_recipient(cc)} | headers]
+
+  defp prepare_bcc(headers, %{bcc: []}), do: headers
+  defp prepare_bcc(headers, %{bcc: bcc}), do: [{"Bcc", render_recipient(bcc)} | headers]
 
   defp prepare_reply_to(headers, %{reply_to: nil}), do: headers
 

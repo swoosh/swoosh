@@ -143,6 +143,26 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
+  test "deliver/1 encodes bcc", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"G Threepwood", "guybrush.threepwood@pirates.grog"})
+      |> bcc("stan@coolshirt.com")
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      {:ok, raw_message} = conn.body_params["RawMessage.Data"] |> URI.decode() |> Base.decode64()
+
+      assert String.contains?(raw_message, "Bcc: stan@coolshirt.com\r\n")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
+  end
+
   test "a sent email that returns a api error parses correctly", %{
     bypass: bypass,
     config: config,
