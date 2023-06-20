@@ -49,7 +49,7 @@ defmodule Swoosh.Application do
   else
     defp runtime_children(children, :serve_mailbox) do
       if Application.get_env(:swoosh, :serve_mailbox) do
-        Logger.warn("""
+        Logger.warning("""
         Could not start preview server.
 
         Please add :plug_cowboy to your dependencies:
