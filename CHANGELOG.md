@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.11.2
+
+### 🐛 Bug Fixes
+
+- Fix BCC for adapters that depend on SMTP helper @princemaple (#779)
+
+### 📝 Documentation
+
+- Remove unnecessary sentence from README @adamu (#776)
+
 ## 1.11.1
 
 ### 🐛 Bug Fixes
