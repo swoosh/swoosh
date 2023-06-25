@@ -1,8 +1,8 @@
-defmodule Swoosh.Adapters.Sendinblue do
+defmodule Swoosh.Adapters.Brevo do
   @moduledoc ~S"""
-  An adapter that sends email using the Sendinblue API (Transactional emails only).
+  An adapter that sends email using the Brevo API (Transactional emails only).
 
-  For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference/sendtransacemail)
+  For reference: [Brevo API docs](https://developers.brevo.com/reference/sendtransacemail)
 
   **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
@@ -12,7 +12,7 @@ defmodule Swoosh.Adapters.Sendinblue do
 
       # config/config.exs
       config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.Sendinblue,
+        adapter: Swoosh.Adapters.Brevo,
         api_key: "my-api-key"
 
       # lib/sample/mailer.ex
@@ -57,7 +57,7 @@ defmodule Swoosh.Adapters.Sendinblue do
 
   alias Swoosh.Email
 
-  @base_url "https://api.sendinblue.com/v3"
+  @base_url "https://api.brevo.com/v3"
   @api_endpoint "/smtp/email"
 
   defp base_url(config), do: config[:base_url] || @base_url

@@ -1,8 +1,8 @@
-defmodule Swoosh.Adapters.SendinblueTest do
+defmodule Swoosh.Adapters.BrevoTest do
   use Swoosh.AdapterCase, async: true
 
   import Swoosh.Email
-  alias Swoosh.Adapters.Sendinblue
+  alias Swoosh.Adapters.Brevo
 
   @example_message_id "<42.11@relay.example.com>"
 
@@ -45,7 +45,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "text-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -69,7 +69,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "html-only delivery returns :ok", %{bypass: bypass, config: config} do
@@ -93,7 +93,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with all fields returns :ok", %{bypass: bypass, config: config} do
@@ -133,7 +133,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with template_id returns :ok", %{bypass: bypass, config: config} do
@@ -157,7 +157,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with template_id and params returns :ok", %{bypass: bypass, config: config} do
@@ -191,7 +191,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with template_id using template's sender returns :ok", %{
@@ -221,7 +221,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with template_id using template's subject returns :ok", %{
@@ -250,7 +250,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with scheduled_at returns :ok", %{bypass: bypass, config: config} do
@@ -280,7 +280,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       make_response(conn)
     end)
 
-    assert Sendinblue.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+    assert Brevo.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
   test "deliver/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
@@ -296,7 +296,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
           "message" => "The expected rate limit is exceeded."
         }}}
 
-    assert Sendinblue.deliver(email, config) == response
+    assert Brevo.deliver(email, config) == response
   end
 
   test "deliver/1 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
@@ -312,7 +312,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
           "message" => "error message explained."
         }}}
 
-    assert Sendinblue.deliver(email, config) == response
+    assert Brevo.deliver(email, config) == response
   end
 
   test "deliver/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
@@ -322,11 +322,11 @@ defmodule Swoosh.Adapters.SendinblueTest do
       Plug.Conn.resp(conn, 500, "")
     end)
 
-    assert Sendinblue.deliver(email, config) == {:error, {500, ""}}
+    assert Brevo.deliver(email, config) == {:error, {500, ""}}
   end
 
   test "validate_config/1 with valid config", %{config: config} do
-    assert Sendinblue.validate_config(config) == :ok
+    assert Brevo.validate_config(config) == :ok
   end
 
   test "validate_config/1 with invalid config" do
@@ -336,7 +336,7 @@ defmodule Swoosh.Adapters.SendinblueTest do
       expected [:api_key] to be set, got: []
       """,
       fn ->
-        Sendinblue.validate_config([])
+        Brevo.validate_config([])
       end
     )
   end
