@@ -117,7 +117,7 @@ defmodule Swoosh.Mixfile do
       [_, module] = Regex.run(~r/\Adefmodule (.+) do/, content)
       module |> String.split(".") |> Module.concat()
     end)
-    |> Kernel.--([Swoosh.Adapters.OhMySmtp])
+    |> Kernel.--([Swoosh.Adapters.OhMySmtp, Swoosh.Adapters.Sendinblue])
   end
 
   defp aliases do
