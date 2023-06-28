@@ -79,7 +79,7 @@ defmodule Swoosh.Adapters.SMTP do
     Enum.map(config, fn {key, value} -> enforce_type!(key, value) end)
   end
 
-  defp enforce_type!(key, value) when key in @config_keys and is_binary(value) do
+  defp enforce_type!(key, value) and is_binary(value) do
     case Map.get(@config_transformations, key) do
       {func, valid_values} ->
         value = func.(value)
@@ -96,6 +96,9 @@ defmodule Swoosh.Adapters.SMTP do
 
       func ->
         {key, func.(value)}
+
+      nil ->
+        {key, value}
     end
   end
 
