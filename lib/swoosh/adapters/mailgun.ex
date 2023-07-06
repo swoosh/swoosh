@@ -15,7 +15,7 @@ defmodule Swoosh.Adapters.Mailgun do
   ## Configuration options
 
   * `:api_key` - the API key used with Mailgun
-  * `:domain` - the domain you will be sending emails from. For sandbox domains, make sure to use the sandbox adddress, for example: `https://api.mailgun.net/v3/sandbox123456.mailgun.org/messages` then you should set `domain: "sandbox123456.mailgun.org"`.
+  * `:domain` - the domain you will be sending emails from. For sandbox domains, make sure to use the sandbox address, for example: `https://api.mailgun.net/v3/sandbox123456.mailgun.org/messages` then you should set `domain: "sandbox123456.mailgun.org"`.
   * `:base_url` - the url to use as the API endpoint. For EU domains, use https://api.eu.mailgun.net/v3
 
   ## Example
