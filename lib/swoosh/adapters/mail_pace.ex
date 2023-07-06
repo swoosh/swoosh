@@ -28,6 +28,7 @@ defmodule Swoosh.Adapters.MailPace do
   import Swoosh.Email.Render
 
   @endpoint "https://app.mailpace.com/api/v1/send"
+  @server_token_key "MailPace-Server-Token"
 
   @impl true
   def deliver(%Email{} = email, config \\ []) do
@@ -52,7 +53,7 @@ defmodule Swoosh.Adapters.MailPace do
   defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"MailPace-Server-Token", config[:api_key]},
+      {server_token_key(config), config[:api_key]},
       {"Content-Type", "application/json"},
       {"Accept", "application/json"}
     ]
@@ -117,4 +118,6 @@ defmodule Swoosh.Adapters.MailPace do
   end
 
   defp endpoint(config), do: config[:endpoint] || @endpoint
+
+  defp server_token_key(config), do: config[:server_token_key] || @server_token_key
 end
