@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.11.3
+
+### 📝 Documentation
+
+- Fix sections on CHANGELOG @nelsonmestevao (#781)
+
+### 🧰 Maintenance
+
+- SendInBlue -> Brevo @princemaple (#783)
+
+
 ## 1.11.2
 
 ### 🐛 Bug Fixes
