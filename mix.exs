@@ -105,7 +105,10 @@ defmodule Swoosh.Mixfile do
           Swoosh.TestAssertions,
           Swoosh.X.TestAssertions
         ],
-        Deprecated: Swoosh.Adapters.OhMySmtp
+        Deprecated: [
+          Swoosh.Adapters.OhMySmtp,
+          Swoosh.Adapters.Sendinblue
+        ]
       ]
     ]
   end
