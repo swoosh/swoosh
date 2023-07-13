@@ -237,7 +237,7 @@ defmodule Swoosh.Mailer do
     require Logger
 
     with adapter when not is_nil(adapter) <- adapter,
-         {:module, _} <- Code.ensure_loaded(adapter),
+         {:module, _} <- Code.ensure_compiled(adapter),
          true <- function_exported?(adapter, :validate_dependency, 0),
          :ok <- adapter.validate_dependency() do
       :ok
