@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.11.4
+
+### 🐛 Bug Fixes
+
+- Race condition on @on_load callback (#792) (quick fix in aef9cccbd)
+
+### 📝 Documentation
+
+- Update Mailgun docs for sandbox mode @stjhimy (#787)
+
+
 ## 1.11.3
 
 ### 📝 Documentation
