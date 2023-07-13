@@ -233,8 +233,9 @@ defmodule Swoosh.Mailer do
     otp_app = Module.get_attribute(mailer, :otp_app)
     mailer_config = Module.get_attribute(mailer, :mailer_config)
 
-    adapter = Keyword.fetch!(Mailer.parse_config(otp_app, mailer, mailer_config, []), :adapter)
-    Mailer.validate_dependency(adapter)
+    if adapter = Keyword.get(Mailer.parse_config(otp_app, mailer, mailer_config, []), :adapter) do
+      Mailer.validate_dependency(adapter)
+    end
   end
 
   @doc false
