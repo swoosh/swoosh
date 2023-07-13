@@ -57,16 +57,13 @@ defmodule Swoosh.MailerTest do
   end
 
   test "raise if mailer defined with nonexistent adapter", %{valid_email: email} do
-    import ExUnit.CaptureLog
-
-    assert capture_log(fn ->
-             defmodule WontWorkAdapterMailer do
-               use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
-             end
-
-             refute function_exported?(WontWorkAdapterMailer, :deliver, 1)
-             refute function_exported?(WontWorkAdapterMailer, :deliver, 2)
-           end) =~ ~r/Elixir.NotExistAdapter does not exist/
+    assert_raise Swoosh.Validation.MissingAdapterError,
+                 ~r/Elixir.NotExistAdapter does not exist/,
+                 fn ->
+                   defmodule WontWorkAdapterMailer do
+                     use Swoosh.Mailer, otp_app: :swoosh, adapter: NotExistAdapter
+                   end
+                 end
   end
 
   test "should raise if deliver!/2 is called with invalid from", %{valid_email: valid_email} do
@@ -147,15 +144,12 @@ defmodule Swoosh.MailerTest do
       def deliver(_, _), do: :ok
     end
 
-    import ExUnit.CaptureLog
-
-    error =
-      capture_log(fn ->
-        assert :abort = Swoosh.Mailer.validate_dependency(FakeDepAdapter)
-      end)
-
-    assert error =~ "- VillanModule"
-    assert error =~ "- Elixir.VModule from :v_dep"
+    assert_raise Swoosh.Validation.MissingDepsError,
+                 ~r"""
+                 - VillanModule
+                 - Elixir\.VModule from :v_dep
+                 """m,
+                 fn -> Swoosh.Mailer.validate_dependency(FakeDepAdapter) end
   end
 
   describe "telemetry" do

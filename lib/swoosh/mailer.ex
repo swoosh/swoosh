@@ -156,13 +156,7 @@ defmodule Swoosh.Mailer do
         end)
       end
 
-      @on_load :validate_dependency
-
-      @doc false
-      def validate_dependency do
-        adapter = Keyword.get(parse_config([]), :adapter)
-        Mailer.validate_dependency(adapter)
-      end
+      @before_compile Swoosh.Mailer
 
       defp parse_config(config) do
         Mailer.parse_config(@otp_app, __MODULE__, @mailer_config, config)
@@ -232,10 +226,19 @@ defmodule Swoosh.Mailer do
     end)
   end
 
+  defmacro __before_compile__(env) do
+    alias Swoosh.Mailer
+
+    mailer = env.module
+    otp_app = Module.get_attribute(mailer, :otp_app)
+    mailer_config = Module.get_attribute(mailer, :mailer_config)
+
+    adapter = Keyword.fetch!(Mailer.parse_config(otp_app, mailer, mailer_config, []), :adapter)
+    Mailer.validate_dependency(adapter)
+  end
+
   @doc false
   def validate_dependency(adapter) do
-    require Logger
-
     with adapter when not is_nil(adapter) <- adapter,
          {:module, _} <- Code.ensure_compiled(adapter),
          true <- function_exported?(adapter, :validate_dependency, 0),
@@ -246,28 +249,10 @@ defmodule Swoosh.Mailer do
         :ok
 
       {:error, :nofile} ->
-        Logger.error("#{adapter} does not exist")
-        :abort
+        raise Swoosh.Validation.MissingAdapterError, adapter: adapter
 
       {:error, deps} when is_list(deps) ->
-        Logger.error(Swoosh.Mailer.missing_deps_message(adapter, deps))
-        :abort
+        raise Swoosh.Validation.MissingDepsError, adapter: adapter, deps: deps
     end
-  end
-
-  @doc false
-  def missing_deps_message(adapter, deps) do
-    deps =
-      deps
-      |> Enum.map(fn
-        {lib, module} -> "#{module} from #{inspect(lib)}"
-        module -> inspect(module)
-      end)
-      |> Enum.map(&"\n- #{&1}")
-
-    """
-    The following dependencies are required to use #{inspect(adapter)}:
-    #{deps}
-    """
   end
 end
