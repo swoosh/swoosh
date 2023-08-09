@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.11.5
+
+### 🧰 Maintenance
+
+- Deprecate system env tuples @josevalim (#800)
+- Use concatenation to build sup children @josevalim (#801)
+- Compute docs lazily @josevalim (#802)
+
+- Bump ex\_doc from 0.30.3 to 0.30.4 @dependabot (#798)
+- Bump mail from 0.2.3 to 0.3.1 @dependabot (#799)
+- Bump ex\_aws from 2.4.3 to 2.4.4 @dependabot (#795)
+- Bump ex\_doc from 0.30.2 to 0.30.3 @dependabot (#794)
+
 ## 1.11.4
 
 ### 🐛 Bug Fixes
