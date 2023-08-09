@@ -232,8 +232,7 @@ defmodule Swoosh.Mailer do
     end
   end
 
-  @doc false
-  def interpolate_env_vars(config) do
+  defp interpolate_env_vars(config) do
     Enum.map(config, fn
       {key, {:system, env_var}} -> {key, System.get_env(env_var)}
       {key, value} -> {key, value}
