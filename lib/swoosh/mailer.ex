@@ -124,6 +124,8 @@ defmodule Swoosh.Mailer do
       @otp_app Keyword.fetch!(opts, :otp_app)
       @mailer_config opts
 
+      Swoosh.Mailer.deprecated_system_env(@otp_app, __MODULE__)
+
       @spec deliver(Swoosh.Email.t(), Keyword.t()) :: {:ok, term} | {:error, term}
       def deliver(email, config \\ [])
 
@@ -204,27 +206,33 @@ defmodule Swoosh.Mailer do
     adapter.deliver_many(emails, config)
   end
 
-  @doc """
-  Parse configs in the following order, later ones taking priority:
-
-  1. mix configs
-  2. compiled configs in Mailer module
-  3. dynamic configs passed into the function
-  4. system envs
-  """
+  @doc false
   def parse_config(otp_app, mailer, mailer_config, dynamic_config) do
     Application.get_env(otp_app, mailer, [])
     |> Keyword.merge(mailer_config)
     |> Keyword.merge(dynamic_config)
-    |> Swoosh.Mailer.interpolate_env_vars()
+    |> interpolate_env_vars()
   end
 
-  @doc """
-  Interpolate system environment variables in the configuration.
+  @doc false
+  def deprecated_system_env(otp_app, mailer) do
+    config = Application.get_env(otp_app, mailer, [])
 
-  This function will transform all the {:system, "ENV_VAR"} tuples into their
-  respective values grabbed from the process environment.
-  """
+    if Keyword.keyword?(config) do
+      Enum.each(config, fn
+        {key, {:system, _env_var}} ->
+          IO.warn(
+            "Using {:system, env_var} to configure Swoosh's #{inspect(mailer)} is deprecated, " <>
+              "please use config/runtime.exs instead (found under key #{inspect(key)})"
+          )
+
+        {_key, _value} ->
+          :ok
+      end)
+    end
+  end
+
+  @doc false
   def interpolate_env_vars(config) do
     Enum.map(config, fn
       {key, {:system, env_var}} -> {key, System.get_env(env_var)}
