@@ -33,15 +33,6 @@ defmodule Swoosh.Mailer do
           api_key: "SG.x.x"
       end
 
-  System environment variables can be specified with `{:system, "ENV_VAR_NAME"}`:
-
-      config :sample, Sample.Mailer,
-        adapter: Swoosh.Adapters.SMTP,
-        relay: "smtp.sendgrid.net"
-        username: {:system, "SMTP_USERNAME"},
-        password: {:system, "SMTP_PASSWORD"},
-        tls: :always
-
   ## Usage
 
   Once configured you can use your mailer like this:
