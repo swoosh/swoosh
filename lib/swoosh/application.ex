@@ -46,13 +46,8 @@ defmodule Swoosh.Application do
         Could not start preview server.
 
         Please add :plug_cowboy to your dependencies:
-          {:plug_cowboy, ">= 1.0.0"}
 
-        And then recompile swoosh:
-
-          mix deps.get
-          mix deps.clean --build swoosh
-          mix deps.compile swoosh
+            {:plug_cowboy, ">= 1.0.0"}
         """)
       end
 
