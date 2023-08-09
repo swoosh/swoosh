@@ -24,7 +24,7 @@ defmodule Swoosh.Mixfile do
       name: "Swoosh",
       source_url: @source_url,
       homepage_url: @source_url,
-      docs: docs(),
+      docs: &docs/0,
       preferred_cli_env: [
         docs: :docs,
         "hex.publish": :docs
