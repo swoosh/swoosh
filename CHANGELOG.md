@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.6
+
+### 🐛 Bug Fixes
+
+- Add `plug` as an explicit dependency though still optional
+
 ## 1.11.5
 
 ### 🧰 Maintenance
