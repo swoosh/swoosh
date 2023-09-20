@@ -41,7 +41,7 @@ defmodule Swoosh.Mailer do
       iex> email = new |> from("tony.stark@example.com") |> to("steve.rogers@example.com")
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, ...}
       iex> Mailer.deliver(email)
-      :ok
+      {:ok, %{...}}
 
   ## Dynamic config
 
@@ -52,7 +52,7 @@ defmodule Swoosh.Mailer do
       iex> email = new |> from("tony.stark@example.com") |> to("steve.rogers@example.com")
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, ...}
       iex> Mailer.deliver(email, domain: "jarvis.com")
-      :ok
+      {:ok, %{...}}
 
   ## Telemetry
 
