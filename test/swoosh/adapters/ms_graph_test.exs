@@ -26,14 +26,20 @@ defmodule Swoosh.Adapters.MsGraphTest do
 
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
-      # TODO(@justindotpub): when calling parse, a 500 is always returned with no error details.
-      # conn = parse(conn)
+      conn = parse(conn)
+
       from_email = email.from |> elem(1)
       expected_path = "/users/" <> from_email <> "/sendMail"
 
-      # TODO: conn.body_params isn't accessible, and perhaps that's because parse(conn) failed so I skipped it?
-      # body = MsGraph.encode_body(email, config)
-      # assert body == conn.body_params
+      {:ok, body, conn} = Plug.Conn.read_body(conn, [])
+      decoded_body = Base.decode64!(body)
+
+      parts = decoded_body |> String.split("\r\n")
+
+      assert "Content-Type: text/html;" in parts
+      assert "From: tony.stark@example.com" in parts
+      assert "To: steve.rogers@example.com" in parts
+      assert "Subject: Hello, Avengers!" in parts
 
       assert expected_path == conn.request_path
       assert "POST" == conn.method
@@ -63,23 +69,31 @@ defmodule Swoosh.Adapters.MsGraphTest do
     from_email = email.from |> elem(1)
 
     Bypass.expect(bypass, fn conn ->
-      # conn = parse(conn)
+      conn = parse(conn)
       expected_path = "/users/" <> from_email <> "/sendMail"
 
-      # body_params = %{
-      #   "subject" => "Hello, Avengers!",
-      #   "to" => ~s(wasp.avengers@example.com, "Steve Rogers" <steve.rogers@example.com>),
-      #   "bcc" => ~s(beast.avengers@example.com, "Clinton Francis Barton" <hawk.eye@example.com>),
-      #   "cc" => ~s(thor.odinson@example.com, "Bruce Banner" <hulk.smash@example.com>),
-      #   "h:Reply-To" => "office.avengers@example.com",
-      #   "from" => ~s("T Stark" <tony.stark@example.com>),
-      #   "text" => "Hello",
-      #   "html" => "<h1>Hello</h1>",
-      #   "h:X-MsGraph-Variables" => "{\"key\":\"value\"}",
-      #   "template" => "avengers-templates"
-      # }
+      {:ok, body, conn} = Plug.Conn.read_body(conn, [])
+      decoded_body = Base.decode64!(body)
 
-      # assert body_params == conn.body_params
+      parts = decoded_body |> String.split("\r\n")
+
+      assert "From: T Stark <tony.stark@example.com>" in parts
+
+      to = Enum.find(parts, fn part -> String.starts_with?(part, "To:") end)
+      assert String.contains?(to, "wasp.avengers@example.com")
+      assert String.contains?(to, "Steve Rogers <steve.rogers@example.com>")
+
+      cc = Enum.find(parts, fn part -> String.starts_with?(part, "Cc:") end)
+      assert String.contains?(cc, "thor.odinson@example.com")
+      assert String.contains?(cc, "Bruce Banner <hulk.smash@example.com>")
+
+      assert "Reply-To: office.avengers@example.com" in parts
+      assert "Subject: Hello, Avengers!" in parts
+      assert "Content-Type: text/html;" in parts
+      assert "Content-Type: text/plain;" in parts
+      assert "<h1>Hello</h1>" in parts
+      assert "Hello" in parts
+
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
@@ -104,12 +118,18 @@ defmodule Swoosh.Adapters.MsGraphTest do
     from_email = email.from |> elem(1)
 
     Bypass.expect(bypass, fn conn ->
-      # conn = parse(conn)
+      conn = parse(conn)
       expected_path = "/users/" <> from_email <> "/sendMail"
 
-      # TODO(@justindotpub): base64 decode the body and check the headers
+      {:ok, body, conn} = Plug.Conn.read_body(conn, [])
+      decoded_body = Base.decode64!(body)
 
-      # assert body_params == conn.body_params
+      parts = decoded_body |> String.split("\r\n")
+
+      assert "In-Reply-To: <1234@example.com>" in parts
+      assert "X-Accept-Language: en" in parts
+      assert "X-Mailer: swoosh" in parts
+
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
