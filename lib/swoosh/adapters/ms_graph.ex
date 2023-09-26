@@ -15,7 +15,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   ## Configuration options
 
-  * `:auth` - either a function, a {mod, func, args} tuple, or a string that returns an OAuth 2.0 access token.
+  * `:auth` - either a function, a {mod, func, args} tuple, or a string that returns/is an OAuth 2.0 access token.
   * `:base_url` - the base URL to use as the Microsoft Graph API endpoint.  Defaults to the standard Microsoft Graph API endpoint.
 
   ## Example
