@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.12.0
+
+### ✨ Features
+
+- Implement Swoosh.Adapters.MsGraph @justindotpub (#815)
+
+### 📝 Documentation
+
+- Update return value in docs @princemaple (#813)
+
+### ⛓️ Dependency
+
+- Bump hackney from 1.18.2 to 1.19.1 @dependabot (#814)
+
 ## 1.11.6
 
 ### 🐛 Bug Fixes
