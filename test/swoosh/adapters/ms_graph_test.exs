@@ -11,7 +11,7 @@ defmodule Swoosh.Adapters.MsGraphTest do
 
     config = [
       base_url: "http://localhost:#{bypass.port}",
-      access_token_fn: fn -> "fake-token" end
+      auth: fn -> "fake-token" end
     ]
 
     valid_email =
@@ -155,10 +155,58 @@ defmodule Swoosh.Adapters.MsGraphTest do
   test "validate_config/1 with invalid config" do
     assert_raise ArgumentError,
                  """
-                 expected [:access_token_fn] to be set, got: []
+                 expected [:auth] to be set, got: []
                  """,
                  fn ->
                    MsGraph.validate_config([])
                  end
+  end
+
+  test ":auth config as anonymous fn succeeds", %{bypass: bypass, config: config, valid_email: email} do
+    config = config |> Keyword.put(:auth, fn -> "fake-token-from-fn" end)
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert {"authorization", "Bearer fake-token-from-fn"} in conn.req_headers
+
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) ==
+             {:ok, %{}}
+  end
+
+  test ":auth config as string succeeds", %{bypass: bypass, config: config, valid_email: email} do
+    config = config |> Keyword.put(:auth, "fake-token-from-string")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert {"authorization", "Bearer fake-token-from-string"} in conn.req_headers
+
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) ==
+             {:ok, %{}}
+  end
+
+  test ":auth config as MFA tuple succeeds", %{bypass: bypass, config: config, valid_email: email} do
+    config = config |> Keyword.put(:auth, {__MODULE__, :auth, ["a", "b", "c"]})
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert {"authorization", "Bearer fake-token-from-mfa-tuple"} in conn.req_headers
+
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) ==
+             {:ok, %{}}
+  end
+
+  def auth(_a, _b, _c) do
+    "fake-token-from-mfa-tuple"
   end
 end

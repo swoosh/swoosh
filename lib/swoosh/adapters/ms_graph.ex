@@ -15,10 +15,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   ## Configuration options
 
-  * `:access_token_fn` - an anonymous function that returns an OAuth 2.0 access token.
-    Per ERLEF guidelines on [protecting sensitive data](https://erlef.github.io/security-wg/secure_coding_and_deployment_hardening/sensitive_data)
-    wrap sensitive data in a closure when passing it as an argument to a function.
-    This also allows you to generate a fresh access token in whatever manner you see fit, shielding this adapter from those concerns.
+  * `:auth` - either a function, a {mod, func, args} tuple, or a string that returns an OAuth 2.0 access token.
   * `:base_url` - the base URL to use as the Microsoft Graph API endpoint.  Defaults to the standard Microsoft Graph API endpoint.
 
   ## Example
@@ -26,7 +23,7 @@ defmodule Swoosh.Adapters.MsGraph do
       # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.MsGraph,
-        access_token_fn: fn -> Sample.OAuthTokenRequester.request_token() end
+        auth: fn -> Sample.OAuthTokenRequester.request_token() end
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -36,7 +33,7 @@ defmodule Swoosh.Adapters.MsGraph do
   """
 
   use Swoosh.Adapter,
-    required_config: [:access_token_fn],
+    required_config: [:auth],
     required_deps: [:gen_smtp, plug: Plug.Conn.Query]
 
   require Logger
@@ -90,14 +87,28 @@ defmodule Swoosh.Adapters.MsGraph do
   end
 
   defp prepare_headers(config) do
-    access_token_fn = config[:access_token_fn]
-
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"Authorization", "Bearer #{access_token_fn.()}"},
+      {"Authorization", "Bearer #{auth(config)}"},
       # Per https://learn.microsoft.com/en-us/graph/api/user-sendmail?view=graph-rest-1.0&tabs=http#request-headers
       # we use a Content-Type of `text/plain` for MIME content.
       {"Content-Type", "text/plain"}
     ]
+  end
+
+  defp auth(config) do
+    case config[:auth] do
+        func when is_function(func, 0) ->
+          func.()
+
+        {m, f, a} when is_atom(m) and is_atom(f) and is_list(a) ->
+          apply(m, f, a)
+
+        token when is_binary(token) ->
+          token
+
+        nil ->
+          raise "Missing required config :auth, it can be a function, a {mod, func, args} tuple, or a string"
+      end
   end
 end
