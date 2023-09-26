@@ -8,7 +8,7 @@ defmodule Swoosh.ConnParser do
         Plug.Parsers.JSON
       ])
       |> Keyword.put_new(:json_decoder, Swoosh.json_library())
-      |> Keyword.put_new(:pass, ["message/rfc822"])
+      |> Keyword.put_new(:pass, ["message/rfc822", "text/plain"])
 
     Plug.Parsers.call(conn, Plug.Parsers.init(opts))
   end
