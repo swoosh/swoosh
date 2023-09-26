@@ -98,17 +98,17 @@ defmodule Swoosh.Adapters.MsGraph do
 
   defp auth(config) do
     case config[:auth] do
-        func when is_function(func, 0) ->
-          func.()
+      func when is_function(func, 0) ->
+        func.()
 
-        {m, f, a} when is_atom(m) and is_atom(f) and is_list(a) ->
-          apply(m, f, a)
+      {m, f, a} when is_atom(m) and is_atom(f) and is_list(a) ->
+        apply(m, f, a)
 
-        token when is_binary(token) ->
-          token
+      token when is_binary(token) ->
+        token
 
-        nil ->
-          raise "Missing required config :auth, it can be a function, a {mod, func, args} tuple, or a string"
-      end
+      nil ->
+        raise "Missing required config :auth, it can be a function, a {mod, func, args} tuple, or a string"
+    end
   end
 end

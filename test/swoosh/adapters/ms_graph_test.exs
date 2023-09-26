@@ -162,8 +162,13 @@ defmodule Swoosh.Adapters.MsGraphTest do
                  end
   end
 
-  test ":auth config as anonymous fn succeeds", %{bypass: bypass, config: config, valid_email: email} do
+  test ":auth config as anonymous fn succeeds", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
     config = config |> Keyword.put(:auth, fn -> "fake-token-from-fn" end)
+
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
 
