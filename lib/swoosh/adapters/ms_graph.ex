@@ -10,7 +10,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   ## Dependency
 
-  Microsoft Graph adapter requires `Plug` and `:gen_smtp` to work properly.
+  Microsoft Graph adapter requires `:gen_smtp` to work properly.
   `:gen_smtp` is only used to encode the email body to MIME format.
 
   ## Configuration options
@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   use Swoosh.Adapter,
     required_config: [:auth],
-    required_deps: [:gen_smtp, plug: Plug.Conn.Query]
+    required_deps: [:gen_smtp]
 
   require Logger
   alias Swoosh.Email
