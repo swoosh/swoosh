@@ -155,6 +155,10 @@ if Code.ensure_loaded?(Plug) do
       end
     end
 
+    defp render_value(value) when value == "", do: "n/a"
+
+    defp render_value(value), do: Plug.HTML.html_escape(value)
+
     defp replace_inline_references(%{html_body: nil, text_body: text_body}) do
       text_body
     end
