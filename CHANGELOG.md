@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.13.0
+
+### ✨ Features
+
+- Add Scaleway adapter @andreh11 (#825)
+- Update the UI for the mailbox viewer @dsincl12 (#822)
+
+### ⛓️ Dependency
+
+- Bump ex\_doc from 0.30.8 to 0.30.9 @dependabot (#826)
+- Bump ex\_doc from 0.30.6 to 0.30.8 @dependabot (#824)
+- Bump hackney from 1.19.1 to 1.20.1 @dependabot (#820)
+- Bump plug from 1.15.0 to 1.15.1 @dependabot (#818)
+- Bump plug from 1.14.2 to 1.15.0 @dependabot (#817)
+
 ## 1.12.0
 
 ### ✨ Features
