@@ -389,6 +389,9 @@ If you are curious, this is how it the mailbox preview looks like:
 
 ![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/main/images/mailbox-preview.png)
 
+
+_Note_ : To show the preview we use the cdn-version of Tailwindcss. If you have set a `content-security-policy` you may have to add `https://cdn.tailwindcss.com` to `default-src` to have the correct make up.
+
 The preview is also available as a JSON endpoint.
 
 ```sh
