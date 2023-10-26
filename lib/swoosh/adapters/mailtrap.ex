@@ -33,7 +33,7 @@ defmodule Swoosh.Adapters.Mailtrap do
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mailtrap,
         api_key: "my-api-key",
-        sandbox_inbox_id: '111111'
+        sandbox_inbox_id: "111111"
 
   ## Using with provider options
 
@@ -106,14 +106,14 @@ defmodule Swoosh.Adapters.Mailtrap do
   defp prepare_url(config) do
     if config[:sandbox_inbox_id] do
       base_url = config[:base_url] || @sandbox_base_url
-      [base_url, Enum.join([@api_endpoint, config[:sandbox_inbox_id]], "/")]
+      [base_url, Path.join([@api_endpoint, config[:sandbox_inbox_id]])]
     else
       [base_url(config), @api_endpoint]
     end
   end
 
   defp base_url(config),
-    do:  config[:base_url] || @base_url
+    do: config[:base_url] || @base_url
 
   defp prepare_body(email) do
     %{}

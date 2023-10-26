@@ -351,6 +351,7 @@ defmodule Swoosh.Adapters.MailtrapTest do
           }
         ]
       }
+
       assert body_params == conn.body_params
       assert "POST" == conn.method
 
@@ -388,7 +389,7 @@ defmodule Swoosh.Adapters.MailtrapTest do
       Plug.Conn.resp(conn, 200, @success_response)
     end)
 
-    assert Mailtrap.deliver(email, config ++ [{:sandbox_inbox_id, 11111}]) ==
+    assert Mailtrap.deliver(email, config ++ [{:sandbox_inbox_id, "11111"}]) ==
              {:ok, %{ids: ["0c7fd939-02cf-11ed-88c2-0a58a9feac02"]}}
   end
 
