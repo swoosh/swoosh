@@ -33,7 +33,7 @@ defmodule Swoosh.Adapters.Mailtrap do
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mailtrap,
         api_key: "my-api-key",
-        sandbox_inbox_id: '111111'
+        sandbox_inbox_id: "111111"
 
   ## Using with provider options
 
