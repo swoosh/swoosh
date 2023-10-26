@@ -106,7 +106,7 @@ defmodule Swoosh.Adapters.Mailtrap do
   defp prepare_url(config) do
     if config[:sandbox_inbox_id] do
       base_url = config[:base_url] || @sandbox_base_url
-      [base_url, Enum.join([@api_endpoint, config[:sandbox_inbox_id]], "/")]
+      [base_url, Path.join([@api_endpoint, config[:sandbox_inbox_id]])]
     else
       [base_url(config), @api_endpoint]
     end
