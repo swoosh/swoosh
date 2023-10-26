@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.14.0
+
+### ✨ Features
+
+- Implement Mailtrap adapter @kalys (#827)
+
+### 📝 Documentation
+
+- Add a note about the Tailwindcss cdn when using a CSP @Hermanverschooten (#828)
+
 ## 1.13.0
 
 ### ✨ Features
