@@ -43,7 +43,8 @@ defmodule Swoosh.Integration.Adapters.MailtrapTest do
       |> html_body("<p>This email was sent by the Swoosh library automation testing</p>")
 
     sandbox_config = [sandbox_inbox_id: System.get_env("MAILTRAP_INBOX")]
+
     assert {:ok, _response} =
-      Swoosh.Adapters.Mailtrap.deliver(email, config ++ sandbox_config)
+             Swoosh.Adapters.Mailtrap.deliver(email, config ++ sandbox_config)
   end
 end

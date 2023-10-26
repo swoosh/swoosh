@@ -351,6 +351,7 @@ defmodule Swoosh.Adapters.MailtrapTest do
           }
         ]
       }
+
       assert body_params == conn.body_params
       assert "POST" == conn.method
 

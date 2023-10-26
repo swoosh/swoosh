@@ -113,7 +113,7 @@ defmodule Swoosh.Adapters.Mailtrap do
   end
 
   defp base_url(config),
-    do:  config[:base_url] || @base_url
+    do: config[:base_url] || @base_url
 
   defp prepare_body(email) do
     %{}
