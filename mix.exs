@@ -69,7 +69,7 @@ defmodule Swoosh.Mixfile do
       {:telemetry, "~> 0.4.2 or ~> 1.0"},
       {:hackney, "~> 1.9", optional: true},
       {:finch, "~> 0.6", optional: true},
-      {:req, "~> 0.4", optional: true},
+      {:req, "~> 0.4 or ~> 1.0", optional: true},
       {:mail, "~> 0.2", optional: true},
       {:gen_smtp, "~> 0.13 or ~> 1.0", optional: true},
       {:cowboy, "~> 1.1 or ~> 2.4", optional: true},
