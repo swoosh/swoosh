@@ -6,7 +6,8 @@ defmodule Swoosh.ApiClient do
 
       config :swoosh, :api_client, MyAPIClient
 
-  Swoosh comes with `Swoosh.ApiClient.Hackney` and `Swoosh.ApiClient.Finch`.
+  Swoosh comes with `Swoosh.ApiClient.Hackney`, `Swoosh.ApiClient.Finch`, and
+  `Swoosh.ApiClient.Req`.
   """
 
   @type url :: binary()
