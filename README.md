@@ -86,8 +86,8 @@ configuration options.
   by default. If you want to use it, you just need to include
   [`Hackney`](https://hex.pm/packages/hackney) as a dependency of your app.
 
-  Swoosh also accepts [`Finch`](https://hex.pm/packages/finch) out-of-the-box.
-  See `Swoosh.ApiClient.Finch` for details.
+  Swoosh also accepts [`Finch`](https://hex.pm/packages/finch) and [`Req`](https://hex.pm/packages/req) out-of-the-box.
+  See `Swoosh.ApiClient.Finch` and `Swoosh.ApiClient.Req` for details.
 
   If you need to integrate with another HTTP client, it's easy to define a new
   API client. Follow the `Swoosh.ApiClient` behaviour and configure Swoosh to
