@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.14.1
+
+### ✨ Features
+
+- Add Swoosh.ApiClient.Req @matthewlehner (#830)
+
 ## 1.14.0
 
 ### ✨ Features
