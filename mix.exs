@@ -106,7 +106,8 @@ defmodule Swoosh.Mixfile do
         "Api Client": [
           Swoosh.ApiClient,
           Swoosh.ApiClient.Finch,
-          Swoosh.ApiClient.Hackney
+          Swoosh.ApiClient.Hackney,
+          Swoosh.ApiClient.Req
         ],
         Plug: Plug.Swoosh.MailboxPreview,
         Test: [
