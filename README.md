@@ -142,12 +142,13 @@ included:
 | Amazon SES   | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)       |            |
 | Amazon SES   | [Swoosh.Adapters.ExAwsAmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.ExAwsAmazonSES.html)     |            |
 | Dyn          | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)                   |            |
-| Scaleway     | [Swoosh.Adapters.Scaleway](https://hexdocs.pm/swoosh/Swoosh.Adapters.Scaleway.html#content) |    |
+| Scaleway     | [Swoosh.Adapters.Scaleway](https://hexdocs.pm/swoosh/Swoosh.Adapters.Scaleway.html#content)         |            |
 | SocketLabs   | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)     |            |
 | Gmail        | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)               |            |
 | MailPace     | [Swoosh.Adapters.MailPace](https://hexdocs.pm/swoosh/Swoosh.Adapters.MailPace.html#content)         | OhMySMTP   |
 | SMTP2GO      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)           |            |
 | ProtonBridge | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content) |            |
+| Mailtrap     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)         |            |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
