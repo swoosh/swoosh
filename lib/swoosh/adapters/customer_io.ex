@@ -179,6 +179,7 @@ defmodule Swoosh.Adapters.CustomerIO do
     do: Map.put(body, :reply_to, render_recipient(reply_to))
 
   defp prepare_subject(body, %Email{subject: nil}), do: body
+  defp prepare_subject(body, %Email{subject: ""}), do: body
   defp prepare_subject(body, %Email{subject: subject}), do: Map.put(body, :subject, subject)
 
   defp prepare_content(body, %Email{html_body: nil, text_body: nil}), do: body
