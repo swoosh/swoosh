@@ -343,4 +343,62 @@ defmodule Swoosh.Adapters.CustomerIOTest do
 
     assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
+
+  test "deliver/1 without subject", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "from" => "tony.stark@example.com",
+        "to" => "steve.rogers@example.com",
+        "body" => "<h1>Hello</h1>",
+        "plaintext_body" => "Hello"
+      }
+
+      assert ^body_params = conn.body_params
+      assert "subject" not in body_params
+      assert "/send/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, "{\"delivery_id\": \"123-xyz\"}")
+    end)
+
+    assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
+  test "deliver/1 without sender", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "to" => "steve.rogers@example.com",
+        "subject" => "Hello, Avengers!",
+        "body" => "<h1>Hello</h1>",
+        "plaintext_body" => "Hello"
+      }
+
+      assert ^body_params = conn.body_params
+      assert "from" not in body_params
+      assert "/send/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, "{\"delivery_id\": \"123-xyz\"}")
+    end)
+
+    assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
 end
