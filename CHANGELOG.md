@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.14.2
+
+### ✨ Features
+
+- Do not send subject to customer.io when empty @caioaao (#834)
+
+### 📝 Documentation
+
+- Add information about Mailtrap adapter in README.md @kalys (#833)
+- Add req docs to Api Client section @krns (#831)
+
+### ⛓️ Dependency
+
+- Bump plug from 1.15.1 to 1.15.2 @dependabot (#832)
+
 ## 1.14.1
 
 ### ✨ Features
