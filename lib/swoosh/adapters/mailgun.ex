@@ -52,6 +52,7 @@ defmodule Swoosh.Adapters.Mailgun do
       |> put_provider_option(:sending_options, %{dkim: "yes", tracking: "no"})
       |> put_provider_option(:tags, ["worldwide-peace", "unity"])
       |> put_provider_option(:template_name, "avengers-templates")
+      |> put_provider_option(:template_version, "initial")
 
   ## Provider options
 
