@@ -68,6 +68,7 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
       |> put_provider_option(:template_name, "avengers-templates")
+      |> put_provider_option(:template_version, "initial")
       |> put_provider_option(:custom_vars, %{"key" => "value"})
 
     Bypass.expect(bypass, fn conn ->
@@ -84,7 +85,8 @@ defmodule Swoosh.Adapters.MailgunTest do
         "text" => "Hello",
         "html" => "<h1>Hello</h1>",
         "h:X-Mailgun-Variables" => "{\"key\":\"value\"}",
-        "template" => "avengers-templates"
+        "template" => "avengers-templates",
+        "t:version" => "initial"
       }
 
       assert body_params == conn.body_params

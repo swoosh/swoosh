@@ -134,6 +134,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_tags(email)
     |> prepare_custom_headers(email)
     |> prepare_template(email)
+    |> prepare_version(email)
     |> encode_body()
   end
 
@@ -216,6 +217,11 @@ defmodule Swoosh.Adapters.Mailgun do
     do: Map.put(body, "template", template_name)
 
   defp prepare_template(body, _), do: body
+
+  defp prepare_version(body, %{provider_options: %{template_version: template_version}}),
+    do: Map.put(body, "t:version", template_version)
+
+  defp prepare_version(body, _), do: body
 
   defp encode_body(%{attachments: attachments, inline: inline} = params) do
     {:multipart,
