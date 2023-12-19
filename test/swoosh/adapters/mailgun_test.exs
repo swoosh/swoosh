@@ -67,7 +67,6 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
-      |> put_provider_option(:template_name, "avengers-templates")
       |> put_provider_option(:custom_vars, %{"key" => "value"})
 
     Bypass.expect(bypass, fn conn ->
@@ -83,8 +82,7 @@ defmodule Swoosh.Adapters.MailgunTest do
         "from" => ~s("T Stark" <tony.stark@example.com>),
         "text" => "Hello",
         "html" => "<h1>Hello</h1>",
-        "h:X-Mailgun-Variables" => "{\"key\":\"value\"}",
-        "template" => "avengers-templates"
+        "h:X-Mailgun-Variables" => "{\"key\":\"value\"}"
       }
 
       assert body_params == conn.body_params
@@ -155,6 +153,46 @@ defmodule Swoosh.Adapters.MailgunTest do
         "html" => "<h1>Hello</h1>",
         "o:dkim" => "yes",
         "o:tracking" => "no"
+      }
+
+      assert body_params == conn.body_params
+      assert expected_path == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailgun.deliver(email, config) ==
+             {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
+  end
+
+  test "deliver/1 with template options returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> put_provider_option(:template_name, "avengers-templates")
+      |> put_provider_option(:template_options, %{
+        version: "initial",
+        text: "yes",
+        variables: %{a: 1}
+      })
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+      expected_path = "/" <> config[:domain] <> "/messages"
+
+      body_params = %{
+        "subject" => "Hello, Avengers!",
+        "to" => "steve.rogers@example.com",
+        "from" => "tony.stark@example.com",
+        "html" => "<h1>Hello</h1>",
+        "template" => "avengers-templates",
+        "t:version" => "initial",
+        "t:text" => "yes",
+        "t:variables" => Swoosh.json_library().encode!(%{a: 1})
       }
 
       assert body_params == conn.body_params
