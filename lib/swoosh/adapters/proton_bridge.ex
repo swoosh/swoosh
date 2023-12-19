@@ -27,6 +27,23 @@ defmodule Swoosh.Adapters.ProtonBridge do
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
       end
+
+  ### SMTP
+
+  You can send emails with Protonmail SMTP service via the following SMTP configs,
+  using `Swoosh.Adapters.SMTP` adapter.
+
+      [
+        relay: "smtp.protonmail.ch",
+        ssl: false,
+        tls: :always,
+        auth: :always,
+        port: 587,
+        retries: 1,
+        no_mx_lookups: false
+      ]
+
+  This bridge adapter provides a special set of configs that utilize the local Protonmail Bridge.
   """
 
   use Swoosh.Adapter, required_config: [], required_deps: [gen_smtp: :gen_smtp_client]
