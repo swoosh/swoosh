@@ -52,6 +52,7 @@ defmodule Swoosh.Adapters.Mailgun do
       |> put_provider_option(:sending_options, %{dkim: "yes", tracking: "no"})
       |> put_provider_option(:tags, ["worldwide-peace", "unity"])
       |> put_provider_option(:template_name, "avengers-templates")
+      |> put_provider_option(:template_options, %{version: "initial"})
 
   ## Provider options
 
@@ -67,6 +68,8 @@ defmodule Swoosh.Adapters.Mailgun do
       kept for backward compatibility, use `:sending_options` instead
 
     * `:template_name` (string) - `template`, name of template created at Mailgun
+
+    * `:template_options` (map) - `version`, `text`, `variables` and/or any future possible values
 
   ## Custom headers
 
@@ -134,6 +137,7 @@ defmodule Swoosh.Adapters.Mailgun do
     |> prepare_tags(email)
     |> prepare_custom_headers(email)
     |> prepare_template(email)
+    |> prepare_template_options(email)
     |> encode_body()
   end
 
@@ -216,6 +220,15 @@ defmodule Swoosh.Adapters.Mailgun do
     do: Map.put(body, "template", template_name)
 
   defp prepare_template(body, _), do: body
+
+  defp prepare_template_options(body, %{provider_options: %{template_options: options}})
+       when is_map(options) do
+    options
+    |> Enum.map(fn {k, v} -> {"t:#{k}", encode_variable(v)} end)
+    |> Enum.into(body)
+  end
+
+  defp prepare_template_options(body, _), do: body
 
   defp encode_body(%{attachments: attachments, inline: inline} = params) do
     {:multipart,
