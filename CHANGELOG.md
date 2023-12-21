@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.14.3
+
+### ✨ Features
+
+- Add template options @princemaple (#839)
+
+### 📝 Documentation
+
+- mention proton smtp, close #837 @princemaple (#840)
+
+### ⛓️ Dependency
+
+- Bump ex\_doc from 0.30.9 to 0.31.0 @dependabot (#836)
+- Bump req from 0.4.5 to 0.4.8 @dependabot (#835)
+
 ## 1.14.2
 
 ### ✨ Features
