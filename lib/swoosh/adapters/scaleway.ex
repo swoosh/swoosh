@@ -13,7 +13,7 @@ defmodule Swoosh.Adapters.Scaleway do
       # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Scaleway,
-        project_id: "my-project-id"
+        project_id: "my-project-id",
         secret_key: "my-api-key"
 
       # lib/sample/mailer.ex

@@ -13,7 +13,7 @@ defmodule Swoosh.Adapters.Dyn do
       # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Dyn,
-        api_key: "my-api-key",
+        api_key: "my-api-key"
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
