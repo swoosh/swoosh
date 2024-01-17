@@ -138,6 +138,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> Map.put("Action", @action)
     |> Map.put("Version", Keyword.get(config, :version, @version))
     |> Map.put("RawMessage.Data", generate_raw_message_data(email, config))
+    |> prepare_source(config)
     |> prepare_configuration_set_name(email)
     |> prepare_tags(email)
   end
@@ -151,6 +152,13 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp prepare_configuration_set_name(body, _email), do: body
+
+  defp prepare_source(body, config) do
+    case Keyword.fetch(config, :source) do
+      {:ok, source} -> Map.put(body, "Source", source)
+      :error -> body
+    end
+  end
 
   defp prepare_tags(body, %{provider_options: %{tags: tags}}) do
     Map.merge(
