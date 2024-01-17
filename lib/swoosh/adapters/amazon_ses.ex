@@ -29,6 +29,22 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   [Amazon SES SendRawEmail Documentation](http://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html)
 
+  ## Configuration options
+
+  ### Required
+
+  Note that these are handled automatically if using `Swoosh.Adapters.ExAwsAmazonSES`.
+
+  * `:region` - the AWS region
+  * `:access_key` - the IAM access key
+  * `:secret` - the IAM secret
+
+  ### Optional
+
+  * `:ses_source` - An email address used for bounce reports. Will be set as the
+    `Source` [request parameter](https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html#API_SendRawEmail_RequestParameters)
+     in the SES API. Note that this must correspond to a verified identity.
+
   ## Examples
 
       # config/config.exs
