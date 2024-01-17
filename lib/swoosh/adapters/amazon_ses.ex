@@ -154,7 +154,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   defp prepare_configuration_set_name(body, _email), do: body
 
   defp prepare_source(body, config) do
-    case Keyword.fetch(config, :source) do
+    case Keyword.fetch(config, :ses_source) do
       {:ok, source} -> Map.put(body, "Source", source)
       :error -> body
     end
