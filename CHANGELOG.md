@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.14.4
+
+### ✨ Features
+
+- AmazonSES: add :ses\_source option to set Source API parameter @adamu (#846)
+
+### 📝 Documentation
+
+- fix comma issues on adapter config samples @SirWerto (#842)
+
 ## 1.14.3
 
 ### ✨ Features
@@ -9,11 +19,6 @@
 ### 📝 Documentation
 
 - mention proton smtp, close #837 @princemaple (#840)
-
-### ⛓️ Dependency
-
-- Bump ex\_doc from 0.30.9 to 0.31.0 @dependabot (#836)
-- Bump req from 0.4.5 to 0.4.8 @dependabot (#835)
 
 ## 1.14.2
 
@@ -25,10 +30,6 @@
 
 - Add information about Mailtrap adapter in README.md @kalys (#833)
 - Add req docs to Api Client section @krns (#831)
-
-### ⛓️ Dependency
-
-- Bump plug from 1.15.1 to 1.15.2 @dependabot (#832)
 
 ## 1.14.1
 
@@ -53,14 +54,6 @@
 - Add Scaleway adapter @andreh11 (#825)
 - Update the UI for the mailbox viewer @dsincl12 (#822)
 
-### ⛓️ Dependency
-
-- Bump ex\_doc from 0.30.8 to 0.30.9 @dependabot (#826)
-- Bump ex\_doc from 0.30.6 to 0.30.8 @dependabot (#824)
-- Bump hackney from 1.19.1 to 1.20.1 @dependabot (#820)
-- Bump plug from 1.15.0 to 1.15.1 @dependabot (#818)
-- Bump plug from 1.14.2 to 1.15.0 @dependabot (#817)
-
 ## 1.12.0
 
 ### ✨ Features
@@ -70,10 +63,6 @@
 ### 📝 Documentation
 
 - Update return value in docs @princemaple (#813)
-
-### ⛓️ Dependency
-
-- Bump hackney from 1.18.2 to 1.19.1 @dependabot (#814)
 
 ## 1.11.6
 
@@ -88,11 +77,6 @@
 - Deprecate system env tuples @josevalim (#800)
 - Use concatenation to build sup children @josevalim (#801)
 - Compute docs lazily @josevalim (#802)
-
-- Bump ex\_doc from 0.30.3 to 0.30.4 @dependabot (#798)
-- Bump mail from 0.2.3 to 0.3.1 @dependabot (#799)
-- Bump ex\_aws from 2.4.3 to 2.4.4 @dependabot (#795)
-- Bump ex\_doc from 0.30.2 to 0.30.3 @dependabot (#794)
 
 ## 1.11.4
 
