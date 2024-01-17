@@ -163,6 +163,40 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
+  test ":ses_source set in config sets the Source API parameter", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    config = Keyword.put(config, :ses_source, "aaa@bbb.com")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert {:ok, "aaa@bbb.com"} = Map.fetch(conn.body_params, "Source")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
+  end
+
+  test ":ses_source not set in config does not set the Source API parameter", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert :error = Map.fetch(conn.body_params, "Source")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
+  end
+
   test "a sent email that returns a api error parses correctly", %{
     bypass: bypass,
     config: config,

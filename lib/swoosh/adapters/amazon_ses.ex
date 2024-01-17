@@ -29,6 +29,22 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   [Amazon SES SendRawEmail Documentation](http://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html)
 
+  ## Configuration options
+
+  ### Required
+
+  Note that these are handled automatically if using `Swoosh.Adapters.ExAwsAmazonSES`.
+
+  * `:region` - the AWS region
+  * `:access_key` - the IAM access key
+  * `:secret` - the IAM secret
+
+  ### Optional
+
+  * `:ses_source` - An email address used for bounce reports. Will be set as the
+    `Source` [request parameter](https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html#API_SendRawEmail_RequestParameters)
+     in the SES API. Note that this must correspond to a verified identity.
+
   ## Examples
 
       # config/config.exs
@@ -138,6 +154,7 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> Map.put("Action", @action)
     |> Map.put("Version", Keyword.get(config, :version, @version))
     |> Map.put("RawMessage.Data", generate_raw_message_data(email, config))
+    |> prepare_source(config)
     |> prepare_configuration_set_name(email)
     |> prepare_tags(email)
   end
@@ -151,6 +168,13 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp prepare_configuration_set_name(body, _email), do: body
+
+  defp prepare_source(body, config) do
+    case Keyword.fetch(config, :ses_source) do
+      {:ok, source} -> Map.put(body, "Source", source)
+      :error -> body
+    end
+  end
 
   defp prepare_tags(body, %{provider_options: %{tags: tags}}) do
     Map.merge(
