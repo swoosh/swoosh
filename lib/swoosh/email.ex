@@ -85,7 +85,7 @@ defmodule Swoosh.Email do
           bcc: [mailbox] | [],
           text_body: text_body | nil,
           html_body: html_body | nil,
-          reply_to: mailbox | nil,
+          reply_to: [mailbox] | mailbox | nil,
           headers: map,
           private: map,
           assigns: map,
@@ -225,7 +225,26 @@ defmodule Swoosh.Email do
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
   """
-  @spec reply_to(t, Recipient.t()) :: t
+  @spec reply_to(t, Recipient.t() | [Recipient.t()]) :: t
+  def reply_to(%__MODULE__{reply_to: nil} = email, reply_to) when is_list(reply_to) do
+    reply_to =
+      reply_to
+      |> List.wrap()
+      |> Enum.map(&Recipient.format(&1))
+
+    %{email | reply_to: reply_to}
+  end
+
+  def reply_to(%__MODULE__{reply_to: reply_to} = email, recipients) when is_list(reply_to) do
+    recipients =
+      recipients
+      |> List.wrap()
+      |> Enum.map(&Recipient.format(&1))
+      |> Enum.concat(reply_to)
+
+    %{email | reply_to: recipients}
+  end
+
   def reply_to(%__MODULE__{} = email, reply_to) do
     %{email | reply_to: Recipient.format(reply_to)}
   end

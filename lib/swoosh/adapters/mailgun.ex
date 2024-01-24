@@ -202,6 +202,20 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_reply_to(body, %{reply_to: {_name, address}}),
     do: Map.put(body, "h:Reply-To", address)
 
+  defp prepare_reply_to(body, %{reply_to: reply_tos}) when is_list(reply_tos) do
+    addresses =
+      reply_tos
+      |> Enum.map(fn reply_to ->
+        case reply_to do
+          {_name, address} -> address
+          address -> address
+        end
+      end)
+      |> Enum.join(", ")
+
+    Map.put(body, "h:Reply-To", addresses)
+  end
+
   defp prepare_cc(body, %{cc: []}), do: body
   defp prepare_cc(body, %{cc: cc}), do: Map.put(body, :cc, render_recipient(cc))
 
