@@ -224,6 +224,16 @@ defmodule Swoosh.Email do
       %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
+
+      iex> new() |> reply_to(["steve.rogers@example.com", "bucky.barnes@example.com"])
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: [{"", "steve.rogers@example.com"}, {"", "bucky.barnes@example.com"}], subject: "", text_body: nil, to: []}
+
+      iex> new() |> reply_to([{"Steve Rogers", "steve.rogers@example.com"}, {"Bucky Barnes", "bucky.barnes@example.com"}])
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: [{"Steve Rogers", "steve.rogers@example.com"}, {"Bucky Barnes", "bucky.barnes@example.com"}], subject: "", text_body: nil, to: []}
   """
   @spec reply_to(t, Recipient.t() | [Recipient.t()]) :: t
   def reply_to(%__MODULE__{reply_to: nil} = email, reply_to) when is_list(reply_to) do
