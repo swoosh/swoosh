@@ -211,7 +211,8 @@ defmodule Swoosh.Email do
   end
 
   @doc """
-  Sets a recipient in the `reply_to` field.
+  Sets a recipient in the `reply_to` field. May also set a list of recipients as `reply_to`, but the
+  support for it on adapters is on case-by-case basis.
 
   ## Examples
 
@@ -232,7 +233,7 @@ defmodule Swoosh.Email do
        subject: "", text_body: nil, to: []}
   """
   @spec reply_to(t, Recipient.t() | [Recipient.t()]) :: t
-  def reply_to(%__MODULE__{reply_to: nil} = email, reply_to) when is_list(reply_to) do
+  def reply_to(%__MODULE__{} = email, reply_to) when is_list(reply_to) do
     %{email | reply_to: Enum.map(reply_to, &Recipient.format(&1))}
   end
 
