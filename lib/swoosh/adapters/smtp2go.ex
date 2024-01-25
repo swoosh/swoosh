@@ -105,6 +105,7 @@ defmodule Swoosh.Adapters.SMTP2GO do
     |> prepare_template_data(email)
     |> prepare_template(email)
     |> prepare_custom_headers(email)
+    |> prepare_reply_to(email)
   end
 
   defp prepare_custom_headers(body, %{headers: headers}) do
@@ -113,6 +114,20 @@ defmodule Swoosh.Adapters.SMTP2GO do
       "custom_headers",
       Enum.map(headers, fn {k, v} -> %{"header" => k, "value" => v} end)
     )
+  end
+
+  defp prepare_reply_to(body, %{reply_to: nil}), do: body
+
+  defp prepare_reply_to(body, %{reply_to: reply_to}) do
+    reply_to_header_value =
+      reply_to
+      |> List.wrap()
+      |> prepare_recipients()
+      |> Enum.join(", ")
+
+    header = %{"header" => "Reply-To", "value" => reply_to_header_value}
+
+    Map.update(body, "custom_headers", [header], &[header | &1])
   end
 
   defp prepare_attachments(body, %{attachments: []}), do: body
