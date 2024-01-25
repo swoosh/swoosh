@@ -225,34 +225,15 @@ defmodule Swoosh.Email do
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
 
-      iex> new() |> reply_to(["steve.rogers@example.com", "bucky.barnes@example.com"])
+      iex> new() |> reply_to([{"Steve Rogers", "steve.rogers@example.com"}, "bucky.barnes@example.com"])
       %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
-       reply_to: [{"", "steve.rogers@example.com"}, {"", "bucky.barnes@example.com"}], subject: "", text_body: nil, to: []}
-
-      iex> new() |> reply_to([{"Steve Rogers", "steve.rogers@example.com"}, {"Bucky Barnes", "bucky.barnes@example.com"}])
-      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
-       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
-       reply_to: [{"Steve Rogers", "steve.rogers@example.com"}, {"Bucky Barnes", "bucky.barnes@example.com"}], subject: "", text_body: nil, to: []}
+       reply_to: [{"Steve Rogers", "steve.rogers@example.com"}, {"", "bucky.barnes@example.com"}],
+       subject: "", text_body: nil, to: []}
   """
   @spec reply_to(t, Recipient.t() | [Recipient.t()]) :: t
   def reply_to(%__MODULE__{reply_to: nil} = email, reply_to) when is_list(reply_to) do
-    reply_to =
-      reply_to
-      |> List.wrap()
-      |> Enum.map(&Recipient.format(&1))
-
-    %{email | reply_to: reply_to}
-  end
-
-  def reply_to(%__MODULE__{reply_to: reply_to} = email, recipients) when is_list(reply_to) do
-    recipients =
-      recipients
-      |> List.wrap()
-      |> Enum.map(&Recipient.format(&1))
-      |> Enum.concat(reply_to)
-
-    %{email | reply_to: recipients}
+    %{email | reply_to: Enum.map(reply_to, &Recipient.format(&1))}
   end
 
   def reply_to(%__MODULE__{} = email, reply_to) do
