@@ -72,12 +72,10 @@ defmodule Swoosh.Adapters.Mailjet do
   @base_url "https://api.mailjet.com/v3.1"
   @api_endpoint "send"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     send_request(:single, prepare_body(email), email, config)
   end
 
-  @impl true
   def deliver_many(emails, config \\ [])
 
   def deliver_many([], _config) do

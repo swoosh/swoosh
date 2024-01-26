@@ -41,7 +41,6 @@ defmodule Swoosh.Adapters.MsGraph do
 
   @base_url "https://graph.microsoft.com/v1.0"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     Logger.debug("Delivering email using #{__MODULE__} Swoosh adapter: #{inspect(email)}")
     headers = prepare_headers(config)

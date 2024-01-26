@@ -22,7 +22,6 @@ defmodule Swoosh.Adapters.Sendmail do
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers
 
-  @impl true
   def deliver(%Email{} = email, config) do
     body = Helpers.body(email, [{:keep_bcc, true} | config])
     port = Port.open({:spawn, cmd(email, config)}, [:binary])

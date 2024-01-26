@@ -71,7 +71,6 @@ defmodule Swoosh.Adapters.SparkPost do
 
   @endpoint "https://api.sparkpost.com/api/v1"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
     body = email |> prepare_body |> Swoosh.json_library().encode!

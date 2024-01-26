@@ -51,7 +51,6 @@ defmodule Swoosh.Adapters.ProtonBridge do
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP
 
-  @impl true
   def deliver(%Email{} = email, user_config) do
     config = Keyword.merge(bridge_config(), user_config)
     SMTP.deliver(email, config)

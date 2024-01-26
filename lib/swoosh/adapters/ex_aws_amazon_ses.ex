@@ -58,7 +58,6 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   alias Swoosh.Email
   alias Swoosh.Adapters.AmazonSES
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     credentials = ExAws.Config.new(:ses)
 

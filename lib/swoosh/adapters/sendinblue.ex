@@ -57,7 +57,6 @@ defmodule Swoosh.Adapters.Sendinblue do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  @impl true
   @deprecated "use Swoosh.Adapters.Brevo.deliver/2 instead"
   def deliver(%Email{} = email, config \\ []) do
     Swoosh.Adapters.Brevo.deliver(email, Keyword.merge([base_url: base_url(config)], config))

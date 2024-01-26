@@ -35,7 +35,6 @@ defmodule Swoosh.Adapters.OhMySmtp do
 
   defp endpoint(config), do: config[:endpoint] || @endpoint
 
-  @impl true
   @deprecated "use Swoosh.Adapter.MailPace.deliver/2 instead"
   def deliver(%Email{} = email, config \\ []) do
     Swoosh.Adapters.MailPace.deliver(

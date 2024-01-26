@@ -81,7 +81,6 @@ defmodule Swoosh.Adapters.Postmark do
 
   @base_url "https://api.postmarkapp.com"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     params = email |> prepare_body() |> Swoosh.json_library().encode!
@@ -102,14 +101,12 @@ defmodule Swoosh.Adapters.Postmark do
     end
   end
 
-  @impl true
   def deliver_many(emails, config \\ [])
 
   def deliver_many([], _config) do
     {:ok, []}
   end
 
-  @impl true
   def deliver_many(emails, config) when is_list(emails) do
     headers = prepare_headers(config)
     body = emails |> prepare_body() |> Swoosh.json_library().encode!

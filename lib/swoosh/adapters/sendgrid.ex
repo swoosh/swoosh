@@ -118,7 +118,6 @@ defmodule Swoosh.Adapters.Sendgrid do
   @base_url "https://api.sendgrid.com/v3"
   @api_endpoint "/mail/send"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = [
       {"Content-Type", "application/json"},

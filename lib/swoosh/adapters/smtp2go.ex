@@ -58,7 +58,6 @@ defmodule Swoosh.Adapters.SMTP2GO do
   @base_url "https://api.smtp2go.com/v3"
   @api_endpoint "email/send"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     body = email |> prepare_body(config) |> Swoosh.json_library().encode!()
     headers = prepare_headers(config)

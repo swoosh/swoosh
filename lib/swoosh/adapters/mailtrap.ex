@@ -77,7 +77,6 @@ defmodule Swoosh.Adapters.Mailtrap do
   @sandbox_base_url "https://sandbox.api.mailtrap.io"
   @api_endpoint "/api/send"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = [
       {"Content-Type", "application/json"},

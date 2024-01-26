@@ -30,7 +30,6 @@ defmodule Swoosh.Adapters.MailPace do
   @endpoint "https://app.mailpace.com/api/v1/send"
   @server_token_key "MailPace-Server-Token"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     params = email |> prepare_body() |> Swoosh.json_library().encode!

@@ -47,7 +47,6 @@ defmodule Swoosh.Adapters.Scaleway do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
     body = email |> prepare_payload(config[:project_id]) |> Swoosh.json_library().encode!

@@ -62,7 +62,6 @@ defmodule Swoosh.Adapters.Brevo do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = [
       {"Accept", "application/json"},

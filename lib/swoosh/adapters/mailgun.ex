@@ -85,7 +85,6 @@ defmodule Swoosh.Adapters.Mailgun do
   @base_url "https://api.mailgun.net/v3"
   @api_endpoint "/messages"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(email, config)
     url = [base_url(config), "/", config[:domain], @api_endpoint]

@@ -67,7 +67,6 @@ defmodule Swoosh.Adapters.SocketLabs do
   @base_url "https://inject.socketlabs.com/api/v1"
   @api_endpoint "/email"
 
-  @impl true
   def deliver(%Email{} = email, config \\ []) do
     headers = [
       {"Content-Type", "application/json"},
