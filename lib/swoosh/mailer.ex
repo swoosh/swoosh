@@ -183,6 +183,7 @@ defmodule Swoosh.Mailer do
     {:error, :from_not_set}
   end
 
+  @doc "Delivers an email."
   def deliver(%Swoosh.Email{} = email, config) do
     adapter = Keyword.fetch!(config, :adapter)
 
@@ -190,6 +191,10 @@ defmodule Swoosh.Mailer do
     adapter.deliver(email, config)
   end
 
+  @doc """
+  The implementation for `deliver_many/2` is on case-by-case basis. Check the adapter that you use
+  to see if it has `deliver_many/2` implemented.
+  """
   def deliver_many(emails, config) do
     adapter = Keyword.fetch!(config, :adapter)
 
