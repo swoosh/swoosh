@@ -221,7 +221,7 @@ defmodule Swoosh.Adapters.SendgridTest do
           }
         ],
         "content" => [
-          %{"type" => "text/html", "value" => "<h1>Hello</h1>"}
+          %{"type" => "text/plain", "value" => "Hello"}
         ],
         "subject" => "Hello, Avengers!"
       }
