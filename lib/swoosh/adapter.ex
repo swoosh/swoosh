@@ -21,23 +21,23 @@ defmodule Swoosh.Adapter do
   end
 
   @type t :: module
-  @type email :: Email.t()
+  @type email :: Swoosh.Email.t()
   @type config :: Keyword.t()
 
   @doc """
   Delivers an email with the given config.
   """
-  @callback deliver(%Swoosh.Email{}, config) :: {:ok, term} | {:error, term}
+  @callback deliver(email(), config()) :: {:ok, term} | {:error, term}
 
   @doc """
   Delivers multiple emails with the given config in one request. Some email providers allow multiple
   messages to be sent in one HTTP request, for example Mailjet and Postmark allow this. Check your
   provider's documentation to see if that is possible.
   """
-  @callback deliver_many(list(%Swoosh.Email{}), config) ::
+  @callback deliver_many(list(email()), config()) ::
               {:ok, list(term)} | {:error, term}
 
-  @callback validate_config(config) :: :ok | no_return
+  @callback validate_config(config()) :: :ok | no_return
   @callback validate_dependency() :: :ok | [module | {atom, module}]
 
   @optional_callbacks validate_dependency: 0, deliver_many: 2
