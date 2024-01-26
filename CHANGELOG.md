@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.15.0
+
+### ✨ Features
+
+- Support multiple reply\_to in sendgrid @princemaple (#853)
+- Support reply\_to in smtp2go @princemaple (#852)
+- Feat mailgun multiple reply to @ghostdsb (#850)
+
+### 📝 Documentation
+
+- Improve docs on adapter functions and deliver_many in general
+
 ## 1.14.4
 
 ### ✨ Features
