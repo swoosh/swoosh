@@ -398,8 +398,7 @@ defmodule Swoosh.Adapters.MailtrapTest do
 
     Bypass.expect(bypass, &Plug.Conn.resp(&1, 400, errors))
 
-    response =
-      {:error, {400, %{"errors" => ["bla bla"], "success" => false}}}
+    response = {:error, {400, %{"errors" => ["bla bla"], "success" => false}}}
 
     assert Mailtrap.deliver(email, config) == response
   end
@@ -409,8 +408,7 @@ defmodule Swoosh.Adapters.MailtrapTest do
 
     Bypass.expect(bypass, &Plug.Conn.resp(&1, 400, errors))
 
-    response =
-      {:error, {400, %{"errors" => ["bla bla"], "success" => false}}}
+    response = {:error, {400, %{"errors" => ["bla bla"], "success" => false}}}
 
     assert Mailtrap.deliver(email, config) == response
   end

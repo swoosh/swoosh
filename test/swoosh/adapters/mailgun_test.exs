@@ -133,6 +133,38 @@ defmodule Swoosh.Adapters.MailgunTest do
              {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
   end
 
+  test "deliver/1 with multiple reply_to returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> reply_to(["office.avengers@example.com", "javis.gpt@example.com"])
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+      expected_path = "/" <> config[:domain] <> "/messages"
+
+      body_params = %{
+        "subject" => "Hello, Avengers!",
+        "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
+        "h:Reply-To" => "office.avengers@example.com, javis.gpt@example.com",
+        "from" => ~s("T Stark" <tony.stark@example.com>),
+        "html" => "<h1>Hello</h1>"
+      }
+
+      assert body_params == conn.body_params
+      assert expected_path == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailgun.deliver(email, config) ==
+             {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
+  end
+
   test "deliver/1 with sending options returns :ok", %{bypass: bypass, config: config} do
     email =
       new()

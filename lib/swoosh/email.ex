@@ -85,7 +85,7 @@ defmodule Swoosh.Email do
           bcc: [mailbox] | [],
           text_body: text_body | nil,
           html_body: html_body | nil,
-          reply_to: mailbox | nil,
+          reply_to: [mailbox] | mailbox | nil,
           headers: map,
           private: map,
           assigns: map,
@@ -211,7 +211,8 @@ defmodule Swoosh.Email do
   end
 
   @doc """
-  Sets a recipient in the `reply_to` field.
+  Sets a recipient in the `reply_to` field. May also set a list of recipients as `reply_to`, but the
+  support for it on adapters is on case-by-case basis.
 
   ## Examples
 
@@ -224,8 +225,18 @@ defmodule Swoosh.Email do
       %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
        headers: %{}, html_body: nil, private: %{}, provider_options: %{},
        reply_to: {"", "steve.rogers@example.com"}, subject: "", text_body: nil, to: []}
+
+      iex> new() |> reply_to([{"Steve Rogers", "steve.rogers@example.com"}, "bucky.barnes@example.com"])
+      %Swoosh.Email{assigns: %{}, attachments: [], bcc: [], cc: [], from: nil,
+       headers: %{}, html_body: nil, private: %{}, provider_options: %{},
+       reply_to: [{"Steve Rogers", "steve.rogers@example.com"}, {"", "bucky.barnes@example.com"}],
+       subject: "", text_body: nil, to: []}
   """
-  @spec reply_to(t, Recipient.t()) :: t
+  @spec reply_to(t, Recipient.t() | [Recipient.t()]) :: t
+  def reply_to(%__MODULE__{} = email, reply_to) when is_list(reply_to) do
+    %{email | reply_to: Enum.map(reply_to, &Recipient.format(&1))}
+  end
+
   def reply_to(%__MODULE__{} = email, reply_to) do
     %{email | reply_to: Recipient.format(reply_to)}
   end
