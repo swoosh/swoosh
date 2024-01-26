@@ -119,6 +119,98 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
     assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
   end
 
+  test "deliver/1 - valid email with singular reply_to",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "api_key" => "api_key",
+        "custom_headers" => [%{"header" => "Reply-To", "value" => "reply-to@example.com"}],
+        "sender" => "sender@example.com",
+        "subject" => "Hello, world!",
+        "to" => ["receiver@example.com"]
+      }
+
+      assert body_params == conn.body_params
+      assert "/email/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email = reply_to(email, "reply-to@example.com")
+
+    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+  end
+
+  test "deliver/1 - valid email with multiple reply_to",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "api_key" => "api_key",
+        "custom_headers" => [
+          %{"header" => "Reply-To", "value" => "reply-to1@example.com, reply-to2@example.com"}
+        ],
+        "sender" => "sender@example.com",
+        "subject" => "Hello, world!",
+        "to" => ["receiver@example.com"]
+      }
+
+      assert body_params == conn.body_params
+      assert "/email/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email = reply_to(email, ["reply-to1@example.com", "reply-to2@example.com"])
+
+    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+  end
+
+  test "deliver/1 - valid email with reply_to and custom headers",
+       %{
+         bypass: bypass,
+         config: config,
+         valid_email: email
+       } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "api_key" => "api_key",
+        "custom_headers" => [
+          %{"header" => "Reply-To", "value" => "reply-to@example.com"},
+          %{"header" => "test", "value" => "value"}
+        ],
+        "sender" => "sender@example.com",
+        "subject" => "Hello, world!",
+        "to" => ["receiver@example.com"]
+      }
+
+      assert body_params == conn.body_params
+      assert "/email/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email = email |> reply_to("reply-to@example.com") |> header("test", "value")
+
+    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+  end
+
   test "deliver1/1 - 400", %{
     bypass: bypass,
     config: config,
