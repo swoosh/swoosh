@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.1
+
+### ✨ Features
+
+- Add support for Bandit @mtrudel (#857)
+
 ## 1.15.0
 
 ### ✨ Features
