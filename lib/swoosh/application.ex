@@ -40,6 +40,7 @@ defmodule Swoosh.Application do
           []
         end
       end
+
     Code.ensure_loaded?(Bandit) ->
       defp mailbox_children do
         if Application.get_env(:swoosh, :serve_mailbox) do
@@ -50,11 +51,12 @@ defmodule Swoosh.Application do
             "Running Swoosh mailbox preview server with Bandit using http on port #{port}"
           )
 
-          [Bandit.child_spec( plug: Plug.Swoosh.MailboxPreview, port: port)]
+          [Bandit.child_spec(plug: Plug.Swoosh.MailboxPreview, port: port)]
         else
           []
         end
       end
+
     true ->
       defp mailbox_children do
         if Application.get_env(:swoosh, :serve_mailbox) do
