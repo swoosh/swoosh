@@ -367,11 +367,13 @@ config :swoosh, serve_mailbox: true
 config :swoosh, serve_mailbox: true, preview_port: 4001
 ```
 
-When using `serve_mailbox: true` make sure to have `plug_cowboy` as a
-dependency of your app.
+When using `serve_mailbox: true` make sure to have either `plug_cowboy` or
+`bandit` as a dependency of your app.
 
 ```elixir
 {:plug_cowboy, ">= 1.0.0"}
+# or
+{:bandit, ">= 1.0.0"}
 ```
 
 And finally you can also use the following Mix task to start the mailbox
