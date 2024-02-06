@@ -31,6 +31,11 @@ defmodule Swoosh.Adapters.Postmark do
   You can also use `template_alias` instead of `template_id`, if you use Postmark's
   [TemplateAlias](https://postmarkapp.com/developer/api/templates-api#email-with-template) feature.
 
+  Note that you must include the `:template_model` provider option even if your template
+  has no variables to interpolate. In this case you can pass an empty map:
+
+      put_provider_option(email, :template_model, %{})
+
   When sending batch emails using `:deliver_many` do not mix emails using
   templates with non-template emails. The use of templates impacts the API
   endpoint used and so the batch email collection should be of the same format.
