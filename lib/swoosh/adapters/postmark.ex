@@ -68,7 +68,8 @@ defmodule Swoosh.Adapters.Postmark do
       when sending email and only required if `:template_id` is not specified
 
     * `:template_model` (map), `TemplateModel`, a map of key/value field to be
-      used in the `HtmlBody`, `TextBody`, and `Subject` field in the template
+      used in the `HtmlBody`, `TextBody`, and `Subject` field in the template,
+      required alongside `:template_id`/`:template_alias`
 
     * `:track_opens` (boolean) - `TrackOpens`, specify if open tracking needs to be enabled for this email.
 
