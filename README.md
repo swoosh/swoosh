@@ -231,57 +231,6 @@ Elixir's ecosystem has many
 - [Exq](https://hexdocs.pm/exq/readme.html) uses Redis and is compatible with
   Resque / Sidekiq.
 
-## Phoenix integration
-
-If you are looking to use Swoosh in your Phoenix project, make sure to check
-out the [phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) project. It
-contains a set of functions that make it easy to render the text and HTML
-bodies using Phoenix views, templates and layouts.
-
-Taking the example from above the "Getting Started" section, your code would
-look something like this:
-
-> web/templates/layout/email.html.eex
-
-```html
-<html>
-  <head>
-    <title><%= @email.subject %></title>
-  </head>
-  <body>
-    <%= @inner_content %>
-  </body>
-</html>
-```
-
-> web/templates/email/welcome.html.eex
-
-```html
-<div>
-  <h1>Welcome to Sample, <%= @username %>!</h1>
-</div>
-```
-
-> web/emails/user_email.ex
-
-```elixir
-defmodule Sample.UserEmail do
-  use Phoenix.Swoosh, view: Sample.EmailView, layout: {Sample.LayoutView, :email}
-
-  def welcome(user) do
-    new()
-    |> to({user.name, user.email})
-    |> from({"Dr B Banner", "hulk.smash@example.com"})
-    |> subject("Hello, Avengers!")
-    |> render_body("welcome.html", %{username: user.username})
-  end
-end
-```
-
-Feels familiar doesn't it? Head to the
-[phoenix_swoosh](https://github.com/swoosh/phoenix_swoosh) repo for more
-details.
-
 ## Attachments
 
 You can attach files to your email using the `Swoosh.Email.attachment/2`
