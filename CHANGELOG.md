@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.15.2
+
+### ✨ Features
+
+- Add support of subaccount and tags for Mandrill @cenavarro (#860)
+
+### 📝 Documentation
+
+- Clarify Postmark docs about template model @TheArrowsmith (#859)
+
 ## 1.15.1
 
 ### ✨ Features
