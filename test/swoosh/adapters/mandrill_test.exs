@@ -520,4 +520,80 @@ defmodule Swoosh.Adapters.MandrillTest do
 
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
+
+  test "deliver/1 with subaccount returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("wasp.avengers@example.com")
+      |> reply_to("office.avengers@example.com")
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:subaccount, "team-cap")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "key" => "jarvis",
+        "message" => %{
+          "subject" => "Hello, Avengers!",
+          "headers" => %{"Reply-To" => "office.avengers@example.com"},
+          "to" => [
+            %{"type" => "to", "email" => "wasp.avengers@example.com"},
+            %{"type" => "to", "email" => "steve.rogers@example.com", "name" => "Steve Rogers"}
+          ],
+          "subaccount" => "team-cap",
+          "from_name" => "T Stark",
+          "from_email" => "tony.stark@example.com"
+        }
+      }
+
+      assert body_params == conn.body_params
+      assert "/messages/send.json" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
+  end
+
+  test "deliver/1 with tags returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> to("wasp.avengers@example.com")
+      |> reply_to("office.avengers@example.com")
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:tags, ["Team Iron-Man", "Tony", "Spider-Man", "War Machine"])
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "key" => "jarvis",
+        "message" => %{
+          "subject" => "Hello, Avengers!",
+          "headers" => %{"Reply-To" => "office.avengers@example.com"},
+          "to" => [
+            %{"type" => "to", "email" => "wasp.avengers@example.com"},
+            %{"type" => "to", "email" => "steve.rogers@example.com", "name" => "Steve Rogers"}
+          ],
+          "tags" => ["Team Iron-Man", "Tony", "Spider-Man", "War Machine"],
+          "from_name" => "T Stark",
+          "from_email" => "tony.stark@example.com"
+        }
+      }
+
+      assert body_params == conn.body_params
+      assert "/messages/send.json" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
+  end
 end

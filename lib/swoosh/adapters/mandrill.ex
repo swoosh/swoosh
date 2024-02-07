@@ -52,6 +52,8 @@ defmodule Swoosh.Adapters.Mandrill do
       |> put_provider_option(:metadata, %{"website" => "www.example.com"})
       |> put_provider_option(:template_name, "welcome-user")
       |> put_provider_option(:template_content, [%{"name" => "a", "content" => "b"}])
+      |> put_provider_option(:subaccount, "subaccount-x")
+      |> put_provider_option(:tags, ["tag-1", "tag-2"])
 
   ## Provider options
 
@@ -71,6 +73,10 @@ defmodule Swoosh.Adapters.Mandrill do
 
     * `:template_name` (string) - a name of slug of the template belongs to a
       user
+
+    * `:subaccount` (string) - the unique id of a subaccount for this message
+
+    * `:tags` (list[string]) - a list of strings to tag the message with
 
   """
 
@@ -141,6 +147,8 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_merge_vars(email)
     |> prepare_merge_language(email)
     |> prepare_custom_headers(email)
+    |> prepare_subaccount(email)
+    |> prepare_tags(email)
   end
 
   defp set_api_key(body, config), do: Map.put(body, :key, config[:api_key])
@@ -256,4 +264,16 @@ defmodule Swoosh.Adapters.Mandrill do
     custom_headers = Map.merge(body[:headers] || %{}, headers)
     Map.put(body, :headers, custom_headers)
   end
+
+  defp prepare_subaccount(body, %{provider_options: %{subaccount: subaccount}}) do
+    Map.put(body, :subaccount, to_string(subaccount))
+  end
+
+  defp prepare_subaccount(body, _email), do: body
+
+  defp prepare_tags(body, %{provider_options: %{tags: tags}}) when is_list(tags) do
+    Map.put(body, :tags, tags)
+  end
+
+  defp prepare_tags(body, _email), do: body
 end
