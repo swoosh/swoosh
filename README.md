@@ -77,7 +77,7 @@ configuration options.
 
   ```elixir
   def deps do
-    [{:swoosh, "~> 1.15"}]
+    [{:swoosh, "~> 1.16"}]
   end
   ```
 

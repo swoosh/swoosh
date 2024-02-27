@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.16.0
 
-- Add alternative SMTP adapter (#870)
+### ✨ Features
+
+Thank you @ruslandoga very much for throwing in this gem.
+
+- Add Swoosh.Adapters.Mua, an alternative SMTP adapter @ruslandoga (#870)
 
 ## 1.15.3
 
