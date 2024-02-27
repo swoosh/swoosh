@@ -22,10 +22,7 @@ defmodule Swoosh.Adapters.Mua do
         adapter: Swoosh.Adapters.Mua,
         relay: "smtp.matrix.com",
         port: 1025,
-        auth: [
-          username: "neo",
-          password: "one"
-        ]
+        auth: [username: "neo", password: "one"]
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -34,7 +31,7 @@ defmodule Swoosh.Adapters.Mua do
 
   ## Note
 
-  For supported configuration options, please see [`Mua.option()`](https://hexdocs.pm/mua/Mua.html#t:option/0)
+  For supported configuration options, please see [`option()`](#t:option/0)
   """
 
   @behaviour Swoosh.Adapter
@@ -51,7 +48,7 @@ defmodule Swoosh.Adapters.Mua do
             cc: [{"Swoosh", "mua@swoosh.github.com"}]
           )
 
-        Swoosh.Adapters.Mua.deliver(email, _no_relay_config = %{})
+        Swoosh.Adapters.Mua.deliver(email, _no_relay_config = [])
 
     Fields:
 
@@ -59,6 +56,7 @@ defmodule Swoosh.Adapters.Mua do
 
     """
 
+    @type t :: %__MODULE__{hosts: [Mua.host()]}
     defexception [:hosts]
 
     def message(%__MODULE__{hosts: hosts}) do
@@ -66,6 +64,10 @@ defmodule Swoosh.Adapters.Mua do
     end
   end
 
+  @type option :: Mua.option() | {:relay, Mua.host()}
+
+  @spec deliver(Swoosh.Email.t(), [option]) ::
+          {:ok, Swoosh.Email.t()} | {:error, Mua.error() | MultihostError.t()}
   def deliver(email, config) do
     recipients = recipients(email)
 
@@ -131,8 +133,7 @@ defmodule Swoosh.Adapters.Mua do
     Enum.reduce(attachments, mail, fn attachment, mail ->
       %Swoosh.Attachment{filename: filename, content_type: content_type} = attachment
       data = Swoosh.Attachment.get_content(attachment)
-      headers = [content_type: content_type]
-      Mail.put_attachment(mail, {filename, data}, headers: headers)
+      Mail.put_attachment(mail, {filename, data}, headers: [content_type: content_type])
     end)
   end
 
