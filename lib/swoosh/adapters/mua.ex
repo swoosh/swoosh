@@ -131,7 +131,7 @@ defmodule Swoosh.Adapters.Mua do
     Enum.reduce(attachments, mail, fn attachment, mail ->
       %Swoosh.Attachment{filename: filename, content_type: content_type} = attachment
       data = Swoosh.Attachment.get_content(attachment)
-      headers = [content_type: content_type, content_length: Integer.to_string(byte_size(data))]
+      headers = [content_type: content_type]
       Mail.put_attachment(mail, {filename, data}, headers: headers)
     end)
   end
