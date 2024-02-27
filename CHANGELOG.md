@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15.3
+
+### ✨ Features
+
+- [SMTP2GO] Pass more info down from the API response
+
 ## 1.15.2
 
 ### ✨ Features
