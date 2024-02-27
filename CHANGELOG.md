@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add alternative SMTP adapter (#870)
+
 ## 1.15.3
 
 ### ✨ Features

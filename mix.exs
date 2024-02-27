@@ -46,6 +46,7 @@ defmodule Swoosh.Mixfile do
           Mail,
           Mail.Message,
           Mail.Renderers.RFC2822,
+          Mua,
           {IEx, :started?, 0}
         ]
       ]
@@ -73,6 +74,7 @@ defmodule Swoosh.Mixfile do
       {:req, "~> 0.4 or ~> 1.0", optional: true},
       {:mail, "~> 0.2", optional: true},
       {:gen_smtp, "~> 0.13 or ~> 1.0", optional: true},
+      {:mua, "~> 0.1.0", optional: true},
       {:cowboy, "~> 1.1 or ~> 2.4", optional: true},
       {:plug, "~> 1.9", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
