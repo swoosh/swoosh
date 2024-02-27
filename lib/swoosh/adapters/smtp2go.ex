@@ -65,8 +65,8 @@ defmodule Swoosh.Adapters.SMTP2GO do
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
-        %{"data" => %{"email_id" => email_id}} = Swoosh.json_library().decode!(body)
-        {:ok, %{id: email_id}}
+        %{"data" => %{"email_id" => email_id} = data} = Swoosh.json_library().decode!(body)
+        {:ok, %{id: email_id, data: data}}
 
       {:ok, status_code, _headers, error}
       when status_code >= 400 ->

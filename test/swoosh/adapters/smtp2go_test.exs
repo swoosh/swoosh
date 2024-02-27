@@ -77,7 +77,7 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
       |> text_body(@template_text_content)
       |> html_body(@template_html_content)
 
-    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+    assert {:ok, %{id: "123456789"}} = SMTP2GO.deliver(email, config)
   end
 
   test "deliver/1 - valid email with template ID and data",
@@ -116,7 +116,7 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
       |> put_provider_option(:template_error_deliver, true)
       |> put_provider_option(:template_error_reporting, @developer)
 
-    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+    assert {:ok, %{id: "123456789"}} = SMTP2GO.deliver(email, config)
   end
 
   test "deliver/1 - valid email with singular reply_to",
@@ -145,7 +145,7 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
 
     email = reply_to(email, "reply-to@example.com")
 
-    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+    assert {:ok, %{id: "123456789"}} = SMTP2GO.deliver(email, config)
   end
 
   test "deliver/1 - valid email with multiple reply_to",
@@ -176,7 +176,7 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
 
     email = reply_to(email, ["reply-to1@example.com", "reply-to2@example.com"])
 
-    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+    assert {:ok, %{id: "123456789"}} = SMTP2GO.deliver(email, config)
   end
 
   test "deliver/1 - valid email with reply_to and custom headers",
@@ -208,7 +208,7 @@ defmodule Swoosh.Adapters.SMTP2GOTest do
 
     email = email |> reply_to("reply-to@example.com") |> header("test", "value")
 
-    assert SMTP2GO.deliver(email, config) == {:ok, %{id: "123456789"}}
+    assert {:ok, %{id: "123456789"}} = SMTP2GO.deliver(email, config)
   end
 
   test "deliver1/1 - 400", %{
