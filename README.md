@@ -130,6 +130,7 @@ included:
 | Provider     | Swoosh adapter                                                                                      | Remarks          |
 | ------------ | --------------------------------------------------------------------------------------------------- | ---------------- |
 | SMTP         | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)                 |                  |
+| Mua          | [Swoosh.Adapters.Mua](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mua.html#content)                   | SMTP alternative |
 | SendGrid     | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)         |                  |
 | Brevo        | [Swoosh.Adapters.Brevo](https://hexdocs.pm/swoosh/Swoosh.Adapters.Brevo.html#content)               | Sendinblue       |
 | Sendmail     | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)         |                  |
@@ -149,7 +150,6 @@ included:
 | SMTP2GO      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)           |                  |
 | ProtonBridge | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content) |                  |
 | Mailtrap     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)         |                  |
-| Mua          | [Swoosh.Adapters.Mua](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mua.html#content)                   | SMTP alternative |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
