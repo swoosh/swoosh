@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Add alternative SMTP adapter 
+- Add alternative SMTP adapter (#870)
 
 ## 1.15.3
 
