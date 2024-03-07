@@ -100,7 +100,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   alias Swoosh.Adapters.SMTP.Helpers, as: SMTPHelper
 
   @encoding "AWS4-HMAC-SHA256"
-  @host_prefix "email."
+  @host_prefix "email-smtp."
   @host_suffix ".amazonaws.com"
   @service_name "ses"
   @action "SendRawEmail"
