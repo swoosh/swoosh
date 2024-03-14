@@ -150,7 +150,7 @@ defmodule Swoosh.Adapters.Mua do
   def validate_config(_config), do: :ok
 
   def validate_dependency do
-    Swoosh.Adapter.validate_dependency(castore: CAStore, mail: Mail, mua: Mua)
+    Swoosh.Adapter.validate_dependency(mail: Mail, mua: Mua)
   end
 
   defp address({_, address}) when is_binary(address), do: address
