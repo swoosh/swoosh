@@ -87,7 +87,7 @@ defmodule Swoosh.Adapters.Mua do
 
   """
 
-  @behaviour Swoosh.Adapter
+  use Swoosh.Adapter, required_deps: [mail: Mail, mua: Mua]
 
   defmodule MultihostError do
     @moduledoc """
@@ -145,12 +145,6 @@ defmodule Swoosh.Adapters.Mua do
       [_ | _] = multihost ->
         {:error, MultihostError.exception(hosts: :proplists.get_keys(multihost))}
     end
-  end
-
-  def validate_config(_config), do: :ok
-
-  def validate_dependency do
-    Swoosh.Adapter.validate_dependency(mail: Mail, mua: Mua)
   end
 
   defp address({_, address}) when is_binary(address), do: address
