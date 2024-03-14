@@ -268,7 +268,8 @@ defmodule Swoosh.Adapters.Mailgun do
         }).()
   end
 
-  defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
+  defp encode_body(no_attachments),
+    do: {"application/x-www-form-urlencoded", 0, Plug.Conn.Query.encode(no_attachments)}
 
   defp encode_variable(var) when is_map(var) or is_list(var),
     do: Swoosh.json_library().encode!(var)
