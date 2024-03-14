@@ -2,8 +2,9 @@ defmodule Swoosh.Adapters.Mua do
   @moduledoc """
   An adapter that sends email using the SMTP protocol.
 
-  Underneath this adapter uses [Mua](https://github.com/ruslandoga/mua) and
-  [Mail](https://github.com/DockYard/elixir-mail) libraries,
+  Underneath this adapter uses [Mua,](https://github.com/ruslandoga/mua) and
+  [Mail,](https://github.com/DockYard/elixir-mail) and
+  [Castore](https://github.com/elixir-mint/castore) libraries,
   add them to your mix.exs file.
 
   ## Example
@@ -13,11 +14,16 @@ defmodule Swoosh.Adapters.Mua do
         [
          {:swoosh, "~> 1.3"},
          {:mua, "~> 0.1.0"},
-         {:mail, "~> 0.3.0"}
+         {:mail, "~> 0.3.0"},
+         {:castore, "~> 1.0"}
         ]
       end
 
-      # config/config.exs
+      # config/config.exs for sending email directly
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Mua
+
+      # config/config.exs for sending email via a relay
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mua,
         relay: "smtp.matrix.com",
@@ -29,12 +35,59 @@ defmodule Swoosh.Adapters.Mua do
         use Swoosh.Mailer, otp_app: :sample
       end
 
-  ## Note
-
   For supported configuration options, please see [`option()`](#t:option/0)
+
+  ## Sending email directly
+
+  When `relay` option is omitted, this adapter will send email directly to
+  the receivers' host. All receivers must be on the same host, otherwise
+  `Swoosh.Adapters.Mua.MultihostError` is raised.
+
+  In this configuration, you need to ensure that your application can make
+  outgoing connections to port 25 and that your sender domain has appropriate
+  DNS records set, e.g. SPF or DKIM.
+
+  > #### Short-lived connections {: .warning}
+  >
+  > Note that each `deliver` call results in a new connection to the receiver's
+  > email server.
+
+  ## Sending email via a relay
+
+  When `relay` option is set, this adapter will send email through that relay.
+  The relay would usually require authentication. For example, you can use your own
+  GMail account with an app password.
+
+  > #### Short-lived connections {: .warning}
+  >
+  > Note that each `deliver` call results in a new connection to the relay.
+  > This is less efficient than `gen_smtp` which reuses the long-lived connection.
+  > Further versions of this adapter might fix this if it ends up being a big problem ;)
+
+  ## CA certificates
+
+  By default [`CAStore.file_path/0`](https://hexdocs.pm/castore/CAStore.html#file_path/0) is used for
+  [`:cacertfile`,](https://www.erlang.org/doc/man/ssl#type-client_cafile) but you can provide your
+  own or use [the system ones](https://www.erlang.org/doc/man/public_key#cacerts_get-0) and supply them
+  in as [`:cacerts`](https://www.erlang.org/doc/man/ssl#type-client_cacerts)
+
+      :ok = :public_key.cacerts_load()
+      [_ | _] = cacerts = :public_key.cacerts_get()
+
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Mua,
+        transport_opts: [
+          cacerts: cacerts
+        ]
+
+  Note that when using `:cacertfile` option, the certificates are decoded on each new connection.
+  To cache the decoded certificates, set `:persistent_term` for `:mua` to true.
+
+      config :mua, persistent_term: true
+
   """
 
-  @behaviour Swoosh.Adapter
+  use Swoosh.Adapter, required_deps: [mail: Mail, mua: Mua]
 
   defmodule MultihostError do
     @moduledoc """
@@ -93,10 +146,6 @@ defmodule Swoosh.Adapters.Mua do
         {:error, MultihostError.exception(hosts: :proplists.get_keys(multihost))}
     end
   end
-
-  def validate_config(_config), do: :ok
-
-  def validate_dependency, do: :ok
 
   defp address({_, address}) when is_binary(address), do: address
   defp address(address) when is_binary(address), do: address
