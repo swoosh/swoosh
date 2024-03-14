@@ -116,6 +116,7 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"Accept", "*/*"},
       {"Authorization", "Basic #{auth(config)}"}
     ]
   end
@@ -176,8 +177,7 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_attachments(body, %{attachments: []}), do: body
 
   defp prepare_attachments(body, %{attachments: attachments}) do
-    body
-    |> Map.put(:attachments, Enum.map(attachments, &prepare_file(&1)))
+    Map.put(body, :attachments, Enum.map(attachments, &prepare_file(&1)))
   end
 
   defp prepare_file(%{data: nil, type: type} = attachment) do
@@ -187,20 +187,6 @@ defmodule Swoosh.Adapters.Mailgun do
       [],
       content_type: attachment.content_type,
       filename: attachment.filename
-    )
-  end
-
-  defp prepare_file(%{filename: nil} = attachment) do
-    Multipart.Part.binary_body(attachment.data)
-  end
-
-  defp prepare_file(%{type: :inline} = attachment) do
-    Multipart.Part.file_content_field(
-      attachment.filename,
-      attachment.data,
-      "inline",
-      [],
-      content_type: attachment.content_type
     )
   end
 

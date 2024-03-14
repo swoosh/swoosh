@@ -75,30 +75,24 @@ defmodule Swoosh.Adapters.MailgunTest do
       )
       |> attachment(
         Swoosh.Attachment.new(
-          "mix.exs",
+          "mix.lock",
           content_type: "text/plain",
           type: :inline
         )
       )
       |> attachment(
         Swoosh.Attachment.new(
-          {:data, "attachment with file name, content-type, as inline"},
+          {:data, "attachment-data with filename and content-type"},
+          filename: "foo.txt",
+          content_type: "text/plain"
+        )
+      )
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "attachment-data with file name, content-type, as inline"},
           filename: "foo.txt",
           content_type: "text/plain",
           type: :inline
-        )
-      )
-      |> attachment(
-        Swoosh.Attachment.new(
-          {:data, "attachment with filename and content-type"},
-          filename: "foo.txt",
-          content_type: "text/plain"
-        )
-      )
-      |> attachment(
-        Swoosh.Attachment.new(
-          {:data, "attachment as data with content-type"},
-          content_type: "text/plain"
         )
       )
       |> put_provider_option(:custom_vars, %{"key" => "value"})
