@@ -47,11 +47,44 @@ defmodule Swoosh.Adapters.Mua do
   outgoing connections to port 25 and that your sender domain has appropriate
   DNS records set, e.g. SPF or DKIM.
 
+  > #### Short-lived connections {: .warning}
+  >
+  > Note that each `deliver` call results in a new connection to the receiver's
+  > email server.
+
   ## Sending email via a relay
 
   When `relay` option is set, this adapter will send email through that relay.
   The relay would usually require authentication. For example, you can use your own
   GMail account with an app password.
+
+  > #### Short-lived connections {: .warning}
+  >
+  > Note that each `deliver` call results in a new connection to the relay.
+  > This is less efficient than `gen_smtp` which reuses the long-lived connection.
+  > Further versions of this adapter might fix this if it ends up being a big problem ;)
+
+  ## CA certificates
+
+  By default [`CAStore.file_path/0`](https://hexdocs.pm/castore/CAStore.html#file_path/0) is used for
+  [`:cacertfile`,](https://www.erlang.org/doc/man/ssl#type-client_cafile) but you can provide your
+  own or use [the system ones](https://www.erlang.org/doc/man/public_key#cacerts_get-0) and supply them
+  in as [`:cacerts`](https://www.erlang.org/doc/man/ssl#type-client_cacerts)
+
+      :ok = :public_key.cacerts_load()
+      [_ | _] = cacerts = :public_key.cacerts_get()
+
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Mua,
+        transport_opts: [
+          cacerts: cacerts
+        ]
+
+  Note that when using `:cacertfile` option, the certificates are decoded on each new connection.
+  To cache the decoded certificates, set `:persistent_term` for `:mua` to true.
+
+      config :mua, persistent_term: true
+
   """
 
   @behaviour Swoosh.Adapter
