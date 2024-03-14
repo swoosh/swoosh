@@ -86,10 +86,17 @@ defmodule Swoosh.Adapters.Mailgun do
   @api_endpoint "/messages"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = prepare_headers(email, config)
     url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    case Swoosh.ApiClient.post(url, headers, prepare_body(email), email) do
+    {content_type, content_length, body} = prepare_payload(email)
+
+    headers = [
+      {"Content-Type", content_type},
+      {"Content-Length", to_string(content_length)}
+      | prepare_headers(config)
+    ]
+
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Swoosh.json_library().decode!(body)["id"]}}
 
@@ -106,20 +113,16 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  defp prepare_headers(email, config) do
+  defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"Authorization", "Basic #{auth(config)}"},
-      {"Content-Type", content_type(email)}
+      {"Authorization", "Basic #{auth(config)}"}
     ]
   end
 
   defp auth(config), do: Base.encode64("api:#{config[:api_key]}")
 
-  defp content_type(%{attachments: []}), do: "application/x-www-form-urlencoded"
-  defp content_type(%{}), do: "multipart/form-data"
-
-  defp prepare_body(email) do
+  defp prepare_payload(email) do
     %{}
     |> prepare_from(email)
     |> prepare_to(email)
@@ -173,33 +176,39 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_attachments(body, %{attachments: []}), do: body
 
   defp prepare_attachments(body, %{attachments: attachments}) do
-    {normal_attachments, inline_attachments} =
-      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
-
     body
-    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
-    |> Map.put(:inlines, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
+    |> Map.put(:attachments, Enum.map(attachments, &prepare_file(&1)))
   end
 
-  defp prepare_file(%{data: nil} = attachment, type) do
+  defp prepare_file(%{data: nil, type: type} = attachment) do
     Multipart.Part.file_field(
       attachment.path,
-      type,
+      to_string(type),
       [],
       content_type: attachment.content_type,
       filename: attachment.filename
     )
   end
 
-  defp prepare_file(%{filename: nil} = attachment, _type) do
-    Multipart.Part.stream_body(attachment.data)
+  defp prepare_file(%{filename: nil} = attachment) do
+    Multipart.Part.binary_body(attachment.data)
   end
 
-  defp prepare_file(attachment, type) do
+  defp prepare_file(%{type: :inline} = attachment) do
     Multipart.Part.file_content_field(
       attachment.filename,
       attachment.data,
-      type,
+      "inline",
+      [],
+      content_type: attachment.content_type
+    )
+  end
+
+  defp prepare_file(%{type: type} = attachment) do
+    Multipart.Part.file_content_field(
+      attachment.filename,
+      attachment.data,
+      to_string(type),
       [],
       content_type: attachment.content_type
     )
@@ -251,22 +260,26 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_template_options(body, _), do: body
 
-  defp encode_body(%{attachments: attachments, inlines: inlines} = params) do
-    Enum.concat(attachments, inlines)
+  defp encode_body(%{attachments: attachments} = params) do
+    attachments
     |> Enum.reduce(
       params
-      |> Map.drop([:attachments, :inlines])
+      |> Map.drop([:attachments])
       |> Enum.reduce(
         Multipart.new(),
-        fn {_k, value}, multipart ->
-          Multipart.add_part(multipart, Multipart.Part.binary_body(value))
+        fn {key, value}, multipart ->
+          Multipart.add_part(multipart, Multipart.Part.text_field(value, key))
         end
       ),
       fn attachment, multipart ->
         Multipart.add_part(multipart, attachment)
       end
     )
-    |> Multipart.body_binary()
+    |> (&{
+          Multipart.content_type(&1, "multipart/form-data"),
+          Multipart.content_length(&1),
+          Multipart.body_binary(&1)
+        }).()
   end
 
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
