@@ -66,6 +66,7 @@ defmodule Swoosh.Mixfile do
 
   defp deps do
     [
+      {:multipart, "~> 0.4.0"},
       {:mime, "~> 1.1 or ~> 2.0"},
       {:jason, "~> 1.0"},
       {:telemetry, "~> 0.4.2 or ~> 1.0"},

@@ -178,18 +178,27 @@ defmodule Swoosh.Adapters.Mailgun do
 
     body
     |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
-    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
+    |> Map.put(:inlines, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
   end
 
   defp prepare_file(%{data: nil} = attachment, type) do
-    {:file, attachment.path,
-     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]}, []}
+    Multipart.Part.file_field(
+      attachment.path,
+      type,
+      [],
+      content_type: attachment.content_type,
+      filename: attachment.filename
+    )
   end
 
   defp prepare_file(attachment, type) do
-    {"attachment-data", attachment.data,
-     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]},
-     [{"Content-Type", attachment.content_type}]}
+    Multipart.Part.file_content_field(
+      attachment.filename,
+      attachment.data,
+      type,
+      [],
+      content_type: attachment.content_type
+    )
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, :from, render_recipient(from))
@@ -238,13 +247,23 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_template_options(body, _), do: body
 
-  defp encode_body(%{attachments: attachments, inline: inline} = params) do
-    {:multipart,
-     params
-     |> Map.drop([:attachments, :inline])
-     |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-     |> Kernel.++(attachments)
-     |> Kernel.++(inline)}
+  defp encode_body(%{attachments: attachments, inlines: inlines} = params) do
+    Enum.concat(attachments, inlines)
+    |> Enum.reduce(
+      params
+      |> Map.drop([:attachments, :inlines])
+      |> Enum.reduce(
+        Multipart.new(),
+        fn {_k, value}, multipart ->
+          Multipart.add_part(multipart, Multipart.Part.binary_body(value))
+        end
+      ),
+      fn attachment, multipart ->
+        Multipart.add_part(multipart, attachment)
+      end
+    )
+    |> to_string()
+    |> (&{:multipart, &1}).()
   end
 
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
