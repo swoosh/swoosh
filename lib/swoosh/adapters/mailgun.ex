@@ -191,6 +191,10 @@ defmodule Swoosh.Adapters.Mailgun do
     )
   end
 
+  defp prepare_file(%{filename: nil} = attachment, _type) do
+    Multipart.Part.stream_body(attachment.data)
+  end
+
   defp prepare_file(attachment, type) do
     Multipart.Part.file_content_field(
       attachment.filename,
@@ -262,8 +266,7 @@ defmodule Swoosh.Adapters.Mailgun do
         Multipart.add_part(multipart, attachment)
       end
     )
-    |> to_string()
-    |> (&{:multipart, &1}).()
+    |> Multipart.body_binary()
   end
 
   defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)

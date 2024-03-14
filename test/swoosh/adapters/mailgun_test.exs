@@ -69,7 +69,14 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> text_body("Hello")
       |> attachment(
         Swoosh.Attachment.new(
-          "mailgun_test.exs",
+          "mix.exs",
+          content_type: "text/plain"
+        )
+      )
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "attachment"},
+          filename: "foo.txt",
           content_type: "text/plain"
         )
       )
