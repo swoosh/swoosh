@@ -67,6 +67,25 @@ defmodule Swoosh.Adapters.MailgunTest do
       |> subject("Hello, Avengers!")
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
+      |> attachment(
+        Swoosh.Attachment.new(
+          "mailgun_test.exs",
+          content_type: "text/plain"
+        )
+      )
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "attachment"},
+          content_type: "text/plain"
+        )
+      )
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "inline attachment"},
+          content_type: "text/plain",
+          type: :inline
+        )
+      )
       |> put_provider_option(:custom_vars, %{"key" => "value"})
 
     Bypass.expect(bypass, fn conn ->
