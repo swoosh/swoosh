@@ -80,7 +80,7 @@ defmodule Swoosh.Mixfile do
       {:plug, "~> 1.9", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
       {:bandit, ">= 1.0.0", optional: true},
-      {:multipart, "~> 0.4"},
+      {:multipart, "~> 0.4", optional: true},
       {:ex_aws, "~> 2.1", optional: true},
       {:bypass, "~> 2.1", only: :test},
       {:ex_doc, "~> 0.26", only: :docs, runtime: false}
