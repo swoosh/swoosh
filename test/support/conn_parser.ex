@@ -5,7 +5,8 @@ defmodule Swoosh.ConnParser do
       |> Keyword.put_new(:parsers, [
         Plug.Parsers.URLENCODED,
         Plug.Parsers.RFC822,
-        Plug.Parsers.JSON
+        Plug.Parsers.JSON,
+        Plug.Parsers.MULTIPART
       ])
       |> Keyword.put_new(:json_decoder, Swoosh.json_library())
       |> Keyword.put_new(:pass, ["message/rfc822", "text/plain"])

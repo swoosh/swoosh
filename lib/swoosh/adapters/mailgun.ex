@@ -77,7 +77,9 @@ defmodule Swoosh.Adapters.Mailgun do
   Mailgun recognizes.
   """
 
-  use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
+  use Swoosh.Adapter,
+    required_config: [:api_key, :domain],
+    required_deps: [multipart: Multipart, plug: Plug.Conn.Query]
 
   alias Swoosh.Email
   import Swoosh.Email.Render
@@ -86,10 +88,17 @@ defmodule Swoosh.Adapters.Mailgun do
   @api_endpoint "/messages"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = prepare_headers(email, config)
     url = [base_url(config), "/", config[:domain], @api_endpoint]
 
-    case Swoosh.ApiClient.post(url, headers, prepare_body(email), email) do
+    {content_type, content_length, body} = prepare_payload(email)
+
+    headers = [
+      {"Content-Type", content_type},
+      {"Content-Length", to_string(content_length)}
+      | prepare_headers(config)
+    ]
+
+    case Swoosh.ApiClient.post(url, headers, body, email) do
       {:ok, 200, _headers, body} ->
         {:ok, %{id: Swoosh.json_library().decode!(body)["id"]}}
 
@@ -106,20 +115,17 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  defp prepare_headers(email, config) do
+  defp prepare_headers(config) do
     [
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"Authorization", "Basic #{auth(config)}"},
-      {"Content-Type", content_type(email)}
+      {"Accept", "*/*"},
+      {"Authorization", "Basic #{auth(config)}"}
     ]
   end
 
   defp auth(config), do: Base.encode64("api:#{config[:api_key]}")
 
-  defp content_type(%{attachments: []}), do: "application/x-www-form-urlencoded"
-  defp content_type(%{}), do: "multipart/form-data"
-
-  defp prepare_body(email) do
+  defp prepare_payload(email) do
     %{}
     |> prepare_from(email)
     |> prepare_to(email)
@@ -173,23 +179,27 @@ defmodule Swoosh.Adapters.Mailgun do
   defp prepare_attachments(body, %{attachments: []}), do: body
 
   defp prepare_attachments(body, %{attachments: attachments}) do
-    {normal_attachments, inline_attachments} =
-      Enum.split_with(attachments, fn %{type: type} -> type == :attachment end)
-
-    body
-    |> Map.put(:attachments, Enum.map(normal_attachments, &prepare_file(&1, "attachment")))
-    |> Map.put(:inline, Enum.map(inline_attachments, &prepare_file(&1, "inline")))
+    Map.put(body, :attachments, Enum.map(attachments, &prepare_file(&1)))
   end
 
-  defp prepare_file(%{data: nil} = attachment, type) do
-    {:file, attachment.path,
-     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]}, []}
+  defp prepare_file(%{data: nil, type: type} = attachment) do
+    Multipart.Part.file_field(
+      attachment.path,
+      to_string(type),
+      [],
+      content_type: attachment.content_type,
+      filename: attachment.filename
+    )
   end
 
-  defp prepare_file(attachment, type) do
-    {"attachment-data", attachment.data,
-     {"form-data", [{"name", ~s/"#{type}"/}, {"filename", ~s/"#{attachment.filename}"/}]},
-     [{"Content-Type", attachment.content_type}]}
+  defp prepare_file(%{type: type} = attachment) do
+    Multipart.Part.file_content_field(
+      attachment.filename,
+      attachment.data,
+      to_string(type),
+      [],
+      content_type: attachment.content_type
+    )
   end
 
   defp prepare_from(body, %{from: from}), do: Map.put(body, :from, render_recipient(from))
@@ -238,16 +248,32 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_template_options(body, _), do: body
 
-  defp encode_body(%{attachments: attachments, inline: inline} = params) do
-    {:multipart,
-     params
-     |> Map.drop([:attachments, :inline])
-     |> Enum.map(fn {k, v} -> {to_string(k), v} end)
-     |> Kernel.++(attachments)
-     |> Kernel.++(inline)}
+  defp encode_body(%{attachments: attachments} = params) do
+    attachments
+    |> Enum.reduce(
+      params
+      |> Map.drop([:attachments])
+      |> Enum.reduce(
+        Multipart.new(),
+        fn {key, value}, multipart ->
+          Multipart.add_part(multipart, Multipart.Part.text_field(value, key))
+        end
+      ),
+      fn attachment, multipart ->
+        Multipart.add_part(multipart, attachment)
+      end
+    )
+    |> then(
+      &{
+        Multipart.content_type(&1, "multipart/form-data"),
+        Multipart.content_length(&1),
+        Multipart.body_binary(&1)
+      }
+    )
   end
 
-  defp encode_body(no_attachments), do: Plug.Conn.Query.encode(no_attachments)
+  defp encode_body(no_attachments),
+    do: {"application/x-www-form-urlencoded", 0, Plug.Conn.Query.encode(no_attachments)}
 
   defp encode_variable(var) when is_map(var) or is_list(var),
     do: Swoosh.json_library().encode!(var)
