@@ -101,19 +101,33 @@ defmodule Swoosh.Adapters.MailgunTest do
       conn = parse(conn)
       expected_path = "/" <> config[:domain] <> "/messages"
 
-      body_params = %{
-        "subject" => "Hello, Avengers!",
-        "to" => ~s(wasp.avengers@example.com, "Steve Rogers" <steve.rogers@example.com>),
-        "bcc" => ~s(beast.avengers@example.com, "Clinton Francis Barton" <hawk.eye@example.com>),
-        "cc" => ~s(thor.odinson@example.com, "Bruce Banner" <hulk.smash@example.com>),
-        "h:Reply-To" => "office.avengers@example.com",
-        "from" => ~s("T Stark" <tony.stark@example.com>),
-        "text" => "Hello",
-        "html" => "<h1>Hello</h1>",
-        "h:X-Mailgun-Variables" => "{\"key\":\"value\"}"
-      }
+      assert match?(
+               %{
+                 "subject" => "Hello, Avengers!",
+                 "to" => ~s(wasp.avengers@example.com, "Steve Rogers" <steve.rogers@example.com>),
+                 "bcc" =>
+                   ~s(beast.avengers@example.com, "Clinton Francis Barton" <hawk.eye@example.com>),
+                 "cc" => ~s(thor.odinson@example.com, "Bruce Banner" <hulk.smash@example.com>),
+                 "h:Reply-To" => "office.avengers@example.com",
+                 "from" => ~s("T Stark" <tony.stark@example.com>),
+                 "text" => "Hello",
+                 "html" => "<h1>Hello</h1>",
+                 "h:X-Mailgun-Variables" => "{\"key\":\"value\"}",
+                 "attachment" => %Plug.Upload{
+                   path: attachment_path,
+                   content_type: "text/plain",
+                   filename: "mix.exs"
+                 },
+                 "inline" => %Plug.Upload{
+                   path: inline_path,
+                   content_type: "text/plain",
+                   filename: "mix.lock"
+                 }
+               }
+               when is_binary(attachment_path) and is_binary(inline_path),
+               conn.body_params
+             )
 
-      assert body_params == conn.body_params
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
