@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.16.1
+
+With #877 Mailgun adapter now supports API Clients other than Hackney.
+
+## 🐛 Bug Fixes
+
+- Rewrite multipart functionality to use a encoding builder @krainboltgreene (#877)
+- Fix Req header handling @wojtekmach (#879)
+
 ## 1.16.0
 
 ### ✨ Features
