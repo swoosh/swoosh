@@ -47,6 +47,7 @@ defmodule Swoosh.Mixfile do
           Mail.Message,
           Mail.Renderers.RFC2822,
           Mua,
+          Multipart,
           {IEx, :started?, 0}
         ]
       ]
@@ -66,7 +67,6 @@ defmodule Swoosh.Mixfile do
 
   defp deps do
     [
-      {:multipart, "~> 0.4.0"},
       {:mime, "~> 1.1 or ~> 2.0"},
       {:jason, "~> 1.0"},
       {:telemetry, "~> 0.4.2 or ~> 1.0"},
@@ -80,6 +80,7 @@ defmodule Swoosh.Mixfile do
       {:plug, "~> 1.9", optional: true},
       {:plug_cowboy, ">= 1.0.0", optional: true},
       {:bandit, ">= 1.0.0", optional: true},
+      {:multipart, "~> 0.4"},
       {:ex_aws, "~> 2.1", optional: true},
       {:bypass, "~> 2.1", only: :test},
       {:ex_doc, "~> 0.26", only: :docs, runtime: false}

@@ -77,7 +77,9 @@ defmodule Swoosh.Adapters.Mailgun do
   Mailgun recognizes.
   """
 
-  use Swoosh.Adapter, required_config: [:api_key, :domain], required_deps: [plug: Plug.Conn.Query]
+  use Swoosh.Adapter,
+    required_config: [:api_key, :domain],
+    required_deps: [multipart: Multipart, plug: Plug.Conn.Query]
 
   alias Swoosh.Email
   import Swoosh.Email.Render
@@ -261,11 +263,13 @@ defmodule Swoosh.Adapters.Mailgun do
         Multipart.add_part(multipart, attachment)
       end
     )
-    |> (&{
-          Multipart.content_type(&1, "multipart/form-data"),
-          Multipart.content_length(&1),
-          Multipart.body_binary(&1)
-        }).()
+    |> then(
+      &{
+        Multipart.content_type(&1, "multipart/form-data"),
+        Multipart.content_length(&1),
+        Multipart.body_binary(&1)
+      }
+    )
   end
 
   defp encode_body(no_attachments),
