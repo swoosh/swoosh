@@ -48,6 +48,7 @@ defmodule Swoosh.Mixfile do
           Mail.Renderers.RFC2822,
           Mua,
           Multipart,
+          Multipart.Part,
           {IEx, :started?, 0}
         ]
       ]
