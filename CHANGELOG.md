@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.16.2
+
+- Update `MixProject` `xref` exclusions [`MultiPart.Part`] @jbcaprell (#880)
+
 ## 1.16.1
 
 With #877 Mailgun adapter now supports API Clients other than Hackney.
