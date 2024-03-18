@@ -2,6 +2,8 @@
 
 ## 1.16.2
 
+### 🐛 Bug Fixes
+
 - Update `MixProject` `xref` exclusions [`MultiPart.Part`] @jbcaprell (#880)
 
 ## 1.16.1
