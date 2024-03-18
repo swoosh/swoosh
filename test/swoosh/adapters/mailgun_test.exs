@@ -46,6 +46,10 @@ defmodule Swoosh.Adapters.MailgunTest do
       assert expected_path == conn.request_path
       assert "POST" == conn.method
 
+      assert {"content-type", "application/x-www-form-urlencoded"} in conn.req_headers
+      assert {"content-length", "118"} in conn.req_headers
+      assert {"authorization", "Basic YXBpOmZha2U="} in conn.req_headers
+
       Plug.Conn.resp(conn, 200, @success_response)
     end)
 
@@ -130,6 +134,11 @@ defmodule Swoosh.Adapters.MailgunTest do
 
       assert expected_path == conn.request_path
       assert "POST" == conn.method
+
+      content_type = List.keyfind(conn.req_headers, "content-type", 0)
+      assert {"content-type", "multipart/form-data; boundary=" <> _} = content_type
+      assert {"content-length", "19503"} in conn.req_headers
+      assert {"authorization", "Basic YXBpOmZha2U="} in conn.req_headers
 
       Plug.Conn.resp(conn, 200, @success_response)
     end)
@@ -423,5 +432,32 @@ defmodule Swoosh.Adapters.MailgunTest do
                  fn ->
                    Mailgun.validate_config([])
                  end
+  end
+
+  test "encode_body/1 sets valid content length" do
+    params = %{
+      to: "\"Steve Rogers\" <steve.rogers@example.com>",
+      from: "\"T Stark\" <tony.stark@example.com>",
+      subject: "Hello, Avengers!",
+      html: "<h1>Hello</h1>",
+      text: "Hello"
+    }
+
+    assert {"application/x-www-form-urlencoded", 174, _body} = Mailgun.encode_body(params)
+  end
+
+  test "encode_body/1 sets valid content length for attachments" do
+    params = %{
+      to: "\"Steve Rogers\" <steve.rogers@example.com>",
+      from: "\"T Stark\" <tony.stark@example.com>",
+      subject: "Hello, Avengers!",
+      html: "<h1>Hello</h1>",
+      text: "Hello",
+      attachments: [
+        Multipart.Part.binary_body("foo")
+      ]
+    }
+
+    assert {"multipart/form-data; boundary=" <> _, 647, _body} = Mailgun.encode_body(params)
   end
 end
