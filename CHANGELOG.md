@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.3
+
+### ✨ Features
+
+- Mailbox Preview: more space for the HTML preview @justincy (#882)
+
+### 🐛 Bug Fixes
+
+- Fix Mailgun adapter incompatibility with Finch @AndrewDryga (#883)
+
 ## 1.16.2
 
 ### 🐛 Bug Fixes
