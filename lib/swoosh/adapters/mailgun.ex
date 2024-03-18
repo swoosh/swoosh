@@ -248,7 +248,8 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_template_options(body, _), do: body
 
-  defp encode_body(%{attachments: attachments} = params) do
+  @doc false
+  def encode_body(%{attachments: attachments} = params) do
     attachments
     |> Enum.reduce(
       params
@@ -272,8 +273,10 @@ defmodule Swoosh.Adapters.Mailgun do
     )
   end
 
-  defp encode_body(no_attachments),
-    do: {"application/x-www-form-urlencoded", 0, Plug.Conn.Query.encode(no_attachments)}
+  def encode_body(no_attachments) do
+    body = Plug.Conn.Query.encode(no_attachments)
+    {"application/x-www-form-urlencoded", byte_size(body), body}
+  end
 
   defp encode_variable(var) when is_map(var) or is_list(var),
     do: Swoosh.json_library().encode!(var)
