@@ -36,23 +36,23 @@
         </div>
       </div>
 
-      <div class="w-full">
+      <div class="w-full flex flex-col">
         <%= if @email do %>
           <div class="">
             <dl class="divide-y divide-gray-100">
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">From</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700"><%= render_recipient(@email.from) %></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.from) %></dd>
               </div>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">To</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700"><%= render_recipient(@email.to) %></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.to) %></dd>
               </div>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">Subject</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700">
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2">
                   <%= if @email.subject == "" do %>
                     <i>No subject</i>
                   <% else %>
@@ -61,81 +61,81 @@
                 </dd>
               </div>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">Cc</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700"><%= render_recipient(@email.cc) %></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.cc) %></dd>
               </div>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">Bcc</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700"><%= render_recipient(@email.bcc) %></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.bcc) %></dd>
               </div>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">Reply-to</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700"><%= render_recipient(@email.reply_to) %></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.reply_to) %></dd>
               </div>
 
               <%= for {name, value} <- @email.headers do %>
-                <div class="pl-4 py-2">
+                <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                   <dt class="text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700"><%= value %></dd>
+                  <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= value %></dd>
                 </div>
               <% end %>
 
               <%= for {name, value} <- @email.provider_options do %>
-                <div class="pl-4 py-2">
+                <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                   <dt class="text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
-                  <dd class="mt-1 text-sm leading-6 text-gray-700"><%= inspect(value) %></dd>
+                  <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= inspect(value) %></dd>
                 </div>
               <% end %>
 
-              <div class="pl-4 py-2">
+              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                 <dt class="text-sm font-medium leading-6 text-gray-900">Sent at</dt>
-                <dd class="mt-1 text-sm leading-6 text-gray-700" data-datetime="<%= @email.private.sent_at %>"></dd>
+                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2" data-datetime="<%= @email.private.sent_at %>"></dd>
               </div>
             </dl>
           </div>
 
-          <div class="">
-            <%= if @email.text_body do %>
-              <div class="border-t border-gray-100 pl-4 py-2">
-                <p class="text-sm font-medium leading-6 text-gray-900">Text body</p>
-                <div class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6">
-                  <%= @email.text_body %>
-                </div>
+          <%= if @email.text_body do %>
+            <div class="border-t border-gray-100 pl-4 py-2">
+              <p class="text-sm font-medium leading-6 text-gray-900">Text body</p>
+              <div class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6">
+                <%= @email.text_body %>
               </div>
-            <% end %>
-            <%= if @email.html_body do %>
-              <div class="border-t border-gray-100 pl-4 py-2">
-                <div class="flex items-center">
-                  <p class="text-sm font-medium leading-6 text-gray-900">HTML body</p>
-                  <a href="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="ml-2" target="_blank">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 14a1 1 0 0 0-1 1v3.077c0 .459-.022.57-.082.684a.363.363 0 0 1-.157.157c-.113.06-.225.082-.684.082H5.923c-.459 0-.571-.022-.684-.082a.363.363 0 0 1-.157-.157c-.06-.113-.082-.225-.082-.684L4.999 5.5a.5.5 0 0 1 .5-.5l3.5.005a1 1 0 1 0 .002-2L5.501 3a2.5 2.5 0 0 0-2.502 2.5v12.577c0 .76.083 1.185.32 1.627.223.419.558.753.977.977.442.237.866.319 1.627.319h12.154c.76 0 1.185-.082 1.627-.319.419-.224.753-.558.977-.977.237-.442.319-.866.319-1.627V15a1 1 0 0 0-1-1zm-2-9.055v-.291l-.39.09A10 10 0 0 1 15.36 5H14a1 1 0 1 1 0-2l5.5.003a1.5 1.5 0 0 1 1.5 1.5V10a1 1 0 1 1-2 0V8.639c0-.757.086-1.511.256-2.249l.09-.39h-.295a10 10 0 0 1-1.411 1.775l-5.933 5.932a1 1 0 0 1-1.414-1.414l5.944-5.944A10 10 0 0 1 18 4.945z" fill="currentColor"/></svg>
-                  </a>
-                </div>
-                <iframe src="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="w-full mt-1 -mb-4" frameborder="0"></iframe>
+            </div>
+          <% end %>
+          <%= if @email.html_body do %>
+            <div class="grow flex flex-col border-t border-gray-100 pl-4 py-2">
+              <div class="flex items-center">
+                <p class="text-sm font-medium leading-6 text-gray-900">HTML body</p>
+                <a href="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="ml-2" target="_blank">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 14a1 1 0 0 0-1 1v3.077c0 .459-.022.57-.082.684a.363.363 0 0 1-.157.157c-.113.06-.225.082-.684.082H5.923c-.459 0-.571-.022-.684-.082a.363.363 0 0 1-.157-.157c-.06-.113-.082-.225-.082-.684L4.999 5.5a.5.5 0 0 1 .5-.5l3.5.005a1 1 0 1 0 .002-2L5.501 3a2.5 2.5 0 0 0-2.502 2.5v12.577c0 .76.083 1.185.32 1.627.223.419.558.753.977.977.442.237.866.319 1.627.319h12.154c.76 0 1.185-.082 1.627-.319.419-.224.753-.558.977-.977.237-.442.319-.866.319-1.627V15a1 1 0 0 0-1-1zm-2-9.055v-.291l-.39.09A10 10 0 0 1 15.36 5H14a1 1 0 1 1 0-2l5.5.003a1.5 1.5 0 0 1 1.5 1.5V10a1 1 0 1 1-2 0V8.639c0-.757.086-1.511.256-2.249l.09-.39h-.295a10 10 0 0 1-1.411 1.775l-5.933 5.932a1 1 0 0 1-1.414-1.414l5.944-5.944A10 10 0 0 1 18 4.945z" fill="currentColor"/></svg>
+                </a>
               </div>
-            <% end %>
-            <%= if length(@email.attachments) > 0 do %>
-              <div class="border-t border-gray-100 pl-4 py-2">
-                <p class="text-sm font-medium leading-6 text-gray-900">Attachment(s)</p>
-                <div class="flex mt-2">
-                  <%= for {attachment, index} <- Enum.with_index(@email.attachments) do %>
-                    <a  href="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/attachments/<%= index %>" target="_blank" class="flex items-center p-4 border border-gray-200 rounded mr-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-                      </svg>
+              <div class="grow">
+                <iframe src="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="w-full mt-1 -mb-4 h-full" frameborder="0"></iframe>
+              </div>
+            </div>
+          <% end %>
+          <%= if length(@email.attachments) > 0 do %>
+            <div class="border-t border-gray-100 pl-4 py-2">
+              <p class="text-sm font-medium leading-6 text-gray-900">Attachment(s)</p>
+              <div class="flex mt-2">
+                <%= for {attachment, index} <- Enum.with_index(@email.attachments) do %>
+                  <a  href="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/attachments/<%= index %>" target="_blank" class="flex items-center p-4 border border-gray-200 rounded mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+                    </svg>
 
-                      <p class="ml-2 text-sm">
-                        <%= attachment.filename %>
-                      </p>
-                    </a>
-                  <% end %>
-                </div>
+                    <p class="ml-2 text-sm">
+                      <%= attachment.filename %>
+                    </p>
+                  </a>
+                <% end %>
               </div>
-            <% end %>
-          </div>
+            </div>
+          <% end %>
         <% else %>
           <%= if length(@emails) == 0 do %>
             <div class="flex items-center justify-center h-screen">
