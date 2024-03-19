@@ -18,7 +18,8 @@
 
 ## 1.16.1
 
-With #877 Mailgun adapter now supports API Clients other than Hackney.
+With #877 Mailgun adapter now supports API Clients other than Hackney. Mailgun users,
+please add [`:multipart`](https://hex.pm/packages/multipart) to your dependency list.
 
 ## 🐛 Bug Fixes
 

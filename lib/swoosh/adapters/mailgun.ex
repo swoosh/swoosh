@@ -10,7 +10,7 @@ defmodule Swoosh.Adapters.Mailgun do
 
   ## Dependency
 
-  Mailgun adapter requires `Plug` to work properly.
+  Mailgun adapter requires `Plug` and [`:multipart`](https://hex.pm/packages/multipart) to work properly.
 
   ## Configuration options
 
