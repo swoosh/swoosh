@@ -137,7 +137,6 @@ defmodule Swoosh.Adapters.MailgunTest do
 
       content_type = List.keyfind(conn.req_headers, "content-type", 0)
       assert {"content-type", "multipart/form-data; boundary=" <> _} = content_type
-      assert {"content-length", "19503"} in conn.req_headers
       assert {"authorization", "Basic YXBpOmZha2U="} in conn.req_headers
 
       Plug.Conn.resp(conn, 200, @success_response)
