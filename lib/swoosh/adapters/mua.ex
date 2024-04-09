@@ -2,10 +2,12 @@ defmodule Swoosh.Adapters.Mua do
   @moduledoc """
   An adapter that sends email using the SMTP protocol.
 
-  Underneath this adapter uses [Mua,](https://github.com/ruslandoga/mua) and
-  [Mail,](https://github.com/DockYard/elixir-mail) and
-  [Castore](https://github.com/elixir-mint/castore) libraries,
-  add them to your mix.exs file.
+  > ### Dependency {: .info}
+  >
+  > Underneath this adapter uses [Mua,](https://github.com/ruslandoga/mua) and
+  > [Mail](https://github.com/DockYard/elixir-mail), and
+  > [Castore](https://github.com/elixir-mint/castore) libraries,
+  > add them to your mix.exs file.
 
   ## Example
 
