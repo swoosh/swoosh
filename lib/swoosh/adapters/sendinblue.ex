@@ -7,7 +7,7 @@ defmodule Swoosh.Adapters.Sendinblue do
 
   An adapter that sends email using the Sendinblue API (Transactional emails only).
   For reference: [Sendinblue API docs](https://developers.sendinblue.com/reference/sendtransacemail)
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 

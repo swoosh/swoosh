@@ -4,7 +4,7 @@ defmodule Swoosh.Adapters.Dyn do
 
   For reference: [Dyn API docs](https://help.dyn.com/email-rest-methods-api/sending-api/)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 

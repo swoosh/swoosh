@@ -4,13 +4,13 @@ defmodule Swoosh.Adapters.Mailjet do
 
   For reference: [Mailjet API docs](https://dev.mailjet.com/guides/#send-api-v3-1)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 
-  ## Dependency
-
-  Mailjet adapter requires `Plug` to work properly.
+  > ### Dependency {: .info}
+  >
+  > Mailjet adapter requires `Plug` to work properly.
 
   ## Example
 

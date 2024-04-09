@@ -13,6 +13,23 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   [IAM Roles for EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html)
   [IAM roles for ECS tasks](https://docs.aws.amazon.com/AmazonECS/latest/userguide/task-iam-roles.html)
 
+  > ### Dependencies {: .info}
+  >
+  > In addition to the `:gen_smtp` dependency that the `AmazonSES` adapter
+  > requires, this adapter also depends on `:ex_aws`.
+  >
+  > Ensure you have the dependencies added in your mix.exs file:
+  >
+  >     def deps do
+  >       [
+  >         {:swoosh, "~> 1.0"},
+  >         {:gen_smtp, "~> 1.0"},
+  >         {:ex_aws, "~> 2.1"},
+  >         # Dependency of `:ex_aws`
+  >         {:sweet_xml, "~> 0.6"}
+  >       ]
+  >     end
+
   ## Example
 
       # config/config.exs
@@ -27,23 +44,6 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
         use Swoosh.Mailer, otp_app: :sample
-      end
-
-  ## Dependencies
-
-  In addition to the `:gen_smtp` dependency that the `AmazonSES` adapter
-  requires, this adapter also depends on `:ex_aws`.
-
-  Ensure you have the dependencies added in your mix.exs file:
-
-      def deps do
-        [
-          {:swoosh, "~> 1.0"},
-          {:gen_smtp, "~> 1.0"},
-          {:ex_aws, "~> 2.1"},
-          # Dependency of `:ex_aws`
-          {:sweet_xml, "~> 0.6"}
-        ]
       end
 
   See also:

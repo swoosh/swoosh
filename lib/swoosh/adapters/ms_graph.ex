@@ -4,14 +4,14 @@ defmodule Swoosh.Adapters.MsGraph do
 
   For reference: [Microsoft Graph API docs](https://learn.microsoft.com/en-us/graph/api/user-sendmail)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 
-  ## Dependency
-
-  Microsoft Graph adapter requires `:gen_smtp` to work properly.
-  `:gen_smtp` is only used to encode the email body to MIME format.
+  > ### Dependency {: .info}
+  >
+  > Microsoft Graph adapter requires `:gen_smtp` to work properly.
+  > `:gen_smtp` is only used to encode the email body to MIME format.
 
   ## Configuration options
 

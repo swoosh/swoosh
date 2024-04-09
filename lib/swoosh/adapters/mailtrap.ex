@@ -9,7 +9,7 @@ defmodule Swoosh.Adapters.Mailtrap do
 
   For reference: [Mailtrap API docs](https://api-docs.mailtrap.io/docs/mailtrap-api-docs/67f1d70aeb62c-send-email)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 

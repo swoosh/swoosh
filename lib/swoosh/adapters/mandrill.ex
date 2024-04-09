@@ -8,7 +8,7 @@ defmodule Swoosh.Adapters.Mandrill do
 
   For reference: [Mandrill API docs](https://mandrillapp.com/api/docs/messages.html)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 

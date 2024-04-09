@@ -4,7 +4,7 @@ defmodule Swoosh.Adapters.Scaleway do
 
   For reference: [Scaleway API docs](https://www.scaleway.com/en/developers/api/transactional-email/#path-emails-send-an-email)
 
-  **This adapter requires an API Client.** Swoosh comes with Hackney and Finch out of the box.
+  **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
 
