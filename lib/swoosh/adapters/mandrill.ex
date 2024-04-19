@@ -78,6 +78,14 @@ defmodule Swoosh.Adapters.Mandrill do
 
     * `:tags` (list[string]) - a list of strings to tag the message with
 
+  ## Template-configured 'from' address
+
+  Mandrill templates allow you to configure the 'from' address in the template itself.
+  To use the 'from' fields configured in the template, rather than specifying the value
+  explicitly, you can set
+
+    |> from("TEMPLATE")
+
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -155,6 +163,8 @@ defmodule Swoosh.Adapters.Mandrill do
 
   defp set_async(body, %{provider_options: %{async: true}}), do: Map.put(body, :async, true)
   defp set_async(body, _email), do: body
+
+  defp prepare_from(body, %{from: {_, "TEMPLATE"}}), do: body
 
   defp prepare_from(body, %{from: {nil, address}}), do: Map.put(body, :from_email, address)
 
