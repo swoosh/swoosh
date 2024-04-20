@@ -596,4 +596,34 @@ defmodule Swoosh.Adapters.MandrillTest do
 
     assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
   end
+
+  test "deliver/1 with TEMPLATE from value returns :ok and has no from values",
+       %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("TEMPLATE")
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "key" => "jarvis",
+        "message" => %{
+          "subject" => "",
+          "to" => [
+            %{"type" => "to", "email" => "steve.rogers@example.com", "name" => "Steve Rogers"}
+          ]
+        }
+      }
+
+      assert body_params == conn.body_params
+      assert "/messages/send.json" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mandrill.deliver(email, config) == {:ok, %{id: "9"}}
+  end
 end
