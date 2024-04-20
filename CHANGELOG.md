@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.4
+
+### ✨ Features
+
+- Add support for allow\_nil\_from @bernardd (#895)
+
+### 🧰 Maintenance
+
+- remove unstable assertion @princemaple (#892)
+
 ## 1.16.3
 
 ### ✨ Features
