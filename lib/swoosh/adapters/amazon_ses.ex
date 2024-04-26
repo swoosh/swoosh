@@ -41,9 +41,14 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   ### Optional
 
-  * `:ses_source` - An email address used for bounce reports. Will be set as the
-    `Source` [request parameter](https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html#API_SendRawEmail_RequestParameters)
-     in the SES API. Note that this must correspond to a verified identity.
+  The following [request parameters](https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html#API_SendRawEmail_RequestParameters) can be set in the configuration:
+
+  * `:ses_source` - mapped to `Source` parameter in the API request
+  * `:ses_source_arn` - mapped to `SourceArn` parameter in the API request
+  * `:ses_from_arn` - mapped to `FromArn` parameter in the API request
+  * `:ses_return_path_arn` - mapped to `ReturnPathArn` parameter in the API request
+
+  See details on how to use the parameters from [the SES API documentation](https://docs.aws.amazon.com/ses/latest/APIReference/API_SendRawEmail.html#API_SendRawEmail_RequestParameters).
 
   ## Examples
 
@@ -154,6 +159,9 @@ defmodule Swoosh.Adapters.AmazonSES do
     |> Map.put("Version", Keyword.get(config, :version, @version))
     |> Map.put("RawMessage.Data", generate_raw_message_data(email, config))
     |> prepare_source(config)
+    |> prepare_source_arn(config)
+    |> prepare_from_arn(config)
+    |> prepare_return_path_arn(config)
     |> prepare_configuration_set_name(email)
     |> prepare_tags(email)
   end
@@ -171,6 +179,27 @@ defmodule Swoosh.Adapters.AmazonSES do
   defp prepare_source(body, config) do
     case Keyword.fetch(config, :ses_source) do
       {:ok, source} -> Map.put(body, "Source", source)
+      :error -> body
+    end
+  end
+
+  defp prepare_source_arn(body, config) do
+    case Keyword.fetch(config, :ses_source_arn) do
+      {:ok, source} -> Map.put(body, "SourceArn", source)
+      :error -> body
+    end
+  end
+
+  defp prepare_from_arn(body, config) do
+    case Keyword.fetch(config, :ses_from_arn) do
+      {:ok, from} -> Map.put(body, "FromArn", from)
+      :error -> body
+    end
+  end
+
+  defp prepare_return_path_arn(body, config) do
+    case Keyword.fetch(config, :ses_return_path_arn) do
+      {:ok, return_path} -> Map.put(body, "ReturnPathArn", return_path)
       :error -> body
     end
   end
