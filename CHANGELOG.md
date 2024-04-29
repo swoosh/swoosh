@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.16.5
+
+### ✨ Features
+
+- Add config options for AmazonSES adapter @otlaitil (#897)
+
 ## 1.16.4
 
 ### ✨ Features
