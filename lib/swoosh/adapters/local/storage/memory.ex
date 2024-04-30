@@ -53,7 +53,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       1
       iex> Memory.pop()
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
-      iex> Memory.all() |> Enun.count()
+      iex> Memory.all() |> Enum.count()
       0
   """
   def pop() do
