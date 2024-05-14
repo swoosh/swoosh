@@ -236,8 +236,10 @@ defmodule Swoosh.Adapters.ZeptoMail do
   defp prepare_inline_cache_attachments(body, _email), do: body
 
   defp prepare_template_key(body, %{provider_options: provider_options}) do
-    template_key = provider_options[:template_key] || provider_options[:template_alias]
-    Map.put(body, :template_key, template_key)
+    case Map.fetch(provider_options, :template_key) do
+      {:ok, template_key} -> Map.put(body, :template_key, template_key)
+      :error -> Map.put(body, :template_alias, provider_options[:template_alias])
+    end
   end
 
   defp prepare_merge_info(body, %{provider_options: provider_options}, :single) do
