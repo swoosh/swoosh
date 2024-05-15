@@ -7,6 +7,7 @@ defmodule Swoosh.Adapters.ZeptoMail do
   ## Configuration options
 
   * `:api_key` - the API key without the prefix `Zoho-enczapikey` used with ZeptoMail.
+  * `:type` - the type of email to send `:single` or `:batch`. Defaults to `:single`
 
   ## Example
 
@@ -50,18 +51,21 @@ defmodule Swoosh.Adapters.ZeptoMail do
 
       import Swoosh.Email
 
-      new()
-      |> from({"T Stark", "tony.stark@example.com"})
-      |> to({"Steve Rogers", "steve.rogers@example.com"})
-      |> to("wasp.avengers@example.com")
-      |> subject("Hello, Avengers!")
-      |> html_body("<h1>Hello Avenger from {{ team }}</h1>")
-      |> put_provider_option(:merge_info,
-        %{
-          "steve.rogers@example.com" => %{team: "Avengers"},
-          "wasp.avengers@example.com" => %{team: "Avengers 2"}
-        }
-      )
+      email =
+        new()
+        |> from({"T Stark", "tony.stark@example.com"})
+        |> to({"Steve Rogers", "steve.rogers@example.com"})
+        |> to("wasp.avengers@example.com")
+        |> subject("Hello, Avengers!")
+        |> html_body("<h1>Hello Avenger from {{ team }}</h1>")
+        |> put_provider_option(:merge_info,
+          %{
+            "steve.rogers@example.com" => %{team: "Avengers"},
+            "wasp.avengers@example.com" => %{team: "Avengers 2"}
+          }
+        )
+
+      Swoosh.Adapters.ZeptoMail.deliver(email, type: :batch)
 
   ## Provider options
     * `:bounce_address` (string) - The email address to which bounced emails will be sent.
@@ -100,14 +104,8 @@ defmodule Swoosh.Adapters.ZeptoMail do
                    is_map_key(email.provider_options, :template_alias)
 
   def deliver(%Email{} = email, config \\ []) do
-    do_deliver(:single, email, config)
-  end
+    type = Keyword.get(config, :type, :single)
 
-  def deliver_many([email], config \\ []) do
-    do_deliver(:batch, email, config)
-  end
-
-  defp do_deliver(type, email, config) do
     url = base_url(config) <> api_endpoint(email)
     url = if type == :batch, do: url <> "/batch", else: url
     body = type |> prepare_payload(email) |> Swoosh.json_library().encode!()

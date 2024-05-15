@@ -367,7 +367,7 @@ defmodule Swoosh.Adapters.ZeptoMailTest do
     assert ZeptoMail.deliver(email, config) == {:error, :econnrefused}
   end
 
-  test "deliver_many/2 a sent batch email results in :ok", %{
+  test "deliver/2 a sent batch email results in :ok", %{
     bypass: bypass,
     config: config,
     valid_email: email
@@ -418,13 +418,10 @@ defmodule Swoosh.Adapters.ZeptoMailTest do
       Plug.Conn.resp(conn, 201, @success_response)
     end)
 
-    assert ZeptoMail.deliver_many([email], config) ==
+    config = Keyword.put(config, :type, :batch)
+
+    assert ZeptoMail.deliver(email, config) ==
              {:ok,
               %{id: "2d6f.3dd3c3f49c2fb8fc.m1.3063d370-1063-11ef-a100-525400fa05f6.18f6cfb6a27"}}
-  end
-
-  test "deliver_many/2 with a not one element list raise", %{config: config} do
-    assert_raise(FunctionClauseError, fn -> ZeptoMail.deliver_many([], config) end)
-    assert_raise(FunctionClauseError, fn -> ZeptoMail.deliver_many([new(), new()], config) end)
   end
 end
