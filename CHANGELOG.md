@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.6
+
+### ✨ Features
+
+- add Swoosh.Adapters.ZeptoMail @gBillal (#905)
+
+### 📝 Documentation
+
+- Fix typo in docs @pguillory (#898)
+
 ## 1.16.5
 
 ### ✨ Features
