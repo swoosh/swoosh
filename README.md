@@ -150,6 +150,7 @@ included:
 | SMTP2GO      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)           |                  |
 | ProtonBridge | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content) |                  |
 | Mailtrap     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)         |                  |
+| ZeptoMail    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)       |                  |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
