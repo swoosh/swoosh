@@ -78,6 +78,11 @@ defmodule Swoosh.Adapters.Mandrill do
 
     * `:tags` (list[string]) - a list of strings to tag the message with
 
+    * `:return_path_domain` (string) - a custom domain to use for the messages's return-path
+
+    * `:tracking_domain` (string) - a custom domain to use for tracking opens and clicks
+      instead of mandrillapp.com
+
   ## Template-configured 'from' address
 
   Mandrill templates allow you to configure the 'from' address in the template itself.
@@ -157,6 +162,8 @@ defmodule Swoosh.Adapters.Mandrill do
     |> prepare_custom_headers(email)
     |> prepare_subaccount(email)
     |> prepare_tags(email)
+    |> prepare_return_path_domain(email)
+    |> prepare_tracking_domain(email)
   end
 
   defp set_api_key(body, config), do: Map.put(body, :key, config[:api_key])
@@ -286,4 +293,18 @@ defmodule Swoosh.Adapters.Mandrill do
   end
 
   defp prepare_tags(body, _email), do: body
+
+  defp prepare_return_path_domain(body, %{
+         provider_options: %{return_path_domain: return_path_domain}
+       }) do
+    Map.put(body, :return_path_domain, return_path_domain)
+  end
+
+  defp prepare_return_path_domain(body, _email), do: body
+
+  defp prepare_tracking_domain(body, %{provider_options: %{tracking_domain: tracking_domain}}) do
+    Map.put(body, :tracking_domain, tracking_domain)
+  end
+
+  defp prepare_tracking_domain(body, _email), do: body
 end
