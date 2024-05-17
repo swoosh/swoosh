@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.16.7
+
+### ✨ Features
+
+- Add support for tracking and return path domains for Mandrill @cenavarro (#906)
+
 ## 1.16.6
 
 ### ✨ Features
