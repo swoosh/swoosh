@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.8
+
+### Breaking Change
+
+`Mua` is bumped to `0.2.0`, and brings some breaking changes. The [change](https://github.com/ruslandoga/mua/pull/44) in v0.2.0 is splitting `transport_opts` into `tcp` and `ssl` specific ones since `:gen_tcp.connect` complains when it receives opts for `:ssl.connect`.
+
+### 🧰 Maintenance
+
+- update mua to v0.2.0 @ruslandoga (#911)
+
 ## 1.16.7
 
 ### ✨ Features
