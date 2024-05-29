@@ -15,7 +15,7 @@ defmodule Swoosh.Adapters.Mua do
       def deps do
         [
          {:swoosh, "~> 1.3"},
-         {:mua, "~> 0.1.0"},
+         {:mua, "~> 0.2.0"},
          {:mail, "~> 0.3.0"},
          {:castore, "~> 1.0"}
         ]
@@ -78,7 +78,7 @@ defmodule Swoosh.Adapters.Mua do
 
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mua,
-        transport_opts: [
+        ssl: [
           cacerts: cacerts
         ]
 
