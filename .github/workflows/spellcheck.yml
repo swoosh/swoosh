@@ -12,4 +12,4 @@ jobs:
       - name: Spell check
         run: |
           pip install codespell    
-          codespell -S deps,_build,.git,.elixir_ls -r "(?<!@)\\b[a-zA-Z0-9_'-]+\\b"
+          codespell -S deps,_build,.git,.elixir_ls -L Domin -r "(?<!@)\\b[a-zA-Z0-9_'-]+\\b"
