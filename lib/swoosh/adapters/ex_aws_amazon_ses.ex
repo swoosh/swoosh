@@ -59,14 +59,17 @@ defmodule Swoosh.Adapters.ExAwsAmazonSES do
   alias Swoosh.Adapters.AmazonSES
 
   def deliver(%Email{} = email, config \\ []) do
-    credentials = ExAws.Config.new(:ses)
-
+    region_override = Keyword.get(config, :region)
+    credentials = get_credentials(region_override)
     config = add_credentials(config, credentials)
 
     email
     |> add_security_token(credentials)
     |> AmazonSES.deliver(config)
   end
+
+  defp get_credentials(nil), do: ExAws.Config.new(:ses)
+  defp get_credentials(region), do: ExAws.Config.new(:ses, region: region)
 
   defp add_credentials(config, credentials) do
     Keyword.merge(
