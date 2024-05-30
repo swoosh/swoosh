@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.16.9
+
+### 🐛 Bug Fixes
+
+- Fix ex\_aws region override @hellomika (#914)
+
 ## 1.16.8
 
 ### Breaking Change
