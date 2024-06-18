@@ -25,6 +25,8 @@ defmodule Swoosh.X.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
+  @type email_assertion :: Email.t() | Keyword.t() | (Email.t() -> boolean())
+
   @doc """
   Sets Swoosh test adapter to global mode.
 
@@ -62,6 +64,24 @@ defmodule Swoosh.X.TestAssertions do
 
       :ok
     end
+  end
+
+  @doc ~S"""
+  Asserts no emails were sent.
+  """
+  @spec assert_no_email_sent() :: boolean | no_return
+  def assert_no_email_sent() do
+    refute_email_sent()
+  end
+
+  @doc ~S"""
+  Asserts `email` was not sent.
+
+  Performs exact matching of the email struct.
+  """
+  @spec assert_email_not_sent(Email.t()) :: boolean | no_return
+  def assert_email_not_sent(%Email{} = email) do
+    refute_email_sent(email)
   end
 
   @doc ~S"""
@@ -274,6 +294,96 @@ defmodule Swoosh.X.TestAssertions do
   def flush_emails do
     do_flush_emails([])
   end
+
+  @doc ~S"""
+  Asserts multiple emails were sent.
+
+  You can pass a list of maps to match on specific params per email
+
+  ## Examples
+
+      iex> alias Swoosh.Email
+      iex> import Swoosh.TestAssertions
+
+      iex> emails = Enum.map(1..2, fn n -> Email.new(subject: "Hello, Avengers #{n}!") end)
+      iex> Swoosh.Adapters.Test.deliver_many(emails, [])
+
+      # assert a specific email was sent
+      iex> assert_emails_sent(emails)
+
+      # assert the list of emails with specific field(s) that were sent
+      iex> assert_email_sent([
+        %{subject: "Hello, Avengers 1!"},
+        %{subject: "Hello, Avengers 2!"},
+      ])
+  """
+  @spec assert_emails_sent() :: tuple | no_return
+  def assert_emails_sent do
+    assert_receive {:emails, _}
+  end
+
+  @spec assert_emails_sent([email_assertion()]) ::
+          :ok | tuple | no_return
+  def assert_emails_sent([%Swoosh.Email{} | _] = emails) do
+    assert_received {:emails, ^emails}
+  end
+
+  def assert_emails_sent([%{} | _] = params_map_list) do
+    assert_received {:emails, emails}
+
+    assert length(emails) == length(params_map_list)
+
+    emails
+    |> Enum.zip(params_map_list)
+    |> Enum.each(fn {email, params_map} ->
+      Enum.each(params_map, &assert_equal(email, &1))
+    end)
+  end
+
+  defp assert_equal(email, {:subject, %Regex{} = value}),
+    do: assert(email.subject =~ value)
+
+  defp assert_equal(email, {:subject, value}),
+    do: assert(email.subject == value)
+
+  defp assert_equal(email, {:from, value}),
+    do: assert(email.from == Recipient.format(value))
+
+  defp assert_equal(email, {:reply_to, value}),
+    do: assert(email.reply_to == Recipient.format(value))
+
+  defp assert_equal(email, {:to, value}) when is_list(value),
+    do: assert(email.to == Enum.map(value, &Recipient.format/1))
+
+  defp assert_equal(email, {:to, value}),
+    do: assert(Recipient.format(value) in email.to)
+
+  defp assert_equal(email, {:cc, value}) when is_list(value),
+    do: assert(email.cc == Enum.map(value, &Recipient.format/1))
+
+  defp assert_equal(email, {:cc, value}),
+    do: assert(Recipient.format(value) in email.cc)
+
+  defp assert_equal(email, {:bcc, value}) when is_list(value),
+    do: assert(email.bcc == Enum.map(value, &Recipient.format/1))
+
+  defp assert_equal(email, {:bcc, value}),
+    do: assert(Recipient.format(value) in email.bcc)
+
+  defp assert_equal(email, {:text_body, %Regex{} = value}),
+    do: assert(email.text_body =~ value)
+
+  defp assert_equal(email, {:text_body, value}),
+    do: assert(email.text_body == value)
+
+  defp assert_equal(email, {:html_body, %Regex{} = value}),
+    do: assert(email.html_body =~ value)
+
+  defp assert_equal(email, {:html_body, value}),
+    do: assert(email.html_body == value)
+
+  defp assert_equal(email, {:headers, value}),
+    do: assert(email.headers == value)
 
   defp do_flush_emails(emails) do
     receive do
