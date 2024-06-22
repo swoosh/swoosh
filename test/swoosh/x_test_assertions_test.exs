@@ -302,5 +302,29 @@ defmodule Swoosh.X.TestAssertionsTest do
         }
       ])
     end
+
+    test "assert list of emails was sent with subject regex" do
+      assert_emails_sent([
+        %{
+          subject: ~r/Hello/,
+        },
+        %{
+          subject: ~r/Hello/,
+        }
+      ])
+    end
+
+    test "assert multiple emails sent with subject regex not found" do
+      assert_raise ExUnit.AssertionError, fn ->
+        assert_emails_sent([
+          %{
+            subject: ~r/HelloA/,
+          },
+          %{
+            subject: ~r/Hello/,
+          }
+        ])
+      end
+    end
   end
 end

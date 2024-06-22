@@ -166,6 +166,9 @@ defmodule Swoosh.X.TestAssertions do
     """
   end
 
+  defp has?(email, {:subject, %Regex{} = value}),
+    do: email.subject =~ value
+
   defp has?(email, {:subject, value}),
     do: email.subject == value
 
@@ -331,59 +334,22 @@ defmodule Swoosh.X.TestAssertions do
   def assert_emails_sent([%{} | _] = params_map_list) do
     assert_received {:emails, emails}
 
-    assert length(emails) == length(params_map_list)
+    assert length(emails) == length(params_map_list), """
+      Expected to receive #{length(params_map_list)} emails but received #{length(emails)}
+    """
 
     emails
     |> Enum.zip(params_map_list)
     |> Enum.each(fn {email, params_map} ->
-      Enum.each(params_map, &assert_equal(email, &1))
+      Enum.each(params_map, fn param ->
+        assert has?(email, param), """
+          Expected email to be sent with the attribute:
+
+          #{inspect(param, pretty: true)}
+        """
+      end)
     end)
   end
-
-  defp assert_equal(email, {:subject, %Regex{} = value}),
-    do: assert(email.subject =~ value)
-
-  defp assert_equal(email, {:subject, value}),
-    do: assert(email.subject == value)
-
-  defp assert_equal(email, {:from, value}),
-    do: assert(email.from == Recipient.format(value))
-
-  defp assert_equal(email, {:reply_to, value}),
-    do: assert(email.reply_to == Recipient.format(value))
-
-  defp assert_equal(email, {:to, value}) when is_list(value),
-    do: assert(email.to == Enum.map(value, &Recipient.format/1))
-
-  defp assert_equal(email, {:to, value}),
-    do: assert(Recipient.format(value) in email.to)
-
-  defp assert_equal(email, {:cc, value}) when is_list(value),
-    do: assert(email.cc == Enum.map(value, &Recipient.format/1))
-
-  defp assert_equal(email, {:cc, value}),
-    do: assert(Recipient.format(value) in email.cc)
-
-  defp assert_equal(email, {:bcc, value}) when is_list(value),
-    do: assert(email.bcc == Enum.map(value, &Recipient.format/1))
-
-  defp assert_equal(email, {:bcc, value}),
-    do: assert(Recipient.format(value) in email.bcc)
-
-  defp assert_equal(email, {:text_body, %Regex{} = value}),
-    do: assert(email.text_body =~ value)
-
-  defp assert_equal(email, {:text_body, value}),
-    do: assert(email.text_body == value)
-
-  defp assert_equal(email, {:html_body, %Regex{} = value}),
-    do: assert(email.html_body =~ value)
-
-  defp assert_equal(email, {:html_body, value}),
-    do: assert(email.html_body == value)
-
-  defp assert_equal(email, {:headers, value}),
-    do: assert(email.headers == value)
 
   defp do_flush_emails(emails) do
     receive do
