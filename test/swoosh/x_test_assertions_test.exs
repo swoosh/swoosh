@@ -306,10 +306,10 @@ defmodule Swoosh.X.TestAssertionsTest do
     test "assert list of emails was sent with subject regex" do
       assert_emails_sent([
         %{
-          subject: ~r/Hello/,
+          subject: ~r/Hello/
         },
         %{
-          subject: ~r/Hello/,
+          subject: ~r/Hello/
         }
       ])
     end
@@ -318,10 +318,10 @@ defmodule Swoosh.X.TestAssertionsTest do
       assert_raise ExUnit.AssertionError, fn ->
         assert_emails_sent([
           %{
-            subject: ~r/HelloA/,
+            subject: ~r/HelloA/
           },
           %{
-            subject: ~r/Hello/,
+            subject: ~r/Hello/
           }
         ])
       end
