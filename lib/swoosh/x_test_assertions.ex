@@ -335,7 +335,7 @@ defmodule Swoosh.X.TestAssertions do
     assert_received {:emails, emails}
 
     assert length(emails) == length(params_map_list), """
-      Expected to receive #{length(params_map_list)} emails but received #{length(emails)}
+    Expected to receive #{length(params_map_list)} emails but received #{length(emails)}
     """
 
     emails
@@ -343,9 +343,9 @@ defmodule Swoosh.X.TestAssertions do
     |> Enum.each(fn {email, params_map} ->
       Enum.each(params_map, fn param ->
         assert has?(email, param), """
-          Expected email to be sent with the attribute:
+        Expected email to be sent with the attribute:
 
-          #{inspect(param, pretty: true)}
+        #{inspect(param, pretty: true)}
         """
       end)
     end)
