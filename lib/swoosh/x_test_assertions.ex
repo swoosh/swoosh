@@ -25,6 +25,8 @@ defmodule Swoosh.X.TestAssertions do
   alias Swoosh.Email
   alias Swoosh.Email.Recipient
 
+  @type email_assertion :: Email.t() | Keyword.t() | (Email.t() -> boolean())
+
   @doc """
   Sets Swoosh test adapter to global mode.
 
@@ -62,6 +64,24 @@ defmodule Swoosh.X.TestAssertions do
 
       :ok
     end
+  end
+
+  @doc ~S"""
+  Asserts no emails were sent.
+  """
+  @spec assert_no_email_sent() :: boolean | no_return
+  def assert_no_email_sent() do
+    refute_email_sent()
+  end
+
+  @doc ~S"""
+  Asserts `email` was not sent.
+
+  Performs exact matching of the email struct.
+  """
+  @spec assert_email_not_sent(Email.t()) :: boolean | no_return
+  def assert_email_not_sent(%Email{} = email) do
+    refute_email_sent(email)
   end
 
   @doc ~S"""
@@ -145,6 +165,9 @@ defmodule Swoosh.X.TestAssertions do
     to contain matching email but none matched
     """
   end
+
+  defp has?(email, {:subject, %Regex{} = value}),
+    do: email.subject =~ value
 
   defp has?(email, {:subject, value}),
     do: email.subject == value
@@ -273,6 +296,59 @@ defmodule Swoosh.X.TestAssertions do
   @spec flush_emails() :: list(Email.t())
   def flush_emails do
     do_flush_emails([])
+  end
+
+  @doc ~S"""
+  Asserts multiple emails were sent.
+
+  You can pass a list of maps to match on specific params per email
+
+  ## Examples
+
+      iex> alias Swoosh.Email
+      iex> import Swoosh.TestAssertions
+
+      iex> emails = Enum.map(1..2, fn n -> Email.new(subject: "Hello, Avengers #{n}!") end)
+      iex> Swoosh.Adapters.Test.deliver_many(emails, [])
+
+      # assert a specific email was sent
+      iex> assert_emails_sent(emails)
+
+      # assert the list of emails with specific field(s) that were sent
+      iex> assert_email_sent([
+        %{subject: "Hello, Avengers 1!"},
+        %{subject: "Hello, Avengers 2!"},
+      ])
+  """
+  @spec assert_emails_sent() :: tuple | no_return
+  def assert_emails_sent do
+    assert_receive {:emails, _}
+  end
+
+  @spec assert_emails_sent([email_assertion()]) ::
+          :ok | tuple | no_return
+  def assert_emails_sent([%Swoosh.Email{} | _] = emails) do
+    assert_received {:emails, ^emails}
+  end
+
+  def assert_emails_sent([%{} | _] = params_map_list) do
+    assert_received {:emails, emails}
+
+    assert length(emails) == length(params_map_list), """
+    Expected to receive #{length(params_map_list)} emails but received #{length(emails)}
+    """
+
+    emails
+    |> Enum.zip(params_map_list)
+    |> Enum.each(fn {email, params_map} ->
+      Enum.each(params_map, fn param ->
+        assert has?(email, param), """
+        Expected email to be sent with the attribute:
+
+        #{inspect(param, pretty: true)}
+        """
+      end)
+    end)
   end
 
   defp do_flush_emails(emails) do
