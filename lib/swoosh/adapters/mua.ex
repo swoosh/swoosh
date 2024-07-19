@@ -138,14 +138,23 @@ defmodule Swoosh.Adapters.Mua do
           {:ok, Swoosh.Email.t()} | {:error, Mua.error() | MultihostError.t()}
   def deliver(email, config) do
     recipients = recipients(email)
+    relay = Keyword.get(config, :relay)
 
     recipients_by_host =
-      if relay = Keyword.get(config, :relay) do
+      if relay do
         [{relay, recipients}]
       else
         recipients
         |> Enum.group_by(&recipient_host/1)
         |> Map.to_list()
+      end
+
+    # we don't perform MX lookup when relay is used
+    config =
+      if relay do
+        Keyword.put_new(config, :mx, false)
+      else
+        config
       end
 
     case recipients_by_host do
