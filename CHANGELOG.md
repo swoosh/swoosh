@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.10
+
+### 🐛 Bug Fixes
+
+- mua: no mx when relay @ruslandoga (#934)
+
+### 📝 Documentation
+
+- mua: update docs @ruslandoga (#935)
+
 ## 1.16.9
 
 ### 🐛 Bug Fixes
