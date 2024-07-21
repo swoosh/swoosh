@@ -16,15 +16,25 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
     ]
   end
 
-  defp config(Swoosh.Adapters.Muaua) do
-    [
-      relay: System.get_env("SMTP_RELAY"),
-      domain: System.get_env("SMTP_DOMAIN"),
-      auth: [
-        username: System.get_env("SMTP_USERNAME"),
-        password: System.get_env("SMTP_PASSWORD")
-      ]
-    ]
+  defp config(Swoosh.Adapters.Mua) do
+    relay = System.get_env("SMTP_RELAY")
+    username = System.get_env("SMTP_USERNAME")
+    password = System.get_env("SMTP_PASSWORD")
+
+    auth =
+      cond do
+        username && password ->
+          Keyword.put(config, :auth, username: username, password: password)
+
+        username || password ->
+          raise ArgumentError, "both SMTP_USERNAME and SMTP_PASSWORD need to be provided"
+
+        # both nil
+        true ->
+          false
+      end
+
+    [relay: relay, auth: auth]
   end
 
   for adapter <- [Swoosh.Adapters.SMTP, Swoosh.Adapters.Mua] do
