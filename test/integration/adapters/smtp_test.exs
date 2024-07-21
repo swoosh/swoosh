@@ -24,7 +24,7 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
     auth =
       cond do
         username && password ->
-          Keyword.put(config, :auth, username: username, password: password)
+          [username: username, password: password]
 
         username || password ->
           raise ArgumentError, "both SMTP_USERNAME and SMTP_PASSWORD need to be provided"
