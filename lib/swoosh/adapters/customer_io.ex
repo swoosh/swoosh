@@ -75,7 +75,7 @@ defmodule Swoosh.Adapters.CustomerIO do
     * `:message_data` (map) - An object containing the key-value pairs referenced
         using liquid in your message, see `:transactional_message_id`.
 
-    * `:preheader` (string) - Also known as "preview text", this is the block block
+    * `:preheader` (string) - Also known as "preview text", this is the block of
       of text that users see next to, or underneath, the subject line in their inbox.
 
     * `:queue_draft` (boolean) - If true, your transactional message is held as

@@ -64,7 +64,7 @@ defmodule Swoosh.Adapters.Mailtrap do
 
     * `:category` (string) - an email category
 
-    * `:custom_variables` (map) - a map contains fields
+    * `:custom_variables` (map) - a map containing fields
 
 
   """

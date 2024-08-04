@@ -24,7 +24,7 @@ defmodule Swoosh.Email do
   This key is reserved for use with adapters, libraries and frameworks.
 
   * `private` - a map of values that are for use by libraries/frameworks, example: `%{phoenix_template: "welcome.html.eex"}`
-    - `client_options` will be passed to underlining http client post call
+    - `client_options` will be passed to underlying http client post call
 
   ## Provider options
 

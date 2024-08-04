@@ -10,7 +10,7 @@ defmodule Swoosh.Adapters.AmazonSES do
   attachments. As a result, however, the `:gen_smtp` dependency is required in order
   to correctly generate the SMTP message that will be sent.
 
-  Ensure sure you have the dependency added in your mix.exs file:
+  Ensure you have the dependency added in your mix.exs file:
 
       def deps do
         [
