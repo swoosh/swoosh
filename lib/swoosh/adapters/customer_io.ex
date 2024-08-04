@@ -76,7 +76,7 @@ defmodule Swoosh.Adapters.CustomerIO do
         using liquid in your message, see `:transactional_message_id`.
 
     * `:preheader` (string) - Also known as "preview text", this is the block of
-      of text that users see next to, or underneath, the subject line in their inbox.
+      text that users see next to, or underneath, the subject line in their inbox.
 
     * `:queue_draft` (boolean) - If true, your transactional message is held as
       a draft in Customer.io and not sent directly to your audience. You must go
