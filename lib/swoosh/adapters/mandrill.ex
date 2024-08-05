@@ -48,7 +48,7 @@ defmodule Swoosh.Adapters.Mandrill do
         %{"rcpt" => "a@example.com", "vars" => %{"name" => "a", "content" => "b"}},
         %{"rcpt" => "b@example.com", "vars" => %{"name" => "b", "content" => "b"}},
       ])
-      |> put_provider_option(:merge_language, "mailchimp"),
+      |> put_provider_option(:merge_language, "mailchimp")
       |> put_provider_option(:metadata, %{"website" => "www.example.com"})
       |> put_provider_option(:template_name, "welcome-user")
       |> put_provider_option(:template_content, [%{"name" => "a", "content" => "b"}])
@@ -71,14 +71,14 @@ defmodule Swoosh.Adapters.Mandrill do
     * `:template_content` (list[map]) - a list of maps of `:name` and
       `:content` to be sent within a template
 
-    * `:template_name` (string) - a name of slug of the template belongs to a
+    * `:template_name` (string) - a name or slug of the template that belongs to a
       user
 
     * `:subaccount` (string) - the unique id of a subaccount for this message
 
     * `:tags` (list[string]) - a list of strings to tag the message with
 
-    * `:return_path_domain` (string) - a custom domain to use for the messages's return-path
+    * `:return_path_domain` (string) - a custom domain to use for the message's return-path
 
     * `:tracking_domain` (string) - a custom domain to use for tracking opens and clicks
       instead of mandrillapp.com

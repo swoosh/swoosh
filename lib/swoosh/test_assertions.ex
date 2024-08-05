@@ -6,8 +6,8 @@ defmodule Swoosh.TestAssertions do
   It is meant to be used with the
   [Swoosh.Adapters.Test](Swoosh.Adapters.Test.html) module.
 
-  **Note**: `Swoosh.TestAssertion` works for unit tests and basic integration tests.
-  Unfortunately it's not going to work for feature/E2E tests.
+  **Note**: `Swoosh.TestAssertions` works for unit tests and basic integration tests.
+  Unfortunately, it's not going to work for feature/E2E tests.
   The mechanism of `assert_email_sent` is based on messaging sending between processes,
   and is expecting the calling process (the one that calls `assert_email_sent`) to be
   the calling process of `Mailer.deliver`, or be the parent process of the whatever

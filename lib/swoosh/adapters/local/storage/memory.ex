@@ -103,7 +103,7 @@ defmodule Swoosh.Adapters.Local.Storage.Memory do
       %Swoosh.Email{from: {"", "tony.stark@example.com"}, headers: %{"Message-ID": "a1b2c3"}, [...]}
       iex> Memory.delete_all()
       :ok
-      iex> Memory.list()
+      iex> Memory.all()
       []
   """
   def delete_all() do
