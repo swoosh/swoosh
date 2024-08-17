@@ -19,6 +19,9 @@ defmodule Swoosh.Adapters.AmazonSES do
         ]
       end
 
+  **Note**: If Swoosh was compiled prior to `:gen_smtp` being installed, it may be necessary to
+  force a recompilation of the library. This can be accomplished using `mix deps.compile swoosh --force`.
+
   **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
   for details.
