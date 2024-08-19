@@ -117,6 +117,12 @@ defmodule Swoosh.Mailer do
 
       Swoosh.Mailer.deprecated_system_env(@otp_app, __MODULE__)
 
+      @doc ~S"""
+      Delivers an email.
+
+      If the email is delivered it returns an `{:ok, result}` tuple. If it fails,
+      returns an `{:error, error}` tuple.
+      """
       @spec deliver(Swoosh.Email.t(), Keyword.t()) :: {:ok, term} | {:error, term}
       def deliver(email, config \\ [])
 
