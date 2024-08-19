@@ -150,6 +150,11 @@ defmodule Swoosh.Mailer do
         end
       end
 
+      @doc ~S"""
+      Delivers a list of emails with the given config.
+
+      It accepts a list of `%Swoosh.Email{}` as its first parameter.
+      """
       @spec deliver_many(list(%Swoosh.Email{}), Keyword.t()) :: {:ok, term} | {:error, term}
       def deliver_many(emails, config \\ [])
 
