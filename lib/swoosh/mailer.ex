@@ -134,6 +134,12 @@ defmodule Swoosh.Mailer do
         end)
       end
 
+      @doc ~S"""
+      Delivers an email with the given config.
+
+      If the email is delivered, it returns the result. If it fails, it raises
+      a `DeliveryError`.
+      """
       @spec deliver!(Swoosh.Email.t(), Keyword.t()) :: term | no_return
       def deliver!(email, config \\ [])
 
