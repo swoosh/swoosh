@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16.11
+
+### ✨ Features
+
+- mua: add Date and Message-ID headers when missing @ruslandoga (#945)
+
+### 📝 Documentation
+
+- Write docs for functions in Mailer \_\_using\_\_ macro  @ivanhercaz (#946)
+- Explain how to recompile after installing gen\_smtp @aj-foster (#944)
+- Fix typos and improve language @preciz (#943)
+
 ## 1.16.10
 
 ### 🐛 Bug Fixes
