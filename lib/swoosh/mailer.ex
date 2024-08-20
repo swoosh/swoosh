@@ -135,7 +135,7 @@ defmodule Swoosh.Mailer do
       end
 
       @doc ~S"""
-      Delivers an email with the given config.
+      Delivers an email, raises on error.
 
       If the email is delivered, it returns the result. If it fails, it raises
       a `DeliveryError`.
@@ -151,7 +151,7 @@ defmodule Swoosh.Mailer do
       end
 
       @doc ~S"""
-      Delivers a list of emails with the given config.
+      Delivers a list of emails.
 
       It accepts a list of `%Swoosh.Email{}` as its first parameter.
       """
