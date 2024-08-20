@@ -99,8 +99,19 @@
 
           <%= if @email.text_body do %>
             <div class="border-t border-gray-100 pl-4 py-2">
-              <p class="text-sm font-medium leading-6 text-gray-900">Text body</p>
-              <div class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6">
+              <p id="text-body-toggle" class="text-sm font-medium leading-6 text-gray-900 cursor-pointer" role="button">
+                Text body
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-4 inline <%= if @email.html_body, do: "rotate-180" %>">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </p>
+              <div id="text-body-content" class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6 <%= if @email.html_body, do: "hidden" %>">
                 <%= @email.text_body %>
               </div>
             </div>
@@ -160,6 +171,18 @@
       const datetimes = Array.from(document.querySelectorAll('[data-datetime]'));
       for (let dt of datetimes) {
         dt.textContent = new Date(dt.dataset.datetime).toLocaleString();
+      }
+
+      const textToggle = document.querySelector("#text-body-toggle");
+
+      if (textToggle) {
+        textToggle.addEventListener("click", () => {
+          const textBody = document.querySelector("#text-body-content");
+          textBody.classList.toggle("hidden");
+
+          const icon = textToggle.querySelector("svg");
+          icon.classList.toggle("rotate-180");
+        });
       }
     </script>
   </body>
