@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.16.12
+
+### ✨ Features
+
+- Add toggle for text preview @andreicek (#947)
+
 ## 1.16.11
 
 ### ✨ Features
