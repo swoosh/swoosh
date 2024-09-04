@@ -66,9 +66,9 @@ defmodule Swoosh.Adapters.Postal do
       {:ok, 200, _headers, body} ->
         case Swoosh.json_library().decode!(body) do
           %{"status" => "success", "data" => data} ->
-            {:ok, data["message_id"]}
+            {:ok, %{id: data["message_id"]}}
 
-          %{"status" => status, "data" => data} when status in ["error", "parameter-error"] ->
+          %{"status" => _, "data" => data} ->
             {:error, {data["code"], data["message"]}}
         end
 
@@ -135,18 +135,12 @@ defmodule Swoosh.Adapters.Postal do
     do: Map.put(body, :subject, subject)
 
   defp prepare_text(body, %Email{text_body: nil}), do: body
-
-  defp prepare_text(body, %Email{text_body: text_body}),
-    do: Map.put(body, :plain_body, text_body)
+  defp prepare_text(body, %Email{text_body: text_body}), do: Map.put(body, :plain_body, text_body)
 
   defp prepare_html(body, %Email{html_body: nil}), do: body
+  defp prepare_html(body, %Email{html_body: html_body}), do: Map.put(body, :html_body, html_body)
 
-  defp prepare_html(body, %Email{html_body: html_body}),
-    do: Map.put(body, :html_body, html_body)
-
-  defp prepare_tag(body, %Email{provider_options: %{tag: tag}}),
-    do: Map.put(body, :tag, tag)
-
+  defp prepare_tag(body, %Email{provider_options: %{tag: tag}}), do: Map.put(body, :tag, tag)
   defp prepare_tag(body, _), do: body
 
   defp prepare_bounce(body, %Email{provider_options: %{bounce: bounce}}) when is_boolean(bounce),
