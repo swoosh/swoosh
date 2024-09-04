@@ -138,7 +138,7 @@ defmodule Swoosh.Adapters.PostalTest do
              {:ok, %{id: "d7eabab3-5936-42ff-a419-711cc76f23c8@test.postalserver.io"}}
   end
 
-  test "deliver/1 fails when API returns ok response with non-sucess status", %{
+  test "deliver/1 fails when API returns ok response with non-success status", %{
     bypass: bypass,
     config: config,
     valid_email: email
