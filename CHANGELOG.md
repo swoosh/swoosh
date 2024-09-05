@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17.0
+
+A new adapter for Postal, thanks to @onvlt
+
+### ✨ Features
+
+- Implement Postal adapter @onvlt (#949)
+
 ## 1.16.12
 
 ### ✨ Features
