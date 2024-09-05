@@ -30,7 +30,7 @@ defmodule Swoosh.Adapters.PostalTest do
     {:ok, bypass: bypass, config: config, valid_email: valid_email}
   end
 
-  test "succesful delivery returns :ok", %{
+  test "successful delivery returns :ok", %{
     bypass: bypass,
     config: config,
     valid_email: email
