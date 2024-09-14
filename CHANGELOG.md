@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.17.1
+
+### 🐛 Bug Fixes
+
+- Update the MSGraph Adapter Dependency @LetThereBeDwight (#955)
+
 ## 1.17.0
 
 A new adapter for Postal, thanks to @onvlt
