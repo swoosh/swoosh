@@ -40,7 +40,7 @@ defmodule Swoosh.Adapters.GmailTest do
         Content-Type: multipart/alternative; boundary="#{boundary}"\r
         \r
         --#{boundary}\r
-        Content-Type: text/html\r
+        Content-Type: text/html; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
         \r
         <h1>Hello</h1>\r
@@ -96,13 +96,13 @@ defmodule Swoosh.Adapters.GmailTest do
         X-Avengers: Assemble\r
         \r
         --#{boundary}\r
-        Content-Type: text/plain\r
+        Content-Type: text/plain; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
         \r
         Hello\r
         \r
         --#{boundary}\r
-        Content-Type: text/html\r
+        Content-Type: text/html; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
         \r
         <h1>Hello</h1>\r
