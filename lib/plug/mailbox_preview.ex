@@ -84,14 +84,16 @@ if Code.ensure_loaded?(Plug) do
           attachments
           |> Enum.at(index)
           |> case do
-            %{data: data, content_type: content_type} when not is_nil(data) ->
+            %{data: data, content_type: content_type, filename: filename} when not is_nil(data) ->
               conn
               |> put_resp_content_type(content_type)
+              |> put_resp_header("content-disposition", "attachment; filename=\"#{filename}\"")
               |> send_resp(200, data)
 
-            %{path: path, content_type: content_type} when not is_nil(path) ->
+            %{path: path, content_type: content_type, filename: filename} when not is_nil(path) ->
               conn
               |> put_resp_content_type(content_type)
+              |> put_resp_header("content-disposition", "attachment; filename=\"#{filename}\"")
               |> send_resp(200, File.read!(path))
 
             _ ->
