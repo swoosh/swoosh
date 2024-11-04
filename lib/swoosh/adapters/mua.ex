@@ -1,15 +1,12 @@
 defmodule Swoosh.Adapters.Mua do
   @moduledoc """
-  An adapter that sends email using the SMTP protocol.
+  An adapter for sending emails using the SMTP protocol.
 
-  > ### Dependency {: .info}
+  > ### Dependencies {: .info}
   >
-  > Underneath this adapter uses [Mua,](https://github.com/ruslandoga/mua) and
-  > [Mail](https://github.com/DockYard/elixir-mail), and
-  > [Castore](https://github.com/elixir-mint/castore) libraries,
-  > add them to your mix.exs file.
-
-  ## Example
+  > This adapter relies on the [Mua](https://github.com/ruslandoga/mua) and
+  > [Mail](https://github.com/DockYard/elixir-mail) libraries.
+  > Ensure they are added to your mix.exs file:
 
       # mix.exs
       def deps do
@@ -17,20 +14,29 @@ defmodule Swoosh.Adapters.Mua do
          {:swoosh, "~> 1.3"},
          {:mua, "~> 0.2.0"},
          {:mail, "~> 0.3.0"},
-         {:castore, "~> 1.0"}
+         # if on OTP version below 25
+         # {:castore, "~> 1.0"}
         ]
       end
 
-      # config/config.exs for sending email directly
+  ## Configuration
+
+  For direct email sending:
+
+      # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mua
 
-      # config/config.exs for sending email via a relay
+  For sending emails via a relay:
+
+      # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mua,
         relay: "smtp.matrix.com",
-        port: 1025,
+        port: 587,
         auth: [username: "neo", password: "one"]
+
+  Define your mailer module:
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -39,53 +45,60 @@ defmodule Swoosh.Adapters.Mua do
 
   For supported configuration options, please see [`option()`](#t:option/0)
 
-  ## Sending email directly
+  ## Sending Email Directly
 
-  When `relay` option is omitted, this adapter will send email directly to
-  the receivers' host. All receivers must be on the same host, otherwise
-  `Swoosh.Adapters.Mua.MultihostError` is raised.
+  When the relay option is omitted, the adapter sends emails directly to the recipients' mail servers.
+  All recipients must be on the same host; otherwise, a `Swoosh.Adapters.Mua.MultihostError` is raised.
 
-  In this configuration, you need to ensure that your application can make
-  outgoing connections to port 25 and that your sender domain has appropriate
-  DNS records set, e.g. SPF or DKIM.
+  Ensure your application can make outgoing connections to port 25 and
+  that your sender domain has appropriate DNS records (e.g. SPF, DKIM).
 
-  > #### Short-lived connections {: .warning}
+  > #### Short-lived Connections {: .warning}
   >
-  > Note that each `deliver` call results in a new connection to the receiver's
-  > email server.
+  > Each `deliver/2` call results in a new connection to the recipient's email server.
 
-  ## Sending email via a relay
+  ## Sending Email via a Relay
 
-  When `relay` option is set, this adapter will send email through that relay.
-  The relay would usually require authentication. For example, you can use your own
-  GMail account with an app password.
+  When the relay option is set, emails are sent through the specified relay, typically requiring authentication.
+  For example, you can use your Gmail account with an app password.
 
-  > #### Short-lived connections {: .warning}
+  > #### Short-lived Connections {: .warning}
   >
-  > Note that each `deliver` call results in a new connection to the relay.
-  > This is less efficient than `gen_smtp` which reuses the long-lived connection.
-  > Further versions of this adapter might fix this if it ends up being a big problem ;)
+  > Each `deliver/2` call results in a new connection to the relay. This is less efficient than `gen_smtp` which reuses long-lived connections.
+  > Future versions of this adapter may address this issue.
 
-  ## CA certificates
+  ## CA Certificates
 
-  By default [`CAStore.file_path/0`](https://hexdocs.pm/castore/CAStore.html#file_path/0) is used for
-  [`:cacertfile`,](https://www.erlang.org/doc/man/ssl#type-client_cafile) but you can provide your
-  own or use [the system ones](https://www.erlang.org/doc/man/public_key#cacerts_get-0) and supply them
-  in as [`:cacerts`](https://www.erlang.org/doc/man/ssl#type-client_cacerts)
-
-      :ok = :public_key.cacerts_load()
-      [_ | _] = cacerts = :public_key.cacerts_get()
+  Starting with OTP 25, [system cacerts](https://www.erlang.org/doc/apps/public_key/public_key.html#cacerts_get/0)
+  are used by default for the [cacerts](https://www.erlang.org/doc/apps/ssl/ssl.html#t:client_option_cert/0) option:
 
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Mua,
-        ssl: [
-          cacerts: cacerts
-        ]
+        # this happens by default
+        ssl: [cacerts: :public_key.cacerts_get()]
 
-  Note that when using `:cacertfile` option, the certificates are decoded on each new connection.
-  To cache the decoded certificates, set `:persistent_term` for `:mua` to true.
+  For OTP versions below 25, [`CAStore.file_path/0`](https://hexdocs.pm/castore/CAStore.html#file_path/0) is used for the [cacertfile](https://www.erlang.org/doc/apps/ssl/ssl.html#t:client_option_cert/0) option:
 
-      config :mua, persistent_term: true
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Mua,
+        # this happens by default
+        ssl: [cacertfile: CAStore.file_path()]
+
+  This means that for OTP versions below 25, you need to add [CAStore](https://hex.pm/packages/castore) to your project.
+
+  You can also use custom certificates:
+
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Mua,
+        ssl: [cacertfile: System.fetch_env!("MY_OWN_SMTP_CACERTFILE")]
+
+
+  > #### CA Certfile Cache {: .warning}
+  >
+  > When using the `:cacertfile` option, certificates are decoded with each new connection.
+  > To cache the decoded certificates, set `:persistent_term` for `:mua` to true:
+  >
+  >     config :mua, persistent_term: true
 
   """
 
@@ -125,14 +138,23 @@ defmodule Swoosh.Adapters.Mua do
           {:ok, Swoosh.Email.t()} | {:error, Mua.error() | MultihostError.t()}
   def deliver(email, config) do
     recipients = recipients(email)
+    relay = Keyword.get(config, :relay)
 
     recipients_by_host =
-      if relay = Keyword.get(config, :relay) do
+      if relay do
         [{relay, recipients}]
       else
         recipients
         |> Enum.group_by(&recipient_host/1)
         |> Map.to_list()
+      end
+
+    # we don't perform MX lookup when relay is used
+    config =
+      if relay do
+        Keyword.put_new(config, :mx, false)
+      else
+        config
       end
 
     case recipients_by_host do
@@ -165,6 +187,7 @@ defmodule Swoosh.Adapters.Mua do
 
   defp render(email) do
     Mail.build_multipart()
+    |> put_headers(email.headers)
     |> maybe(&Mail.put_from/2, email.from)
     |> maybe(&Mail.put_to/2, email.to)
     |> maybe(&Mail.put_cc/2, email.cc)
@@ -172,7 +195,6 @@ defmodule Swoosh.Adapters.Mua do
     |> maybe(&Mail.put_subject/2, email.subject)
     |> maybe(&Mail.put_text/2, email.text_body)
     |> maybe(&Mail.put_html/2, email.html_body)
-    |> maybe(&put_headers/2, email.headers)
     |> maybe(&put_attachments/2, email.attachments)
     |> Mail.render()
   end
@@ -189,8 +211,27 @@ defmodule Swoosh.Adapters.Mua do
   end
 
   defp put_headers(mail, headers) do
+    keys = headers |> Map.keys() |> Enum.map(&String.downcase/1)
+
+    has_date? = "date" in keys
+    has_message_id? = "message-id" in keys
+
+    headers = if has_date?, do: headers, else: Map.put(headers, "Date", DateTime.utc_now())
+    headers = if has_message_id?, do: headers, else: Map.put(headers, "Message-ID", message_id())
+
     Enum.reduce(headers, mail, fn {key, value}, mail ->
       Mail.Message.put_header(mail, key, value)
     end)
+  end
+
+  defp message_id do
+    Base.hex_encode32(
+      <<
+        System.system_time(:nanosecond)::64,
+        :erlang.phash2({node(), self()}, 16_777_216)::24,
+        :erlang.unique_integer()::32
+      >>,
+      case: :lower
+    )
   end
 end

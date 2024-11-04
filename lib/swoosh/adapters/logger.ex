@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Logger do
   @moduledoc ~S"""
   An adapter that only logs email using Logger.
 
-  It can be useful in environment where you do not necessarily want to send real
+  It can be useful in environments where you do not necessarily want to send real
   emails (eg. staging environments) or in development.
 
   By default it only prints the recipient of the email but you can print the full

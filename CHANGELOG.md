@@ -1,5 +1,59 @@
 # Changelog
 
+## 1.17.2
+
+### ✨ Features
+
+- fix: download attachment with the filename @RETFU (#957)
+
+### ⛓️ Dependency
+
+- Bump mail from 0.3.1 to 0.4.0 @dependabot (#958)
+- Bump ex\_aws from 2.5.4 to 2.5.5 @dependabot (#952)
+- Bump plug\_cowboy from 2.7.1 to 2.7.2 @dependabot (#953)
+
+## 1.17.1
+
+### 🐛 Bug Fixes
+
+- Update the MSGraph Adapter Dependency @LetThereBeDwight (#955)
+
+## 1.17.0
+
+A new adapter for Postal, thanks to @onvlt
+
+### ✨ Features
+
+- Implement Postal adapter @onvlt (#949)
+
+## 1.16.12
+
+### ✨ Features
+
+- Add toggle for text preview @andreicek (#947)
+
+## 1.16.11
+
+### ✨ Features
+
+- mua: add Date and Message-ID headers when missing @ruslandoga (#945)
+
+### 📝 Documentation
+
+- Write docs for functions in Mailer \_\_using\_\_ macro  @ivanhercaz (#946)
+- Explain how to recompile after installing gen\_smtp @aj-foster (#944)
+- Fix typos and improve language @preciz (#943)
+
+## 1.16.10
+
+### 🐛 Bug Fixes
+
+- mua: no mx when relay @ruslandoga (#934)
+
+### 📝 Documentation
+
+- mua: update docs @ruslandoga (#935)
+
 ## 1.16.9
 
 ### 🐛 Bug Fixes

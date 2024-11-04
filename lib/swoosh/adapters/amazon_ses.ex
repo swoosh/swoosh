@@ -6,11 +6,11 @@ defmodule Swoosh.Adapters.AmazonSES do
 
   This email adapter makes use of the Amazon SES SendRawEmail action and generates
   a SMTP style message containing the information to be emailed. This allows for
-  greater more customizable email message and ensures the capability to add
+  greater and more customizable email message and ensures the capability to add
   attachments. As a result, however, the `:gen_smtp` dependency is required in order
   to correctly generate the SMTP message that will be sent.
 
-  Ensure sure you have the dependency added in your mix.exs file:
+  Ensure you have the dependency added in your mix.exs file:
 
       def deps do
         [
@@ -18,6 +18,9 @@ defmodule Swoosh.Adapters.AmazonSES do
           {:gen_smtp, "~> 1.0"}
         ]
       end
+
+  **Note**: If Swoosh was compiled prior to `:gen_smtp` being installed, it may be necessary to
+  force a recompilation of the library. This can be accomplished using `mix deps.compile swoosh --force`.
 
   **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)

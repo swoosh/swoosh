@@ -38,21 +38,21 @@
 
       <div class="w-full flex flex-col">
         <%= if @email do %>
-          <div class="">
+          <div id="email-details" class="">
             <dl class="divide-y divide-gray-100">
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">From</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.from) %></dd>
+              <div id="email-details__from" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">From</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.from) %></dd>
               </div>
 
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">To</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.to) %></dd>
+              <div id="email-details__to" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">To</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.to) %></dd>
               </div>
 
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Subject</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2">
+              <div id="email-details__subject" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">Subject</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2">
                   <%= if @email.subject == "" do %>
                     <i>No subject</i>
                   <% else %>
@@ -61,46 +61,57 @@
                 </dd>
               </div>
 
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Cc</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.cc) %></dd>
+              <div id="email-details__cc" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">Cc</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.cc) %></dd>
               </div>
 
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Bcc</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.bcc) %></dd>
+              <div id="email-details__bcc" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">Bcc</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.bcc) %></dd>
               </div>
 
-              <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Reply-to</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.reply_to) %></dd>
+              <div id="email-details__reply-to" class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">Reply-to</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= render_recipient(@email.reply_to) %></dd>
               </div>
 
               <%= for {name, value} <- @email.headers do %>
                 <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
-                  <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= value %></dd>
+                  <dt class="details__label text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
+                  <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= value %></dd>
                 </div>
               <% end %>
 
               <%= for {name, value} <- @email.provider_options do %>
                 <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
-                  <dd class="text-sm leading-6 text-gray-700 sm:col-span-2"><%= inspect(value) %></dd>
+                  <dt class="details__label text-sm font-medium leading-6 text-gray-900"><%= name %></dt>
+                  <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2"><%= inspect(value) %></dd>
                 </div>
               <% end %>
 
               <div class="pl-4 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
-                <dt class="text-sm font-medium leading-6 text-gray-900">Sent at</dt>
-                <dd class="text-sm leading-6 text-gray-700 sm:col-span-2" data-datetime="<%= @email.private.sent_at %>"></dd>
+                <dt class="details__label text-sm font-medium leading-6 text-gray-900">Sent at</dt>
+                <dd class="details__value text-sm leading-6 text-gray-700 sm:col-span-2" data-datetime="<%= @email.private.sent_at %>"></dd>
               </div>
             </dl>
           </div>
 
           <%= if @email.text_body do %>
             <div class="border-t border-gray-100 pl-4 py-2">
-              <p class="text-sm font-medium leading-6 text-gray-900">Text body</p>
-              <div class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6">
+              <p id="text-body-toggle" class="text-sm font-medium leading-6 text-gray-900 cursor-pointer" role="button">
+                Text body
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-4 inline <%= if @email.html_body, do: "rotate-180" %>">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </p>
+              <div id="text-body-content" class="text-sm text-gray-700 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6 <%= if @email.html_body, do: "hidden" %>">
                 <%= @email.text_body %>
               </div>
             </div>
@@ -160,6 +171,18 @@
       const datetimes = Array.from(document.querySelectorAll('[data-datetime]'));
       for (let dt of datetimes) {
         dt.textContent = new Date(dt.dataset.datetime).toLocaleString();
+      }
+
+      const textToggle = document.querySelector("#text-body-toggle");
+
+      if (textToggle) {
+        textToggle.addEventListener("click", () => {
+          const textBody = document.querySelector("#text-body-content");
+          textBody.classList.toggle("hidden");
+
+          const icon = textToggle.querySelector("svg");
+          icon.classList.toggle("rotate-180");
+        });
       }
     </script>
   </body>

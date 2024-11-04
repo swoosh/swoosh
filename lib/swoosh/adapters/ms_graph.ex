@@ -34,7 +34,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   use Swoosh.Adapter,
     required_config: [:auth],
-    required_deps: [:gen_smtp]
+    required_deps: [gen_smtp: :gen_smtp_client]
 
   require Logger
   alias Swoosh.Email
