@@ -211,6 +211,27 @@ defmodule Swoosh.Adapters.MsGraphTest do
              {:ok, %{}}
   end
 
+  test ":url config utilizes given url in full", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    custom_path = "/v1.0/some_other_custom_path"
+    url = "http://localhost:#{bypass.port}#{custom_path}"
+    config = config |> Keyword.put(:url, url)
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert custom_path == conn.request_path
+
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) ==
+             {:ok, %{}}
+  end
+
   def auth(_a, _b, _c) do
     "fake-token-from-mfa-tuple"
   end
