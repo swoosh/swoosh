@@ -44,6 +44,8 @@ defmodule Swoosh.Adapters.Mailjet do
       |> put_provider_option(:template_error_deliver, true)
       |> put_provider_option(:template_error_reporting, "developer@example.com")
       |> put_provider_option(:variables, %{firstname: "lulu", lastname: "wang"})
+      |> put_provider_option(:custom_id, "custom_id")
+      |> put_provider_option(:event_payload, "event_payload")
 
   ## Provider options
 
@@ -61,6 +63,10 @@ defmodule Swoosh.Adapters.Mailjet do
     * `:variables` (map) - `Variables`, custom key-value variable for the email
       content
 
+    * `:custom_id` (string) - `CustomID`, custom id for the email
+
+    * `:event_payload` (string | map) - `EventPayload`, custom payload that will
+      be attached on the mailjet webhook events
   """
 
   use Swoosh.Adapter,
@@ -175,9 +181,20 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_template(email)
     |> prepare_custom_headers(email)
     |> prepare_custom_id(email)
+    |> prepare_event_payload(email)
   end
 
   defp wrap_messages(body) when is_list(body), do: %{Messages: body}
+
+  defp prepare_event_payload(body, %{provider_options: %{event_payload: event_payload}})
+       when is_binary(event_payload),
+       do: Map.put(body, "EventPayload", event_payload)
+
+  defp prepare_event_payload(body, %{provider_options: %{event_payload: event_payload}})
+       when is_map(event_payload),
+       do: Map.put(body, "EventPayload", Swoosh.json_library().encode!(event_payload))
+
+  defp prepare_event_payload(body, _options), do: body
 
   defp prepare_custom_id(body, %{provider_options: %{custom_id: custom_id}}),
     do: Map.put(body, "CustomID", custom_id)
