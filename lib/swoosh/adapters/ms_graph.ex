@@ -17,6 +17,7 @@ defmodule Swoosh.Adapters.MsGraph do
 
   * `:auth` - either a function, a {mod, func, args} tuple, or a string that returns/is an OAuth 2.0 access token.
   * `:base_url` - the base URL to use as the Microsoft Graph API endpoint.  Defaults to the standard Microsoft Graph API endpoint.
+  * `:url` - the full URL to use as the Microsoft Graph API endpoint. If this is provided, `:base_url` is ignored. Useful for doing delegated sends such that the from of the email is maintained, but auth is done using the full URL (like when using a Distribution List).
 
   ## Example
 
@@ -81,8 +82,12 @@ defmodule Swoosh.Adapters.MsGraph do
   defp base_url(config), do: config[:base_url] || @base_url
 
   defp api_endpoint_url(email, config) do
-    {_, from_email} = email.from
-    "#{base_url(config)}/users/#{from_email}/sendMail"
+    if config[:url] do
+      config[:url]
+    else
+      {_, from_email} = email.from
+      "#{base_url(config)}/users/#{from_email}/sendMail"
+    end
   end
 
   defp prepare_headers(config) do
