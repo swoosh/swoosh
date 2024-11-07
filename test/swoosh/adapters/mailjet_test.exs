@@ -12,6 +12,8 @@ defmodule Swoosh.Adapters.MailjetTest do
   @developer "developer@example.com"
   @template_id "template_id"
   @custom_id "my-great-custom-id"
+  @event_payload_binary "Eticket,1234,row,15,seat,B"
+  @event_payload_map %{"event" => "Eticket", "event_id" => "1234", "row" => "15", "seat" => "B"}
   @template_html_content "<h1>Hello, world!</h1>"
   @template_text_content "# Hello, world!"
   @success_response """
@@ -265,6 +267,102 @@ defmodule Swoosh.Adapters.MailjetTest do
       |> text_body(@template_text_content)
       |> html_body(@template_html_content)
       |> put_provider_option(:custom_id, @custom_id)
+
+    assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
+  end
+
+  test "deliver/1 - valid email with binary EventPayload", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TextPart" => @template_text_content,
+            "HTMLPart" => @template_html_content,
+            "Headers" => %{},
+            # Note: the mailjet API does not include the EventPayload
+            # it's only included in the webhook events
+            "EventPayload" => @event_payload_binary
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email =
+      email
+      |> text_body(@template_text_content)
+      |> html_body(@template_html_content)
+      |> put_provider_option(:event_payload, @event_payload_binary)
+
+    assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
+  end
+
+  test "deliver/1 - valid email with map EventPayload", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TextPart" => @template_text_content,
+            "HTMLPart" => @template_html_content,
+            "Headers" => %{},
+            # Note: the mailjet API does not include the EventPayload
+            # it's only included in the webhook events
+            "EventPayload" => Jason.encode!(@event_payload_map)
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email =
+      email
+      |> text_body(@template_text_content)
+      |> html_body(@template_html_content)
+      |> put_provider_option(:event_payload, @event_payload_map)
 
     assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
   end
