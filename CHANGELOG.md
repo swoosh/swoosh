@@ -1,16 +1,19 @@
 # Changelog
 
+## 1.17.3
+
+### ✨ Features
+
+- feat(mailjet): add event\_payload to provider options @mrdotb (#965)
+- Handle direct URL specification on MSGraph.deliver @LetThereBeDwight (#967)
+- Complete Swoosh.X.TestAssertions @edgarlatorre (#924)
+- Add CSS labels to email detail elements @alexslade (#956)
+
 ## 1.17.2
 
 ### ✨ Features
 
 - fix: download attachment with the filename @RETFU (#957)
-
-### ⛓️ Dependency
-
-- Bump mail from 0.3.1 to 0.4.0 @dependabot (#958)
-- Bump ex\_aws from 2.5.4 to 2.5.5 @dependabot (#952)
-- Bump plug\_cowboy from 2.7.1 to 2.7.2 @dependabot (#953)
 
 ## 1.17.1
 
