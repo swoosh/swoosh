@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.4
+
+### 🐛 Bug Fixes
+
+- mua: fix default message-id @ruslandoga (#978)
+
+### 🧰 Maintenance
+
+- mua: cleanup test @ruslandoga (#938)
+
 ## 1.17.3
 
 ### ✨ Features
