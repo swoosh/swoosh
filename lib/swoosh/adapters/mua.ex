@@ -187,7 +187,7 @@ defmodule Swoosh.Adapters.Mua do
 
   defp render(email) do
     Mail.build_multipart()
-    |> put_headers(email.headers)
+    |> put_headers(email)
     |> maybe(&Mail.put_from/2, email.from)
     |> maybe(&Mail.put_to/2, email.to)
     |> maybe(&Mail.put_cc/2, email.cc)
@@ -210,7 +210,9 @@ defmodule Swoosh.Adapters.Mua do
     end)
   end
 
-  defp put_headers(mail, headers) do
+  defp put_headers(mail, swoosh_email) do
+    %{from: from, headers: headers} = swoosh_email
+
     utc_now = DateTime.utc_now()
     keys = headers |> Map.keys() |> Enum.map(&String.downcase/1)
 
@@ -223,7 +225,7 @@ defmodule Swoosh.Adapters.Mua do
       if has_message_id? do
         headers
       else
-        address = address(mail.from)
+        address = address(from)
         host = host(address)
         Map.put(headers, "Message-ID", message_id(host, utc_now))
       end
