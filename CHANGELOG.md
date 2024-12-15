@@ -2,6 +2,8 @@
 
 ## 1.17.5
 
+This release fixes a bug introduced in 1.17.4
+
 ### 🐛 Bug Fixes
 
 - mua: fix mail.from @ruslandoga (#982)
