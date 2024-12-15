@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.5
+
+### 🐛 Bug Fixes
+
+- mua: fix mail.from @ruslandoga (#982)
+
+### 📝 Documentation
+
+- Adapters: Add documentation about setting the base\_url for ZeptoMail … @reimeri (#981)
+
 ## 1.17.4
 
 ### 🐛 Bug Fixes
