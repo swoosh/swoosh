@@ -3,6 +3,11 @@ defmodule Swoosh.Adapters.MuaTest do
 
   @moduletag :mailpit
 
+  defp mailpit_deliver(email, config \\ []) do
+    config = Keyword.merge([relay: "localhost", port: 1025], config)
+    Swoosh.Adapters.Mua.deliver(email, config)
+  end
+
   describe "deliver/2" do
     setup do
       base_email =
@@ -39,8 +44,8 @@ defmodule Swoosh.Adapters.MuaTest do
                email
                |> Swoosh.Email.from("mua@github.com")
                |> Swoosh.Email.to("to@mailpit.local")
-               |> Swoosh.Email.cc(["cc1@mailpit.examile", "cc2@mailpit.local"])
-               |> Swoosh.Email.bcc(["bcc1@mailpit.examile", "bcc2@mailpit.local"])
+               |> Swoosh.Email.cc(["cc1@mailpit.local", "cc2@mailpit.local"])
+               |> Swoosh.Email.bcc(["bcc1@mailpit.local", "bcc2@mailpit.local"])
                |> mailpit_deliver()
 
       assert %{
@@ -50,11 +55,11 @@ defmodule Swoosh.Adapters.MuaTest do
                  %{"Address" => "recipient@mailpit.local", "Name" => "Recipient"}
                ],
                "Bcc" => [
-                 %{"Address" => "bcc1@mailpit.examile", "Name" => ""},
+                 %{"Address" => "bcc1@mailpit.local", "Name" => ""},
                  %{"Address" => "bcc2@mailpit.local", "Name" => ""}
                ],
                "Cc" => [
-                 %{"Address" => "cc1@mailpit.examile", "Name" => ""},
+                 %{"Address" => "cc1@mailpit.local", "Name" => ""},
                  %{"Address" => "cc2@mailpit.local", "Name" => ""}
                ]
              } = mailpit_summary("latest")
@@ -65,8 +70,8 @@ defmodule Swoosh.Adapters.MuaTest do
                email
                |> Swoosh.Email.from({nil, "mua@github.com"})
                |> Swoosh.Email.to({nil, "to@mailpit.local"})
-               |> Swoosh.Email.cc([{nil, "cc1@mailpit.examile"}, {nil, "cc2@mailpit.local"}])
-               |> Swoosh.Email.bcc([{nil, "bcc1@mailpit.examile"}, {nil, "bcc2@mailpit.local"}])
+               |> Swoosh.Email.cc([{nil, "cc1@mailpit.local"}, {nil, "cc2@mailpit.local"}])
+               |> Swoosh.Email.bcc([{nil, "bcc1@mailpit.local"}, {nil, "bcc2@mailpit.local"}])
                |> mailpit_deliver()
 
       assert %{
@@ -76,11 +81,11 @@ defmodule Swoosh.Adapters.MuaTest do
                  %{"Address" => "recipient@mailpit.local", "Name" => "Recipient"}
                ],
                "Bcc" => [
-                 %{"Address" => "bcc1@mailpit.examile", "Name" => ""},
+                 %{"Address" => "bcc1@mailpit.local", "Name" => ""},
                  %{"Address" => "bcc2@mailpit.local", "Name" => ""}
                ],
                "Cc" => [
-                 %{"Address" => "cc1@mailpit.examile", "Name" => ""},
+                 %{"Address" => "cc1@mailpit.local", "Name" => ""},
                  %{"Address" => "cc2@mailpit.local", "Name" => ""}
                ]
              } = mailpit_summary("latest")
@@ -137,24 +142,19 @@ defmodule Swoosh.Adapters.MuaTest do
     end
   end
 
-  defp mailpit_deliver(email, config \\ []) do
-    config = Keyword.merge([relay: "localhost", port: 1025], config)
-    Swoosh.Adapters.Mua.deliver(email, config)
-  end
-
   defp mailpit_summary(message_id) do
-    mailpit_api_request("http://localhost:8025/api/v1/message/#{message_id}")
+    mailpit_get("http://localhost:8025/api/v1/message/#{message_id}")
   end
 
   defp mailpit_headers(message_id) do
-    mailpit_api_request("http://localhost:8025/api/v1/message/#{message_id}/headers")
+    mailpit_get("http://localhost:8025/api/v1/message/#{message_id}/headers")
   end
 
   defp mailpit_attachment(message_id, part_id) do
-    mailpit_api_request("http://localhost:8025/api/v1/message/#{message_id}/part/#{part_id}")
+    mailpit_get("http://localhost:8025/api/v1/message/#{message_id}/part/#{part_id}")
   end
 
-  defp mailpit_api_request(url) do
+  defp mailpit_get(url) do
     Req.get!(url, retry: false).body
   end
 end
