@@ -25,6 +25,37 @@ defmodule Swoosh.Adapters.SendgridTest do
     |> Plug.Conn.resp(200, body)
   end
 
+  test "successful delivery returns :ok for gzip emails", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "from" => %{"email" => "tony.stark@example.com"},
+        "personalizations" => [%{"to" => [%{"email" => "steve.rogers@example.com"}]}],
+        "content" => [
+          %{"type" => "text/plain", "value" => "Hello"},
+          %{"type" => "text/html", "value" => "<h1>Hello</h1>"}
+        ],
+        "subject" => "Hello, Avengers!"
+      }
+
+      assert body_params == conn.body_params
+      assert "/mail/send" == conn.request_path
+      assert "POST" == conn.method
+      assert {"content-encoding", "gzip"} in conn.req_headers
+      assert body_params == conn.body_params
+
+      respond_with(conn, body: "{\"message\":\"success\"}", id: "123-xyz")
+    end)
+
+    config = Keyword.put(config, :compress, true)
+    assert Sendgrid.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
   test "successful delivery returns :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
