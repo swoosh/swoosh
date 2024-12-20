@@ -5,12 +5,15 @@ defmodule Plug.Parsers.Gzip do
   """
   @behaviour Plug.Parsers
 
+  @impl true
   def init(opts) do
     json_decoder = Keyword.get(opts, :json_decoder)
-    {:ok, opts, json_decoder}
+
+    json_decoder
   end
 
-  def parse(conn, _type, _subtype, _headers, {:ok, _opts, json_decoder}) do
+  @impl true
+  def parse(conn, _type, _subtype, _headers, json_decoder) when not is_nil(json_decoder) do
     case get_content_encoding(conn) do
       "gzip" ->
         body = :zlib.gunzip(conn.body_params)
@@ -26,6 +29,11 @@ defmodule Plug.Parsers.Gzip do
       _ ->
         {:next, conn}
     end
+  end
+
+  @impl true
+  def parse(conn, _type, _subtype, _headers, _opts) do
+    {:next, conn}
   end
 
   # Helper to get the `Content-Encoding` header
