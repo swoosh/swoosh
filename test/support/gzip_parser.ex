@@ -2,28 +2,40 @@ defmodule Plug.Parsers.GZIP do
   @behaviour Plug.Parsers
 
   @impl true
-  def init(opts) do
-    opts
-  end
+  def init(opts), do: opts
 
   @impl true
-  def parse(%Plug.Conn{} = conn, "application", "json", %{}, opts) do
+  def parse(conn, "application", _subtype, _headers, opts) do
     json_decoder = Keyword.get(opts, :json_decoder)
-    {:ok, compressed_body, conn} = Plug.Conn.read_body(conn, opts)
 
-    body = :zlib.gunzip(compressed_body)
+    case get_content_encoding(conn) do
+      "gzip" ->
+        {:ok, compressed_body, conn} = Plug.Conn.read_body(conn)
+        uncompressed_body = :zlib.gunzip(compressed_body)
 
-    case json_decoder.decode(body) do
-      {:ok, json} ->
-        {:ok, json, conn}
+        case json_decoder.decode(uncompressed_body) do
+          {:ok, json} ->
+            {:ok, json, conn}
 
-      {:error, _reason} ->
-        {:error, :unprocessable_entity, conn}
+          {:error, _} ->
+            {:error, :unprocessable_entity, conn}
+        end
+
+      _ ->
+        {:next, conn}
     end
   end
 
   @impl true
   def parse(conn, _type, _subtype, _headers, _opts) do
     {:next, conn}
+  end
+
+  # Helper to get the `Content-Encoding` header
+  defp get_content_encoding(conn) do
+    conn
+    |> Plug.Conn.get_req_header("content-encoding")
+    |> List.first("")
+    |> String.downcase()
   end
 end
