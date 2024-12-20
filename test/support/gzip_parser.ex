@@ -5,7 +5,7 @@ defmodule Plug.Parsers.GZIP do
   def init(opts), do: opts
 
   @impl true
-  def parse(conn, "application", _subtype, _headers, opts) do
+  def parse(conn, "application", "json", _headers, opts) do
     json_decoder = Keyword.get(opts, :json_decoder)
 
     case get_content_encoding(conn) do
