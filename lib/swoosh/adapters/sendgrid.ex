@@ -126,9 +126,14 @@ defmodule Swoosh.Adapters.Sendgrid do
         {"User-Agent", "swoosh/#{Swoosh.version()}"},
         {"Authorization", "Bearer #{config[:api_key]}"}
       ]
-      |> maybe_set_content_encoding(config)
+      |> maybe_set_content_encoding(config[:compress])
 
-    body = email |> prepare_body() |> Swoosh.json_library().encode! |> maybe_compress_body(config)
+    body =
+      email
+      |> prepare_body()
+      |> Swoosh.json_library().encode!
+      |> maybe_compress_body(config[:compress])
+
     url = [base_url(config), @api_endpoint]
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
@@ -146,12 +151,12 @@ defmodule Swoosh.Adapters.Sendgrid do
     end
   end
 
-  defp maybe_set_content_encoding(headers, compress: true),
+  defp maybe_set_content_encoding(headers, _compress = true),
     do: headers ++ [{"Content-Encoding", "gzip"}]
 
   defp maybe_set_content_encoding(headers, _), do: headers
 
-  defp maybe_compress_body(body, compress: true), do: :zlib.gzip(body)
+  defp maybe_compress_body(body, _compress = true), do: :zlib.gzip(body)
   defp maybe_compress_body(body, _), do: body
 
   defp extract_id(headers) do
