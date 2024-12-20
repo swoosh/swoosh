@@ -3,7 +3,6 @@ defmodule Plug.Parsers.Gzip do
   Local fork of https://github.com/DefactoSoftware/xml_parser
   with some mods
   """
-  alias Hex.API.Key
   @behaviour Plug.Parsers
 
   def init(opts) do
@@ -11,12 +10,12 @@ defmodule Plug.Parsers.Gzip do
     {:ok, opts, json_decoder}
   end
 
-  def parse(conn, _type, _subtype, _headers, {:ok, opts, json_decoder}) do
+  def parse(conn, _type, _subtype, _headers, {:ok, _opts, json_decoder}) do
     case get_content_encoding(conn) do
       "gzip" ->
-        body = :zlib.gunzip(body)
+        body = :zlib.gunzip(conn.body_params)
 
-        case json_decoder do
+        case json_decoder.decode(body) do
           {:ok, json} ->
             {:ok, json, conn}
 
