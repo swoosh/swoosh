@@ -1,4 +1,4 @@
-defmodule Plug.Parsers.Gzip do
+defmodule Plug.Parsers.GZIP do
   @behaviour Plug.Parsers
 
   @impl true

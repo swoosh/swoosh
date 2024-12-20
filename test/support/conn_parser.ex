@@ -2,7 +2,7 @@ defmodule Swoosh.ConnParser do
   def parse(conn, opts \\ []) do
     case get_content_encoding(conn) do
       "gzip" ->
-        opts = [parsers: [Plug.Parsers.Gzip], json_decoder: Swoosh.json_library()]
+        opts = [parsers: [Plug.Parsers.GZIP], json_decoder: Swoosh.json_library()]
         Plug.Parsers.call(conn, Plug.Parsers.init(opts))
 
       _ ->
