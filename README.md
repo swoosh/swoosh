@@ -274,6 +274,17 @@ defmodule Sample.UserTest do
 end
 ```
 
+## Custom JSON Library
+
+By default, Swoosh ships with required dependency `Jason`. In the future we will change it to Elixir native `JSON` module.
+If you want to swap the default JSON library used by Swoosh, you can configure it in your `config/config.exs` file like this:
+
+```elixir
+config :swoosh, :json_library, JSON
+```
+
+In future major version, `Jason` will be removed from dependency list or become an optional dependency.
+
 ## Mailbox preview in the browser
 
 Swoosh ships with a Plug that allows you to preview the emails in the local
