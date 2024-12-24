@@ -71,7 +71,7 @@ defmodule Swoosh.X.TestAssertionsTest do
           {"to (list)", to: ["steve.rogers@example.com"]},
           {"cc", cc: "bruce.banner@example.com"},
           {"bcc", bcc: "bruce.banner@example.com"},
-          {"header", headers: %{"Revengers" => "Gather"}}
+          {"header", headers: Macro.escape(%{"Revengers" => "Gather"})}
         ] do
       quote do
         test "assert email sent with wrong #{unquote(param_name)}" do
