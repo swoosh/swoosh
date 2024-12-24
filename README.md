@@ -276,14 +276,14 @@ end
 
 ## Custom JSON Library
 
-By default, Swoosh ships with required dependency `Jason`. In the future we will change it to Elixir native `JSON` module.
+By default, Swoosh ships with required dependency `Jason`. In the future, we will change it to the builtin `JSON` module in Elixir 1.18+.
 If you want to swap the default JSON library used by Swoosh, you can configure it in your `config/config.exs` file like this:
 
 ```elixir
 config :swoosh, :json_library, JSON
 ```
 
-In future major version, `Jason` will be removed from dependency list or become an optional dependency.
+In future major versions, `Jason` will be removed from the dependency list or become an optional dependency.
 
 ## Mailbox preview in the browser
 
