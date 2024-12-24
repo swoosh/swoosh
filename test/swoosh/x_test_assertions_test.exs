@@ -188,7 +188,7 @@ defmodule Swoosh.X.TestAssertionsTest do
           {"cc (list)", cc: ["natasha.romanoff@example.com"]},
           {"bcc", bcc: "steve.rogers@example.com"},
           {"bcc (list)", bcc: ["steve.rogers@example.com"]},
-          {"header", headers: %{"Revengers" => "Gather"}},
+          {"header", headers: Macro.escape(%{"Revengers" => "Gather"})},
           {"subject", subject: "Hello, League!"},
           {"text body", text_body: "some html"},
           {"html body", html_body: "some text"}
