@@ -188,7 +188,7 @@ defmodule Swoosh.X.TestAssertionsTest do
           {"cc (list)", cc: ["natasha.romanoff@example.com"]},
           {"bcc", bcc: "steve.rogers@example.com"},
           {"bcc (list)", bcc: ["steve.rogers@example.com"]},
-          {"header", headers: %{"Revengers" => "Gather"}},
+          {"header", headers: Macro.escape(%{"Revengers" => "Gather"})},
           {"subject", subject: "Hello, League!"},
           {"text body", text_body: "some html"},
           {"html body", html_body: "some text"}
@@ -205,7 +205,7 @@ defmodule Swoosh.X.TestAssertionsTest do
           {"reply to", reply_to: "bruce.banner@example.com"},
           {"to (list)", to: ["steve.rogers@example.com", "bruce.banner@example.com"]},
           {"cc (list)", cc: ["natasha.romanoff@example.com", "stephen.strange@example.com"]},
-          {"header", headers: %{"Avengers" => "Assemble"}},
+          {"header", headers: Macro.escape(%{"Avengers" => "Assemble"})},
           {"bcc", bcc: "loki.odinson@example.com"},
           {"bcc (list)", bcc: ["loki.odinson@example.com"]},
           {"subject", subject: "Hello, Avengers!"},
