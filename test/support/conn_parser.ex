@@ -3,6 +3,7 @@ defmodule Swoosh.ConnParser do
     opts =
       opts
       |> Keyword.put_new(:parsers, [
+        Plug.Parsers.GZIP,
         Plug.Parsers.URLENCODED,
         Plug.Parsers.RFC822,
         Plug.Parsers.JSON,
