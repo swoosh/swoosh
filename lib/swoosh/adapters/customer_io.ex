@@ -20,6 +20,13 @@ defmodule Swoosh.Adapters.CustomerIO do
         use Swoosh.Mailer, otp_app: :sample
       end
 
+  You can also change the API host, which defaults to `https://api.customer.io/v1`. For example, if
+  your Customer.io account is configured to use their EU datacenter:
+
+      # config/config.exs
+      config :sample, Sample.Mailer,
+        base_url: "https://api-eu.customer.io/v1"
+
   ## Using with provider options
 
       import Swoosh.Email
