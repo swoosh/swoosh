@@ -27,6 +27,8 @@ defmodule Swoosh.Adapters.CustomerIO do
       config :sample, Sample.Mailer,
         base_url: "https://api-eu.customer.io/v1"
 
+  This can also be provided to `deliver/2` on a case-by-case basis.
+
   ## Using with provider options
 
       import Swoosh.Email
