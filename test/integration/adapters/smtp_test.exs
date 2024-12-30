@@ -16,15 +16,16 @@ defmodule Swoosh.Integration.Adapters.SMTPTest do
     ]
   end
 
-  defp config(Swoosh.Adapters.Muaua) do
-    [
-      relay: System.get_env("SMTP_RELAY"),
-      domain: System.get_env("SMTP_DOMAIN"),
-      auth: [
-        username: System.get_env("SMTP_USERNAME"),
-        password: System.get_env("SMTP_PASSWORD")
-      ]
-    ]
+  defp config(Swoosh.Adapters.Mua) do
+    relay = System.get_env("SMTP_RELAY", "localhost")
+    domain = System.get_env("SMTP_DOMAIN", "mua.local")
+    port = String.to_integer(System.get_env("SMTP_PORT", "1025"))
+
+    username = System.get_env("SMTP_USERNAME")
+    password = System.get_env("SMTP_PASSWORD")
+    auth = if username && password, do: [username: username, password: password]
+
+    [relay: relay, port: port, domain: domain, auth: auth]
   end
 
   for adapter <- [Swoosh.Adapters.SMTP, Swoosh.Adapters.Mua] do

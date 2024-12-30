@@ -8,6 +8,7 @@ defmodule Swoosh.Adapters.ZeptoMail do
 
   * `:api_key` - the API key without the prefix `Zoho-enczapikey` used with ZeptoMail.
   * `:type` - the type of email to send `:single` or `:batch`. Defaults to `:single`
+  * `:base_url` - the url to use as the API endpoint. For EU, use https://api.zeptomail.eu/v1.1
 
   ## Example
 

@@ -131,7 +131,7 @@ defmodule Swoosh.TestAssertions do
       iex> assert_emails_sent(emails)
 
       # assert the list of emails with specific field(s) that were sent
-      iex> assert_email_sent([
+      iex> assert_emails_sent([
         %{subject: "Hello, Avengers 1!"},
         %{subject: "Hello, Avengers 2!"},
       ])
