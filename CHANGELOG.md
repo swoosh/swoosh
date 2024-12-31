@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.17.6
+
+### ✨ Features
+
+- Sendgrid: Support Mail Body Compression @luhagel (#971)
+
+### 📝 Documentation
+
+- Document how to change base\_url for CustomerIO adapter @sheharyarn (#987)
+- Add JSON section to README @princemaple (#985)
+- Fix doc typo in test\_assertions.ex @sevab (#983)
+
 ## 1.17.5
 
 This release fixes a bug introduced in 1.17.4
