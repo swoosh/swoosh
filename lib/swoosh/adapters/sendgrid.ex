@@ -29,7 +29,8 @@ defmodule Swoosh.Adapters.Sendgrid do
       # config/config.exs
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Sendgrid,
-        api_key: "my-api-key"
+        api_key: "my-api-key",
+        compress: true # default false
 
       # lib/sample/mailer.ex
       defmodule Sample.Mailer do
@@ -119,13 +120,20 @@ defmodule Swoosh.Adapters.Sendgrid do
   @api_endpoint "/mail/send"
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = [
-      {"Content-Type", "application/json"},
-      {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"Authorization", "Bearer #{config[:api_key]}"}
-    ]
+    headers =
+      [
+        {"Content-Type", "application/json"},
+        {"User-Agent", "swoosh/#{Swoosh.version()}"},
+        {"Authorization", "Bearer #{config[:api_key]}"}
+      ]
+      |> maybe_set_content_encoding(config[:compress])
 
-    body = email |> prepare_body() |> Swoosh.json_library().encode!
+    body =
+      email
+      |> prepare_body()
+      |> Swoosh.json_library().encode!
+      |> maybe_compress_body(config[:compress])
+
     url = [base_url(config), @api_endpoint]
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
@@ -142,6 +150,14 @@ defmodule Swoosh.Adapters.Sendgrid do
         {:error, reason}
     end
   end
+
+  defp maybe_set_content_encoding(headers, _compress = true),
+    do: headers ++ [{"Content-Encoding", "gzip"}]
+
+  defp maybe_set_content_encoding(headers, _), do: headers
+
+  defp maybe_compress_body(body, _compress = true), do: :zlib.gzip(body)
+  defp maybe_compress_body(body, _), do: body
 
   defp extract_id(headers) do
     headers

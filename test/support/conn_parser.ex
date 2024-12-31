@@ -10,6 +10,7 @@ defmodule Swoosh.ConnParser do
       ])
       |> Keyword.put_new(:json_decoder, Swoosh.json_library())
       |> Keyword.put_new(:pass, ["message/rfc822", "text/plain"])
+      |> Keyword.put_new(:body_reader, {GZipBodyReader, :read_body, []})
 
     Plug.Parsers.call(conn, Plug.Parsers.init(opts))
   end
