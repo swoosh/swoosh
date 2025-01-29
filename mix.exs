@@ -136,26 +136,6 @@ defmodule Swoosh.Mixfile do
     |> Kernel.--(@deprecated_adapters)
   end
 
-  defp aliases do
-    ["test.ci": &test_ci/1]
-  end
-
-  defp test_ci(args) do
-    args = if IO.ANSI.enabled?(), do: ["--color" | args], else: ["--no-color" | args]
-
-    {_, res} =
-      System.cmd(
-        "mix",
-        ["test" | args],
-        into: IO.binstream(:stdio, :line),
-        env: [{"MIX_ENV", "test"}]
-      )
-
-    if res > 0 do
-      System.at_exit(fn _ -> exit({:shutdown, 1}) end)
-    end
-  end
-
   defp description do
     """
     Compose, deliver and test your emails easily in Elixir. Supports SMTP,
