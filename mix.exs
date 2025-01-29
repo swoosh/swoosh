@@ -143,11 +143,6 @@ defmodule Swoosh.Mixfile do
   defp test_ci(args) do
     args = if IO.ANSI.enabled?(), do: ["--color" | args], else: ["--no-color" | args]
 
-    args =
-      if System.get_env("TRAVIS_SECURE_ENV_VARS") == "true",
-        do: ["--include=integration" | args],
-        else: args
-
     {_, res} =
       System.cmd(
         "mix",
