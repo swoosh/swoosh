@@ -3,13 +3,18 @@ if Code.ensure_loaded?(Plug) do
     @moduledoc """
     Plug that serves pages useful for previewing emails in development.
 
+    - `:csp_nonce_assign_key` - a map of keys to assign to the conn.assigns.
+      - `:script` - the key to assign the script CSP nonce to
+      - `:style` - the key to assign the style CSP nonce to
+
     ## Examples
 
         # in a Phoenix router
         defmodule Sample.Router do
           scope "/dev" do
             pipe_through [:browser]
-            forward "/mailbox", Plug.Swoosh.MailboxPreview
+            forward "/mailbox", Plug.Swoosh.MailboxPreview,
+              csp_nonce_assign_key: %{script: :script_csp_nonce, style: :style_csp_nonce}
           end
         end
     """
@@ -30,10 +35,15 @@ if Code.ensure_loaded?(Plug) do
     )
 
     def call(conn, opts) do
+      csp_nonce_assign_key =
+        %{script: :script_csp_nonce, style: :style_csp_nonce}
+        |> Map.merge(opts[:csp_nonce_assign_key] || %{})
+
       conn =
         conn
         |> assign(:base_path, Path.join(["/" | conn.script_name]))
         |> assign(:storage_driver, opts[:storage_driver] || Memory)
+        |> put_private(:csp_nonce_assign_key, csp_nonce_assign_key)
 
       super(conn, opts)
     end
@@ -149,6 +159,11 @@ if Code.ensure_loaded?(Plug) do
 
     defp to_absolute_url(conn, path) do
       Path.join(conn.assigns.base_path, path)
+    end
+
+    defp csp_nonce(conn, type) when type in [:script, :style] do
+      csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
+      conn.assigns[csp_nonce_assign_key]
     end
 
     defp render_recipient(recipient) do
