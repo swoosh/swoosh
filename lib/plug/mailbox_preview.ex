@@ -36,8 +36,9 @@ if Code.ensure_loaded?(Plug) do
 
     def call(conn, opts) do
       csp_nonce_assign_key =
-        %{script: :script_csp_nonce, style: :style_csp_nonce}
-        |> Map.merge(opts[:csp_nonce_assign_key] || %{})
+        opts
+        |> Access.get(:csp_nonce_assign_key)
+        |> Enum.into(%{script: :script_csp_nonce, style: :style_csp_nonce})
 
       conn =
         conn
