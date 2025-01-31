@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.7
+
+### ✨ Feature
+
+- fix: add csp nonce @yordis (#996)
+
+### 🧰 Maintenance
+
+- Compile tailwind instead of using cdn @princemaple (#998)
+
 ## 1.17.6
 
 ### ✨ Features
