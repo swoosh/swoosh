@@ -49,7 +49,10 @@ if Code.ensure_loaded?(Plug) do
       super(conn, opts)
     end
 
-    plug Plug.Static, at: "/assets", from: "priv/static/assets/"
+    plug Plug.Static,
+      at: "/assets",
+      from: Path.join(:code.priv_dir(:swoosh), "/static/assets/")
+
     plug :match
     plug :dispatch
 
