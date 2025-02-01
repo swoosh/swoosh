@@ -1,0 +1,31 @@
+name: Retire
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+      reason:
+        type: choice
+        default: invalid
+        options:
+          - renamed
+          - deprecated
+          - security
+          - invalid
+          - other
+      message:
+        type: string
+        required: true
+        default: Not working as expected
+
+jobs:
+  retire:
+    uses: swoosh/actions/.github/workflows/retire.yml@main
+    with:
+      package: 'swoosh'
+      version: ${{ inputs.version }}
+      reason: ${{ inputs.reason }}
+      message: ${{ inputs.message }}
+    secrets:
+      HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
