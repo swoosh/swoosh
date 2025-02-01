@@ -4,7 +4,14 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/app.css" nonce="<%= csp_nonce(@conn, :style) %>">
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        if (!window.location.pathname.endsWith("/")) {
+          window.location.href = window.location.pathname + "/" + window.location.search;
+        }
+      });
+    </script>
+    <link rel="stylesheet" href="./assets/app.css" nonce="<%= csp_nonce(@conn, :style) %>">
   </head>
   <body>
     <div class="flex">
