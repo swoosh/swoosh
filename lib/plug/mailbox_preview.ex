@@ -51,7 +51,7 @@ if Code.ensure_loaded?(Plug) do
 
     plug Plug.Static,
       at: "/assets",
-      from: Path.join(:code.priv_dir(:swoosh), "/static/assets/")
+      from: {:swoosh, "priv/static/assets/"}
 
     plug :match
     plug :dispatch
