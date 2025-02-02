@@ -1,12 +1,19 @@
 # Changelog
 
-## 1.17.8
+## 1.17.9
+
+### 🐛 Bug Fixes
+
+- fix assets path prefix
+- improve static serving config
+
+## 1.17.8 (deprecated: broken css priv path, fixed in 1.17.9)
 
 ### 🐛 Bug Fixes
 
 - fix priv path for css file @princemaple (#1001)
 
-## 1.17.7 (deprecated: broken css priv path, fixed in 1.17.8)
+## 1.17.7 (deprecated: broken css priv path, fixed in 1.17.9)
 
 ### ✨ Feature
 
