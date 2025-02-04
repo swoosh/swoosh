@@ -7,7 +7,7 @@ end
 
 if Mix.env() in [:dev, :docs] do
   config :tailwind,
-    version: "4.0.0",
+    version: "4.0.3",
     default: [
       args: ~w(
         --input=lib/plug/assets/app.css
