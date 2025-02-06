@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.17.10
+
+### 🐛 Bug Fixes
+
+- Fix broken attachments on Scaleway adapter @olivermt (#1003)
+
 ## 1.17.9
 
 ### 🐛 Bug Fixes
