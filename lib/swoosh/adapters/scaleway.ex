@@ -164,7 +164,8 @@ defmodule Swoosh.Adapters.Scaleway do
         attachments,
         &%{
           name: &1.filename,
-          content: Swoosh.Attachment.get_content(&1, :base64)
+          content: Swoosh.Attachment.get_content(&1, :base64),
+          type: &1.content_type
         }
       )
     )
