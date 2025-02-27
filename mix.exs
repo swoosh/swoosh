@@ -84,7 +84,7 @@ defmodule Swoosh.Mixfile do
       {:ex_aws, "~> 2.1", optional: true},
       {:bypass, "~> 2.1", only: :test},
       {:ex_doc, "~> 0.26", only: :docs, runtime: false},
-      {:tailwind, "~> 0.2.4", only: [:docs, :dev], runtime: false}
+      {:tailwind, "~> 0.3.0", only: [:docs, :dev], runtime: false}
     ]
   end
 
