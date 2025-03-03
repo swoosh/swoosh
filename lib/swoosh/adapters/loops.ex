@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.Loops do
   @moduledoc ~s"""
   An adapter that sends email using the Loops API.
 
-  For reference: [CustomerIO API docs](https://loops.so/docs/api-reference/send-transactional-email)
+  For reference: [Loops API docs](https://loops.so/docs/api-reference/send-transactional-email)
 
   **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
@@ -25,11 +25,15 @@ defmodule Swoosh.Adapters.Loops do
 
       new()
       |> to("katy@example.com")
+      |> from("chris@example.com")
       |> put_provider_option(:data_variables, %{
           "name" => "Chris",
           "passwordResetLink" => "https://example.com/reset-password"
         })
       |> put_provider_option(:transactional_id, "clfq6dinn000yl70fgwwyp82l")
+
+  Note that we need to provide a `from` because it's required by Swoosh. This will
+  be ignored though, since Loops API doesn't support setting a sender.
 
   ## Provider Options
 
