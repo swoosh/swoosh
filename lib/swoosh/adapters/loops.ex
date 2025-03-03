@@ -25,7 +25,7 @@ defmodule Swoosh.Adapters.Loops do
 
       new()
       |> to("katy@example.com")
-      |> from("chris@example.com")
+      |> from("IGNORED") # see note below
       |> put_provider_option(:data_variables, %{
           "name" => "Chris",
           "passwordResetLink" => "https://example.com/reset-password"
