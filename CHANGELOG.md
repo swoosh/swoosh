@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.0
+
+### ✨ Features
+
+- Implement loops.so adapter @caioaao (#1012)
+
 ## 1.17.10
 
 ### 🐛 Bug Fixes
