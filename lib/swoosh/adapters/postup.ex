@@ -213,10 +213,6 @@ defmodule Swoosh.Adapters.PostUp do
     do: %{address: email, tags: String.split(tags, ";", trim: true)}
 
   defp prepare_content(payload, key, value) when is_binary(key) do
-    [{key, value}]
-    |> Map.new()
-    |> then(fn new_content_field ->
-      Map.update(payload, "content", new_content_field, &Map.merge(&1, new_content_field))
-    end)
+    put_in(payload, [Access.key("content", %{}), key], value)
   end
 end
