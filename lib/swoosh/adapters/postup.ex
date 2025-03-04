@@ -184,10 +184,10 @@ defmodule Swoosh.Adapters.PostUp do
   defp prepare_provider_option(payload, %Email{
          provider_options: options
        }) do
-    options
-    |> Map.take(@provider_options)
+    _required = Map.fetch!(options, :send_template_id)
 
     options
+    |> Map.take(@provider_options)
     |> Enum.reduce(payload, fn
       {:send_template_id, send_template_id}, acc ->
         Map.put(acc, "SendTemplateId", send_template_id)
