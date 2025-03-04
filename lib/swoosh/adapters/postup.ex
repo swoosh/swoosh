@@ -60,7 +60,7 @@ defmodule Swoosh.Adapters.PostUp do
   Note that most of these options are nested under the optional "content" field in the JSON request
   body alongside "fromEmail", "fromName", "htmlBody", etc.
 
-    * `send_template_id` (integer) - `sendTemplateId`, unique number assigned to each send template.
+    * `send_template_id` (integer): unique number assigned to each send template.
       **Required field.**
 
     * `unsub_content_id` (integer): ID for replacement unsubscribe content in specified template.
