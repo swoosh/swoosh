@@ -150,7 +150,7 @@ defmodule Swoosh.Adapters.PostUp do
   defp prepare_reply_to(payload, %Email{reply_to: nil}),
     do: payload
 
-  defp prepare_reply_to(payload, %Email{reply_to: {"", reply_to}}),
+  defp prepare_reply_to(payload, %Email{reply_to: {name, reply_to}}) when name in [nil, ""],
     do: prepare_content(payload, "replyToEmail", reply_to)
 
   defp prepare_reply_to(payload, %Email{reply_to: {reply_to_name, reply_to_email}}) do
