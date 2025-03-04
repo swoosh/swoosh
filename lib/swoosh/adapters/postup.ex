@@ -192,7 +192,7 @@ defmodule Swoosh.Adapters.PostUp do
       {:send_template_id, send_template_id}, acc ->
         Map.put(acc, "SendTemplateId", send_template_id)
 
-      {key, value}, acc when key in @provider_options ->
+      {key, value}, acc ->
         content_key =
           case key do
             :unsub_content_id -> "unsubContentId"
@@ -203,10 +203,6 @@ defmodule Swoosh.Adapters.PostUp do
           end
 
         prepare_content(acc, content_key, value)
-
-      # Skip unrecognized provider options
-      _, acc ->
-        acc
     end)
   end
 
