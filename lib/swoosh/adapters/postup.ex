@@ -137,7 +137,7 @@ defmodule Swoosh.Adapters.PostUp do
   # Swoosh requires a from field; specify some invalid email address to omit it from request body
   defp prepare_from(payload, %Email{from: {name, email}}) when is_binary(email) do
     cond do
-      (String.length(name) == 0 or is_nil(name)) and not String.match?(email, ~r/.+@.+\..+/) ->
+      (is_nil(name) or name == "") and not String.match?(email, ~r/^.+@.+\..+$/) ->
         payload
 
       true ->
