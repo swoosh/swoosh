@@ -207,11 +207,11 @@ defmodule Swoosh.Adapters.PostUp do
     end)
   end
 
-  defp prepare_recipient({tags, email}) when tags == "" or is_nil(tags),
+  defp prepare_recipient({nil, email}),
     do: %{address: email, tags: []}
 
   defp prepare_recipient({tags, email}) when is_binary(tags),
-    do: %{address: email, tags: String.split(tags, ";")}
+    do: %{address: email, tags: String.split(tags, ";", trim: true)}
 
   defp prepare_content(payload, key, value) when is_binary(key) do
     [{key, value}]
