@@ -154,8 +154,9 @@ defmodule Swoosh.Adapters.PostUp do
     do: prepare_content(payload, "replyToEmail", reply_to)
 
   defp prepare_reply_to(payload, %Email{reply_to: {reply_to_name, reply_to_email}}) do
-    prepare_content(payload, "replyToEmail", reply_to_email)
-    prepare_content(payload, "replyToName", reply_to_name)
+    payload
+    |> prepare_content("replyToEmail", reply_to_email)
+    |> prepare_content("replyToName", reply_to_name)
   end
 
   defp prepare_to(payload, %Email{to: to}) do
