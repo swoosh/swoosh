@@ -160,9 +160,8 @@ defmodule Swoosh.Adapters.PostUp do
   end
 
   defp prepare_to(payload, %Email{to: to}) do
-    recipient = Enum.map(to, &prepare_recipient/1)
-    # Support multiple recipients by calling to/1 subsequent times
-    Map.update(payload, "recipients", recipient, &[&1 | [recipient]])
+    recipients = Enum.map(to, &prepare_recipient/1)
+    Map.put(payload, "recipients", recipients)
   end
 
   defp prepare_subject(payload, %Email{subject: ""}), do: payload
