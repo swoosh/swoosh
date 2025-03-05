@@ -181,9 +181,7 @@ defmodule Swoosh.Adapters.PostUp do
   defp prepare_html_content(payload, %Email{html_body: html_content}),
     do: prepare_content(payload, "htmlBody", html_content)
 
-  defp prepare_provider_option(payload, %Email{
-         provider_options: options
-       }) do
+  defp prepare_provider_option(payload, %Email{provider_options: options}) do
     _required = Map.fetch!(options, :send_template_id)
 
     options
