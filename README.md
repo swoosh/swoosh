@@ -153,6 +153,7 @@ included:
 | ZeptoMail    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)       |                  |
 | Postal       | [Swoosh.Adapters.Postal](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postal.html#content)             |                  |
 | Loops        | [Swoosh.Adapters.Loops](https://hexdocs.pm/swoosh/Swoosh.Adapters.Loops.html#content)               |                  |
+| PostUp       | [Swoosh.Adapters.PostUp](https://hexdocs.pm/swoosh/Swoosh.Adapters.PostUp.html#content)             |                  |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
