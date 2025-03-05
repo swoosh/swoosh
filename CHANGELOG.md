@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.1
+
+### ✨ Features
+
+- Add PostUp adapter @zatchheems (#1015)
+
 ## 1.18.0
 
 ### ✨ Features
