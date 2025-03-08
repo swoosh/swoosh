@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.2
+
+### 🐛 Bug Fixes
+
+- Fix: Prevent zeptomail error when receiving non json response body on 500 @atoncetti (#1017)
+
 ## 1.18.1
 
 ### ✨ Features
