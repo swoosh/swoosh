@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.3
+
+### 🧰 Maintenance
+
+- Update Req usage, preparing for v1.0 @wojtekmach (#1022)
+
 ## 1.18.2
 
 ### 🐛 Bug Fixes
