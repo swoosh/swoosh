@@ -57,12 +57,7 @@ defmodule Swoosh.ApiClient.Req do
 
     case Req.post(url, options) do
       {:ok, response} ->
-        headers =
-          for {name, values} <- response.headers,
-              value <- values do
-            {name, value}
-          end
-
+        headers = Req.get_headers_list(response)
         {:ok, response.status, headers, response.body}
 
       {:error, reason} ->
