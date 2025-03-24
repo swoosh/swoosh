@@ -14,8 +14,10 @@ defmodule Swoosh.TestAssertions do
   does the `Mailer.deliver` call.
 
   For feature/E2E tests, you should use `Swoosh.Adapters.Local` adapter.
-  In your test, instead of calling `assert_email_sent`, you should navigate to the
+  In your test, instead of calling `assert_email_sent`, you could check what's in the
+  local adapter mailbox. Alternatively, you could also navigate to the
   preview url with your E2E tool (e.g. `wallaby`) and test that the email is in the inbox.
+  A JSON endpoint is also available as part of the preview plug.
   """
 
   import ExUnit.Assertions
