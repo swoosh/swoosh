@@ -23,10 +23,15 @@ defmodule Swoosh.Adapters.Local do
 
   def deliver(%Swoosh.Email{} = email, config) do
     driver = storage_driver(config)
-    email = update_in(email, [Access.key!(:private), :ref], fn ref -> ref || make_ref() end)
+
+    email =
+      email
+      |> update_in([Access.key!(:private), :ref], fn ref -> ref || make_ref() end)
+      |> put_in([Access.key!(:private), :pid], self())
+
     %Swoosh.Email{headers: %{"Message-ID" => id}} = driver.push(email)
 
-    {:ok, %{id: id, ref: email.private.ref}}
+    {:ok, %{id: id, ref: email.private.ref, pid: email.private.pid}}
   end
 
   def deliver_many(emails, config) when is_list(emails) do
