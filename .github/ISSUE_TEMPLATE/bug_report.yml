@@ -7,6 +7,14 @@ body:
       value: |
         Thank you for using the bug template! 🙏
 
+  - type: markdown
+    id: latest-version-swoosh
+    attributes:
+      label: Have you tried the latest version of Swoosh?
+      description: You may want to try the latest version first ;)
+      options:
+        - label: 'Yes'
+
   - type: textarea
     id: description
     attributes:
