@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.4
+
+### ✨ Features
+
+- Support dark/light mode based on system theme in dev preview mailbox @chrismccord (#1027)
+
 ## 1.18.3
 
 ### 🧰 Maintenance
