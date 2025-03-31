@@ -7,7 +7,7 @@ body:
       value: |
         Thank you for using the bug template! 🙏
 
-  - type: markdown
+  - type: checkboxes
     id: latest-version-swoosh
     attributes:
       label: Have you tried the latest version of Swoosh?
