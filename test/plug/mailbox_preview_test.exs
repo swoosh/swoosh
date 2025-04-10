@@ -47,6 +47,12 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
     end
   end
 
+  defmodule EmptyDriver do
+    def all, do: []
+    def get(_id), do: nil
+    def template_model, do: %{}
+  end
+
   describe "/json" do
     test "renders emails in json" do
       opts = MailboxPreview.init(storage_driver: StorageDriver)
@@ -107,6 +113,26 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
                  }
                ]
              }
+    end
+  end
+
+  describe "/latest" do
+    test "with existing messages redirects to most recent" do
+      opts = MailboxPreview.init(storage_driver: StorageDriver)
+
+      conn = conn(:get, "/latest")
+      conn = MailboxPreview.call(conn, opts)
+
+      assert conn.state == :sent
+      assert conn.status == 302
+      assert get_resp_header(conn, "location") == ["/1"]
+    end
+
+    test "with no messages redirects to base path" do
+      opts = MailboxPreview.init(storage_driver: EmptyDriver)
+      conn = conn(:get, "/latest")
+      conn = MailboxPreview.call(conn, opts)
+      assert get_resp_header(conn, "location") == ["/"]
     end
   end
 
