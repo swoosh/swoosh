@@ -71,21 +71,16 @@ if Code.ensure_loaded?(Plug) do
     end
 
     get "/" do
-      emails = conn.assigns.storage_driver.all()
-
-      conn
-      |> put_resp_content_type("text/html")
-      |> send_resp(200, template(emails: emails, email: nil, conn: conn))
-    end
-
-    get "/latest" do
       case conn.assigns.storage_driver.all() do
         [%Swoosh.Email{headers: %{"Message-ID" => id}} | _] ->
           redir(conn, Path.join(conn.assigns.base_path, id))
 
-        [] ->
-          redir(conn, conn.assigns.base_path)
-      end
+
+        emails ->
+          conn
+          |> put_resp_content_type("text/html")
+          |> send_resp(200, template(emails: emails, email: nil, conn: conn))
+        end
     end
 
     get "/:id/html" do

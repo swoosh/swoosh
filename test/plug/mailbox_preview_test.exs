@@ -116,11 +116,11 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
     end
   end
 
-  describe "/latest" do
+  describe "/" do
     test "with existing messages redirects to most recent" do
       opts = MailboxPreview.init(storage_driver: StorageDriver)
 
-      conn = conn(:get, "/latest")
+      conn = conn(:get, "/")
       conn = MailboxPreview.call(conn, opts)
 
       assert conn.state == :sent
@@ -132,7 +132,7 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       opts = MailboxPreview.init(storage_driver: EmptyDriver)
       conn = conn(:get, "/latest")
       conn = MailboxPreview.call(conn, opts)
-      assert get_resp_header(conn, "location") == ["/"]
+      assert get_resp_header(conn, "location") == []
     end
   end
 
