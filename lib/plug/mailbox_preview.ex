@@ -75,12 +75,11 @@ if Code.ensure_loaded?(Plug) do
         [%Swoosh.Email{headers: %{"Message-ID" => id}} | _] ->
           redir(conn, Path.join(conn.assigns.base_path, id))
 
-
         emails ->
           conn
           |> put_resp_content_type("text/html")
           |> send_resp(200, template(emails: emails, email: nil, conn: conn))
-        end
+      end
     end
 
     get "/:id/html" do
@@ -203,7 +202,10 @@ if Code.ensure_loaded?(Plug) do
       conn
       |> put_resp_header("location", location)
       |> put_resp_content_type("text/html")
-      |> send_resp(302, "<html><body>You are being <a href=\"#{location}\">redirected</a>.</body></html>")
+      |> send_resp(
+        302,
+        "<html><body>You are being <a href=\"#{location}\">redirected</a>.</body></html>"
+      )
     end
   end
 end

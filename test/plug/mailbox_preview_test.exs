@@ -1,6 +1,7 @@
 defmodule Plug.Swoosh.MailboxPreviewTest do
   use ExUnit.Case, async: true
-  use Plug.Test
+
+  import Plug.{Conn, Test}
 
   alias Plug.Swoosh.MailboxPreview
 
@@ -130,7 +131,7 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
 
     test "with no messages redirects to base path" do
       opts = MailboxPreview.init(storage_driver: EmptyDriver)
-      conn = conn(:get, "/latest")
+      conn = conn(:get, "/")
       conn = MailboxPreview.call(conn, opts)
       assert get_resp_header(conn, "location") == []
     end
