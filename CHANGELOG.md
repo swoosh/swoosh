@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.19.0
+
+### ✨ Features
+
+- Redirect to latest message in mailbox if one exists @chrismccord (#1032)
+- make links clickable in text email preview @SteffenDE (#1031)
+
+### 🐛 Bug Fixes
+
+- Specify the correct content\_disposition and content\_id @Hermanverschooten (#901)
+  - fixes Mua adapter when using inline attachments
+
 ## 1.18.4
 
 ### ✨ Features
