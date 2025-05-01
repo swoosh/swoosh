@@ -37,14 +37,11 @@ defmodule Swoosh.Adapters.GmailTest do
         Subject: Hello, Avengers!\r
         MIME-Version: 1.0\r
         From: "" <steve.rogers@example.com>\r
-        Content-Type: multipart/alternative; boundary="#{boundary}"\r
-        \r
-        --#{boundary}\r
         Content-Type: text/html; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
         \r
         <h1>Hello</h1>\r
-        --#{boundary}--\
+        \r
         """
         |> Mail.Parsers.RFC2822.parse()
 
