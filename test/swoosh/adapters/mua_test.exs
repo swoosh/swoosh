@@ -130,6 +130,33 @@ defmodule Swoosh.Adapters.MuaTest do
                "ID" => message_id,
                "Attachments" => [
                  %{
+                   "ContentID" => "",
+                   "ContentType" => "text/plain",
+                   "FileName" => "attachment.txt",
+                   "PartID" => part_id,
+                   "Size" => 9
+                 }
+               ]
+             } = mailpit_summary("latest")
+
+      assert mailpit_attachment(message_id, part_id) == "hello :)\n"
+    end
+
+    @tag :tmp_dir
+    test "with inline attachments", %{email: email, tmp_dir: tmp_dir} do
+      attachment = Path.join(tmp_dir, "attachment.txt")
+      File.write!(attachment, "hello :)\n")
+
+      assert {:ok, _email} =
+               email
+               |> Swoosh.Email.attachment(Swoosh.Attachment.new(attachment, type: :inline))
+               |> mailpit_deliver()
+
+      assert %{
+               "ID" => message_id,
+               "Inline" => [
+                 %{
+                   "ContentID" => "attachment.txt",
                    "ContentType" => "text/plain",
                    "FileName" => "attachment.txt",
                    "PartID" => part_id,

@@ -119,7 +119,7 @@
                 </a>
               </div>
               <div class="grow">
-                <iframe src="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="w-full mt-1 -mb-4 h-full" frameborder="0"></iframe>
+                <iframe id="html-mail" src="<%= to_absolute_url(@conn, @email.headers["Message-ID"]) %>/html" class="w-full mt-1 -mb-4 h-full" frameborder="0"></iframe>
               </div>
             </div>
           <% end %>
@@ -172,6 +172,32 @@
           const icon = textToggle.querySelector("svg");
           icon.classList.toggle("rotate-180");
         });
+      }
+
+      // set target="_top" on links to open them outside of the iframe
+      const iframe = document.querySelector("#html-mail");
+      if (iframe) {
+        Array.from(iframe.contentWindow.document.querySelectorAll("a")).forEach((link) => {
+          if (!link.hasAttribute("target")) {
+            link.setAttribute("target", "_top");
+          }
+        });
+      }
+
+      // make links in text only view clickable
+      const textMail = document.querySelector("#text-body-content");
+      if (textMail) {
+        const textContent = textMail.textContent;
+        // match common URL formats starting with http://, https://, or www.
+        const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
+        const htmlWithLinks = textContent.replace(urlRegex, function(url) {
+          // Add https:// prefix to URLs starting with www.
+          const href = url.startsWith('www.') ? 'https://' + url : url;
+          return `<a href="${href}" style="text-decoration: underline;">${url}</a>`;
+        });
+
+        // Set the HTML content with clickable links
+        textMail.innerHTML = htmlWithLinks;
       }
     </script>
   </body>
