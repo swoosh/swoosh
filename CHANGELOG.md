@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.1
+
+### 🐛 Bug Fixes
+
+- Regenerate styles, fix [#1030](https://github.com/swoosh/swoosh/issues/1030)
+
 ## 1.19.0
 
 ### ✨ Features
