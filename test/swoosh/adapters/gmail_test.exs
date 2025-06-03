@@ -29,7 +29,7 @@ defmodule Swoosh.Adapters.GmailTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      boundary = Mail.Message.get_boundary(conn.body_params)
+      _boundary = Mail.Message.get_boundary(conn.body_params)
 
       body_params =
         ~s"""
