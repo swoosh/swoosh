@@ -123,6 +123,7 @@ defmodule Swoosh.Adapters.Sendgrid do
     headers =
       [
         {"Content-Type", "application/json"},
+        {"Accept", "application/json"},
         {"User-Agent", "swoosh/#{Swoosh.version()}"},
         {"Authorization", "Bearer #{config[:api_key]}"}
       ]
