@@ -1,0 +1,52 @@
+name: Tailwind
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  tailwind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.18'
+          otp-version: 27.x
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        id: cache-elixir-deps
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+
+      - name: Install Dependencies
+        if: steps.cache-elixir-deps.outputs.cache-hit != 'true'
+        run: mix do deps.get, deps.compile, compile, tailwind.install, tailwind default
+
+      - name: Check for code diffs
+        id: diff
+        run: echo "diff=$(git diff --name-only)" >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        if: steps.diff.outputs.diff != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add -A
+          git checkout -b "tailwind-${{ github.ref }}"
+
+          git config user.name 'Po Chen'
+          git config user.email 'princemaple@users.noreply.github.com'
+
+          git commit -m "Regenerate styles with Tailwind CSS"
+          git push -u origin HEAD
+
+          gh pr create --fill

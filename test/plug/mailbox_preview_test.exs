@@ -1,6 +1,7 @@
 defmodule Plug.Swoosh.MailboxPreviewTest do
   use ExUnit.Case, async: true
-  use Plug.Test
+
+  import Plug.{Conn, Test}
 
   alias Plug.Swoosh.MailboxPreview
 
@@ -45,6 +46,12 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
     def template_model do
       %{name: "Steve", email: "steve@avengers.com"}
     end
+  end
+
+  defmodule EmptyDriver do
+    def all, do: []
+    def get(_id), do: nil
+    def template_model, do: %{}
   end
 
   describe "/json" do
@@ -107,6 +114,26 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
                  }
                ]
              }
+    end
+  end
+
+  describe "/" do
+    test "with existing messages redirects to most recent" do
+      opts = MailboxPreview.init(storage_driver: StorageDriver)
+
+      conn = conn(:get, "/")
+      conn = MailboxPreview.call(conn, opts)
+
+      assert conn.state == :sent
+      assert conn.status == 302
+      assert get_resp_header(conn, "location") == ["/1"]
+    end
+
+    test "with no messages redirects to base path" do
+      opts = MailboxPreview.init(storage_driver: EmptyDriver)
+      conn = conn(:get, "/")
+      conn = MailboxPreview.call(conn, opts)
+      assert get_resp_header(conn, "location") == []
     end
   end
 

@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.19.1
+
+### 🐛 Bug Fixes
+
+- Regenerate styles, fix [#1030](https://github.com/swoosh/swoosh/issues/1030)
+
+## 1.19.0
+
+### ✨ Features
+
+- Redirect to latest message in mailbox if one exists @chrismccord (#1032)
+- make links clickable in text email preview @SteffenDE (#1031)
+
+### 🐛 Bug Fixes
+
+- Specify the correct content\_disposition and content\_id @Hermanverschooten (#901)
+  - fixes Mua adapter when using inline attachments
+
+## 1.18.4
+
+### ✨ Features
+
+- Support dark/light mode based on system theme in dev preview mailbox @chrismccord (#1027)
+
 ## 1.18.3
 
 ### 🧰 Maintenance
