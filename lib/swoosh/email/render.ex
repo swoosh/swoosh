@@ -4,8 +4,16 @@ defmodule Swoosh.Email.Render do
   def render_recipient(nil), do: ""
   def render_recipient({nil, address}), do: address
   def render_recipient({"", address}), do: address
-  def render_recipient({name, address}), do: ~s("#{name}" <#{address}>)
   def render_recipient([]), do: ""
+
+  def render_recipient({name, address}) do
+    name =
+      name
+      |> String.replace("\\", "\\\\")
+      |> String.replace("\"", "\\\"")
+
+    ~s("#{name}" <#{address}>)
+  end
 
   def render_recipient(list) when is_list(list) do
     list

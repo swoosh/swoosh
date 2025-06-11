@@ -171,6 +171,20 @@ defmodule Swoosh.Adapters.AmazonSESTest do
       |> text_body("Hello")
 
     Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      {:ok, raw_message} = conn.body_params["RawMessage.Data"] |> URI.decode() |> Base.decode64()
+
+      assert String.contains?(
+               raw_message,
+               "From: \"G Threepwood, \\\"Mighty Pirate\\\"\" <guybrush.threepwood@pirates.grog>\r\n"
+             )
+
+      assert String.contains?(
+               raw_message,
+               "To: \"Elaine Marley\\\\\" <elaine.marley@triisland.gov>\r\n"
+             )
+
       Plug.Conn.resp(conn, 200, @success_response)
     end)
 
