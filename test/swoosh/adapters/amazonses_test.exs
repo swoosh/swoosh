@@ -163,6 +163,34 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
+  test "deliver/1 with quotes and backslashes in address name", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({~s|G Threepwood, "Mighty Pirate"|, "guybrush.threepwood@pirates.grog"})
+      |> to({~s|Elaine Marley\\|, "elaine.marley@triisland.gov"})
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      {:ok, raw_message} = conn.body_params["RawMessage.Data"] |> URI.decode() |> Base.decode64()
+
+      assert String.contains?(
+               raw_message,
+               ~s|From: "G Threepwood, \\"Mighty Pirate\\"" <guybrush.threepwood@pirates.grog>\r\n|
+             )
+
+      assert String.contains?(
+               raw_message,
+               ~s|To: "Elaine Marley\\\\" <elaine.marley@triisland.gov>\r\n|
+             )
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
+  end
+
   test "optional config params are present in the API request body when they're set in the config",
        %{
          bypass: bypass,

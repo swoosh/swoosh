@@ -105,6 +105,30 @@ defmodule Swoosh.Email.SMTPTest do
               ], "Hello"}
   end
 
+  test "simple email with quotes and backslashes in the recipient names", %{valid_email: email} do
+    email =
+      email
+      |> html_body(nil)
+      |> from({~s|Tony "Iron Man" Stark|, "tony@stark.com"})
+      |> to({~s|Steve "Cap" Rogers|, "steve@rogers.com"})
+      |> cc({~s|\\Loki\\|, "loki@jotunheim.god"})
+
+    assert Helpers.prepare_message(email, []) ==
+             {
+               "text",
+               "plain",
+               [
+                 {"Content-Type", "text/plain; charset=\"utf-8\""},
+                 {"From", ~s|"Tony \\"Iron Man\\" Stark" <tony@stark.com>|},
+                 {"To", ~s|"Steve \\"Cap\\" Rogers" <steve@rogers.com>, steve@rogers.com|},
+                 {"Cc", ~s|"\\\\Loki\\\\" <loki@jotunheim.god>|},
+                 {"Subject", "Hello, Avengers!"},
+                 {"MIME-Version", "1.0"}
+               ],
+               "Hello"
+             }
+  end
+
   test "simple html email", %{valid_email: email} do
     email = email |> text_body(nil)
 
