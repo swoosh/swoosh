@@ -166,8 +166,8 @@ defmodule Swoosh.Adapters.AmazonSESTest do
   test "deliver/1 with quotes and backslashes in address name", %{bypass: bypass, config: config} do
     email =
       new()
-      |> from({"G Threepwood, \"Mighty Pirate\"", "guybrush.threepwood@pirates.grog"})
-      |> to({"Elaine Marley\\", "elaine.marley@triisland.gov"})
+      |> from({~s|G Threepwood, "Mighty Pirate"|, "guybrush.threepwood@pirates.grog"})
+      |> to({~s|Elaine Marley\\|, "elaine.marley@triisland.gov"})
       |> text_body("Hello")
 
     Bypass.expect(bypass, fn conn ->
@@ -177,12 +177,12 @@ defmodule Swoosh.Adapters.AmazonSESTest do
 
       assert String.contains?(
                raw_message,
-               "From: \"G Threepwood, \\\"Mighty Pirate\\\"\" <guybrush.threepwood@pirates.grog>\r\n"
+               ~s|From: "G Threepwood, \\"Mighty Pirate\\"" <guybrush.threepwood@pirates.grog>\r\n|
              )
 
       assert String.contains?(
                raw_message,
-               "To: \"Elaine Marley\\\\\" <elaine.marley@triisland.gov>\r\n"
+               ~s|To: "Elaine Marley\\\\" <elaine.marley@triisland.gov>\r\n|
              )
 
       Plug.Conn.resp(conn, 200, @success_response)

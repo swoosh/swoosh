@@ -109,9 +109,9 @@ defmodule Swoosh.Email.SMTPTest do
     email =
       email
       |> html_body(nil)
-      |> from({"Tony \"Iron Man\" Stark", "tony@stark.com"})
-      |> to({"Steve \"Cap\" Rogers", "steve@rogers.com"})
-      |> cc({"\\Loki\\", "loki@jotunheim.god"})
+      |> from({~s|Tony "Iron Man" Stark|, "tony@stark.com"})
+      |> to({~s|Steve "Cap" Rogers|, "steve@rogers.com"})
+      |> cc({~s|\\Loki\\|, "loki@jotunheim.god"})
 
     assert Helpers.prepare_message(email, []) ==
              {
@@ -119,9 +119,9 @@ defmodule Swoosh.Email.SMTPTest do
                "plain",
                [
                  {"Content-Type", "text/plain; charset=\"utf-8\""},
-                 {"From", "\"Tony \\\"Iron Man\\\" Stark\" <tony@stark.com>"},
-                 {"To", "\"Steve \\\"Cap\\\" Rogers\" <steve@rogers.com>, steve@rogers.com"},
-                 {"Cc", "\"\\\\Loki\\\\\" <loki@jotunheim.god>"},
+                 {"From", ~s|"Tony \\"Iron Man\\" Stark" <tony@stark.com>|},
+                 {"To", ~s|"Steve \\"Cap\\" Rogers" <steve@rogers.com>, steve@rogers.com|},
+                 {"Cc", ~s|"\\\\Loki\\\\" <loki@jotunheim.god>|},
                  {"Subject", "Hello, Avengers!"},
                  {"MIME-Version", "1.0"}
                ],
