@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.19.2
+
+### ✨ Features
+
+- Escape quotes and backslashes in address names @jiegillet (#1047)
+- Add Accept header to all requests made by Sendgrid adapter @sergey-elkin (#1046)
+- Remove svg fill for dark mode @cmnstmntmn (#1044)
+
+### 🧰 Maintenance
+
+- Fix unused variable warnings in CI - Gmail Test @DuldR (#1045)
+
 ## 1.19.1
 
 ### 🐛 Bug Fixes
