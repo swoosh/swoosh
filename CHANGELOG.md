@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.3
+
+### ✨ Features
+
+- Add deliver\_many support to Brevo adapter @linusdm (#1049)
+
 ## 1.19.2
 
 ### ✨ Features
