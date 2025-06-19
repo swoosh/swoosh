@@ -35,6 +35,26 @@ defmodule Swoosh.Adapters.Brevo do
       |> put_provider_option(:tags, ["tag_1", "tag_2"])
       |> put_provider_option(:schedule_at, ~U[2022-11-15 11:00:00Z])
 
+  ## Batch Sending
+
+  This adapter supports `deliver_many/2` for sending multiple emails in a single API call
+  using Brevo's `messageVersions` parameter. When using batch sending:
+
+  **Global parameters** (applied to all emails in the batch):
+    * `sender` - from address (taken from first email)
+    * `attachment` - attachments (taken from first email)  
+    * `tags` - email tags (taken from first email)
+    * `scheduledAt` - scheduled send time (taken from first email)
+
+  **Per-email parameters** (can be different for each email):
+    * `to`, `cc`, `bcc` - recipients
+    * `subject` - email subject
+    * `htmlContent`, `textContent` - email content
+    * `templateId` - template selection
+    * `params` - template variables
+    * `headers` - custom headers
+    * `replyTo` - reply address
+
   ## Provider Options
 
     * `sender_id` (integer) - `sender`, the sender `id` where this library will
@@ -63,13 +83,7 @@ defmodule Swoosh.Adapters.Brevo do
   defp base_url(config), do: config[:base_url] || @base_url
 
   def deliver(%Email{} = email, config \\ []) do
-    headers = [
-      {"Accept", "application/json"},
-      {"Content-Type", "application/json"},
-      {"User-Agent", "swoosh/#{Swoosh.version()}"},
-      {"Api-Key", config[:api_key]}
-    ]
-
+    headers = prepare_request_headers(config)
     body = email |> prepare_payload() |> Swoosh.json_library().encode!
     url = [base_url(config), @api_endpoint]
 
@@ -88,10 +102,80 @@ defmodule Swoosh.Adapters.Brevo do
     end
   end
 
+  def deliver_many(emails, config \\ [])
+
+  def deliver_many([], _config) do
+    {:ok, []}
+  end
+
+  def deliver_many([first_email | _] = emails, config) do
+    headers = prepare_request_headers(config)
+    body = emails |> prepare_batch_payload() |> Swoosh.json_library().encode!
+    url = [base_url(config), @api_endpoint]
+
+    case Swoosh.ApiClient.post(url, headers, body, first_email) do
+      {:ok, code, _headers, body} when code >= 200 and code <= 399 ->
+        {:ok, Enum.map(extract_message_ids(body), &%{id: &1})}
+
+      {:ok, code, _headers, body} when code >= 400 ->
+        case Swoosh.json_library().decode(body) do
+          {:ok, error} -> {:error, {code, error}}
+          {:error, _} -> {:error, {code, body}}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp prepare_request_headers(config) do
+    [
+      {"Accept", "application/json"},
+      {"Content-Type", "application/json"},
+      {"User-Agent", "swoosh/#{Swoosh.version()}"},
+      {"Api-Key", config[:api_key]}
+    ]
+  end
+
   defp extract_message_id(body) do
     body
     |> Swoosh.json_library().decode!()
     |> Map.get("messageId")
+  end
+
+  defp extract_message_ids(body) do
+    body
+    |> Swoosh.json_library().decode!()
+    |> Map.get("messageIds", [])
+  end
+
+  defp prepare_batch_payload([first_email | _] = emails) do
+    %{}
+    # from, attachments, tags and scheduled_at can only be defined globally
+    |> prepare_from(first_email)
+    |> prepare_attachments(first_email)
+    |> prepare_tags(first_email)
+    |> prepare_schedule_at(first_email)
+    # subject, text_content, html_content, template_id can be overridden per message but must be defined globally first
+    |> prepare_subject(first_email)
+    |> prepare_text_content(first_email)
+    |> prepare_html_content(first_email)
+    |> prepare_template_id(first_email)
+    |> Map.put("messageVersions", Enum.map(emails, &prepare_message_version/1))
+  end
+
+  defp prepare_message_version(email) do
+    %{}
+    |> prepare_reply_to(email)
+    |> prepare_to(email)
+    |> prepare_cc(email)
+    |> prepare_bcc(email)
+    |> prepare_subject(email)
+    |> prepare_text_content(email)
+    |> prepare_html_content(email)
+    |> prepare_template_id(email)
+    |> prepare_headers(email)
+    |> prepare_params(email)
   end
 
   defp prepare_payload(email) do
