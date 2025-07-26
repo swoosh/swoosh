@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.4
+
+### ✨ Features
+
+- Allow Customer.io to use TEMPLATE for from @axelson (#1058)
+
 ## 1.19.3
 
 ### ✨ Features
