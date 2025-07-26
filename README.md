@@ -142,6 +142,7 @@ included:
 | SparkPost    | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)       |                  |
 | Amazon SES   | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)       |                  |
 | Amazon SES   | [Swoosh.Adapters.ExAwsAmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.ExAwsAmazonSES.html)     |                  |
+| Customer.io  | [Swoosh.Adapters.CustomerIO](https://hexdocs.pm/swoosh/Swoosh.Adapters.CustomerIO.html)             |                  |
 | Dyn          | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)                   |                  |
 | Scaleway     | [Swoosh.Adapters.Scaleway](https://hexdocs.pm/swoosh/Swoosh.Adapters.Scaleway.html#content)         |                  |
 | SocketLabs   | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)     |                  |
