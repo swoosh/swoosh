@@ -99,12 +99,27 @@ defmodule Swoosh.Adapters.CustomerIO do
       unsubscribed recipients. Setting this value overrides the value set in the
       settings of your transactional_message_id.
 
-    * `:tracked"` (boolean) - If true, Customer.io tracks opens and link clicks
+    * `:tracked` (boolean) - If true, Customer.io tracks opens and link clicks
       in your message.
 
     * `:transactional_message_id` (integer or string) - The transactional message template that
       you want to use for your message. You can call the template by its numerical ID
       or by the Trigger Name that you assigned the template (case insensitive).
+
+  ## Using a template
+
+  You can use a template by setting the `from` field to `TEMPLATE`. This will let you set the `from`
+  address within Customer.io instead of hard-coding it in your code.
+
+      import Swoosh.Email
+
+      new()
+      |> from("TEMPLATE")
+      |> to({"Katy", "katy@example.com"})
+      |> subject("Hello, Ten Rings!")
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+      |> put_provider_option(:transactional_message_id, "my-template-id")
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -172,6 +187,7 @@ defmodule Swoosh.Adapters.CustomerIO do
   end
 
   defp prepare_from(body, %Email{from: nil}), do: body
+  defp prepare_from(body, %{from: "TEMPLATE"}), do: body
   defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, render_recipient(from))
 
   defp prepare_to(body, %Email{to: to}),

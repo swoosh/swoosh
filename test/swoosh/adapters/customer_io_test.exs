@@ -97,6 +97,36 @@ defmodule Swoosh.Adapters.CustomerIOTest do
     assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
+  test "delivery with from=TEMPLATE returns :ok", %{bypass: bypass, config: config} do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "from" => "TEMPLATE",
+        "to" => "steve.rogers@example.com",
+        "subject" => "Hello, Avengers!",
+        "body" => "<h1>Hello</h1>",
+        "transactional_message_id" => "my-template-id"
+      }
+
+      assert ^body_params = conn.body_params
+      assert "/send/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, "{\"delivery_id\": \"123-xyz\"}")
+    end)
+
+    email =
+      new()
+      |> from("TEMPLATE")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> put_provider_option(:transactional_message_id, "my-template-id")
+
+    assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
   test "deliver/1 with all fields returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
