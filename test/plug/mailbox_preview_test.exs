@@ -31,7 +31,13 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
           )
         )
         |> Swoosh.Email.put_private(:sent_at, "2021-01-21T18:34:20.615851Z"),
-        %Swoosh.Email{}
+        new()
+        |> subject("Avengers Assemble! 🦸‍♂️")
+        |> from("TEMPLATE")
+        |> to("avengers@shield.gov")
+        |> text_body("Lorem ipsum dolor sit amet")
+        |> html_body("<p>Lorem ipsum dolor sit amet</p>")
+        |> header("Message-ID", "2")
       ]
     end
 
@@ -101,14 +107,16 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
                  %{
                    "bcc" => [],
                    "cc" => [],
-                   "from" => "",
+                   "from" => "TEMPLATE",
                    "reply_to" => "",
                    "sent_at" => nil,
-                   "subject" => "",
-                   "to" => [],
-                   "html_body" => nil,
-                   "text_body" => nil,
-                   "headers" => %{},
+                   "subject" => "Avengers Assemble! 🦸‍♂️",
+                   "to" => ["avengers@shield.gov"],
+                   "html_body" => "<p>Lorem ipsum dolor sit amet</p>",
+                   "text_body" => "Lorem ipsum dolor sit amet",
+                   "headers" => %{
+                     "Message-ID" => "2"
+                   },
                    "provider_options" => [],
                    "attachments" => []
                  }
@@ -134,6 +142,20 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       conn = conn(:get, "/")
       conn = MailboxPreview.call(conn, opts)
       assert get_resp_header(conn, "location") == []
+    end
+  end
+
+  describe "/:id" do
+    test "renders email details" do
+      opts = MailboxPreview.init(storage_driver: StorageDriver)
+
+      conn = conn(:get, "/3")
+      conn = MailboxPreview.call(conn, opts)
+
+      assert conn.state == :sent
+      assert conn.status == 200
+      assert get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
+      assert conn.resp_body =~ "Avengers Assemble! 🦸‍♂️"
     end
   end
 
