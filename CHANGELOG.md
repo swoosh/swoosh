@@ -1,10 +1,16 @@
 # Changelog
 
+## 1.19.5
+
+### 🐛 Bug Fixes
+
+- Support rendering `"TEMPLATE"` in the mailbox @axelson (#1059)
+
 ## 1.19.4
 
 ### ✨ Features
 
-- Allow Customer.io to use TEMPLATE for from @axelson (#1058)
+- Allow Customer.io to use `"TEMPLATE"` for from @axelson (#1058)
 
 ## 1.19.3
 
