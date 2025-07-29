@@ -182,6 +182,9 @@ if Code.ensure_loaded?(Plug) do
 
     defp render_value(value), do: Plug.HTML.html_escape(value)
 
+    defp render_email_name(%{from: {name, _email_address}}), do: render_value(name)
+    defp render_email_name(%{from: "TEMPLATE"}), do: "TEMPLATE"
+
     defp replace_inline_references(%{html_body: nil, text_body: text_body}) do
       text_body
     end

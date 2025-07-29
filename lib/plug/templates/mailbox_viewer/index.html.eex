@@ -21,8 +21,7 @@
               <%= for email <- @emails do %>
                 <% id = email.headers["Message-ID"] %>
                 <a href="<%= to_absolute_url(@conn, id) %>" class="flex flex-col border-b border-gray-200 dark:border-gray-700 p-4<%= if @email && @email.headers["Message-ID"] == id, do: " bg-gray-100 dark:bg-gray-800" %>">
-                  <% {name, _email_address} = email.from %>
-                  <div class="font-bold"><%= render_value(name) %></div>
+                  <div class="font-bold"><%= render_email_name(email) %></div>
                   <p class="text-sm leading-6 text-gray-700 dark:text-gray-300"><%= email.subject %></p>
                 </a>
               <% end %>

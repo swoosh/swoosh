@@ -5,6 +5,7 @@ defmodule Swoosh.Email.Render do
   def render_recipient({nil, address}), do: address
   def render_recipient({"", address}), do: address
   def render_recipient([]), do: ""
+  def render_recipient("TEMPLATE"), do: "TEMPLATE"
 
   def render_recipient({name, address}) do
     name =
