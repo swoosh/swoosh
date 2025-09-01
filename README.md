@@ -153,6 +153,7 @@ included:
 | Mailtrap     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)         |                  |
 | ZeptoMail    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)       |                  |
 | Postal       | [Swoosh.Adapters.Postal](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postal.html#content)             |                  |
+| Lettermint   | [Swoosh.Adapters.Lettermint](https://hexdocs.pm/swoosh/Swoosh.Adapters.Lettermint.html#content)     |                  |
 | ------ | **Below are not fully featured services** | ------ |
 | Loops        | [Swoosh.Adapters.Loops](https://hexdocs.pm/swoosh/Swoosh.Adapters.Loops.html#content)               |                  |
 | PostUp       | [Swoosh.Adapters.PostUp](https://hexdocs.pm/swoosh/Swoosh.Adapters.PostUp.html#content)             |                  |
