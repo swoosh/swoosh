@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.6
+
+### ✨ Features
+
+- Add Lettermint adapter @olivermt (#1064)
+
 ## 1.19.5
 
 ### 🐛 Bug Fixes
