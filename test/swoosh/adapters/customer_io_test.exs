@@ -97,12 +97,11 @@ defmodule Swoosh.Adapters.CustomerIOTest do
     assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
-  test "delivery with from=TEMPLATE returns :ok", %{bypass: bypass, config: config} do
+  test "delivery with from 'TEMPLATE' omits the from parameter", %{bypass: bypass, config: config} do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
 
       body_params = %{
-        "from" => "TEMPLATE",
         "to" => "steve.rogers@example.com",
         "subject" => "Hello, Avengers!",
         "body" => "<h1>Hello</h1>",

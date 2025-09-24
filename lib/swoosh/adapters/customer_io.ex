@@ -187,7 +187,8 @@ defmodule Swoosh.Adapters.CustomerIO do
   end
 
   defp prepare_from(body, %Email{from: nil}), do: body
-  defp prepare_from(body, %{from: "TEMPLATE"}), do: body
+  defp prepare_from(body, %Email{from: "TEMPLATE"}), do: body
+  defp prepare_from(body, %Email{from: {_, "TEMPLATE"}}), do: body
   defp prepare_from(body, %Email{from: from}), do: Map.put(body, :from, render_recipient(from))
 
   defp prepare_to(body, %Email{to: to}),
