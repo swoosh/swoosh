@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.7
+
+### 🐛 Bug Fixes
+
+- Fix special "TEMPLATE" from option in CustomerIO adapter @maltoe (#1069)
+
 ## 1.19.6
 
 ### ✨ Features
