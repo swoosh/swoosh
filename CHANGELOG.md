@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.19.8
+
+### ✨ Features
+
+- Encode international domain names (IDNA) @jiegillet (#1070)
+
 ## 1.19.7
 
 ### 🐛 Bug Fixes
