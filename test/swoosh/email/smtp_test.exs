@@ -129,6 +129,30 @@ defmodule Swoosh.Email.SMTPTest do
              }
   end
 
+  test "simple email to recipients with non-ASCII characters domains", %{valid_email: email} do
+    email =
+      email
+      |> html_body(nil)
+      |> from({nil, "tony@stärk.com"})
+      |> cc({"", "loki@jötunheim.god"})
+      |> to({"Steve Rogers", "steve@rœgers.com"})
+
+    assert Helpers.prepare_message(email, []) ==
+             {
+               "text",
+               "plain",
+               [
+                 {"Content-Type", "text/plain; charset=\"utf-8\""},
+                 {"From", "tony@xn--strk-moa.com"},
+                 {"To", "\"Steve Rogers\" <steve@xn--rgers-hbb.com>, steve@rogers.com"},
+                 {"Cc", "loki@xn--jtunheim-n4a.god"},
+                 {"Subject", "Hello, Avengers!"},
+                 {"MIME-Version", "1.0"}
+               ],
+               "Hello"
+             }
+  end
+
   test "simple html email", %{valid_email: email} do
     email = email |> text_body(nil)
 
