@@ -31,11 +31,12 @@ defmodule Swoosh.Adapters.Scaleway do
       |> subject("Hello, Wally!")
       |> text_body("Hello")
       |> put_provider_option(:send_before, ~U[2022-11-15 11:00:00Z])
+      |> put_provider_option(:additional_headers, [%{key: "Reply-To", value: "support@example.com"}])
 
   ## Provider Options
 
     * `send_before` (RFC 3339 format) - `send_before`, maximum date to deliver the email.
-
+    * `additional_headers`, list of maps with :key and :value
   """
 
   use Swoosh.Adapter, required_config: [:project_id, :secret_key]
@@ -99,6 +100,7 @@ defmodule Swoosh.Adapters.Scaleway do
     |> prepare_params(email)
     |> prepare_attachments(email)
     |> prepare_send_before(email)
+    |> prepare_additional_headers(email)
   end
 
   defp prepare_project_id(payload, project_id), do: Map.put(payload, "project_id", project_id)
@@ -182,4 +184,13 @@ defmodule Swoosh.Adapters.Scaleway do
   end
 
   defp prepare_send_before(payload, _), do: payload
+
+  defp prepare_additional_headers(payload, %{
+         provider_options: %{additional_headers: additional_headers}
+       })
+       when is_list(additional_headers) do
+    Map.put(payload, "additional_headers", additional_headers)
+  end
+
+  defp prepare_additional_headers(payload, _), do: payload
 end
