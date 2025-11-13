@@ -180,6 +180,51 @@ defmodule Swoosh.Adapters.ScalewayTest do
     assert Scaleway.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
   end
 
+  test "deliver/1 with additional_headers returns :ok", %{bypass: bypass, config: config} do
+    additional_headers = [
+      [
+        %{
+          key: "Reply-To",
+          value: "admin@my.domain.example.com"
+        },
+        %{
+          key: "x-project-tracker",
+          value: "1234"
+        }
+      ]
+    ]
+
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> subject("Hello, Avengers!")
+      |> put_provider_option(:additional_headers, additional_headers)
+
+    Bypass.expect_once(bypass, "POST", "/emails", fn conn ->
+      conn = parse(conn)
+
+      assert %{
+               "from" => %{"name" => "T Stark", "email" => "tony.stark@example.com"},
+               "to" => [%{"name" => "Steve Rogers", "email" => "steve.rogers@example.com"}],
+               "project_id" => "ABC",
+               "subject" => "Hello, Avengers!",
+               "additional_headers" => additional_headers_in_body
+             } = conn.body_params
+
+      assert additional_headers_in_body == [
+               [
+                 %{"key" => "Reply-To", "value" => "admin@my.domain.example.com"},
+                 %{"key" => "x-project-tracker", "value" => "1234"}
+               ]
+             ]
+
+      make_response(conn)
+    end)
+
+    assert Scaleway.deliver(email, config) == {:ok, %{id: "#{@example_message_id}"}}
+  end
+
   test "deliver/1 with 429 response", %{bypass: bypass, config: config, valid_email: email} do
     error = ~s/{"code": "too_many_requests", "message": "The expected rate limit is exceeded."}/
 
