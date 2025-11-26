@@ -173,6 +173,14 @@ configurations and instructions.
 Adding new adapters is super easy and we are definitely looking for
 contributions on that front. Get in touch if you want to help!
 
+### Third-party Adapters
+
+Adapters for email providers not included by Swoosh, maintained by Elixir community members.
+
+| Provider     | Swoosh adapter                                                                                      | Remarks          |
+| ------------ | --------------------------------------------------------------------------------------------------- | ---------------- |
+| Resend       | [Resend.Swoosh.Adapter](https://hexdocs.pm/resend/Resend.Swoosh.Adapter.html)                       |                  |
+
 ## Recipient
 
 The Recipient Protocol enables you to easily make your structs compatible
