@@ -183,6 +183,4 @@ defmodule Swoosh.Adapters.Scaleway do
   end
 
   defp prepare_send_before(payload, _), do: payload
-
-
 end
