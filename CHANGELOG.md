@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.19.9
+
+### ✨ Features
+
+- add support for additional\_headers provider option in Scaleway @jaimeiniesta (#1077)
+- Support specifying ip\_pool\_name data for Sendgrid #1081 @lardcanoe (#1082)
+
+### 📝 Documentation
+
+- Add Resend adapter to README @jtormey (#1080)
+
+
 ## 1.19.8
 
 ### ✨ Features
