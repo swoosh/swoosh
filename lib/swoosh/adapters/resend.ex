@@ -136,30 +136,27 @@ defmodule Swoosh.Adapters.Resend do
     {:ok, []}
   end
 
+  @impl Swoosh.Adapter
   def deliver_many([first_email | _] = emails, config) do
     # Validate that batch emails don't use unsupported features
-    case validate_batch_emails(emails) do
-      :ok ->
-        headers = prepare_request_headers(config, first_email)
-        body = emails |> prepare_batch_body() |> Swoosh.json_library().encode!()
-        url = [base_url(config), @batch_endpoint]
+    with :ok <- validate_batch_emails(emails) do
+      headers = prepare_request_headers(config, first_email)
+      body = emails |> prepare_batch_body() |> Swoosh.json_library().encode!()
+      url = [base_url(config), @batch_endpoint]
 
-        case Swoosh.ApiClient.post(url, headers, body, first_email) do
-          {:ok, code, _headers, body} when code >= 200 and code <= 399 ->
-            {:ok, extract_batch_ids(body)}
+      case Swoosh.ApiClient.post(url, headers, body, first_email) do
+        {:ok, code, _headers, body} when code >= 200 and code <= 399 ->
+          {:ok, extract_batch_ids(body)}
 
-          {:ok, code, _headers, body} when code >= 400 ->
-            case Swoosh.json_library().decode(body) do
-              {:ok, error} -> {:error, {code, error}}
-              {:error, _} -> {:error, {code, body}}
-            end
+        {:ok, code, _headers, body} when code >= 400 ->
+          case Swoosh.json_library().decode(body) do
+            {:ok, error} -> {:error, {code, error}}
+            {:error, _} -> {:error, {code, body}}
+          end
 
-          {:error, reason} ->
-            {:error, reason}
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+        {:error, reason} ->
+          {:error, reason}
+      end
     end
   end
 
