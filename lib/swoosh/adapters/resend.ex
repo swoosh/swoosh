@@ -76,7 +76,7 @@ defmodule Swoosh.Adapters.Resend do
   ## Provider Options
 
     * `tags` (list of maps) - List of tag objects with `name` and `value` keys
-      for categorizing emails (max 3 tags, 256 chars per value)
+      for categorizing emails (max 256 chars per value)
 
     * `scheduled_at` (string) - ISO 8601 formatted date-time string to schedule
       the email for later delivery (not supported in batch sending)
