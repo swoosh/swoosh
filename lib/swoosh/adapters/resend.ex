@@ -2,7 +2,9 @@ defmodule Swoosh.Adapters.Resend do
   @moduledoc ~S"""
   An adapter that sends email using the Resend API.
 
-  For reference: [Resend API docs](https://resend.com/docs/api-reference/emails/send-email)
+  For reference:
+  * [Sending Email API docs](https://resend.com/docs/api-reference/emails/send-email)
+  * [Sending Email in Batch API docs](https://resend.com/docs/api-reference/emails/send-batch-emails)
 
   **This adapter requires an API Client.** Swoosh comes with Hackney, Finch and Req out of the box.
   See the [installation section](https://hexdocs.pm/swoosh/Swoosh.html#module-installation)
