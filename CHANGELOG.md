@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.20.0
+
+### ✨ Features
+
+- feat: add a resend adapter @ceolinrenato (#1089)
+  - differences from community library `:resend` can be found [in this comment](https://github.com/swoosh/swoosh/pull/1089#issuecomment-3692700369)
+
 ## 1.19.9
 
 ### ✨ Features
