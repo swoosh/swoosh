@@ -109,7 +109,6 @@ defmodule Swoosh.Adapters.Resend do
 
   defp base_url(config), do: config[:base_url] || @base_url
 
-  @impl Swoosh.Adapter
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_request_headers(config, email)
     body = email |> prepare_body() |> Swoosh.json_library().encode!()
@@ -130,15 +129,12 @@ defmodule Swoosh.Adapters.Resend do
     end
   end
 
-  @impl Swoosh.Adapter
   def deliver_many(emails, config \\ [])
 
-  @impl Swoosh.Adapter
   def deliver_many([], _config) do
     {:ok, []}
   end
 
-  @impl Swoosh.Adapter
   def deliver_many([first_email | _] = emails, config) do
     # Validate that batch emails don't use unsupported features
     with :ok <- validate_batch_emails(emails) do
