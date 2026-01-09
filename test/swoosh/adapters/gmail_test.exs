@@ -29,7 +29,7 @@ defmodule Swoosh.Adapters.GmailTest do
   test "a sent email results in :ok", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      _boundary = Mail.Message.get_boundary(conn.body_params)
+      boundary = Mail.Message.get_boundary(conn.body_params)
 
       body_params =
         ~s"""
@@ -37,10 +37,14 @@ defmodule Swoosh.Adapters.GmailTest do
         Subject: Hello, Avengers!\r
         MIME-Version: 1.0\r
         From: "" <steve.rogers@example.com>\r
+        Content-Type: multipart/alternative; boundary="#{boundary}"\r
+        \r
+        --#{boundary}\r
         Content-Type: text/html; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
         \r
         <h1>Hello</h1>\r
+        --#{boundary}--\r
         \r
         """
         |> Mail.Parsers.RFC2822.parse()
@@ -103,7 +107,8 @@ defmodule Swoosh.Adapters.GmailTest do
         Content-Transfer-Encoding: quoted-printable\r
         \r
         <h1>Hello</h1>\r
-        --#{boundary}--\
+        --#{boundary}--\r
+        \r
         """
         |> Mail.Parsers.RFC2822.parse()
 
