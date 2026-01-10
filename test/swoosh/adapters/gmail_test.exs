@@ -101,7 +101,6 @@ defmodule Swoosh.Adapters.GmailTest do
         Content-Transfer-Encoding: quoted-printable\r
         \r
         Hello\r
-        \r
         --#{boundary}\r
         Content-Type: text/html; charset=UTF-8\r
         Content-Transfer-Encoding: quoted-printable\r
