@@ -202,6 +202,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
        ) do
     [type, format] = String.split(content_type, "/")
     content = Swoosh.Attachment.get_content(attachment)
+    transfer_encoding = transfer_encoding_for_content_type(content_type)
 
     case attachment_type do
       :attachment ->
@@ -209,7 +210,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
           type,
           format,
           [
-            {"Content-Transfer-Encoding", "base64"}
+            {"Content-Transfer-Encoding", transfer_encoding}
             | custom_headers
           ],
           attachment_content_params(:attachment, filename),
@@ -221,7 +222,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
           type,
           format,
           [
-            {"Content-Transfer-Encoding", "base64"},
+            {"Content-Transfer-Encoding", transfer_encoding},
             {"Content-Id", "<#{cid || filename}>"}
             | custom_headers
           ],
@@ -230,6 +231,14 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
         }
     end
   end
+
+  # RFC 2046 Section 5.2: message/* types must not use base64 encoding
+  # - message/rfc822 allows "7bit", "8bit", or "binary" (Section 5.2.1)
+  # - message/partial must be "7bit" (Section 5.2.2)
+  # - message/external-body must be "7bit" (Section 5.2.3)
+  defp transfer_encoding_for_content_type("message/rfc822"), do: "8bit"
+  defp transfer_encoding_for_content_type("message/" <> _), do: "7bit"
+  defp transfer_encoding_for_content_type(_), do: "base64"
 
   if gen_smtp_major >= 1 do
     defp attachment_content_params(:attachment, filename) do
