@@ -319,4 +319,50 @@ defmodule Swoosh.Email.SMTPTest do
     assert {"Cc", "cc@test.com"} in headers
     refute {"Bcc", "bcc@test.com"} in headers
   end
+
+  test "message/rfc822 attachment uses 8bit encoding per RFC 2046", %{valid_email: email} do
+    rfc822_content = """
+    From: original@sender.com
+    To: original@recipient.com
+    Subject: Forwarded message
+
+    This is the original message body.
+    """
+
+    email =
+      email
+      |> attachment(%Swoosh.Attachment{
+        content_type: "message/rfc822",
+        data: rfc822_content,
+        filename: "forwarded.eml",
+        type: :attachment,
+        headers: []
+      })
+
+    {"multipart", "mixed", _headers, [_content_part, attachment_part]} =
+      Helpers.prepare_message(email, [])
+
+    {"message", "rfc822", attachment_headers, _params, _content} = attachment_part
+
+    assert {"Content-Transfer-Encoding", "8bit"} in attachment_headers
+  end
+
+  test "message/partial attachment uses 7bit encoding per RFC 2046", %{valid_email: email} do
+    email =
+      email
+      |> attachment(%Swoosh.Attachment{
+        content_type: "message/partial",
+        data: "partial message content",
+        filename: "partial.eml",
+        type: :attachment,
+        headers: []
+      })
+
+    {"multipart", "mixed", _headers, [_content_part, attachment_part]} =
+      Helpers.prepare_message(email, [])
+
+    {"message", "partial", attachment_headers, _params, _content} = attachment_part
+
+    assert {"Content-Transfer-Encoding", "7bit"} in attachment_headers
+  end
 end
