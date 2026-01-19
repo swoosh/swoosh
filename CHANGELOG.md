@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.20.1
+
+### 🐛 Bug Fixes
+
+- Fix Content-Transfer-Encoding for message/\* attachments @romsahel (#1096)
+
 ## 1.20.0
 
 ### ✨ Features
