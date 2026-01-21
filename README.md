@@ -14,7 +14,7 @@ The complete documentation for Swoosh is [available online at HexDocs](https://h
 
 ## Requirements
 
-Elixir 1.13+ and Erlang OTP 24+
+Elixir 1.16+ and Erlang OTP 26+
 
 ## Getting started
 
@@ -77,7 +77,7 @@ configuration options.
 
   ```elixir
   def deps do
-    [{:swoosh, "~> 1.20"}]
+    [{:swoosh, "~> 1.21"}]
   end
   ```
 

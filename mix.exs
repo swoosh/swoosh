@@ -2,13 +2,13 @@ defmodule Swoosh.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/swoosh/swoosh"
-  @version "1.20.1"
+  @version "1.21.0"
 
   def project do
     [
       app: :swoosh,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       consolidate_protocols: Mix.env() != :test,
       build_embedded: Mix.env() == :prod,

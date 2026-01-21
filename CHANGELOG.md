@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.0
+
+- Bump Elixir requirement to 1.16, Erlang OTP to 26
+
 ## 1.20.1
 
 ### 🐛 Bug Fixes
