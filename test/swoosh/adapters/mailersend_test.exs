@@ -670,4 +670,167 @@ defmodule Swoosh.Adapters.MailersendTest do
       end
     )
   end
+
+  test "deliver_many/2 without any email" do
+    assert Mailersend.deliver_many([], []) == {:ok, []}
+  end
+
+  test "deliver_many/2 with two basic emails returns :ok", %{bypass: bypass, config: config} do
+    email1 =
+      new()
+      |> from({"Tony Stark", "tony.stark@example.com"})
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Steve!")
+      |> html_body("<h1>Hello Steve</h1>")
+
+    email2 =
+      new()
+      |> from({"Tony Stark", "tony.stark@example.com"})
+      |> to("natasha.romanova@example.com")
+      |> subject("Hello, Natasha!")
+      |> html_body("<h1>Hello Natasha</h1>")
+
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      conn = parse(conn)
+      assert get_header(conn, "authorization") == "Bearer test-api-key"
+      assert get_header(conn, "content-type") == "application/json"
+
+      assert conn.body_params == %{
+               "_json" => [
+                 %{
+                   "from" => %{"email" => "tony.stark@example.com", "name" => "Tony Stark"},
+                   "to" => [%{"email" => "steve.rogers@example.com"}],
+                   "subject" => "Hello, Steve!",
+                   "html" => "<h1>Hello Steve</h1>"
+                 },
+                 %{
+                   "from" => %{"email" => "tony.stark@example.com", "name" => "Tony Stark"},
+                   "to" => [%{"email" => "natasha.romanova@example.com"}],
+                   "subject" => "Hello, Natasha!",
+                   "html" => "<h1>Hello Natasha</h1>"
+                 }
+               ]
+             }
+
+      Plug.Conn.resp(conn, 202, ~s({"bulk_email_id": "bulk-abc-123"}))
+    end)
+
+    assert Mailersend.deliver_many([email1, email2], config) ==
+             {:ok, %{bulk_email_id: "bulk-abc-123"}}
+  end
+
+  test "deliver_many/2 with different recipients and content", %{bypass: bypass, config: config} do
+    email1 =
+      new()
+      |> from({"Tony Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> cc({"Nick Fury", "nick.fury@example.com"})
+      |> subject("Meeting Today")
+      |> text_body("Don't forget our meeting")
+      |> put_provider_option(:tags, ["reminder", "avengers"])
+
+    email2 =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("natasha.romanova@example.com")
+      |> bcc({"Maria Hill", "maria.hill@example.com"})
+      |> subject("Mission Briefing")
+      |> html_body("<p>Classified info</p>")
+      |> put_provider_option(:tags, ["classified"])
+
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      conn = parse(conn)
+
+      assert conn.body_params == %{
+               "_json" => [
+                 %{
+                   "from" => %{"email" => "tony.stark@example.com", "name" => "Tony Stark"},
+                   "to" => [
+                     %{"email" => "steve.rogers@example.com", "name" => "Steve Rogers"}
+                   ],
+                   "cc" => [%{"email" => "nick.fury@example.com", "name" => "Nick Fury"}],
+                   "subject" => "Meeting Today",
+                   "text" => "Don't forget our meeting",
+                   "tags" => ["reminder", "avengers"]
+                 },
+                 %{
+                   "from" => %{"email" => "tony.stark@example.com"},
+                   "to" => [%{"email" => "natasha.romanova@example.com"}],
+                   "bcc" => [%{"email" => "maria.hill@example.com", "name" => "Maria Hill"}],
+                   "subject" => "Mission Briefing",
+                   "html" => "<p>Classified info</p>",
+                   "tags" => ["classified"]
+                 }
+               ]
+             }
+
+      Plug.Conn.resp(conn, 202, ~s({"bulk_email_id": "bulk-mixed-456"}))
+    end)
+
+    assert Mailersend.deliver_many([email1, email2], config) ==
+             {:ok, %{bulk_email_id: "bulk-mixed-456"}}
+  end
+
+  test "deliver_many/2 with provider options returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Newsletter")
+      |> html_body("<h1>Weekly Update</h1>")
+      |> put_provider_option(:tags, ["newsletter"])
+      |> put_provider_option(:track_opens, true)
+      |> put_provider_option(:precedence_bulk, true)
+
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      conn = parse(conn)
+
+      [body] = conn.body_params["_json"]
+      assert body["tags"] == ["newsletter"]
+      assert body["settings"] == %{"track_opens" => true}
+      assert body["precedence_bulk"] == true
+
+      Plug.Conn.resp(conn, 202, ~s({"bulk_email_id": "bulk-opts-789"}))
+    end)
+
+    assert Mailersend.deliver_many([email], config) ==
+             {:ok, %{bulk_email_id: "bulk-opts-789"}}
+  end
+
+  test "deliver_many/2 with 422 response", %{bypass: bypass, config: config, valid_email: email} do
+    error = ~s({"message":"Validation error","errors":{"to":["required"]}})
+
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      Plug.Conn.resp(conn, 422, error)
+    end)
+
+    assert Mailersend.deliver_many([email], config) ==
+             {:error,
+              {422, %{"message" => "Validation error", "errors" => %{"to" => ["required"]}}}}
+  end
+
+  test "deliver_many/2 with 401 response", %{bypass: bypass, config: config, valid_email: email} do
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      Plug.Conn.resp(conn, 401, ~s({"message":"Unauthenticated."}))
+    end)
+
+    assert Mailersend.deliver_many([email], config) ==
+             {:error, {401, %{"message" => "Unauthenticated."}}}
+  end
+
+  test "deliver_many/2 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
+    Bypass.expect_once(bypass, "POST", "/v1/bulk-email", fn conn ->
+      Plug.Conn.resp(conn, 500, "Internal Server Error")
+    end)
+
+    assert Mailersend.deliver_many([email], config) ==
+             {:error, {500, "Internal Server Error"}}
+  end
+
+  defp get_header(conn, key) do
+    case Enum.find(conn.req_headers, fn {k, _} -> k == key end) do
+      {_, value} -> value
+      nil -> nil
+    end
+  end
 end

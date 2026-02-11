@@ -109,6 +109,7 @@ defmodule Swoosh.Adapters.Mailersend do
 
   @base_url "https://api.mailersend.com"
   @api_endpoint "/v1/email"
+  @bulk_endpoint "/v1/bulk-email"
 
   def deliver(%Email{} = email, config \\ []) do
     headers = prepare_headers(config)
@@ -136,6 +137,33 @@ defmodule Swoosh.Adapters.Mailersend do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  def deliver_many(emails, config \\ [])
+  def deliver_many([], _config), do: {:ok, []}
+
+  def deliver_many(emails, config) when is_list(emails) do
+    headers = prepare_headers(config)
+    body = emails |> Enum.map(&prepare_body/1) |> Swoosh.json_library().encode!()
+    url = [base_url(config), @bulk_endpoint]
+
+    case Swoosh.ApiClient.post(url, headers, body, List.first(emails)) do
+      {:ok, 202, _headers, body} ->
+        {:ok, %{bulk_email_id: extract_bulk_id(body)}}
+
+      {:ok, code, _headers, body} when code > 399 ->
+        case Swoosh.json_library().decode(body) do
+          {:ok, error} -> {:error, {code, error}}
+          {:error, _} -> {:error, {code, body}}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp extract_bulk_id(body) do
+    body |> Swoosh.json_library().decode!() |> Map.get("bulk_email_id")
   end
 
   defp base_url(config), do: config[:base_url] || @base_url
