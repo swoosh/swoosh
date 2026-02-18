@@ -149,7 +149,7 @@ defmodule Swoosh.Adapters.Mailersend do
 
     case Swoosh.ApiClient.post(url, headers, body, List.first(emails)) do
       {:ok, 202, _headers, body} ->
-        {:ok, %{bulk_email_id: extract_bulk_id(body)}}
+        {:ok, [%{bulk_email_id: extract_bulk_id(body)}]}
 
       {:ok, code, _headers, body} when code > 399 ->
         case Swoosh.json_library().decode(body) do
@@ -173,8 +173,7 @@ defmodule Swoosh.Adapters.Mailersend do
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
       {"Authorization", "Bearer #{config[:api_key]}"},
       {"Content-Type", "application/json"},
-      {"Accept", "application/json"},
-      {"X-Requested-With", "XMLHttpRequest"}
+      {"Accept", "application/json"}
     ]
   end
 
