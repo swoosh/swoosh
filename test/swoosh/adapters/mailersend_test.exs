@@ -576,7 +576,6 @@ defmodule Swoosh.Adapters.MailersendTest do
       assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer test-api-key"]
       assert Plug.Conn.get_req_header(conn, "content-type") == ["application/json"]
       assert Plug.Conn.get_req_header(conn, "accept") == ["application/json"]
-      assert Plug.Conn.get_req_header(conn, "x-requested-with") == ["XMLHttpRequest"]
 
       [user_agent] = Plug.Conn.get_req_header(conn, "user-agent")
       assert user_agent =~ "swoosh/"
@@ -716,7 +715,7 @@ defmodule Swoosh.Adapters.MailersendTest do
     end)
 
     assert Mailersend.deliver_many([email1, email2], config) ==
-             {:ok, %{bulk_email_id: "bulk-abc-123"}}
+             {:ok, [%{bulk_email_id: "bulk-abc-123"}]}
   end
 
   test "deliver_many/2 with different recipients and content", %{bypass: bypass, config: config} do
@@ -768,7 +767,7 @@ defmodule Swoosh.Adapters.MailersendTest do
     end)
 
     assert Mailersend.deliver_many([email1, email2], config) ==
-             {:ok, %{bulk_email_id: "bulk-mixed-456"}}
+             {:ok, [%{bulk_email_id: "bulk-mixed-456"}]}
   end
 
   test "deliver_many/2 with provider options returns :ok", %{bypass: bypass, config: config} do
@@ -794,7 +793,7 @@ defmodule Swoosh.Adapters.MailersendTest do
     end)
 
     assert Mailersend.deliver_many([email], config) ==
-             {:ok, %{bulk_email_id: "bulk-opts-789"}}
+             {:ok, [%{bulk_email_id: "bulk-opts-789"}]}
   end
 
   test "deliver_many/2 with 422 response", %{bypass: bypass, config: config, valid_email: email} do

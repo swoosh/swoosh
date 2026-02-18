@@ -136,6 +136,7 @@ included:
 | Sendmail     | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)         |                  |
 | Mandrill     | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)         |                  |
 | Mailgun      | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)           |                  |
+| MailerSend   | [Swoosh.Adapters.Mailersend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailersend.html#content)     |                  |
 | Mailjet      | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)           |                  |
 | MsGraph      | [Swoosh.Adapters.MsGraph](https://hexdocs.pm/swoosh/Swoosh.Adapters.MsGraph.html#content)           |                  |
 | Postmark     | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)         |                  |
