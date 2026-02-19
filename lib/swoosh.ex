@@ -4,7 +4,7 @@ defmodule Swoosh do
              |> String.replace("# Swoosh\n\n", "", global: false)
              |> String.replace("(#adapters", "(#module-adapters")
 
-  @version "1.21.0"
+  @version "1.22.0"
 
   @doc false
   def version, do: @version

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.22.0
+
+### ✨ Features
+
+- Adapter/mailersend @cpursley (#1104)
+
 ## 1.21.0
 
 - Bump Elixir requirement to 1.16, Erlang OTP to 26
