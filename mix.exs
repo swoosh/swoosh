@@ -24,10 +24,6 @@ defmodule Swoosh.Mixfile do
       source_url: @source_url,
       homepage_url: @source_url,
       docs: &docs/0,
-      preferred_cli_env: [
-        docs: :docs,
-        "hex.publish": :docs
-      ],
 
       # Suppress warnings
       xref: [
@@ -60,6 +56,10 @@ defmodule Swoosh.Mixfile do
       mod: {Swoosh.Application, []},
       env: [json_library: Jason, api_client: Swoosh.ApiClient.Hackney]
     ]
+  end
+
+  def cli do
+    [preferred_envs: [docs: :docs, "hex.publish": :docs]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
