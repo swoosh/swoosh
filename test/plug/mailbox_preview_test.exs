@@ -156,6 +156,7 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       assert conn.status == 200
       assert get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
       assert conn.resp_body =~ "Avengers Assemble! 🦸‍♂️"
+      refute conn.resp_body =~ "text-body-content\" class=\"text-sm text-gray-700 dark:text-gray-300 leading-6 font-mono whitespace-pre-line ml-2 -mt-4"
     end
   end
 

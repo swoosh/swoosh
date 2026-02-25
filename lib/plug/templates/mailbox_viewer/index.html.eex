@@ -103,7 +103,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                 </svg>
               </p>
-              <div id="text-body-content" class="text-sm text-gray-700 dark:text-gray-300 leading-6 font-mono whitespace-pre-line ml-2 -mt-4 -mb-6 <%= if @email.html_body, do: "hidden" %>">
+              <div id="text-body-content" class="text-sm text-gray-700 dark:text-gray-300 leading-6 font-mono whitespace-pre-line ml-2 -mb-6 <%= if @email.html_body, do: "hidden" %>">
                 <%= @email.text_body %>
               </div>
             </div>
