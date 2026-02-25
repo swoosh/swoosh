@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.22.1
+
+### 🐛 Bug Fixes
+
+- Fix mailbox preview text-body clipping by removing negative top offset @copilot-swe-agent (#1108)
+
 ## 1.22.0
 
 ### ✨ Features
