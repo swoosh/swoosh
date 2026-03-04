@@ -47,6 +47,20 @@ defmodule Swoosh.MailerTest do
     {:ok, valid_email: valid_email}
   end
 
+  test "deliver/2 can be overridden", %{valid_email: email} do
+    defmodule OverridingMailer do
+      use Swoosh.Mailer, otp_app: :swoosh, adapter: FakeAdapter
+
+      def deliver(email, config) do
+        send(self(), :custom_deliver_called)
+        super(email, config)
+      end
+    end
+
+    assert {:ok, _} = OverridingMailer.deliver(email)
+    assert_received :custom_deliver_called
+  end
+
   test "dynamic adapter", %{valid_email: email} do
     defmodule OtherAdapterMailer do
       # Adapter not specified

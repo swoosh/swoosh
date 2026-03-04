@@ -134,6 +134,8 @@ defmodule Swoosh.Mailer do
         end)
       end
 
+      defoverridable deliver: 1, deliver: 2
+
       @doc ~S"""
       Delivers an email, raises on error.
 
