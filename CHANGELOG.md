@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.23.0
+
+### ✨ Features
+
+- Make `deliver/1` and `deliver/2` overridable in `Swoosh.Mailer` @copilot-swe-agent (#1109)
+
 ## 1.22.1
 
 ### 🐛 Bug Fixes
