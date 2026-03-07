@@ -127,38 +127,39 @@ Swoosh supports the most popular transactional email providers out of the box
 and also has an SMTP adapter. Below is the list of the adapters currently
 included:
 
-| Provider     | Swoosh adapter                                                                                      | Remarks          |
-| ------------ | --------------------------------------------------------------------------------------------------- | ---------------- |
-| SMTP         | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)                 |                  |
-| Mua          | [Swoosh.Adapters.Mua](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mua.html#content)                   | SMTP alternative |
-| SendGrid     | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)         |                  |
-| Brevo        | [Swoosh.Adapters.Brevo](https://hexdocs.pm/swoosh/Swoosh.Adapters.Brevo.html#content)               | Sendinblue       |
-| Sendmail     | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)         |                  |
-| Mandrill     | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)         |                  |
-| Mailgun      | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)           |                  |
-| MailerSend   | [Swoosh.Adapters.Mailersend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailersend.html#content)     |                  |
-| Mailjet      | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)           |                  |
-| MsGraph      | [Swoosh.Adapters.MsGraph](https://hexdocs.pm/swoosh/Swoosh.Adapters.MsGraph.html#content)           |                  |
-| Postmark     | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)         |                  |
-| SparkPost    | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)       |                  |
-| Amazon SES   | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)       |                  |
-| Amazon SES   | [Swoosh.Adapters.ExAwsAmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.ExAwsAmazonSES.html)     |                  |
-| Customer.io  | [Swoosh.Adapters.CustomerIO](https://hexdocs.pm/swoosh/Swoosh.Adapters.CustomerIO.html)             |                  |
-| Dyn          | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)                   |                  |
-| Scaleway     | [Swoosh.Adapters.Scaleway](https://hexdocs.pm/swoosh/Swoosh.Adapters.Scaleway.html#content)         |                  |
-| SocketLabs   | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)     |                  |
-| Gmail        | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)               |                  |
-| MailPace     | [Swoosh.Adapters.MailPace](https://hexdocs.pm/swoosh/Swoosh.Adapters.MailPace.html#content)         | OhMySMTP         |
-| SMTP2GO      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)           |                  |
-| ProtonBridge | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content) |                  |
-| Mailtrap     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)         |                  |
-| ZeptoMail    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)       |                  |
-| Postal       | [Swoosh.Adapters.Postal](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postal.html#content)             |                  |
-| Lettermint   | [Swoosh.Adapters.Lettermint](https://hexdocs.pm/swoosh/Swoosh.Adapters.Lettermint.html#content)     |                  |
-| Resend       | [Swoosh.Adapters.Resend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Resend.html#content)             |                  |
-| ------ | **Below are not fully featured services** | ------ |
-| Loops        | [Swoosh.Adapters.Loops](https://hexdocs.pm/swoosh/Swoosh.Adapters.Loops.html#content)               |                  |
-| PostUp       | [Swoosh.Adapters.PostUp](https://hexdocs.pm/swoosh/Swoosh.Adapters.PostUp.html#content)             |                  |
+| Provider                     | Swoosh adapter                                                                                                                  | Remarks          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| SMTP                         | [Swoosh.Adapters.SMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP.html#content)                                             |                  |
+| Mua                          | [Swoosh.Adapters.Mua](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mua.html#content)                                               | SMTP alternative |
+| SendGrid                     | [Swoosh.Adapters.Sendgrid](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendgrid.html#content)                                     |                  |
+| Brevo                        | [Swoosh.Adapters.Brevo](https://hexdocs.pm/swoosh/Swoosh.Adapters.Brevo.html#content)                                           | Sendinblue       |
+| Sendmail                     | [Swoosh.Adapters.Sendmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sendmail.html#content)                                     |                  |
+| Mandrill                     | [Swoosh.Adapters.Mandrill](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mandrill.html#content)                                     |                  |
+| Mailgun                      | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)                                       |                  |
+| MailerSend                   | [Swoosh.Adapters.Mailersend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailersend.html#content)                                 |                  |
+| Mailjet                      | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)                                       |                  |
+| MsGraph                      | [Swoosh.Adapters.MsGraph](https://hexdocs.pm/swoosh/Swoosh.Adapters.MsGraph.html#content)                                       |                  |
+| Postmark                     | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)                                     |                  |
+| SparkPost                    | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)                                   |                  |
+| Amazon SES                   | [Swoosh.Adapters.AmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.AmazonSES.html#content)                                   |                  |
+| Amazon SES                   | [Swoosh.Adapters.ExAwsAmazonSES](https://hexdocs.pm/swoosh/Swoosh.Adapters.ExAwsAmazonSES.html)                                 |                  |
+| Customer.io                  | [Swoosh.Adapters.CustomerIO](https://hexdocs.pm/swoosh/Swoosh.Adapters.CustomerIO.html)                                         |                  |
+| Dyn                          | [Swoosh.Adapters.Dyn](https://hexdocs.pm/swoosh/Swoosh.Adapters.Dyn.html#content)                                               |                  |
+| Scaleway                     | [Swoosh.Adapters.Scaleway](https://hexdocs.pm/swoosh/Swoosh.Adapters.Scaleway.html#content)                                     |                  |
+| SocketLabs                   | [Swoosh.Adapters.SocketLabs](https://hexdocs.pm/swoosh/Swoosh.Adapters.SocketLabs.html#content)                                 |                  |
+| Gmail                        | [Swoosh.Adapters.Gmail](https://hexdocs.pm/swoosh/Swoosh.Adapters.Gmail.html#content)                                           |                  |
+| MailPace                     | [Swoosh.Adapters.MailPace](https://hexdocs.pm/swoosh/Swoosh.Adapters.MailPace.html#content)                                     | OhMySMTP         |
+| SMTP2GO                      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)                                       |                  |
+| ProtonBridge                 | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content)                             |                  |
+| Mailtrap                     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)                                     |                  |
+| ZeptoMail                    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)                                   |                  |
+| Postal                       | [Swoosh.Adapters.Postal](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postal.html#content)                                         |                  |
+| Lettermint                   | [Swoosh.Adapters.Lettermint](https://hexdocs.pm/swoosh/Swoosh.Adapters.Lettermint.html#content)                                 |                  |
+| Resend                       | [Swoosh.Adapters.Resend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Resend.html#content)                                         |                  |
+| Azure Communication Services | [Swoosh.Adapters.AzureCommunicationServices](https://hexdocs.pm/swoosh/Swoosh.Adapters.AzureCommunicationServices.html#content) |                  |
+| ------                       | **Below are not fully featured services**                                                                                       | ------           |
+| Loops                        | [Swoosh.Adapters.Loops](https://hexdocs.pm/swoosh/Swoosh.Adapters.Loops.html#content)                                           |                  |
+| PostUp                       | [Swoosh.Adapters.PostUp](https://hexdocs.pm/swoosh/Swoosh.Adapters.PostUp.html#content)                                         |                  |
 
 Configure which adapter you want to use by updating your `config/config.exs`
 file:
@@ -179,9 +180,9 @@ contributions on that front. Get in touch if you want to help!
 
 Adapters for email providers not included by Swoosh, maintained by Elixir community members.
 
-| Provider     | Swoosh adapter                                                                                      | Remarks          |
-| ------------ | --------------------------------------------------------------------------------------------------- | ---------------- |
-| Resend       | [Resend.Swoosh.Adapter](https://hexdocs.pm/resend/Resend.Swoosh.Adapter.html)                       |                  |
+| Provider | Swoosh adapter                                                                | Remarks |
+| -------- | ----------------------------------------------------------------------------- | ------- |
+| Resend   | [Resend.Swoosh.Adapter](https://hexdocs.pm/resend/Resend.Swoosh.Adapter.html) |         |
 
 ## Recipient
 
@@ -369,7 +370,6 @@ it's recommended to boot the application in the same session.
 If you are curious, this is how it the mailbox preview looks like:
 
 ![Plug.Swoosh.MailboxPreview](https://github.com/swoosh/swoosh/raw/main/images/mailbox-preview.png)
-
 
 _Note_ : To show the preview we use the cdn-version of Tailwindcss. If you have set a `content-security-policy` you may have to add `https://cdn.tailwindcss.com` to `default-src` to have the correct make up.
 
