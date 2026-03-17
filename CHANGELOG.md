@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.23.1
+
+### ✨ Features
+
+- Add tracking options to the mailjet adapter @wkirschbaum (#1114)
+
+### 🧰 Maintenance
+
+- Remove unused require Logger compilation warning @wkirschbaum (#1115)
+
 ## 1.23.0
 
 ### ✨ Features
