@@ -46,6 +46,9 @@ defmodule Swoosh.Adapters.Mailjet do
       |> put_provider_option(:variables, %{firstname: "lulu", lastname: "wang"})
       |> put_provider_option(:custom_id, "custom_id")
       |> put_provider_option(:event_payload, "event_payload")
+      |> put_provider_option(:track_opens, false)
+      |> put_provider_option(:track_clicks, false)
+      |> put_provider_option(:url_tags, "utm_source=transactional&utm_medium=email")
 
   ## Provider options
 
@@ -67,6 +70,13 @@ defmodule Swoosh.Adapters.Mailjet do
 
     * `:event_payload` (string | map) - `EventPayload`, custom payload that will
       be attached on the mailjet webhook events
+
+    * `:track_opens` (boolean) - `TrackOpens`, enable or disable open tracking
+
+    * `:track_clicks` (boolean) - `TrackClicks`, enable or disable click tracking
+
+    * `:url_tags` (string) - `URLTags`, URL query parameters to append to all
+      URLs in the message (e.g. `"utm_source=transactional&utm_medium=email"`)
   """
 
   use Swoosh.Adapter,
@@ -182,6 +192,9 @@ defmodule Swoosh.Adapters.Mailjet do
     |> prepare_custom_headers(email)
     |> prepare_custom_id(email)
     |> prepare_event_payload(email)
+    |> prepare_track_opens(email)
+    |> prepare_track_clicks(email)
+    |> prepare_url_tags(email)
   end
 
   defp wrap_messages(body) when is_list(body), do: %{Messages: body}
@@ -310,4 +323,25 @@ defmodule Swoosh.Adapters.Mailjet do
   end
 
   defp prepare_template(body, _email), do: body
+
+  defp prepare_track_opens(body, %{provider_options: %{track_opens: true}}),
+    do: Map.put(body, "TrackOpens", "enabled")
+
+  defp prepare_track_opens(body, %{provider_options: %{track_opens: false}}),
+    do: Map.put(body, "TrackOpens", "disabled")
+
+  defp prepare_track_opens(body, _email), do: body
+
+  defp prepare_track_clicks(body, %{provider_options: %{track_clicks: true}}),
+    do: Map.put(body, "TrackClicks", "enabled")
+
+  defp prepare_track_clicks(body, %{provider_options: %{track_clicks: false}}),
+    do: Map.put(body, "TrackClicks", "disabled")
+
+  defp prepare_track_clicks(body, _email), do: body
+
+  defp prepare_url_tags(body, %{provider_options: %{url_tags: url_tags}}),
+    do: Map.put(body, "URLTags", url_tags)
+
+  defp prepare_url_tags(body, _email), do: body
 end
