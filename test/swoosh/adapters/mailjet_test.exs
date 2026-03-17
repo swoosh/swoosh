@@ -367,6 +367,56 @@ defmodule Swoosh.Adapters.MailjetTest do
     assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
   end
 
+  test "deliver/1 - valid email with tracking options", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "Messages" => [
+          %{
+            "From" => %{
+              "Email" => @sender,
+              "Name" => ""
+            },
+            "To" => [
+              %{
+                "Email" => @receiver,
+                "Name" => ""
+              }
+            ],
+            "Subject" => @subject,
+            "TextPart" => @template_text_content,
+            "HTMLPart" => @template_html_content,
+            "Headers" => %{},
+            "TrackOpens" => "enabled",
+            "TrackClicks" => "disabled",
+            "URLTags" => "utm_source=transactional&utm_medium=email"
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    email =
+      email
+      |> text_body(@template_text_content)
+      |> html_body(@template_html_content)
+      |> put_provider_option(:track_opens, true)
+      |> put_provider_option(:track_clicks, false)
+      |> put_provider_option(:url_tags, "utm_source=transactional&utm_medium=email")
+
+    assert Mailjet.deliver(email, config) == {:ok, %{id: 123_456_789}}
+  end
+
   test "deliver1/1 - single 4xx error response from Send API", %{
     bypass: bypass,
     config: config,
