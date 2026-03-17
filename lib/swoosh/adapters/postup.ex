@@ -77,7 +77,6 @@ defmodule Swoosh.Adapters.PostUp do
 
   use Swoosh.Adapter, required_config: [:username, :password]
 
-  require Logger
   alias Swoosh.Email
 
   @base_url "https://api.postup.com/api"
