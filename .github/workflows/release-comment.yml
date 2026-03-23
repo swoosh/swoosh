@@ -15,5 +15,3 @@ jobs:
     steps:
       - name: Comment on released pull requests
         uses: remix-run/release-comment-action@0.4.1
-        with:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
