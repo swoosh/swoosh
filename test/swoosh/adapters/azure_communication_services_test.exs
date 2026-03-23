@@ -567,4 +567,17 @@ defmodule Swoosh.Adapters.AzureCommunicationServicesTest do
                    AzureCommunicationServices.deliver(email, config)
                  end
   end
+
+  test "deliver/2 with empty string auth values raises ArgumentError", %{
+    bypass: bypass,
+    valid_email: email
+  } do
+    config = [endpoint: "http://localhost:#{bypass.port}", access_key: "", auth: ""]
+
+    assert_raise ArgumentError,
+                 ~r/expected exactly one of \[:access_key, :auth\] to be set/,
+                 fn ->
+                   AzureCommunicationServices.deliver(email, config)
+                 end
+  end
 end
