@@ -1,0 +1,19 @@
+name: Release Comment
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on released pull requests
+        uses: remix-run/release-comment-action@0.4.1
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
