@@ -207,43 +207,7 @@ defmodule Swoosh.Adapters.AzureCommunicationServices do
   defp path_and_query(%URI{path: path, query: query}), do: "#{path}?#{query}"
 
   defp format_rfc1123(datetime) do
-    day_of_week =
-      case Date.day_of_week(DateTime.to_date(datetime)) do
-        1 -> "Mon"
-        2 -> "Tue"
-        3 -> "Wed"
-        4 -> "Thu"
-        5 -> "Fri"
-        6 -> "Sat"
-        7 -> "Sun"
-      end
-
-    month =
-      case datetime.month do
-        1 -> "Jan"
-        2 -> "Feb"
-        3 -> "Mar"
-        4 -> "Apr"
-        5 -> "May"
-        6 -> "Jun"
-        7 -> "Jul"
-        8 -> "Aug"
-        9 -> "Sep"
-        10 -> "Oct"
-        11 -> "Nov"
-        12 -> "Dec"
-      end
-
-    :io_lib.format("~s, ~2..0B ~s ~4B ~2..0B:~2..0B:~2..0B GMT", [
-      day_of_week,
-      datetime.day,
-      month,
-      datetime.year,
-      datetime.hour,
-      datetime.minute,
-      datetime.second
-    ])
-    |> IO.iodata_to_binary()
+    Calendar.strftime(datetime, "%a, %d %b %Y %H:%M:%S GMT")
   end
 
   defp resolve_auth(func) when is_function(func, 0), do: func.()
