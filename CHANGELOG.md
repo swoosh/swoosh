@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.24.0
+
+### ✨ Features
+
+- Add Azure Communication Services adapter @jamilbk (#1116)
+
 ## 1.23.1
 
 ### ✨ Features
