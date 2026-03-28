@@ -39,6 +39,10 @@ defmodule Swoosh.Adapters.Sandbox.Storage do
     GenServer.call(__MODULE__, {:push, owner_pid, email})
   end
 
+  def push_many(owner_pid, emails) do
+    GenServer.call(__MODULE__, {:push_many, owner_pid, emails})
+  end
+
   def all(owner_pid) do
     case :ets.lookup(@table, owner_pid) do
       [{^owner_pid, emails}] -> emails
@@ -118,6 +122,18 @@ defmodule Swoosh.Adapters.Sandbox.Storage do
 
     :ets.insert(@table, {owner_pid, [email | existing]})
     send(owner_pid, {:email, email})
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:push_many, owner_pid, emails}, _from, state) do
+    existing =
+      case :ets.lookup(@table, owner_pid) do
+        [{^owner_pid, existing}] -> existing
+        [] -> []
+      end
+
+    :ets.insert(@table, {owner_pid, Enum.reverse(emails) ++ existing})
+    send(owner_pid, {:emails, emails})
     {:reply, :ok, state}
   end
 
