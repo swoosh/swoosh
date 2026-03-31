@@ -6,18 +6,17 @@ defmodule Swoosh.TestAssertions do
   It is meant to be used with the
   [Swoosh.Adapters.Test](Swoosh.Adapters.Test.html) module.
 
-  **Note**: `Swoosh.TestAssertions` works for unit tests and basic integration tests.
-  Unfortunately, it's not going to work for feature/E2E tests.
-  The mechanism of `assert_email_sent` is based on messaging sending between processes,
-  and is expecting the calling process (the one that calls `assert_email_sent`) to be
-  the calling process of `Mailer.deliver`, or be the parent process of the whatever
-  does the `Mailer.deliver` call.
+  **Note**: `Swoosh.TestAssertions` works for unit tests and basic integration tests
+  when using `Swoosh.Adapters.Test`.
 
-  For feature/E2E tests, you should use `Swoosh.Adapters.Local` adapter.
-  In your test, instead of calling `assert_email_sent`, you could check what's in the
-  local adapter mailbox. Alternatively, you could also navigate to the
-  preview url with your E2E tool (e.g. `wallaby`) and test that the email is in the inbox.
-  A JSON endpoint is also available as part of the preview plug.
+  For feature/E2E tests, use `Swoosh.Adapters.Sandbox` instead.  The sandbox adapter
+  supports per-test process ownership and explicit allows, so `assert_email_sent`
+  works even when the delivering process (e.g. a Phoenix endpoint or LiveView) has
+  no `$callers` ancestry back to the test process.  See
+  `Swoosh.Adapters.Sandbox` for setup instructions.
+
+  Alternatively, you can use `Swoosh.Adapters.Local` and check the local adapter
+  mailbox or navigate to the preview URL with your E2E tool.
   """
 
   import ExUnit.Assertions
