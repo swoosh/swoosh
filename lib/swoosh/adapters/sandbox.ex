@@ -218,22 +218,25 @@ defmodule Swoosh.Adapters.Sandbox do
 
   @impl true
   def deliver(email, config) do
-    callers = [self() | List.wrap(Process.get(:"$callers"))]
-
-    case Storage.find_owner(callers) do
+    case resolve_owner(config) do
       {:ok, owner} ->
         Storage.push(owner, email)
         {:ok, %{}}
 
-      :no_owner ->
-        case Storage.get_shared() do
-          nil ->
-            handle_unregistered(config, email)
+      :ignored ->
+        {:ok, %{}}
+    end
+  end
 
-          shared ->
-            Storage.push(shared, email)
-            {:ok, %{}}
-        end
+  @impl true
+  def deliver_many(emails, config) do
+    case resolve_owner(config) do
+      {:ok, owner} ->
+        Storage.push_many(owner, emails)
+        {:ok, List.duplicate(%{}, length(emails))}
+
+      :ignored ->
+        {:ok, List.duplicate(%{}, length(emails))}
     end
   end
 
@@ -255,7 +258,22 @@ defmodule Swoosh.Adapters.Sandbox do
 
   # Private
 
-  defp handle_unregistered(config, email) do
+  defp resolve_owner(config) do
+    callers = [self() | List.wrap(Process.get(:"$callers"))]
+
+    case Storage.find_owner(callers) do
+      {:ok, _owner} = ok ->
+        ok
+
+      :no_owner ->
+        case Storage.get_shared() do
+          nil -> handle_unregistered!(config)
+          shared -> {:ok, shared}
+        end
+    end
+  end
+
+  defp handle_unregistered!(config) do
     case Keyword.get(config, :on_unregistered, :raise) do
       :raise ->
         raise """
@@ -264,12 +282,10 @@ defmodule Swoosh.Adapters.Sandbox do
         Call Swoosh.Adapters.Sandbox.checkout() in your test setup, or
         Swoosh.Adapters.Sandbox.allow(owner, pid) to explicitly permit a process, or
         Swoosh.Adapters.Sandbox.set_shared(self()) for E2E tests.
-
-        Email: #{inspect(email)}
         """
 
       :ignore ->
-        {:ok, %{}}
+        :ignored
     end
   end
 end
