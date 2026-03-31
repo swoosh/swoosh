@@ -242,15 +242,49 @@ defmodule Swoosh.Adapters.Sandbox do
 
   # Sandbox API
 
+  @doc """
+  Registers the current process as a sandbox owner.
+
+  Emails delivered by this process, its `$callers`, or processes explicitly
+  allowed with `allow/2` are stored in this owner's inbox.
+  """
   defdelegate checkout(), to: Storage
+
+  @doc """
+  Unregisters the current process as a sandbox owner and clears its inbox.
+  """
   defdelegate checkin(), to: Storage
+
+  @doc """
+  Allows `allowed_pid` to deliver emails into `owner_pid`'s sandbox inbox.
+
+  This is useful when a process that is not in the test process' `$callers`
+  chain sends email, such as a background worker or a browser-driven request.
+  """
   defdelegate allow(owner_pid, allowed_pid), to: Storage
+
+  @doc """
+  Sets or clears the shared sandbox owner for non-async tests.
+
+  When set, unregistered deliveries are routed to the shared owner instead of
+  raising.
+  """
   defdelegate set_shared(pid), to: Storage
 
   # defdelegate does not support default arguments
+  @doc """
+  Returns all emails captured for the given owner.
+  """
   def all(owner_pid \\ self()), do: Storage.all(owner_pid)
+
+  @doc """
+  Returns and removes all emails captured for the given owner.
+  """
   def flush(owner_pid \\ self()), do: Storage.flush(owner_pid)
 
+  @doc """
+  Encodes the given owner pid into a `user-agent` token for browser tests.
+  """
   def encode_owner(pid \\ self()) do
     encoded = pid |> :erlang.term_to_binary() |> Base.url_encode64()
     "SwooshSandbox (#{encoded})"

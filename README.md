@@ -176,6 +176,18 @@ configurations and instructions.
 Adding new adapters is super easy and we are definitely looking for
 contributions on that front. Get in touch if you want to help!
 
+For local development and tests, these built-in adapters are also worth knowing:
+
+- [`Swoosh.Adapters.Local`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Local.html#content)
+  stores emails locally so you can inspect them or use
+  [`Plug.Swoosh.MailboxPreview`](https://hexdocs.pm/swoosh/Plug.Swoosh.MailboxPreview.html#content).
+- [`Swoosh.Adapters.Test`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Test.html#content)
+  works with [`Swoosh.TestAssertions`](https://hexdocs.pm/swoosh/Swoosh.TestAssertions.html#content)
+  in unit tests and basic integration tests.
+- [`Swoosh.Adapters.Sandbox`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sandbox.html#content)
+  is the async-safe testing adapter for feature, browser, and E2E tests where
+  email delivery happens in separate processes.
+
 ### Third-party Adapters
 
 Adapters for email providers not included by Swoosh, maintained by Elixir community members.
@@ -289,6 +301,12 @@ defmodule Sample.UserTest do
   end
 end
 ```
+
+For feature, browser, and E2E tests where email delivery happens outside the
+test process tree, use
+[`Swoosh.Adapters.Sandbox`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sandbox.html#content)
+instead. Its module docs include setup instructions for standard ExUnit tests,
+Phoenix integration, and browser-test helpers.
 
 ## Custom JSON Library
 

@@ -9,15 +9,17 @@ defmodule Swoosh.X.TestAssertions do
   [Swoosh.Adapters.Test](Swoosh.Adapters.Test.html) module.
 
   **Note**: `Swoosh.X.TestAssertions` works for unit tests and basic integration tests.
-  Unfortunately it's not going to work for feature/E2E tests.
+  Using it with `Swoosh.Adapters.Test` is not going to work for feature/E2E tests.
   The mechanism of `assert_email_sent` is based on messaging sending between processes,
   and is expecting the calling process (the one that calls `assert_email_sent`) to be
   the calling process of `Mailer.deliver`, or be the parent process of the whatever
   does the `Mailer.deliver` call.
 
-  For feature/E2E tests, you should use `Swoosh.Adapters.Local` adapter.
-  In your test, instead of calling `assert_email_sent`, you could check what's in the
-  local adapter mailbox.
+  For feature/E2E tests, prefer
+  [Swoosh.Adapters.Sandbox](Swoosh.Adapters.Sandbox.html) so
+  `assert_email_sent` continues to work across separate processes.
+  Alternatively, you can use `Swoosh.Adapters.Local` and inspect the local
+  adapter mailbox directly.
   """
 
   import ExUnit.Assertions
