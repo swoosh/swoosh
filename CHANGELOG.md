@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.25.0
+
+### ✨ Features
+
+- Add `Swoosh.Adapters.Sandbox` @aidalgol (#1120)
+
+### 📝 Documentation
+
+- Improve discoverability and HexDocs coverage for `Swoosh.Adapters.Sandbox` @copilot-swe-agent (#1121)
+
+### 🧰 Maintenance
+
+- Add release-published workflow to comment on released PRs @copilot-swe-agent (#1118)
+
 ## 1.24.0
 
 ### ✨ Features
