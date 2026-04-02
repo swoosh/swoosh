@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Comment on released pull requests
-        uses: remix-run/release-comment-action@0.4.1
+        uses: remix-run/release-comment-action@v0.5.1
