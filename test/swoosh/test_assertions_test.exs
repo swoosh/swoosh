@@ -401,5 +401,17 @@ defmodule Swoosh.TestAssertionsTest do
         }
       ])
     end
+
+    test "assert_no_email_sent catches emails from deliver_many" do
+      assert_raise ExUnit.AssertionError, fn ->
+        assert_no_email_sent()
+      end
+    end
+
+    test "refute_emails_sent catches emails from deliver_many" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_emails_sent()
+      end
+    end
   end
 end
