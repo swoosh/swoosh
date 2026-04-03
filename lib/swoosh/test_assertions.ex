@@ -215,6 +215,15 @@ defmodule Swoosh.TestAssertions do
   end
 
   @doc ~S"""
+  Refutes any email was sent via `deliver_many`.
+  """
+  defmacro refute_emails_sent() do
+    quote do
+      refute_received {:emails, _}
+    end
+  end
+
+  @doc ~S"""
   Asserts email with `attributes` was not sent.
 
   Performs pattern matching using the given pattern, equivalent to `pattern = email`.
@@ -257,6 +266,7 @@ defmodule Swoosh.TestAssertions do
   @spec assert_no_email_sent() :: false | no_return
   def assert_no_email_sent() do
     refute_email_sent()
+    refute_emails_sent()
   end
 
   @doc ~S"""
