@@ -87,6 +87,21 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
     def get(_id), do: email()
   end
 
+  defmodule NilFilenameDriver do
+    import Swoosh.Email
+
+    def email do
+      new()
+      |> from("admin@example.com")
+      |> to("victim@example.com")
+      |> header("Message-ID", "nil-fn")
+      |> attachment(Swoosh.Attachment.new({:data, "data"}, content_type: "image/png"))
+    end
+
+    def all, do: [email()]
+    def get(_id), do: email()
+  end
+
   describe "/json" do
     test "renders emails in json" do
       opts = MailboxPreview.init(storage_driver: StorageDriver)
@@ -253,6 +268,19 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       refute header =~ "<"
       refute header =~ ~s|"|
       assert header == "attachment; filename*=UTF-8''FNAME%3Cscript%3Ealert%281%29%3C%2Fscript%3E.png"
+    end
+
+    test "falls back to a default content-disposition filename when nil" do
+      opts = MailboxPreview.init(storage_driver: NilFilenameDriver)
+
+      conn = conn(:get, "/nil-fn/attachments/0")
+      conn = MailboxPreview.call(conn, opts)
+
+      assert conn.status == 200
+
+      assert get_resp_header(conn, "content-disposition") == [
+               "attachment; filename*=UTF-8''attachment"
+             ]
     end
   end
 end

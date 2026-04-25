@@ -169,6 +169,7 @@ if Code.ensure_loaded?(Plug) do
     end
 
     defp content_disposition(filename) do
+      filename = if is_binary(filename), do: filename, else: "attachment"
       "attachment; filename*=UTF-8''" <> URI.encode(filename, &URI.char_unreserved?/1)
     end
 
