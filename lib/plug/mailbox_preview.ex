@@ -25,6 +25,8 @@ if Code.ensure_loaded?(Plug) do
     alias Swoosh.Email.Render
     alias Swoosh.Adapters.Local.Storage.Memory
 
+    import Plug.HTML, only: [html_escape: 1]
+
     require EEx
 
     EEx.function_from_file(
@@ -103,13 +105,13 @@ if Code.ensure_loaded?(Plug) do
             %{data: data, content_type: content_type, filename: filename} when not is_nil(data) ->
               conn
               |> put_resp_content_type(content_type)
-              |> put_resp_header("content-disposition", "attachment; filename=\"#{filename}\"")
+              |> put_resp_header("content-disposition", content_disposition(filename))
               |> send_resp(200, data)
 
             %{path: path, content_type: content_type, filename: filename} when not is_nil(path) ->
               conn
               |> put_resp_content_type(content_type)
-              |> put_resp_header("content-disposition", "attachment; filename=\"#{filename}\"")
+              |> put_resp_header("content-disposition", content_disposition(filename))
               |> send_resp(200, File.read!(path))
 
             _ ->
@@ -164,6 +166,11 @@ if Code.ensure_loaded?(Plug) do
 
     defp to_absolute_url(conn, path) do
       Path.join(conn.assigns.base_path, path)
+    end
+
+    defp content_disposition(filename) do
+      filename = if is_binary(filename), do: filename, else: "attachment"
+      "attachment; filename*=UTF-8''" <> URI.encode(filename, &URI.char_unreserved?/1)
     end
 
     defp csp_nonce(conn, type) when type in [:script, :style] do
