@@ -267,7 +267,9 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       [header] = get_resp_header(conn, "content-disposition")
       refute header =~ "<"
       refute header =~ ~s|"|
-      assert header == "attachment; filename*=UTF-8''FNAME%3Cscript%3Ealert%281%29%3C%2Fscript%3E.png"
+
+      assert header ==
+               "attachment; filename*=UTF-8''FNAME%3Cscript%3Ealert%281%29%3C%2Fscript%3E.png"
     end
 
     test "falls back to a default content-disposition filename when nil" do
