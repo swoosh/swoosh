@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.25.1
+
+### 🐛 Bug Fixes
+
+- Escape email content in mailbox preview UI @mogest (#1124)
+- fix: assert_no_email_sent and refute_email_sent now catch deliver_many @donleandro (#1123)
+
 ## 1.25.0
 
 ### ✨ Features
