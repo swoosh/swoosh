@@ -13,5 +13,9 @@ jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Comment on released pull requests
         uses: remix-run/release-comment-action@v0.5.1
