@@ -71,7 +71,7 @@ defmodule Swoosh.Mixfile do
       {:jason, "~> 1.0"},
       {:telemetry, "~> 0.4.2 or ~> 1.0"},
       {:idna, "~> 6.0"},
-      {:hackney, "~> 1.9", optional: true},
+      {:hackney, ">= 1.9.0 and < 5.0.0", optional: true},
       {:finch, "~> 0.6", optional: true},
       {:req, "~> 0.5.10 or ~> 0.6 or ~> 1.0", optional: true},
       {:mail, "~> 0.2", optional: true},
