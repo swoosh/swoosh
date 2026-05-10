@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.25.2
+
+### 🐛 Bug Fixes
+
+- fix(config): prioritize runtime config for Mailer @ukashazia (#1134)
+
 ## 1.25.1
 
 ### 🐛 Bug Fixes
