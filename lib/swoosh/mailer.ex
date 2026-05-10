@@ -225,7 +225,8 @@ defmodule Swoosh.Mailer do
   def parse_config(otp_app, mailer, mailer_config, dynamic_config) do
     application_config = Application.get_env(otp_app, mailer, [])
 
-    Keyword.merge(mailer_config, application_config)
+    mailer_config
+    |> Keyword.merge(application_config)
     |> Keyword.merge(dynamic_config)
     |> interpolate_env_vars()
   end
