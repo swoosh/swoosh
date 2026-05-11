@@ -16,6 +16,24 @@ defmodule Swoosh.Adapters.Postmark do
         use Swoosh.Mailer, otp_app: :sample
       end
 
+  ## Sending with multiple Postmark servers
+
+  Postmark server API keys are passed through the `:api_key` adapter config.
+  You can configure a default server API key and override it per delivery with
+  `Sample.Mailer.deliver/2`:
+
+      # config/config.exs
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.Postmark,
+        api_key: "default-server-api-key"
+
+      # use another Postmark server for this delivery
+      Sample.Mailer.deliver(email, api_key: "client-server-api-key")
+
+  Runtime config passed to `deliver/2` takes precedence over the configured
+  default, so the request uses the given key as the
+  `X-Postmark-Server-Token` header.
+
   ## Example of sending emails using templates
 
   This will use Postmark's `withTemplate` endpoint.
