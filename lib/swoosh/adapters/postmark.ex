@@ -20,7 +20,7 @@ defmodule Swoosh.Adapters.Postmark do
 
   Postmark server API keys are passed through the `:api_key` adapter config.
   You can configure a default server API key and override it per delivery with
-  `Swoosh.Mailer.deliver/2`:
+  your mailer module's `deliver/2`:
 
       # config/config.exs
       config :sample, Sample.Mailer,
