@@ -2,8 +2,14 @@
 
 ## 1.25.3
 
+### 📝 Documentation
+
+- Document runtime Postmark server keys @dl-alexandre (#1135)
+
 ### 🧰 Maintenance
 
+- update to support hackney less than 5.0 @allenwyma (#1132)
+- Allow usage of idna 7.x @sax (#1142)
 - Fix Elixir 1.20 compilation warnings @gilbertwong96 (#1150)
 
 ## 1.25.2
