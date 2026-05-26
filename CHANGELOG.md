@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.25.3
+
+### 🧰 Maintenance
+
+- Fix Elixir 1.20 compilation warnings @gilbertwong96 (#1150)
+
 ## 1.25.2
 
 ### 🐛 Bug Fixes
