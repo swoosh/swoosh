@@ -168,8 +168,6 @@ defmodule Swoosh.Adapters.PostUp do
   defp prepare_subject(payload, %Email{subject: subject}),
     do: prepare_content(payload, "subject", subject)
 
-  defp prepare_subject(payload, _), do: payload
-
   defp prepare_text_content(payload, %Email{text_body: nil}), do: payload
 
   defp prepare_text_content(payload, %Email{text_body: text_body}),
