@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.26.0
+
+### ✨ Features
+
+- Add self-hosted Mailpit adapter @waseigo (#1152)
+
+### 📝 Documentation
+
+- Document the new Mailpit adapter in the README
+
 ## 1.25.3
 
 ### 📝 Documentation
