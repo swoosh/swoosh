@@ -77,7 +77,7 @@ configuration options.
 
   ```elixir
   def deps do
-    [{:swoosh, "~> 1.25"}]
+    [{:swoosh, "~> 1.26"}]
   end
   ```
 
@@ -152,6 +152,7 @@ included:
 | SMTP2GO                      | [Swoosh.Adapters.SMTP2GO](https://hexdocs.pm/swoosh/Swoosh.Adapters.SMTP2GO.html#content)                                       |                  |
 | ProtonBridge                 | [Swoosh.Adapters.ProtonBridge](https://hexdocs.pm/swoosh/Swoosh.Adapters.ProtonBridge.html#content)                             |                  |
 | Mailtrap                     | [Swoosh.Adapters.Mailtrap](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailtrap.html#content)                                     |                  |
+| Mailpit                      | [Swoosh.Adapters.Mailpit](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailpit.html#content)                                       | Self-hosted      |
 | ZeptoMail                    | [Swoosh.Adapters.ZeptoMail](https://hexdocs.pm/swoosh/Swoosh.Adapters.ZeptoMail.html#content)                                   |                  |
 | Postal                       | [Swoosh.Adapters.Postal](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postal.html#content)                                         |                  |
 | Lettermint                   | [Swoosh.Adapters.Lettermint](https://hexdocs.pm/swoosh/Swoosh.Adapters.Lettermint.html#content)                                 |                  |
@@ -187,6 +188,9 @@ For local development and tests, these built-in adapters are also worth knowing:
 - [`Swoosh.Adapters.Sandbox`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Sandbox.html#content)
   is the async-safe testing adapter for feature, browser, and E2E tests where
   email delivery happens in separate processes.
+- [`Swoosh.Adapters.Mailpit`](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailpit.html#content)
+  sends to a self-hosted Mailpit server over HTTP, which can be useful in local
+  development or shared preview environments.
 
 ### Third-party Adapters
 
