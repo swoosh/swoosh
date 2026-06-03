@@ -29,7 +29,7 @@ defmodule Swoosh.Adapters.MuaTest do
                "From" => %{"Address" => "swoosh+mua@github.com", "Name" => "Mua"},
                "To" => [%{"Address" => "recipient@mailpit.local", "Name" => "Recipient"}],
                "Subject" => "how are you? 😋",
-               "Text" => "I'm fine 😌\r\n",
+               "Text" => "I'm fine 😌",
                "HTML" => "I'm <i>fine</i> 😌"
              } = mailpit_summary("latest")
 
