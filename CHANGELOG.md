@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.26.1
+
+### 🐛 Bug Fixes
+
+- Fix inline attachment `cid` handling for Mailpit adapter @waseigo (#1155)
+
 ## 1.26.0
 
 ### ✨ Features
