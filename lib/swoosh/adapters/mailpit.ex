@@ -173,7 +173,7 @@ defmodule Swoosh.Adapters.Mailpit do
 
         case attachment.type do
           :inline ->
-            content_id = attachment.content_id || attachment.filename
+            content_id = attachment.cid || attachment.filename
             Map.put(att_map, "ContentID", content_id)
 
           _ ->

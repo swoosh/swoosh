@@ -219,6 +219,108 @@ defmodule Swoosh.Adapters.MailpitTest do
       assert "/api/v1/send" == conn.request_path
       assert "POST" == conn.method
 
+      att = List.first(conn.body_params["Attachments"])
+      refute Map.has_key?(att, "ContentID")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailpit.deliver(email, config) ==
+             {:ok, %{id: "iAfZVVe2UQfNSG5BAjgYwa"}}
+  end
+
+  test "deliver/1 with an inline attachment", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body(~s(<img src="cid:inline.txt"/>))
+      |> text_body("Hello")
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "inline-content"},
+          filename: "inline.txt",
+          content_type: "text/plain",
+          type: :inline
+        )
+      )
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      attachment_content = Base.encode64("inline-content")
+
+      body_params = %{
+        "From" => %{"Email" => "tony.stark@example.com"},
+        "To" => [%{"Email" => "steve.rogers@example.com"}],
+        "Text" => "Hello",
+        "HTML" => ~s(<img src="cid:inline.txt"/>),
+        "Subject" => "Hello, Avengers!",
+        "Attachments" => [
+          %{
+            "Filename" => "inline.txt",
+            "Content" => attachment_content,
+            "ContentType" => "text/plain",
+            "ContentID" => "inline.txt"
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/api/v1/send" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailpit.deliver(email, config) ==
+             {:ok, %{id: "iAfZVVe2UQfNSG5BAjgYwa"}}
+  end
+
+  test "deliver/1 with an inline attachment and custom cid", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body(~s(<img src="cid:my-cid"/>))
+      |> text_body("Hello")
+      |> attachment(
+        Swoosh.Attachment.new(
+          {:data, "inline-content"},
+          filename: "inline.txt",
+          content_type: "text/plain",
+          type: :inline,
+          cid: "my-cid"
+        )
+      )
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      attachment_content = Base.encode64("inline-content")
+
+      body_params = %{
+        "From" => %{"Email" => "tony.stark@example.com"},
+        "To" => [%{"Email" => "steve.rogers@example.com"}],
+        "Text" => "Hello",
+        "HTML" => ~s(<img src="cid:my-cid"/>),
+        "Subject" => "Hello, Avengers!",
+        "Attachments" => [
+          %{
+            "Filename" => "inline.txt",
+            "Content" => attachment_content,
+            "ContentType" => "text/plain",
+            "ContentID" => "my-cid"
+          }
+        ]
+      }
+
+      assert body_params == conn.body_params
+      assert "/api/v1/send" == conn.request_path
+      assert "POST" == conn.method
+
       Plug.Conn.resp(conn, 200, @success_response)
     end)
 
