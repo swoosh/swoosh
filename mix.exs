@@ -25,9 +25,9 @@ defmodule Swoosh.Mixfile do
       homepage_url: @source_url,
       docs: &docs/0,
 
-      # Suppress warnings
-      xref: [
-        exclude: [
+      # Suppress warnings for optional dependencies
+      elixirc_options: [
+        no_warn_undefined: [
           :hackney,
           :gen_smtp_client,
           :mimemail,
