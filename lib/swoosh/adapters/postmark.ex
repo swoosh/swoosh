@@ -253,8 +253,8 @@ defmodule Swoosh.Adapters.Postmark do
 
   defp prepare_reply_to(body, %{reply_to: nil}), do: body
 
-  defp prepare_reply_to(body, %{reply_to: {_name, address}}),
-    do: Map.put(body, "ReplyTo", address)
+  defp prepare_reply_to(body, %{reply_to: reply_to}),
+    do: Map.put(body, "ReplyTo", render_recipient(reply_to))
 
   defp prepare_subject(body, %{subject: ""}), do: body
   defp prepare_subject(body, %{subject: subject}), do: Map.put(body, "Subject", subject)

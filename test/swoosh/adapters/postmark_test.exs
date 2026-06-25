@@ -645,4 +645,34 @@ defmodule Swoosh.Adapters.PostmarkTest do
                 }
               ]}
   end
+
+  test "deliver/1 includes recipient name in reply_to", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from({"T Stark", "tony.stark@example.com"})
+      |> to({"Steve Rogers", "steve.rogers@example.com"})
+      |> reply_to({"Iron Man", "iron.man@example.com"})
+      |> html_body("<h1>Hello</h1>")
+      |> text_body("Hello")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      body_params = %{
+        "To" => "\"Steve Rogers\" <steve.rogers@example.com>",
+        "From" => "\"T Stark\" <tony.stark@example.com>",
+        "ReplyTo" => "\"Iron Man\" <iron.man@example.com>",
+        "TextBody" => "Hello",
+        "HtmlBody" => "<h1>Hello</h1>"
+      }
+
+      assert body_params == conn.body_params
+      assert "/email" == conn.request_path
+      assert "POST" == conn.method
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Postmark.deliver(email, config) == {:ok, %{id: "b7bc2f4a-e38e-4336-af7d-e6c392c2f817"}}
+  end
 end
