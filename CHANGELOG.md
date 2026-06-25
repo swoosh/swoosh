@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.26.2
+
+### 🐛 Bug Fixes
+
+- Fix Postmark adapter not adding the recipient name to the Reply-To header @vickz84259 (#1166)
+
 ## 1.26.1
 
 ### 🐛 Bug Fixes
