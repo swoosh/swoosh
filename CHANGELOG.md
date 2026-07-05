@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.26.3
+
+### 🔒 Security
+
+- Fix URL path injection via unencoded sender address in MsGraph adapter (GHSA-754j-98wh-57rf / CVE-2026-54893)
+
 ## 1.26.2
 
 ### 🐛 Bug Fixes
