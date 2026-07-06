@@ -86,7 +86,8 @@ defmodule Swoosh.Adapters.MsGraph do
       config[:url]
     else
       {_, from_email} = email.from
-      "#{base_url(config)}/users/#{from_email}/sendMail"
+      encoded_email = URI.encode(from_email, &URI.char_unreserved?/1)
+      "#{base_url(config)}/users/#{encoded_email}/sendMail"
     end
   end
 

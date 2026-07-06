@@ -29,7 +29,7 @@ defmodule Swoosh.Adapters.MsGraphTest do
       conn = parse(conn)
 
       from_email = email.from |> elem(1)
-      expected_path = "/users/" <> from_email <> "/sendMail"
+      expected_path = "/users/" <> URI.encode(from_email, &URI.char_unreserved?/1) <> "/sendMail"
 
       {:ok, body, conn} = Plug.Conn.read_body(conn, [])
       decoded_body = Base.decode64!(body)
@@ -70,7 +70,7 @@ defmodule Swoosh.Adapters.MsGraphTest do
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      expected_path = "/users/" <> from_email <> "/sendMail"
+      expected_path = "/users/" <> URI.encode(from_email, &URI.char_unreserved?/1) <> "/sendMail"
 
       {:ok, body, conn} = Plug.Conn.read_body(conn, [])
       decoded_body = Base.decode64!(body)
@@ -119,7 +119,7 @@ defmodule Swoosh.Adapters.MsGraphTest do
 
     Bypass.expect(bypass, fn conn ->
       conn = parse(conn)
-      expected_path = "/users/" <> from_email <> "/sendMail"
+      expected_path = "/users/" <> URI.encode(from_email, &URI.char_unreserved?/1) <> "/sendMail"
 
       {:ok, body, conn} = Plug.Conn.read_body(conn, [])
       decoded_body = Base.decode64!(body)
@@ -230,6 +230,53 @@ defmodule Swoosh.Adapters.MsGraphTest do
 
     assert MsGraph.deliver(email, config) ==
              {:ok, %{}}
+  end
+
+  test "from address with URL-special chars is percent-encoded to prevent path injection", %{
+    bypass: bypass,
+    config: config
+  } do
+    # An attacker-controlled 'from' with '/' would escape the /users/{from}/sendMail
+    # segment and redirect the authenticated request to a different Graph endpoint.
+    email =
+      new()
+      |> from("evil/inject@example.com")
+      |> to("target@example.com")
+      |> subject("Test")
+      |> html_body("<p>test</p>")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+      # Injection would split the path into 4+ segments; encoding keeps it at 3.
+      assert length(conn.path_info) == 3
+      assert List.first(conn.path_info) == "users"
+      assert List.last(conn.path_info) == "sendMail"
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) == {:ok, %{}}
+  end
+
+  test "from address with '?' is percent-encoded to prevent query string injection", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("evil?injected=true@example.com")
+      |> to("target@example.com")
+      |> subject("Test")
+      |> html_body("<p>test</p>")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+      # Without encoding, '?' would start an attacker-controlled query string
+      assert conn.query_string == ""
+      assert String.ends_with?(conn.request_path, "/sendMail")
+      Plug.Conn.resp(conn, 202, @success_response)
+    end)
+
+    assert MsGraph.deliver(email, config) == {:ok, %{}}
   end
 
   def auth(_a, _b, _c) do
