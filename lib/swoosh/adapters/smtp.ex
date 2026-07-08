@@ -23,6 +23,7 @@ defmodule Swoosh.Adapters.SMTP do
         password: "ilovepepperpotts",
         ssl: true,
         tls: :always,
+        # See "TLS options and certificate verification" below.
         auth: :always,
         port: 1025,
         dkim: [
@@ -40,6 +41,54 @@ defmodule Swoosh.Adapters.SMTP do
   ## Note
 
   With `STARTTLS` you should omit the ssl configuration or set it to false.
+
+  ## TLS options and certificate verification
+
+  When using STARTTLS (`tls: :always`, with `ssl` omitted or set to `false`),
+  you can pass `tls_options` directly to `gen_smtp` to enable certificate path
+  validation:
+
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.SMTP,
+        relay: "smtp.avengers.com",
+        tls: :always,
+        tls_options: [
+          versions: [:"tlsv1.2", :"tlsv1.3"],
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          server_name_indication: ~c"smtp.avengers.com",
+          depth: 99,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+
+  For implicit TLS (`ssl: true`, typically on port 465), `gen_smtp` uses
+  `sockopts` for the initial SSL connection instead of `tls_options`:
+
+      config :sample, Sample.Mailer,
+        adapter: Swoosh.Adapters.SMTP,
+        relay: "smtp.avengers.com",
+        ssl: true,
+        port: 465,
+        sockopts: [
+          versions: [:"tlsv1.2", :"tlsv1.3"],
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          server_name_indication: ~c"smtp.avengers.com",
+          depth: 99,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ]
+        ]
+
+  `:public_key.cacerts_get/0` is available on OTP 25 and later. For older OTP
+  releases, or when using a package such as `castore`, pass `cacertfile` or
+  `cacerts` instead.
+
+  Using the appropriate option for the connection type silences OTP's
+  "Authenticity is not established by certificate path validation" warning by
+  actually configuring peer certificate verification.
 
   For more details, please see [gen_smtp docs](https://hexdocs.pm/gen_smtp/readme.html)
   """
