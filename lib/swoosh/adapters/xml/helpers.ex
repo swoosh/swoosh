@@ -32,6 +32,10 @@ defmodule Swoosh.Adapters.XML.Helpers do
   end
 
   @doc false
+  # A missing node (no xpath match, so `first/2` returned nil) has no text.
+  # Return an empty string instead of crashing in :xmerl_xpath.node_type/1.
+  def text(nil), do: ""
+
   def text(node) do
     "./text()"
     |> to_charlist

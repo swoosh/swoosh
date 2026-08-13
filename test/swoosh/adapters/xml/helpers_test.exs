@@ -54,4 +54,13 @@ defmodule Swoosh.Adapters.XML.HelpersTest do
 
     assert text == ""
   end
+
+  test "first_text returns blank when the path matches no node", %{xml_string: xml_string} do
+    text =
+      xml_string
+      |> XMLHelper.parse()
+      |> XMLHelper.first_text("//missing")
+
+    assert text == ""
+  end
 end
