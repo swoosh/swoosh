@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.27.1
+
+### 🐛 Bug Fixes
+
+- Fix `Swoosh.Adapters.AmazonSES` crashing when the SES error response XML is missing an expected node @youdie006 (#1186)
+
 ## 1.27.0
 
 ### ✨ Features
