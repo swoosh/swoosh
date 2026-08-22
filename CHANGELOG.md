@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### ✨ Features
+
+- Add TurboSMTP adapter @NewtTheWolf
+
 ## 1.27.1
 
 ### 🐛 Bug Fixes
