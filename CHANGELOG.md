@@ -4,7 +4,7 @@
 
 ### ✨ Features
 
-- Add TurboSMTP adapter @NewtTheWolf
+- Add TurboSMTP adapter @NewtTheWolf (#1190)
 
 ## 1.27.1
 
