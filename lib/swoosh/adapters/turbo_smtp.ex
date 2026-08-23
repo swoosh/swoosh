@@ -108,7 +108,7 @@ defmodule Swoosh.Adapters.TurboSMTP do
   end
 
   defp handle_success(body) do
-    case Swoosh.json_library().decode(body) do
+    case decode_json(body) do
       {:ok, %{"mid" => mid}} -> {:ok, %{id: to_string(mid)}}
       {:ok, response} -> {:ok, response}
       {:error, _} -> {:error, {200, body}}
@@ -116,11 +116,13 @@ defmodule Swoosh.Adapters.TurboSMTP do
   end
 
   defp decode_body(body) do
-    case Swoosh.json_library().decode(body) do
+    case decode_json(body) do
       {:ok, decoded} -> decoded
       {:error, _} -> body
     end
   end
+
+  defp decode_json(body), do: Swoosh.json_library().decode(body)
 
   defp prepare_headers(config) do
     [
@@ -141,6 +143,8 @@ defmodule Swoosh.Adapters.TurboSMTP do
         |> prepare_content(email)
         |> prepare_custom_headers(email)
         |> prepare_attachments(email)
+        # qualify_inline_cids reads payload["attachments"], so it must run after
+        # prepare_attachments — otherwise cids are silently left unqualified.
         |> qualify_inline_cids(email)
         |> prepare_provider_options(email)
 
@@ -196,6 +200,10 @@ defmodule Swoosh.Adapters.TurboSMTP do
 
   defp custom_headers(%{headers: headers, reply_to: nil}), do: headers
 
+  defp custom_headers(%{headers: headers, reply_to: reply_to}) when is_list(reply_to) do
+    Map.put(headers, "Reply-To", Enum.map_join(reply_to, ",", &format_email/1))
+  end
+
   defp custom_headers(%{headers: headers, reply_to: reply_to}) do
     Map.put(headers, "Reply-To", format_email(reply_to))
   end
@@ -237,10 +245,15 @@ defmodule Swoosh.Adapters.TurboSMTP do
     attachments
     |> Enum.map(& &1["content_id"])
     |> Enum.reject(&(is_nil(&1) or String.contains?(&1, "@")))
-    |> Enum.reduce(html, fn cid, html ->
-      pattern = Regex.compile!("cid:#{Regex.escape(cid)}(?![\\w.@-])")
-      Regex.replace(pattern, html, "cid:#{cid}@#{domain}")
-    end)
+    |> case do
+      [] ->
+        html
+
+      cids ->
+        alternation = Enum.map_join(cids, "|", &Regex.escape/1)
+        pattern = Regex.compile!("cid:(#{alternation})(?![\\w.@-])")
+        Regex.replace(pattern, html, "cid:\\1@#{domain}")
+    end
   end
 
   defp sender_domain(from) do
