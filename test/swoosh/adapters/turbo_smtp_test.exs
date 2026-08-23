@@ -333,6 +333,26 @@ defmodule Swoosh.Adapters.TurboSMTPTest do
              {:error, {401, %{"errorCode" => 401, "message" => "Wrong credentials"}}}
   end
 
+  test "an unexpected status is an error tuple, never a raise", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect_once(bypass, &Plug.Conn.resp(&1, 302, "moved"))
+
+    assert TurboSMTP.deliver(email, config) == {:error, {302, "moved"}}
+  end
+
+  test "a 2xx body that is not JSON reports its own status", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect_once(bypass, &Plug.Conn.resp(&1, 202, "queued"))
+
+    assert TurboSMTP.deliver(email, config) == {:error, {202, "queued"}}
+  end
+
   test "deliver/1 with 5xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect_once(bypass, &Plug.Conn.resp(&1, 500, ""))
 

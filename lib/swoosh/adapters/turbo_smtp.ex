@@ -95,10 +95,10 @@ defmodule Swoosh.Adapters.TurboSMTP do
       url = [base_url(config), @api_endpoint]
 
       case Swoosh.ApiClient.post(url, headers, body, email) do
-        {:ok, 200, _headers, body} ->
-          handle_success(body)
+        {:ok, code, _headers, body} when code in 200..299 ->
+          handle_success(code, body)
 
-        {:ok, code, _headers, body} when code >= 400 ->
+        {:ok, code, _headers, body} ->
           {:error, {code, decode_body(body)}}
 
         {:error, reason} ->
@@ -107,11 +107,11 @@ defmodule Swoosh.Adapters.TurboSMTP do
     end
   end
 
-  defp handle_success(body) do
+  defp handle_success(code, body) do
     case Swoosh.json_library().decode(body) do
       {:ok, %{"mid" => mid}} -> {:ok, %{id: to_string(mid)}}
       {:ok, response} -> {:ok, response}
-      {:error, _} -> {:error, {200, body}}
+      {:error, _} -> {:error, {code, body}}
     end
   end
 
