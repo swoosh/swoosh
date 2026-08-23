@@ -2,7 +2,7 @@ defmodule Swoosh.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/swoosh/swoosh"
-  @version "1.27.1"
+  @version "1.28.0"
 
   def project do
     [
