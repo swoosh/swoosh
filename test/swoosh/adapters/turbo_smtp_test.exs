@@ -101,6 +101,31 @@ defmodule Swoosh.Adapters.TurboSMTPTest do
     assert {:ok, _} = TurboSMTP.deliver(email, config)
   end
 
+  test "multiple reply_to addresses are joined into a single header", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> text_body("Hello")
+      |> reply_to([{"Pepper Potts", "pepper@example.com"}, "happy@example.com"])
+
+    Bypass.expect_once(bypass, "POST", "/api/v2/mail/send", fn conn ->
+      conn = parse(conn)
+
+      assert conn.body_params["custom_headers"] == %{
+               "Reply-To" => "Pepper Potts <pepper@example.com>,happy@example.com"
+             }
+
+      make_response(conn)
+    end)
+
+    assert {:ok, _} = TurboSMTP.deliver(email, config)
+  end
+
   test "deliver/1 with provider options returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
@@ -184,6 +209,43 @@ defmodule Swoosh.Adapters.TurboSMTPTest do
       # The unrelated `logo.png.bak` reference must not be caught by the rewrite.
       assert conn.body_params["html_content"] ==
                ~s|<img src="cid:logo.png@example.com"> and <img src="cid:logo.png.bak">|
+
+      make_response(conn)
+    end)
+
+    assert {:ok, _} = TurboSMTP.deliver(email, config)
+  end
+
+  test "multiple inline attachments are all qualified", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body(~s|<img src="cid:logo.png"> and <img src="cid:banner.png">|)
+      |> attachment(
+        Attachment.new({:data, "img1"},
+          filename: "logo.png",
+          content_type: "image/png",
+          type: :inline
+        )
+      )
+      |> attachment(
+        Attachment.new({:data, "img2"},
+          filename: "banner.png",
+          content_type: "image/png",
+          type: :inline
+        )
+      )
+
+    Bypass.expect_once(bypass, "POST", "/api/v2/mail/send", fn conn ->
+      conn = parse(conn)
+
+      assert conn.body_params["html_content"] ==
+               ~s|<img src="cid:logo.png@example.com"> and <img src="cid:banner.png@example.com">|
 
       make_response(conn)
     end)
