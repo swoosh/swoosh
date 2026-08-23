@@ -108,7 +108,7 @@ defmodule Swoosh.Adapters.TurboSMTP do
   end
 
   defp handle_success(body) do
-    case decode_json(body) do
+    case Swoosh.json_library().decode(body) do
       {:ok, %{"mid" => mid}} -> {:ok, %{id: to_string(mid)}}
       {:ok, response} -> {:ok, response}
       {:error, _} -> {:error, {200, body}}
@@ -116,13 +116,11 @@ defmodule Swoosh.Adapters.TurboSMTP do
   end
 
   defp decode_body(body) do
-    case decode_json(body) do
+    case Swoosh.json_library().decode(body) do
       {:ok, decoded} -> decoded
       {:error, _} -> body
     end
   end
-
-  defp decode_json(body), do: Swoosh.json_library().decode(body)
 
   defp prepare_headers(config) do
     [
