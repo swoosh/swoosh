@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.28.0
+
 ### ✨ Features
 
 - Add TurboSMTP adapter @NewtTheWolf (#1190)
