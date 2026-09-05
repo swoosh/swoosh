@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### ✨ Features
+
+- Add MailKite adapter @bucabay
+
 ## 1.28.0
 
 ### ✨ Features
