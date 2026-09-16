@@ -147,6 +147,7 @@ defmodule Swoosh.Adapters.CustomerIOTest do
         "from" => ~s("T Stark" <tony.stark@example.com>),
         "to" => ~s("Steve Rogers" <steve.rogers@example.com>),
         "reply_to" => "hulk.smash@example.com",
+        "cc" => ~s("Janet Pym" <wasp.avengers@example.com>, hulk.smash@example.com),
         "bcc" => ~s("Henry McCoy" <beast.avengers@example.com>, thor.odinson@example.com),
         "plaintext_body" => "Hello",
         "body" => "<h1>Hello</h1>",

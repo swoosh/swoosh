@@ -177,6 +177,7 @@ defmodule Swoosh.Adapters.CustomerIO do
     %{}
     |> prepare_from(email)
     |> prepare_to(email)
+    |> prepare_cc(email)
     |> prepare_bcc(email)
     |> prepare_subject(email)
     |> prepare_content(email)
@@ -193,6 +194,11 @@ defmodule Swoosh.Adapters.CustomerIO do
 
   defp prepare_to(body, %Email{to: to}),
     do: Map.put(body, :to, render_recipient(to))
+
+  defp prepare_cc(body, %Email{cc: []}), do: body
+
+  defp prepare_cc(body, %Email{cc: cc}),
+    do: Map.put(body, :cc, render_recipient(cc))
 
   defp prepare_bcc(body, %Email{bcc: []}), do: body
 
