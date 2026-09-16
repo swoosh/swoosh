@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.28.1
+
+### 🐛 Bug Fixes
+
+- Add CC support to Customer.io adapter
 
 ## 1.28.0
 
