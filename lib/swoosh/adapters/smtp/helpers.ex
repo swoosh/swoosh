@@ -34,7 +34,46 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
 
   @parameters if(gen_smtp_major >= 1, do: %{}, else: [])
 
+  # The parameter slots are a map for gen_smtp 1.x and a keyword list for 0.x, and
+  # which one this build produces was decided above, at compile time. A build made
+  # before :gen_smtp was added passes the 0.x shape, which gen_smtp 1.x cannot read.
+  @doc false
+  def ensure_parameters_are_readable!(parameters) when is_map(parameters), do: :ok
+
+  def ensure_parameters_are_readable!(_parameters) do
+    if runtime_expects_map_parameters?() do
+      raise """
+      Swoosh was compiled before :gen_smtp was added to this project, so this build
+      passes the gen_smtp 0.x message parameters. gen_smtp 1.x reads that slot as a
+      map, so every send fails with BadMapError raised from inside :mimemail.
+
+      Recompile Swoosh against the installed :gen_smtp:
+
+          mix deps.compile swoosh --force
+
+      Repeat for each MIX_ENV you build.
+      """
+    end
+
+    :ok
+  end
+
+  defp runtime_expects_map_parameters? do
+    # The result is ignored: it reports {:error, {:already_loaded, _}} when
+    # :gen_smtp is already loaded, which is the common case.
+    Application.load(:gen_smtp)
+
+    with true <- Code.ensure_loaded?(:gen_smtp_client),
+         vsn when is_list(vsn) <- Application.spec(:gen_smtp, :vsn),
+         {:ok, version} <- Version.parse(to_string(vsn)) do
+      version.major >= 1
+    else
+      _ -> false
+    end
+  end
+
   defp mime_encode(type, subtype, headers, parts, encoding_config) do
+    ensure_parameters_are_readable!(@parameters)
     :mimemail.encode({type, subtype, headers, @parameters, parts}, encoding_config)
   end
 

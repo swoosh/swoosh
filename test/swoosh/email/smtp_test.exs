@@ -365,4 +365,22 @@ defmodule Swoosh.Email.SMTPTest do
 
     assert {"Content-Transfer-Encoding", "7bit"} in attachment_headers
   end
+
+  test "body/2 encodes a message when the build and the runtime gen_smtp agree", %{
+    valid_email: email
+  } do
+    assert Helpers.body(email, []) =~ "Subject: Hello, Avengers!"
+  end
+
+  test "ensure_parameters_are_readable!/1 accepts the gen_smtp 1.x parameter map" do
+    assert Helpers.ensure_parameters_are_readable!(%{}) == :ok
+  end
+
+  test "ensure_parameters_are_readable!/1 raises for a build compiled without :gen_smtp" do
+    # gen_smtp 1.x is installed for the test suite, so the 0.x parameter shape is
+    # exactly the stale artifact this guards against.
+    assert_raise RuntimeError, ~r/mix deps\.compile swoosh --force/, fn ->
+      Helpers.ensure_parameters_are_readable!([])
+    end
+  end
 end
