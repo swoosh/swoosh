@@ -138,6 +138,7 @@ included:
 | Mailgun                      | [Swoosh.Adapters.Mailgun](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailgun.html#content)                                       | GDPR             |
 | MailerSend                   | [Swoosh.Adapters.Mailersend](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailersend.html#content)                                 | GDPR             |
 | Mailjet                      | [Swoosh.Adapters.Mailjet](https://hexdocs.pm/swoosh/Swoosh.Adapters.Mailjet.html#content)                                       | EU               |
+| MailChannels                 | [Swoosh.Adapters.MailChannels](https://hexdocs.pm/swoosh/Swoosh.Adapters.MailChannels.html)                                   | Req client       |
 | MsGraph                      | [Swoosh.Adapters.MsGraph](https://hexdocs.pm/swoosh/Swoosh.Adapters.MsGraph.html#content)                                       |                  |
 | Postmark                     | [Swoosh.Adapters.Postmark](https://hexdocs.pm/swoosh/Swoosh.Adapters.Postmark.html#content)                                     |                  |
 | SparkPost                    | [Swoosh.Adapters.SparkPost](https://hexdocs.pm/swoosh/Swoosh.Adapters.SparkPost.html#content)                                   |                  |
