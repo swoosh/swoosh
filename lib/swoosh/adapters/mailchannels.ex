@@ -31,8 +31,9 @@ defmodule Swoosh.Adapters.MailChannels do
 
   ## Responses and transport
 
-  HTTP 202 returns `{:ok, %{}}`: acceptance is not delivery, and the API does not
-  supply a message ID. Other statuses return `{:error, {:http_status, status}}`.
+  HTTP 202 returns `{:ok, %{}}`, or `{:ok, %{id: message_id, request_id: request_id}}`
+  when the body carries them: acceptance is not delivery. A 202 whose `results` report
+  a `"failed"` recipient returns `{:error, :delivery_failed}`. Other statuses return `{:error, {:http_status, status}}`.
   Transport errors return `{:error, :transport_failure}` with unknown acceptance.
   Response bodies, request contents and keys are not included in adapter errors.
 
@@ -90,7 +91,7 @@ defmodule Swoosh.Adapters.MailChannels do
       receive_timeout: 15_000
     ]
 
-    if Version.compare(to_string(Application.spec(:req, :vsn)), "0.7.0") != :lt do
+    if Version.compare(to_string(Application.spec(:req, :vsn) || "0.7.0"), "0.7.0") != :lt do
       options ++
         [
           finch: [
@@ -140,9 +141,36 @@ defmodule Swoosh.Adapters.MailChannels do
     _ -> {:error, :invalid_payload}
   end
 
+  # The API reports per-personalization failures inside a 202 body.
+  defp accepted(body) do
+    with true <- is_binary(body) and body != "",
+         {:ok, %{"results" => results} = decoded} when is_list(results) <-
+           Swoosh.json_library().decode(body) do
+      if Enum.any?(results, &(is_map(&1) and &1["status"] == "failed")) do
+        {:error, :delivery_failed}
+      else
+        {:ok, accepted_ids(decoded, results)}
+      end
+    else
+      _ -> {:ok, %{}}
+    end
+  end
+
+  defp accepted_ids(decoded, results) do
+    case results do
+      [%{"message_id" => id} | _] when is_binary(id) -> %{id: id}
+      _ -> %{}
+    end
+    |> then(
+      &if is_binary(decoded["request_id"]),
+        do: Map.put(&1, :request_id, decoded["request_id"]),
+        else: &1
+    )
+  end
+
   defp post(client, headers, body, email) do
     case client.post(@url, headers, body, email) do
-      {:ok, 202, _, _} -> {:ok, %{}}
+      {:ok, 202, _, response_body} -> accepted(response_body)
       {:ok, status, _, _} when is_integer(status) -> {:error, {:http_status, status}}
       _ -> {:error, :transport_failure}
     end
