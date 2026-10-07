@@ -11,6 +11,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
          {:ok, to} <- addresses(email.to, true),
          {:ok, cc} <- addresses(email.cc, false),
          {:ok, bcc} <- addresses(email.bcc, false),
+         :ok <- recipient_total(to, cc, bcc),
          {:ok, reply} <- reply_to(email.reply_to),
          {:ok, content} <- content(email),
          {:ok, headers} <- headers(email.headers),
@@ -32,6 +33,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
 
   defp supported(%{provider_options: options}) when options == %{}, do: :ok
   defp supported(_), do: {:error, :unsupported_provider_options}
+  defp subject(""), do: {:error, :invalid_subject}
   defp subject(value), do: if(line?(value), do: :ok, else: {:error, :invalid_subject})
   defp optional(map, _, value) when value in [nil, [], %{}], do: map
   defp optional(map, key, value), do: Map.put(map, key, value)
@@ -60,6 +62,14 @@ defmodule Swoosh.Adapters.MailChannels.Message do
   end
 
   defp addresses(_, _), do: {:error, :invalid_recipients}
+
+  # The API limits To, Cc and Bcc together, not each list.
+  defp recipient_total(to, cc, bcc) do
+    if length(to) + length(cc) + length(bcc) <= 1000,
+      do: :ok,
+      else: {:error, :invalid_recipients}
+  end
+
   defp reply_to(value) when value in [nil, []], do: {:ok, nil}
   defp reply_to([value]), do: address(value)
   defp reply_to(values) when is_list(values), do: {:error, :unsupported_reply_to}
