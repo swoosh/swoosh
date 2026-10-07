@@ -133,6 +133,7 @@ defmodule Swoosh.Adapters.MailChannels.MessageTest do
   test "empty bodies, malformed structs and unsupported attachment metadata fail explicitly" do
     assert {:error, :missing_content} = Message.prepare(%{mail() | text_body: nil})
     assert {:error, :invalid_email} = Message.prepare(%{mail() | from: nil})
+    assert {:error, :invalid_subject} = Message.prepare(%{mail() | subject: "a\nBcc: x"})
 
     item = %Swoosh.Attachment{
       filename: "x",
