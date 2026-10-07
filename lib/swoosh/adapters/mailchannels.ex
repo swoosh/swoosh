@@ -91,7 +91,7 @@ defmodule Swoosh.Adapters.MailChannels do
       receive_timeout: 15_000
     ]
 
-    if Version.compare(to_string(Application.spec(:req, :vsn) || "0.7.0"), "0.7.0") != :lt do
+    if Version.compare(to_string(Application.spec(:req, :vsn)), "0.7.0") != :lt do
       options ++
         [
           finch: [
