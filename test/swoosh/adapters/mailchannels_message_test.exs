@@ -102,6 +102,20 @@ defmodule Swoosh.Adapters.MailChannels.MessageTest do
              Message.prepare(%{mail() | to: [], bcc: [{"", "private@example.test"}]})
   end
 
+  test "To, Cc and Bcc share the 1,000 recipient limit" do
+    list = fn prefix, count -> for i <- 1..count, do: {"", "#{prefix}#{i}@example.test"} end
+
+    assert {:ok, _} = Message.prepare(%{mail() | to: list.("to", 500), cc: list.("cc", 500)})
+
+    assert {:error, :invalid_recipients} =
+             Message.prepare(%{
+               mail()
+               | to: list.("to", 500),
+                 cc: list.("cc", 400),
+                 bcc: list.("bcc", 101)
+             })
+  end
+
   test "missing files return static errors without disclosing their path" do
     email =
       mail()
@@ -134,6 +148,7 @@ defmodule Swoosh.Adapters.MailChannels.MessageTest do
     assert {:error, :missing_content} = Message.prepare(%{mail() | text_body: nil})
     assert {:error, :invalid_email} = Message.prepare(%{mail() | from: nil})
     assert {:error, :invalid_subject} = Message.prepare(%{mail() | subject: "a\nBcc: x"})
+    assert {:error, :invalid_subject} = Message.prepare(%{mail() | subject: ""})
 
     item = %Swoosh.Attachment{
       filename: "x",

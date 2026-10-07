@@ -17,7 +17,12 @@ defmodule Swoosh.Adapters.MailChannelsTest do
   end
 
   defp email,
-    do: new() |> from("sender@example.test") |> to("to@example.test") |> text_body("private-body")
+    do:
+      new()
+      |> from("sender@example.test")
+      |> to("to@example.test")
+      |> subject("synthetic-subject")
+      |> text_body("private-body")
 
   defp deliver,
     do: Swoosh.Mailer.deliver(email(), adapter: MailChannels, api_key: "synthetic-key")
@@ -66,9 +71,19 @@ defmodule Swoosh.Adapters.MailChannelsTest do
     assert {:ok, %{id: "m1", request_id: "r1"}} = deliver()
   end
 
-  test "202 body reporting a failed recipient is an error" do
-    response(202, ~s({"request_id":"r1","results":[{"index":0,"status":"failed","reason":"x"}]}))
-    assert {:error, :delivery_failed} = deliver()
+  test "202 body reporting a failed result is an error carrying ids but not the reason" do
+    response(
+      202,
+      ~s({"request_id":"r1","results":[{"index":0,"message_id":"m1","status":"failed","reason":"to@example.test rejected"}]})
+    )
+
+    assert {:error, {:send_failed, %{id: "m1", request_id: "r1"} = ids}} = deliver()
+    assert map_size(ids) == 2
+  end
+
+  test "202 body without results still surfaces the request id" do
+    response(202, ~s({"request_id":"r1"}))
+    assert {:ok, %{request_id: "r1"}} = deliver()
   end
 
   test "non-202 statuses are bounded errors, with no response content or retry" do

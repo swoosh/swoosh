@@ -24,19 +24,24 @@ defmodule Swoosh.Adapters.MailChannels do
 
   ## Supported fields
 
-  Supports From, To, Cc, Bcc, subject, text/HTML content, one Reply-To, custom headers,
-  and file/binary/inline attachments. At least one To recipient is required by the
-  API. Bcc recipients remain in their original role. Unsupported provider options,
+  Supports From, To, Cc, Bcc, a non-empty subject, text/HTML content, one Reply-To,
+  custom headers, and file/binary/inline attachments. At least one To recipient is
+  required by the API, and To, Cc and Bcc together may not exceed 1,000 recipients.
+  Bcc recipients remain in their original role. Unsupported provider options, multiple
+  Reply-To addresses, structural headers and attachment metadata are rejected.
+
   Inline attachments use their `cid` (Swoosh defaults it to the filename) as the
   API `content_id`, which must be 1-255 printable ASCII characters without `<`, `>`
-  or spaces; pass an explicit `cid:` for filenames that don't qualify. Multiple
-  Reply-To addresses, structural headers and attachment metadata are rejected.
+  or spaces; pass an explicit `cid:` for filenames that don't qualify.
 
   ## Responses and transport
 
-  HTTP 202 returns `{:ok, %{}}`, or `{:ok, %{id: message_id, request_id: request_id}}`
-  when the body carries them: acceptance is not delivery. A 202 whose `results` report
-  a `"failed"` recipient returns `{:error, :delivery_failed}`. Other statuses return `{:error, {:http_status, status}}`.
+  HTTP 202 returns `{:ok, %{id: message_id, request_id: request_id}}` with the values
+  from the response body, or `{:ok, %{}}` if it carries none. Acceptance is not
+  delivery: final outcomes are reported through MailChannels webhooks, which carry the
+  same IDs. A 202 whose result is `"failed"` means MailChannels dropped the message and
+  returns `{:error, {:send_failed, ids}}` with the same `ids` map; the failure reason is
+  not included. Other statuses return `{:error, {:http_status, status}}`.
   Transport errors return `{:error, :transport_failure}` with unknown acceptance.
   Response bodies, request contents and keys are not included in adapter errors.
 
@@ -144,16 +149,17 @@ defmodule Swoosh.Adapters.MailChannels do
     _ -> {:error, :invalid_payload}
   end
 
-  # The API reports per-personalization failures inside a 202 body.
+  # The API reports per-personalization results inside a 202 body. Swoosh sends one
+  # personalization, so the first result describes the whole email.
   defp accepted(body) do
     with true <- is_binary(body) and body != "",
-         {:ok, %{"results" => results} = decoded} when is_list(results) <-
-           Swoosh.json_library().decode(body) do
-      if Enum.any?(results, &(is_map(&1) and &1["status"] == "failed")) do
-        {:error, :delivery_failed}
-      else
-        {:ok, accepted_ids(decoded, results)}
-      end
+         {:ok, %{} = decoded} <- Swoosh.json_library().decode(body) do
+      results = if is_list(decoded["results"]), do: decoded["results"], else: []
+      ids = accepted_ids(decoded, results)
+
+      if Enum.any?(results, &(is_map(&1) and &1["status"] == "failed")),
+        do: {:error, {:send_failed, ids}},
+        else: {:ok, ids}
     else
       _ -> {:ok, %{}}
     end
