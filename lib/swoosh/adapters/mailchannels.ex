@@ -27,7 +27,10 @@ defmodule Swoosh.Adapters.MailChannels do
   Supports From, To, Cc, Bcc, subject, text/HTML content, one Reply-To, custom headers,
   and file/binary/inline attachments. At least one To recipient is required by the
   API. Bcc recipients remain in their original role. Unsupported provider options,
-  multiple Reply-To addresses, structural headers and attachment metadata are rejected.
+  Inline attachments use their `cid` (Swoosh defaults it to the filename) as the
+  API `content_id`, which must be 1-255 printable ASCII characters without `<`, `>`
+  or spaces; pass an explicit `cid:` for filenames that don't qualify. Multiple
+  Reply-To addresses, structural headers and attachment metadata are rejected.
 
   ## Responses and transport
 

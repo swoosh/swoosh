@@ -6,6 +6,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
 
   def prepare(%Email{} = email) do
     with :ok <- supported(email),
+         :ok <- subject(email.subject),
          {:ok, from} <- address(email.from),
          {:ok, to} <- addresses(email.to, true),
          {:ok, cc} <- addresses(email.cc, false),
@@ -13,8 +14,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
          {:ok, reply} <- reply_to(email.reply_to),
          {:ok, content} <- content(email),
          {:ok, headers} <- headers(email.headers),
-         {:ok, attachments} <- attachments(email.attachments),
-         true <- line?(email.subject) do
+         {:ok, attachments} <- attachments(email.attachments) do
       group = %{to: to} |> optional(:cc, cc) |> optional(:bcc, bcc)
 
       {:ok,
@@ -32,6 +32,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
 
   defp supported(%{provider_options: options}) when options == %{}, do: :ok
   defp supported(_), do: {:error, :unsupported_provider_options}
+  defp subject(value), do: if(line?(value), do: :ok, else: {:error, :invalid_subject})
   defp optional(map, _, value) when value in [nil, [], %{}], do: map
   defp optional(map, key, value), do: Map.put(map, key, value)
 
