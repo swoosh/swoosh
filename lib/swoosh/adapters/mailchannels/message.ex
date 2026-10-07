@@ -2,7 +2,7 @@ defmodule Swoosh.Adapters.MailChannels.Message do
   @moduledoc false
   alias Swoosh.{Attachment, Email}
 
-  @structural ~w(to cc bcc from sender reply-to return-path subject content-type content-transfer-encoding mime-version)
+  @structural ~w(to cc bcc from sender reply-to return-path subject content-type content-transfer-encoding mime-version message-id authentication-results dkim-signature received)
 
   def prepare(%Email{} = email) do
     with :ok <- supported(email),

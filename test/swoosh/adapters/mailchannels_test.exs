@@ -57,6 +57,20 @@ defmodule Swoosh.Adapters.MailChannelsTest do
     refute_receive {:request, _}
   end
 
+  test "202 body with ids is surfaced" do
+    response(
+      202,
+      ~s({"request_id":"r1","results":[{"index":0,"message_id":"m1","status":"sent"}]})
+    )
+
+    assert {:ok, %{id: "m1", request_id: "r1"}} = deliver()
+  end
+
+  test "202 body reporting a failed recipient is an error" do
+    response(202, ~s({"request_id":"r1","results":[{"index":0,"status":"failed","reason":"x"}]}))
+    assert {:error, :delivery_failed} = deliver()
+  end
+
   test "non-202 statuses are bounded errors, with no response content or retry" do
     for status <- [200, 204, 301, 302, 303, 307, 308, 400, 401, 403, 429, 500, 503] do
       response(status, "synthetic-key private-body")

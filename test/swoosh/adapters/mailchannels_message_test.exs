@@ -88,6 +88,8 @@ defmodule Swoosh.Adapters.MailChannels.MessageTest do
   test "rejects structural, duplicate-case and injected headers" do
     for headers <- [
           %{"Bcc" => "private@example.test"},
+          %{"Message-ID" => "<x@example.test>"},
+          %{"DKIM-Signature" => "v=1"},
           %{"X-A" => "a", "x-a" => "b"},
           %{"X-Test" => "x\r\nBcc: private@example.test"}
         ] do
