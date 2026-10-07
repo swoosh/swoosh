@@ -15,7 +15,11 @@ defmodule Swoosh.Adapters.MailChannels.TLSTest do
 
   defp deliver do
     email =
-      new() |> from("sender@example.test") |> to("to@example.test") |> text_body("synthetic body")
+      new()
+      |> from("sender@example.test")
+      |> to("to@example.test")
+      |> subject("synthetic subject")
+      |> text_body("synthetic body")
 
     Swoosh.Mailer.deliver(email, adapter: MailChannels, api_key: "synthetic-key")
   end
