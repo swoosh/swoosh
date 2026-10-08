@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.29.0
+
+### 🐛 Bug Fixes
+
+- Return identifiers for failed MailChannels sends and enforce subject and total recipient limits
+
+### 🧰 Maintenance
+
+- Document that MailChannels TLS fixture tests are manual
+
 ## 1.28.1
 
 ### 🐛 Bug Fixes
