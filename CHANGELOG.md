@@ -1,14 +1,14 @@
 # Changelog
 
-## 1.29.0
+## 1.28.2
 
-### 🐛 Bug Fixes
+### ✨ Features
 
-- Return identifiers for failed MailChannels sends and enforce subject and total recipient limits
+- Add authenticated MailChannels Email API adapter @ttulttul (#1206)
 
 ### 🧰 Maintenance
 
-- Document that MailChannels TLS fixture tests are manual
+- Regenerate styles with Tailwind CSS @github-actions (#1208)
 
 ## 1.28.1
 
