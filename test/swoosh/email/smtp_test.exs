@@ -244,8 +244,11 @@ defmodule Swoosh.Email.SMTPTest do
                     }, "<h1>Hello</h1>"}
                  ]},
                 {"text", "plain", [{"Content-Transfer-Encoding", "base64"}],
-                 %{disposition: "attachment", disposition_params: [{"filename", "example.txt"}]},
-                 "this is an attachment"}
+                 %{
+                   content_type_params: [],
+                   disposition: "attachment",
+                   disposition_params: [{"filename", "example.txt"}]
+                 }, "this is an attachment"}
               ]}
   end
 
@@ -364,5 +367,79 @@ defmodule Swoosh.Email.SMTPTest do
     {"message", "partial", attachment_headers, _params, _content} = attachment_part
 
     assert {"Content-Transfer-Encoding", "7bit"} in attachment_headers
+  end
+
+  test "calendar attachment gets the method in the content type parameters", %{valid_email: email} do
+    for method <- ~w(PUBLISH REQUEST REPLY ADD CANCEL REFRESH COUNTER DECLINECOUNTER) do
+      data = """
+      BEGIN:VCALENDAR
+      PRODID:-//Example/ExampleCalendarClient//EN
+      METHOD:#{method}
+      VERSION:2.0
+      BEGIN:VEVENT
+      ORGANIZER:mailto:tony@stark.com
+      ATTENDEE;ROLE=CHAIR;PARTSTAT=ACCEPTED:mailto:tony@stark.com
+      ATTENDEE;RSVP=YES:mailto:steve@rogers.com
+      DTSTAMP:20150611T190000Z
+      DTSTART:20150701T210000Z
+      DTEND:20150701T230000Z
+      SUMMARY:Avengers Meeting
+      DESCRIPTION:Let's talk about the newest threats.
+      UID:calsvr.example.com-873970198738777
+      ATTACH:ftp://ftp.stark.example.com/pub/docs/ultron.doc
+      STATUS:CONFIRMED
+      END:VEVENT
+      END:VCALENDAR
+      """
+
+      email =
+        attachment(email, %Swoosh.Attachment{
+          content_type: "text/calendar",
+          data: data,
+          filename: "calendar.ics",
+          type: :attachment,
+          headers: []
+        })
+
+      assert Helpers.prepare_message(email, []) ==
+               {"multipart", "mixed",
+                [
+                  {"From", "tony@stark.com"},
+                  {"To", "steve@rogers.com"},
+                  {"Subject", "Hello, Avengers!"},
+                  {"MIME-Version", "1.0"}
+                ],
+                [
+                  {"multipart", "alternative", [], %{},
+                   [
+                     {"text", "plain",
+                      [
+                        {"Content-Type", "text/plain; charset=\"utf-8\""},
+                        {"Content-Transfer-Encoding", "quoted-printable"}
+                      ],
+                      %{
+                        content_type_params: [{"charset", "utf-8"}],
+                        disposition: "inline",
+                        disposition_params: []
+                      }, "Hello"},
+                     {"text", "html",
+                      [
+                        {"Content-Type", "text/html; charset=\"utf-8\""},
+                        {"Content-Transfer-Encoding", "quoted-printable"}
+                      ],
+                      %{
+                        content_type_params: [{"charset", "utf-8"}],
+                        disposition: "inline",
+                        disposition_params: []
+                      }, "<h1>Hello</h1>"}
+                   ]},
+                  {"text", "calendar", [{"Content-Transfer-Encoding", "base64"}],
+                   %{
+                     content_type_params: [{"method", method}],
+                     disposition: "attachment",
+                     disposition_params: [{"filename", "calendar.ics"}]
+                   }, data}
+                ]}
+    end
   end
 end
