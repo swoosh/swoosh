@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.29.1
+
+### 🐛 Bug Fixes
+
+- Send Customer.io attachments as a filename-keyed object @ashabhasa (#1214)
+
 ## 1.29.0
 
 ### ✨ Features
