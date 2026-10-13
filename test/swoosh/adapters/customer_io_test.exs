@@ -403,6 +403,45 @@ defmodule Swoosh.Adapters.CustomerIOTest do
     assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
   end
 
+  test "delivery with attachments sends them as a filename => base64 content object", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    email =
+      email
+      |> attachment(Swoosh.Attachment.new({:data, "invoice"}, filename: "invoice.pdf"))
+      |> attachment(Swoosh.Attachment.new({:data, "receipt"}, filename: "receipt.pdf"))
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      attachments = %{
+        "invoice.pdf" => Base.encode64("invoice"),
+        "receipt.pdf" => Base.encode64("receipt")
+      }
+
+      assert ^attachments = conn.body_params["attachments"]
+
+      Plug.Conn.resp(conn, 200, "{\"delivery_id\": \"123-xyz\"}")
+    end)
+
+    assert CustomerIO.deliver(email, config) == {:ok, %{id: "123-xyz"}}
+  end
+
+  test "delivery with duplicate attachment filenames returns an error without calling the API", %{
+    config: config,
+    valid_email: email
+  } do
+    email =
+      email
+      |> attachment(Swoosh.Attachment.new({:data, "first"}, filename: "invoice.pdf"))
+      |> attachment(Swoosh.Attachment.new({:data, "second"}, filename: "invoice.pdf"))
+
+    assert CustomerIO.deliver(email, config) ==
+             {:error, {:duplicate_attachment_filename, "invoice.pdf"}}
+  end
+
   test "deliver/1 without sender", %{bypass: bypass, config: config} do
     email =
       new()

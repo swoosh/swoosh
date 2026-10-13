@@ -120,6 +120,13 @@ defmodule Swoosh.Adapters.CustomerIO do
       |> html_body("<h1>Hello</h1>")
       |> text_body("Hello")
       |> put_provider_option(:transactional_message_id, "my-template-id")
+
+  ## Attachments
+
+  Customer.io keys attachments by filename, so two attachments with the same
+  filename cannot be represented. The adapter returns
+  `{:error, {:duplicate_attachment_filename, filename}}` instead of silently
+  dropping one of them.
   """
 
   use Swoosh.Adapter, required_config: [:api_key]
@@ -146,6 +153,13 @@ defmodule Swoosh.Adapters.CustomerIO do
 
   @impl Swoosh.Adapter
   def deliver(%Email{} = email, config \\ []) do
+    case duplicate_attachment_filename(email) do
+      nil -> send_email(email, config)
+      filename -> {:error, {:duplicate_attachment_filename, filename}}
+    end
+  end
+
+  defp send_email(email, config) do
     headers = [
       {"Content-Type", "application/json"},
       {"User-Agent", "swoosh/#{Swoosh.version()}"},
@@ -169,6 +183,12 @@ defmodule Swoosh.Adapters.CustomerIO do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  defp duplicate_attachment_filename(%Email{attachments: attachments}) do
+    attachments
+    |> Enum.frequencies_by(& &1.filename)
+    |> Enum.find_value(fn {filename, count} -> if count > 1, do: filename end)
   end
 
   defp base_url(config), do: config[:base_url] || @base_url
@@ -229,7 +249,7 @@ defmodule Swoosh.Adapters.CustomerIO do
 
   defp prepare_attachments(body, %Email{attachments: attachments}) do
     attachments =
-      Enum.map(attachments, &%{&1.filename => Swoosh.Attachment.get_content(&1, :base64)})
+      Map.new(attachments, &{&1.filename, Swoosh.Attachment.get_content(&1, :base64)})
 
     Map.put(body, :attachments, attachments)
   end
