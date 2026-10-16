@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🧰 Maintenance
+
+- Deprecate configuring Sendmail with string cmd_args.
+
 ## 1.29.1
 
 ### 🐛 Bug Fixes
