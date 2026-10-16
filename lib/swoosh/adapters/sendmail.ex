@@ -8,7 +8,7 @@ defmodule Swoosh.Adapters.Sendmail do
       config :sample, Sample.Mailer,
         adapter: Swoosh.Adapters.Sendmail,
         cmd_path: "/usr/bin/sendmail",
-        cmd_args: "-N delay,failure,success",
+        cmd_args: ["-N", "delay,failure,success"],
         qmail: true # Default false
 
       # lib/sample/mailer.ex
@@ -19,21 +19,17 @@ defmodule Swoosh.Adapters.Sendmail do
 
   use Swoosh.Adapter, required_deps: [gen_smtp: :mimemail]
 
+  require Logger
+
   alias Swoosh.Email
   alias Swoosh.Adapters.SMTP.Helpers
 
   def deliver(%Email{} = email, config) do
     body = Helpers.body(email, [{:keep_bcc, true} | config])
-    port = Port.open({:spawn, cmd(email, config)}, [:binary])
+    port = Port.open({:spawn_executable, cmd_path(config)}, [:binary, args: cmd_args(email, config)])
     Port.command(port, body)
     Port.close(port)
     {:ok, %{}}
-  end
-
-  @doc false
-  def cmd(email, config) do
-    sender = Helpers.sender(email) |> shell_escape()
-    "#{cmd_path(config)} -f#{sender}#{cmd_args(config)}"
   end
 
   @doc false
@@ -48,12 +44,17 @@ defmodule Swoosh.Adapters.Sendmail do
   end
 
   @doc false
-  def cmd_args(config) do
-    if(config[:qmail], do: "", else: " -oi -t") <> String.trim_trailing(" #{config[:cmd_args]}")
+  def cmd_args(email, config) do
+    ["-f", Helpers.sender(email)] ++
+      if(config[:qmail], do: [], else: ["-oi", "-t"]) ++
+      split_args(config[:cmd_args])
   end
 
-  @doc false
-  def shell_escape(s) do
-    "'" <> String.replace(s, "'", "'\\''") <> "'"
+  defp split_args(nil), do: []
+  defp split_args(args) when is_list(args), do: args
+
+  defp split_args(args) when is_binary(args) do
+    Logger.warning("Deprecated string cmd_args in sendmail config.  Pass arg list instead.")
+    String.split(args)
   end
 end
