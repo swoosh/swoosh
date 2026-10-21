@@ -2,6 +2,10 @@ defmodule Swoosh.Adapters.Sendmail do
   @moduledoc ~S"""
   An adapter that sends email using the sendmail binary.
 
+  The binary is executed directly, not through a shell, so `cmd_path` must be an
+  absolute path and `cmd_args` must be a list of arguments. A string `cmd_args` is
+  deprecated: it is split on whitespace and shell quoting is not honored.
+
   ## Example
 
       # config/config.exs

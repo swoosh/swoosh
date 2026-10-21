@@ -46,6 +46,53 @@ defmodule Swoosh.Adapters.SendmailTest do
     assert Sendmail.cmd_args(email, config) == ["-f", "tony.stark@example.com", "-oi", "-t"]
   end
 
+  @tag :tmp_dir
+  test "deliver/2 executes the binary directly with the args and body on stdin", %{
+    valid_email: email,
+    tmp_dir: dir
+  } do
+    out = Path.join(dir, "out")
+    script = Path.join(dir, "fake-sendmail")
+
+    File.write!(script, """
+    #!/bin/sh
+    for a in "$@"; do printf 'ARG:%s\\n' "$a"; done > '#{out}.tmp'
+    cat >> '#{out}.tmp'
+    mv '#{out}.tmp' '#{out}'
+    """)
+
+    File.chmod!(script, 0o755)
+
+    config = [cmd_path: script, cmd_args: ["-N", "a b; touch #{dir}/pwned"]]
+    assert {:ok, %{}} = Sendmail.deliver(email, config)
+
+    assert wait_for_file(out) =~
+             "ARG:-f\nARG:tony.stark@example.com\nARG:-oi\nARG:-t\nARG:-N\nARG:a b; touch #{dir}/pwned\n"
+
+    assert File.read!(out) =~ "Subject: Hello, Avengers!"
+    refute File.exists?(Path.join(dir, "pwned"))
+  end
+
+  test "deliver/2 raises when cmd_path is not an executable", %{valid_email: email} do
+    assert_raise ErlangError, fn ->
+      Sendmail.deliver(email, cmd_path: "/nonexistent/sendmail")
+    end
+  end
+
+  defp wait_for_file(path, tries \\ 100) do
+    case File.read(path) do
+      {:ok, content} ->
+        content
+
+      {:error, _} when tries > 0 ->
+        Process.sleep(20)
+        wait_for_file(path, tries - 1)
+
+      {:error, reason} ->
+        flunk("#{path} never appeared: #{inspect(reason)}")
+    end
+  end
+
   test "string cmd_args", %{valid_email: email} do
     {result, log} =
       with_log(fn ->
