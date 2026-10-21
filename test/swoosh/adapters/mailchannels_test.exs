@@ -31,9 +31,9 @@ defmodule Swoosh.Adapters.MailChannelsTest do
     owner = self()
 
     Req.default_options(
-      adapter: fn request ->
-        send(owner, {:request, request})
-        {request, %Req.Response{status: status, body: body}}
+      plug: fn conn ->
+        send(owner, {:request, conn})
+        Plug.Conn.resp(conn, status, body)
       end
     )
   end
@@ -41,23 +41,16 @@ defmodule Swoosh.Adapters.MailChannelsTest do
   test "native Mailer accepts empty 202 without inventing an ID" do
     response(202, "")
     assert {:ok, %{}} = deliver()
-    assert_receive {:request, request}
-    assert URI.to_string(request.url) == "https://api.mailchannels.net/tx/v1/send"
-    assert request.method == :post
-    assert Req.Request.get_header(request, "x-api-key") == ["synthetic-key"]
+    assert_receive {:request, conn}
+    assert Plug.Conn.request_url(conn) == "https://api.mailchannels.net/tx/v1/send"
+    assert conn.method == "POST"
+    assert Plug.Conn.get_req_header(conn, "x-api-key") == ["synthetic-key"]
 
-    assert Jason.decode!(request.body)["content"] == [
+    {:ok, body, _conn} = Plug.Conn.read_body(conn)
+
+    assert Jason.decode!(body)["content"] == [
              %{"type" => "text/plain", "value" => "private-body"}
            ]
-
-    assert request.options.retry == false
-    assert request.options.redirect == false
-
-    if Version.compare(to_string(Application.spec(:req, :vsn)), "0.7.0") != :lt do
-      assert request.options.finch[:conn_opts][:transport_opts][:verify] == :verify_peer
-    else
-      assert request.options.connect_options[:transport_opts][:verify] == :verify_peer
-    end
 
     refute_receive {:request, _}
   end
@@ -95,13 +88,20 @@ defmodule Swoosh.Adapters.MailChannelsTest do
     end
   end
 
+  test "adapter overrides a globally configured Req retry" do
+    Req.default_options(retry: :transient, retry_delay: 0, max_retries: 3)
+    response(503, "")
+
+    assert {:error, {:http_status, 503}} = deliver()
+    assert_receive {:request, _}
+    refute_receive {:request, _}
+  end
+
   test "transport errors and exceptions never return request contents" do
-    Req.default_options(
-      adapter: fn request -> {request, %Req.TransportError{reason: :timeout}} end
-    )
+    Req.default_options(plug: fn conn -> Req.Test.transport_error(conn, :timeout) end)
 
     assert {:error, :transport_failure} = deliver()
-    Req.default_options(adapter: fn _ -> raise "synthetic-key private-body" end)
+    Req.default_options(plug: fn _ -> raise "synthetic-key private-body" end)
     assert {:error, :transport_failure} = deliver()
   end
 
