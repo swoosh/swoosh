@@ -111,10 +111,10 @@ defmodule Swoosh.Adapters.SendmailTest do
   test "string cmd_args", %{valid_email: email} do
     {result, log} =
       with_log(fn ->
-        Sendmail.cmd_args(email, %{cmd_args: "abc def"})
+        Sendmail.cmd_args(email, %{cmd_args: ~s(abc "d e" 'f g')})
       end)
 
-    assert result == ["-f", "tony.stark@example.com", "-oi", "-t", "abc", "def"]
+    assert result == ["-f", "tony.stark@example.com", "-oi", "-t", "abc", "d e", "f g"]
     assert log =~ "Deprecated"
   end
 end

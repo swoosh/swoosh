@@ -5,7 +5,8 @@ defmodule Swoosh.Adapters.Sendmail do
   The binary is executed directly, not through a shell, so `cmd_path` must be an
   absolute path (a relative one is looked up in `PATH`, which is deprecated) and
   `cmd_args` must be a list of arguments. A string `cmd_args` is
-  deprecated: it is split on whitespace and shell quoting is not honored.
+  deprecated: it is split into arguments honoring quotes and backslash escapes,
+  but no other shell syntax (pipes, redirects, variables) is supported.
 
   ## Example
 
@@ -75,6 +76,6 @@ defmodule Swoosh.Adapters.Sendmail do
 
   defp split_args(args) when is_binary(args) do
     Logger.warning("Deprecated string cmd_args in sendmail config.  Pass arg list instead.")
-    String.split(args)
+    OptionParser.split(args)
   end
 end
