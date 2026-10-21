@@ -88,6 +88,15 @@ defmodule Swoosh.Adapters.MailChannelsTest do
     end
   end
 
+  test "adapter overrides a globally configured Req retry" do
+    Req.default_options(retry: :transient, retry_delay: 0, max_retries: 3)
+    response(503, "")
+
+    assert {:error, {:http_status, 503}} = deliver()
+    assert_receive {:request, _}
+    refute_receive {:request, _}
+  end
+
   test "transport errors and exceptions never return request contents" do
     Req.default_options(plug: fn conn -> Req.Test.transport_error(conn, :timeout) end)
 
