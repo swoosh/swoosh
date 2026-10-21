@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### 🧰 Maintenance
+
+- Deprecate configuring Sendmail with string cmd_args. Strings are split honoring quotes, but pipes, redirects and variables are no longer interpreted.
+- Run the Sendmail binary directly instead of through a shell. A relative `cmd_path` is still looked up in `PATH` but is deprecated, and a missing binary raises instead of silently returning `{:ok, %{}}`. `Swoosh.Adapters.Sendmail.cmd/2` and `shell_escape/1` are removed, and `cmd_args` now takes the email.
+
 ## 1.29.1
 
 ### 🐛 Bug Fixes
