@@ -52,7 +52,8 @@ defmodule Swoosh.Adapters.Sendmail do
     config[:cmd_path] || default
   end
 
-  defp executable(config) do
+  @doc false
+  def executable(config) do
     path = cmd_path(config)
 
     with :relative <- Path.type(path),

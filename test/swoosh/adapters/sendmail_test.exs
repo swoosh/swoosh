@@ -79,13 +79,18 @@ defmodule Swoosh.Adapters.SendmailTest do
     end
   end
 
-  test "deliver/2 resolves a relative cmd_path through PATH with a deprecation warning", %{
-    valid_email: email
-  } do
-    {result, log} = with_log(fn -> Sendmail.deliver(email, cmd_path: "true") end)
+  test "executable resolves a relative cmd_path through PATH with a deprecation warning" do
+    {result, log} = with_log(fn -> Sendmail.executable(cmd_path: "true") end)
 
-    assert result == {:ok, %{}}
+    assert result == System.find_executable("true")
     assert log =~ "Deprecated relative sendmail cmd_path"
+  end
+
+  test "executable leaves an absolute cmd_path alone without warning" do
+    {result, log} = with_log(fn -> Sendmail.executable(cmd_path: "/usr/bin/sendmail") end)
+
+    assert result == "/usr/bin/sendmail"
+    assert log == ""
   end
 
   test "deliver/2 raises for a relative cmd_path that is not in PATH", %{valid_email: email} do
