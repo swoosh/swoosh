@@ -5,7 +5,7 @@
 ### 🧰 Maintenance
 
 - Deprecate configuring Sendmail with string cmd_args. Strings are split on whitespace and shell quoting is no longer honored.
-- Run the Sendmail binary directly instead of through a shell. `cmd_path` must now be an absolute path, and a missing binary raises instead of silently returning `{:ok, %{}}`. `Swoosh.Adapters.Sendmail.cmd/2` and `shell_escape/1` are removed, and `cmd_args` now takes the email.
+- Run the Sendmail binary directly instead of through a shell. A relative `cmd_path` is still looked up in `PATH` but is deprecated, and a missing binary raises instead of silently returning `{:ok, %{}}`. `Swoosh.Adapters.Sendmail.cmd/2` and `shell_escape/1` are removed, and `cmd_args` now takes the email.
 
 ## 1.29.1
 

@@ -79,6 +79,21 @@ defmodule Swoosh.Adapters.SendmailTest do
     end
   end
 
+  test "deliver/2 resolves a relative cmd_path through PATH with a deprecation warning", %{
+    valid_email: email
+  } do
+    {result, log} = with_log(fn -> Sendmail.deliver(email, cmd_path: "true") end)
+
+    assert result == {:ok, %{}}
+    assert log =~ "Deprecated relative sendmail cmd_path"
+  end
+
+  test "deliver/2 raises for a relative cmd_path that is not in PATH", %{valid_email: email} do
+    assert_raise ErlangError, fn ->
+      Sendmail.deliver(email, cmd_path: "no-such-sendmail-binary")
+    end
+  end
+
   defp wait_for_file(path, tries \\ 100) do
     case File.read(path) do
       {:ok, content} ->

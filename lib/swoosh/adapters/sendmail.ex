@@ -3,7 +3,8 @@ defmodule Swoosh.Adapters.Sendmail do
   An adapter that sends email using the sendmail binary.
 
   The binary is executed directly, not through a shell, so `cmd_path` must be an
-  absolute path and `cmd_args` must be a list of arguments. A string `cmd_args` is
+  absolute path (a relative one is looked up in `PATH`, which is deprecated) and
+  `cmd_args` must be a list of arguments. A string `cmd_args` is
   deprecated: it is split on whitespace and shell quoting is not honored.
 
   ## Example
@@ -32,7 +33,7 @@ defmodule Swoosh.Adapters.Sendmail do
     body = Helpers.body(email, [{:keep_bcc, true} | config])
 
     port =
-      Port.open({:spawn_executable, cmd_path(config)}, [:binary, args: cmd_args(email, config)])
+      Port.open({:spawn_executable, executable(config)}, [:binary, args: cmd_args(email, config)])
 
     Port.command(port, body)
     Port.close(port)
@@ -48,6 +49,18 @@ defmodule Swoosh.Adapters.Sendmail do
       end
 
     config[:cmd_path] || default
+  end
+
+  defp executable(config) do
+    path = cmd_path(config)
+
+    with :relative <- Path.type(path),
+         found when is_binary(found) <- System.find_executable(path) do
+      Logger.warning("Deprecated relative sendmail cmd_path.  Pass an absolute path instead.")
+      found
+    else
+      _ -> path
+    end
   end
 
   @doc false
