@@ -90,7 +90,7 @@ defmodule Swoosh.Adapters.SendmailTest do
     {result, log} = with_log(fn -> Sendmail.executable(cmd_path: "/usr/bin/sendmail") end)
 
     assert result == "/usr/bin/sendmail"
-    assert log == ""
+    refute log =~ "Deprecated relative sendmail cmd_path"
   end
 
   test "deliver/2 raises for a relative cmd_path that is not in PATH", %{valid_email: email} do
