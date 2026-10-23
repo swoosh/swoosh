@@ -357,6 +357,87 @@ defmodule Swoosh.Adapters.MailgunTest do
              {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
   end
 
+  test "deliver/1 with a string tag returns :ok", %{bypass: bypass, config: config} do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> put_provider_option(:tags, "unity")
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert "unity" == conn.body_params["o:tag"]
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailgun.deliver(email, config) ==
+             {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
+  end
+
+  test "deliver/1 with tags and an attachment sends one o:tag part per tag", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> attachment(
+        Swoosh.Attachment.new({:data, "attachment-data"},
+          filename: "foo.txt",
+          content_type: "text/plain"
+        )
+      )
+      |> put_provider_option(:tags, ["worldwide-peace", "unity"])
+
+    Bypass.expect(bypass, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+
+      assert ["worldwide-peace", "unity"] == multipart_field_values(body, "o:tag")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailgun.deliver(email, config) ==
+             {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
+  end
+
+  test "deliver/1 with a string tag and an attachment sends the o:tag part", %{
+    bypass: bypass,
+    config: config
+  } do
+    email =
+      new()
+      |> from("tony.stark@example.com")
+      |> to("steve.rogers@example.com")
+      |> subject("Hello, Avengers!")
+      |> html_body("<h1>Hello</h1>")
+      |> attachment(
+        Swoosh.Attachment.new({:data, "attachment-data"},
+          filename: "foo.txt",
+          content_type: "text/plain"
+        )
+      )
+      |> put_provider_option(:tags, "unity")
+
+    Bypass.expect(bypass, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+
+      assert ["unity"] == multipart_field_values(body, "o:tag")
+
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    assert Mailgun.deliver(email, config) ==
+             {:ok, %{id: "<20111114174239.25659.5817@samples.mailgun.org>"}}
+  end
+
   test "deliver/1 with custom headers returns :ok", %{bypass: bypass, config: config} do
     email =
       new()
@@ -458,5 +539,12 @@ defmodule Swoosh.Adapters.MailgunTest do
     }
 
     assert {"multipart/form-data; boundary=" <> _, 647, _body} = Mailgun.encode_body(params)
+  end
+
+  # Plug's multipart parser keeps only the last value of a repeated field, so read the raw body.
+  defp multipart_field_values(body, name) do
+    ~r/Content-Disposition: form-data; name="#{Regex.escape(name)}"\r\n\r\n(.*?)\r\n--/is
+    |> Regex.scan(body, capture: :all_but_first)
+    |> List.flatten()
   end
 end
