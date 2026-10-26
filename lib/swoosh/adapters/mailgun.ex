@@ -258,6 +258,8 @@ defmodule Swoosh.Adapters.Mailgun do
       |> Enum.reduce(
         Multipart.new(),
         fn {key, value}, multipart ->
+          # A list becomes one part per element (a repeated field, e.g. `o:tag`).
+          # `List.wrap/1` also turns a nil value into no part instead of raising.
           value
           |> List.wrap()
           |> Enum.reduce(multipart, fn field, multipart ->
