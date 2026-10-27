@@ -64,7 +64,7 @@ defmodule Swoosh.Adapters.Mailgun do
 
     * `:sending_options` (map) - `o:my-key`, all the sending options
 
-    * `:tags` (list[string]) - `o:tag`, was added in before `:sending_options`,
+    * `:tags` (list[string] | string) - `o:tag`, was added in before `:sending_options`,
       kept for backward compatibility, use `:sending_options` instead
 
     * `:template_name` (string) - `template`, name of template created at Mailgun
@@ -166,7 +166,8 @@ defmodule Swoosh.Adapters.Mailgun do
 
   defp prepare_recipient_vars(body, _email), do: body
 
-  defp prepare_tags(body, %{provider_options: %{tags: tags}}) when is_list(tags) do
+  defp prepare_tags(body, %{provider_options: %{tags: tags}})
+       when is_list(tags) or is_binary(tags) do
     Map.put(body, "o:tag", tags)
   end
 
@@ -257,7 +258,13 @@ defmodule Swoosh.Adapters.Mailgun do
       |> Enum.reduce(
         Multipart.new(),
         fn {key, value}, multipart ->
-          Multipart.add_part(multipart, Multipart.Part.text_field(value, key))
+          # A list becomes one part per element (a repeated field, e.g. `o:tag`).
+          # `List.wrap/1` also turns a nil value into no part instead of raising.
+          value
+          |> List.wrap()
+          |> Enum.reduce(multipart, fn field, multipart ->
+            Multipart.add_part(multipart, Multipart.Part.text_field(field, key))
+          end)
         end
       ),
       fn attachment, multipart ->
