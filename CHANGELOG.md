@@ -12,6 +12,7 @@
 ### 🐛 Bug Fixes
 
 - Send Customer.io attachments as a filename-keyed object @ashabhasa (#1214)
+- Fix Mailgun tags failing when the email has attachments @jadhavgaurav (#1221)
 
 ## 1.29.0
 
