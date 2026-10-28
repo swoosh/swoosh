@@ -1,6 +1,14 @@
 # Changelog
 
+## 1.29.3
+
+### 🧰 Maintenance
+
+- Replace the release comment action with a script that comments once per pull request
+
 ## 1.29.1
+
+> This release was published to Hex as 1.29.2 by mistake, so there is no 1.29.1 on Hex. The GitHub release and tag are `v1.29.1`.
 
 ### 🧰 Maintenance
 
