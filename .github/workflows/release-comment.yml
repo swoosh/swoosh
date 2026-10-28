@@ -3,6 +3,15 @@ name: Release Comment
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to comment for
+        required: true
+      dry_run:
+        description: Only print the PRs and issues that would be commented on
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -18,4 +27,53 @@ jobs:
           fetch-depth: 0
 
       - name: Comment on released pull requests
-        uses: remix-run/release-comment-action@v0.5.1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          prerelease=$(gh release view "$TAG" --json isPrerelease -q .isPrerelease)
+
+          # Previous tag by git ancestry, so a backport release compares against its own line.
+          if ! previous=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null); then
+            echo "No previous tag before ${TAG}, nothing to comment on."
+            exit 0
+          fi
+
+          # GitHub dedupes by PR, unlike walking commits (merge commits would comment once per commit).
+          prs=$(gh api "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$TAG" -f previous_tag_name="$previous" -q .body \
+            | grep -oE "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/pull/[0-9]+" \
+            | grep -oE '[0-9]+$' | sort -un)
+
+          for pr in $prs; do
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "[dry-run] would comment on PR #${pr}"
+            else
+              echo "PR #${pr}"
+              gh pr comment "$pr" --body "🤖 Hello there,
+
+          We just published version \`${TAG}\` which includes this pull request. If you'd like to take it for a test run please try it out and let us know what you think!
+
+          Thanks!"
+            fi
+
+            issues=$(gh pr view "$pr" --json closingIssuesReferences -q '.closingIssuesReferences[].number')
+            for issue in $issues; do
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "[dry-run] would comment on issue #${issue}$([ "$prerelease" != "true" ] && echo ' and close it')"
+                continue
+              fi
+              echo "Issue #${issue}"
+              gh issue comment "$issue" --body "🤖 Hello there,
+
+          We just published version \`${TAG}\` which involves this issue. If you'd like to take it for a test run please try it out and let us know what you think!
+
+          Thanks!"
+              if [ "$prerelease" != "true" ]; then
+                gh issue close "$issue"
+              fi
+            done
+          done
