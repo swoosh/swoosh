@@ -4,6 +4,8 @@ defmodule Swoosh.TestAssertionsTest do
   import Swoosh.Email
   import Swoosh.TestAssertions
 
+  @prefix "Hello"
+
   defp deliver(%Swoosh.Email{} = email) do
     {:ok, _} = Swoosh.Adapters.Test.deliver(email, nil)
     email
@@ -225,6 +227,133 @@ defmodule Swoosh.TestAssertionsTest do
     test "refute email sent with matching interpolated params" do
       assert_raise ExUnit.AssertionError, fn ->
         refute_email_sent(subject: "Hello,#{String.trim(" Avengers!", "!")}!")
+      end
+    end
+
+    test "refute email sent with pinned params" do
+      other_subject = "Good bye, Avengers!"
+      subject = "Hello, Avengers!"
+
+      refute_email_sent(subject: ^other_subject)
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: ^subject)
+      end
+    end
+
+    test "refute email sent with a wildcard param" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: _)
+      end
+    end
+
+    test "refute email sent with a prefix pattern param" do
+      refute_email_sent(subject: "Good bye" <> _)
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: "Hello" <> _)
+      end
+    end
+
+    test "refute email sent matches map params as a subset" do
+      new() |> header("Avengers", "Assemble") |> header("Revengers", "Gather") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Revengers" => "Gather"})
+      end
+    end
+
+    test "refute email sent with a literal sigil prefix pattern" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: ~s(Hello) <> _)
+      end
+    end
+
+    test "refute email sent preserves a variable pattern expanded by a macro" do
+      subject = "Other"
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: var!(subject))
+      end
+
+      assert subject == "Other"
+    end
+
+    test "refute email sent with a function call inside a binary" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: <<String.trim(" Hello, Avengers! ")::binary>>)
+      end
+    end
+
+    test "refute email sent with a module attribute prefix pattern" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: @prefix <> _)
+      end
+    end
+
+    test "refute email sent with a function call prefix" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: String.trim(" Hello, Avengers ") <> "!")
+      end
+    end
+
+    test "refute email sent matches partial headers with a literal sigil prefix" do
+      new() |> header("Avengers", "Assemble") |> header("Revengers", "Gather") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Avengers" => ~s(Assemble) <> _})
+      end
+    end
+
+    test "refute email sent with pins and wildcards inside map params" do
+      value = "Assemble"
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Avengers" => ^value})
+      end
+
+      new() |> header("Revengers", "Gather") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Revengers" => _})
+      end
+    end
+
+    test "refute email sent matches partial assigns with a negative number" do
+      new() |> assign(:offset, -1) |> assign(:name, "Bruce") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(assigns: %{offset: -1})
+      end
+    end
+
+    test "refute email sent matches partial headers with a literal sigil" do
+      new() |> header("Avengers", "Assemble") |> header("Revengers", "Gather") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Avengers" => ~s(Assemble)})
+      end
+    end
+
+    test "refute email sent matches partial headers with an interpolated value" do
+      name = "semble"
+      new() |> header("Avengers", "Assemble") |> header("Revengers", "Gather") |> deliver()
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(headers: %{"Avengers" => "As#{name}"})
+      end
+    end
+
+    test "refute email sent with interpolated and pattern params together" do
+      name = "Avengers"
+      value = "Assemble"
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(
+          from: "tony.stark@example.com",
+          subject: "Hello, #{name}!",
+          headers: %{"Avengers" => ^value}
+        )
       end
     end
 
