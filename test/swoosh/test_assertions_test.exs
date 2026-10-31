@@ -212,6 +212,22 @@ defmodule Swoosh.TestAssertionsTest do
       )
     end
 
+    test "refute email sent with interpolated params" do
+      user = %{name: "Avenger"}
+
+      refute_email_sent(
+        subject: "some issue for #{Integer.to_string(3)}",
+        text_body: "some issue for #{user.name}",
+        to: "loki.odinson@example.com"
+      )
+    end
+
+    test "refute email sent with matching interpolated params" do
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(subject: "Hello,#{String.trim(" Avengers!", "!")}!")
+      end
+    end
+
     test "refute email sent with expected params" do
       assert_raise ExUnit.AssertionError, fn ->
         refute_email_sent(
