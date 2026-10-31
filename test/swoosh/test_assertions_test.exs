@@ -224,7 +224,7 @@ defmodule Swoosh.TestAssertionsTest do
 
     test "refute email sent with matching interpolated params" do
       assert_raise ExUnit.AssertionError, fn ->
-        refute_email_sent(subject: "Hello,#{String.trim(" Avengers!")}")
+        refute_email_sent(subject: "Hello,#{String.trim(" Avengers!", "!")}!")
       end
     end
 
