@@ -237,8 +237,20 @@ defmodule Swoosh.TestAssertions do
   `%{attributes...} = email`.
   """
   defmacro refute_email_sent(attributes) when is_list(attributes) do
+    {pattern, bindings} =
+      Enum.reduce(attributes, {[], []}, fn attribute, {pattern, bindings} ->
+        {key, value} = email_pattern(attribute)
+        variable = Macro.unique_var(:value, __MODULE__)
+
+        {
+          [{key, {:^, [], [variable]}} | pattern],
+          [quote(do: unquote(variable) = unquote(value)) | bindings]
+        }
+      end)
+
     quote do
-      refute_email_sent(%{unquote_splicing(Enum.map(attributes, &email_pattern/1))})
+      unquote_splicing(bindings)
+      refute_received {:email, %{unquote_splicing(pattern)}}
     end
   end
 
@@ -249,11 +261,14 @@ defmodule Swoosh.TestAssertions do
   end
 
   defp email_pattern({key, value}) when key in [:from, :reply_to] do
-    {key, Recipient.format(value)}
+    {key, quote(do: Swoosh.Email.Recipient.format(unquote(value)))}
   end
 
   defp email_pattern({key, value}) when key in [:to, :cc, :bcc] do
-    {key, value |> List.wrap() |> Enum.map(&Recipient.format/1)}
+    {key,
+     quote do
+       unquote(value) |> List.wrap() |> Enum.map(&Swoosh.Email.Recipient.format/1)
+     end}
   end
 
   defp email_pattern({key, value}) do
