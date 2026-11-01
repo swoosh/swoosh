@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.30.0
+
+### 🐛 Bug Fixes
+
+- Allow interpolated strings and function calls in `refute_email_sent/1` attributes, and support `^pin` and `_` on recipient fields @mvanhorn (#1229)
+
 ## 1.29.3
 
 ### 🧰 Maintenance

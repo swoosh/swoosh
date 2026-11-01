@@ -235,10 +235,20 @@ defmodule Swoosh.TestAssertions do
 
   After conversion, performs pattern matching using a map of email attributes, similar to
   `%{attributes...} = email`.
+
+  Values that cannot appear in a match, such as interpolated strings and function calls, are
+  evaluated first and compared by value. Other values remain patterns, so `^subject`, `_`,
+  `"Hello" <> _` and partial maps such as `headers: %{"X-Id" => _}` keep working.
   """
   defmacro refute_email_sent(attributes) when is_list(attributes) do
+    {pattern, bindings} =
+      attributes
+      |> Enum.map(&email_pattern/1)
+      |> pin_calls([], __CALLER__)
+
     quote do
-      refute_email_sent(%{unquote_splicing(Enum.map(attributes, &email_pattern/1))})
+      unquote_splicing(Enum.reverse(bindings))
+      refute_received {:email, %{unquote_splicing(pattern)}}
     end
   end
 
@@ -248,16 +258,94 @@ defmodule Swoosh.TestAssertions do
     end
   end
 
+  defp email_pattern({key, {:_, _, context} = wildcard})
+       when key in [:from, :reply_to, :to, :cc, :bcc] and is_atom(context) do
+    {key, wildcard}
+  end
+
+  defp email_pattern({key, {:^, _, [pinned]}}) when key in [:from, :reply_to, :to, :cc, :bcc] do
+    email_pattern({key, pinned})
+  end
+
   defp email_pattern({key, value}) when key in [:from, :reply_to] do
-    {key, Recipient.format(value)}
+    {key, quote(do: Swoosh.Email.Recipient.format(unquote(value)))}
   end
 
   defp email_pattern({key, value}) when key in [:to, :cc, :bcc] do
-    {key, value |> List.wrap() |> Enum.map(&Recipient.format/1)}
+    {key,
+     quote do
+       unquote(value) |> List.wrap() |> Enum.map(&Swoosh.Email.Recipient.format/1)
+     end}
   end
 
   defp email_pattern({key, value}) do
     {key, value}
+  end
+
+  defp pin_calls({op, _, _} = ast, bindings, _env) when op in [:^, :@, :__aliases__] do
+    {ast, bindings}
+  end
+
+  defp pin_calls({name, _, context} = ast, bindings, _env)
+       when is_atom(name) and is_atom(context) do
+    {ast, bindings}
+  end
+
+  defp pin_calls({:<<>>, _, segments} = ast, bindings, env) do
+    if Enum.all?(segments, fn segment ->
+         value =
+           case segment do
+             {:"::", _, [value, _type]} -> value
+             value -> value
+           end
+
+         {_value, bindings} = pin_calls(value, [], env)
+         bindings == []
+       end) do
+      {ast, bindings}
+    else
+      pin_call(ast, bindings)
+    end
+  end
+
+  defp pin_calls({:<>, meta, [left, right]} = ast, bindings, env) do
+    case pin_calls(left, [], env) do
+      {left, []} ->
+        {right, bindings} = pin_calls(right, bindings, env)
+        {{:<>, meta, [left, right]}, bindings}
+
+      _ ->
+        pin_call(ast, bindings)
+    end
+  end
+
+  defp pin_calls({op, meta, args}, bindings, env) when op in [:%{}, :%, :{}, :|, :=] do
+    {args, bindings} = Enum.map_reduce(args, bindings, &pin_calls(&1, &2, env))
+    {{op, meta, args}, bindings}
+  end
+
+  defp pin_calls({left, right}, bindings, env) do
+    {left, bindings} = pin_calls(left, bindings, env)
+    {right, bindings} = pin_calls(right, bindings, env)
+    {{left, right}, bindings}
+  end
+
+  defp pin_calls(ast, bindings, env) when is_list(ast) do
+    Enum.map_reduce(ast, bindings, &pin_calls(&1, &2, env))
+  end
+
+  defp pin_calls(ast, bindings, env) when is_tuple(ast) do
+    case Macro.expand(ast, env) do
+      ^ast -> pin_call(ast, bindings)
+      expanded -> pin_calls(expanded, bindings, env)
+    end
+  end
+
+  defp pin_calls(ast, bindings, _env), do: {ast, bindings}
+
+  defp pin_call(ast, bindings) do
+    variable = Macro.unique_var(:value, __MODULE__)
+    {{:^, [], [variable]}, [quote(do: unquote(variable) = unquote(ast)) | bindings]}
   end
 
   @doc ~S"""
