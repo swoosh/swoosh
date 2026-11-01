@@ -249,6 +249,45 @@ defmodule Swoosh.X.TestAssertionsTest do
         subject: "Hello, Avengers!"
       )
     end
+
+    test "refute email sent with a map of params" do
+      refute_email_sent(%{subject: "Good bye, Avengers!"})
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_email_sent(%{subject: "Hello, Avengers!", from: "tony.stark@example.com"})
+      end
+    end
+
+    test "refute emails sent when none were sent with deliver_many" do
+      refute_emails_sent()
+    end
+
+    test "refute emails sent when emails were sent with deliver_many" do
+      deliver_many([new(subject: "Hello, Avengers!")])
+
+      assert_raise ExUnit.AssertionError, fn ->
+        refute_emails_sent()
+      end
+    end
+
+    test "assertions keep the order of emails in the mailbox" do
+      receive do
+        {:email, _} -> nil
+      end
+
+      for subject <- ["first", "second", "third"], do: deliver(new(subject: subject))
+
+      assert_email_sent(subject: "second")
+      refute_email_sent(subject: "missing")
+      assert_email_sent(subject: "third")
+
+      assert [
+               {:email, %{subject: "first"}},
+               {:email, %{subject: "second"}},
+               {:email, %{subject: "third"}}
+             ] =
+               Process.info(self(), :messages) |> elem(1)
+    end
   end
 
   describe "when multiple emails are sent" do
@@ -270,6 +309,12 @@ defmodule Swoosh.X.TestAssertionsTest do
       deliver_many(emails)
 
       {:ok, emails: emails}
+    end
+
+    test "assert no email sent fails when emails were sent with deliver_many" do
+      assert_raise ExUnit.AssertionError, fn ->
+        assert_no_email_sent()
+      end
     end
 
     test "assert multiple emails were sent" do

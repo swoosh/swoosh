@@ -74,6 +74,7 @@ defmodule Swoosh.X.TestAssertions do
   @spec assert_no_email_sent() :: boolean | no_return
   def assert_no_email_sent() do
     refute_email_sent()
+    refute_emails_sent()
   end
 
   @doc ~S"""
@@ -227,11 +228,20 @@ defmodule Swoosh.X.TestAssertions do
     """
   end
 
-  @spec refute_email_sent(Email.t() | list | (Email.t() -> boolean)) :: boolean | no_return
+  @doc ~S"""
+  Refutes any email was sent via `deliver_many`.
+  """
+  @spec refute_emails_sent() :: boolean | no_return
+  def refute_emails_sent() do
+    refute_received {:emails, _}
+  end
+
+  @spec refute_email_sent(Email.t() | list | map | (Email.t() -> boolean)) ::
+          boolean | no_return
   @doc ~S"""
   Asserts email with `attributes` was not sent.
 
-  You can pass a keyword list to match on specific params
+  You can pass a keyword list or a map to match on specific params
   or an anonymous function that returns a boolean.
   """
   def refute_email_sent(%Email{} = email) do
@@ -253,6 +263,10 @@ defmodule Swoosh.X.TestAssertions do
 
     #{inspect(matched_email, pretty: true)}
     """
+  end
+
+  def refute_email_sent(attributes) when is_map(attributes) do
+    refute_email_sent(Map.to_list(attributes))
   end
 
   def refute_email_sent(attributes) when is_list(attributes) do
@@ -364,7 +378,8 @@ defmodule Swoosh.X.TestAssertions do
   defp emails() do
     emails = flush_emails()
 
-    Enum.each(emails, &send(self(), {:email, &1}))
+    # flush_emails/0 returns newest first, so re-queue oldest first to keep mailbox order
+    emails |> Enum.reverse() |> Enum.each(&send(self(), {:email, &1}))
 
     emails
   end
