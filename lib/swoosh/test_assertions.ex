@@ -258,6 +258,15 @@ defmodule Swoosh.TestAssertions do
     end
   end
 
+  defp email_pattern({key, {:_, _, context} = wildcard})
+       when key in [:from, :reply_to, :to, :cc, :bcc] and is_atom(context) do
+    {key, wildcard}
+  end
+
+  defp email_pattern({key, {:^, _, [pinned]}}) when key in [:from, :reply_to, :to, :cc, :bcc] do
+    email_pattern({key, pinned})
+  end
+
   defp email_pattern({key, value}) when key in [:from, :reply_to] do
     {key, quote(do: Swoosh.Email.Recipient.format(unquote(value)))}
   end

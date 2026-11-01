@@ -344,6 +344,31 @@ defmodule Swoosh.TestAssertionsTest do
       end
     end
 
+    for field <- [:from, :reply_to, :to, :cc, :bcc] do
+      test "refute email sent supports pins and wildcards on #{field}" do
+        sent = "tony.stark@example.com"
+        other = "nobody@example.com"
+
+        new()
+        |> from(sent)
+        |> reply_to(sent)
+        |> to(sent)
+        |> cc(sent)
+        |> bcc(sent)
+        |> deliver()
+
+        refute_email_sent([{unquote(field), ^other}])
+
+        assert_raise ExUnit.AssertionError, fn ->
+          refute_email_sent([{unquote(field), ^sent}])
+        end
+
+        assert_raise ExUnit.AssertionError, fn ->
+          refute_email_sent([{unquote(field), _}])
+        end
+      end
+    end
+
     test "refute email sent with interpolated and pattern params together" do
       name = "Avengers"
       value = "Assemble"
