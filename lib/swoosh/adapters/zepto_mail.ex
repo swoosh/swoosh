@@ -78,6 +78,7 @@ defmodule Swoosh.Adapters.ZeptoMail do
     * `:client_reference` (string) - An identifier set by the user to track a particular transaction.
 
     * `:mime_headers` (map) - The additional headers to be sent in the email for your reference purposes.
+      Headers set with `Swoosh.Email.header/3` are sent here too; on a conflict, this option wins.
 
     * `:attachments` (list) - A list of file cache keys to send as attachments.
 
@@ -119,8 +120,8 @@ defmodule Swoosh.Adapters.ZeptoMail do
     ]
 
     case Swoosh.ApiClient.post(url, headers, body, email) do
-      {:ok, 201, _headers, body} ->
-        {:ok, %{id: Swoosh.json_library().decode!(body)["request_id"]}}
+      {:ok, code, _headers, body} when code in 200..299 ->
+        {:ok, %{id: request_id(body)}}
 
       {:ok, code, _headers, body} when code > 399 ->
         reason =
@@ -139,6 +140,13 @@ defmodule Swoosh.Adapters.ZeptoMail do
   end
 
   defp base_url(config), do: config[:base_url] || @base_url
+
+  defp request_id(body) do
+    case Swoosh.json_library().decode(body) do
+      {:ok, %{"request_id" => request_id}} -> request_id
+      _ -> nil
+    end
+  end
 
   defp api_endpoint(email) when is_template(email), do: @api_template_endpoint
   defp api_endpoint(_email), do: @api_endpoint
@@ -172,6 +180,7 @@ defmodule Swoosh.Adapters.ZeptoMail do
     |> prepare_reply_to(email)
     |> prepare_attachments(email)
     |> prepare_provider_options(email)
+    |> prepare_mime_headers(email)
     |> prepare_file_cache_attachments(email)
   end
 
@@ -276,6 +285,12 @@ defmodule Swoosh.Adapters.ZeptoMail do
         :client_reference
       ])
     )
+  end
+
+  defp prepare_mime_headers(body, %{headers: headers}) when map_size(headers) == 0, do: body
+
+  defp prepare_mime_headers(body, %{headers: headers}) do
+    Map.update(body, :mime_headers, headers, &Map.merge(headers, &1))
   end
 
   defp wrap_recipient(recipients), do: Enum.map(recipients, &%{email_address: &1})

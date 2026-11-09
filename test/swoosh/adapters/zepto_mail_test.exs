@@ -348,6 +348,49 @@ defmodule Swoosh.Adapters.ZeptoMailTest do
               %{id: "2d6f.3dd3c3f49c2fb8fc.m1.3063d370-1063-11ef-a100-525400fa05f6.18f6cfb6a27"}}
   end
 
+  test "a 200 response results in :ok", %{bypass: bypass, config: config, valid_email: email} do
+    Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 200, @success_response) end)
+
+    assert ZeptoMail.deliver(email, config) ==
+             {:ok,
+              %{id: "2d6f.3dd3c3f49c2fb8fc.m1.3063d370-1063-11ef-a100-525400fa05f6.18f6cfb6a27"}}
+  end
+
+  test "a 2xx response without a JSON body results in :ok without an id", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 202, "") end)
+
+    assert ZeptoMail.deliver(email, config) == {:ok, %{id: nil}}
+  end
+
+  test "headers set with header/3 are sent as mime_headers; the provider option wins", %{
+    bypass: bypass,
+    config: config,
+    valid_email: email
+  } do
+    email =
+      email
+      |> header("X-Entity-Ref-ID", "ref-1")
+      |> header("x-header-1", "from header/3")
+      |> put_provider_option(:mime_headers, %{"x-header-1" => "from provider option"})
+
+    Bypass.expect(bypass, fn conn ->
+      conn = parse(conn)
+
+      assert conn.body_params["mime_headers"] == %{
+               "X-Entity-Ref-ID" => "ref-1",
+               "x-header-1" => "from provider option"
+             }
+
+      Plug.Conn.resp(conn, 201, @success_response)
+    end)
+
+    assert {:ok, _} = ZeptoMail.deliver(email, config)
+  end
+
   test "deliver/2 with 4xx response", %{bypass: bypass, config: config, valid_email: email} do
     Bypass.expect(bypass, fn conn ->
       Plug.Conn.resp(conn, 400, @error_response)
