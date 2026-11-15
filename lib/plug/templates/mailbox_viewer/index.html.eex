@@ -174,11 +174,15 @@
       // set target="_top" on links to open them outside of the iframe
       const iframe = document.querySelector("#html-mail");
       if (iframe) {
-        Array.from(iframe.contentWindow.document.querySelectorAll("a")).forEach((link) => {
-          if (!link.hasAttribute("target")) {
-            link.setAttribute("target", "_top");
-          }
-        });
+        const setLinkTargets = () => {
+          Array.from(iframe.contentWindow.document.querySelectorAll("a")).forEach((link) => {
+            if (!link.hasAttribute("target")) {
+              link.setAttribute("target", "_top");
+            }
+          });
+        }
+        setLinkTargets();
+        iframe.addEventListener("load", setLinkTargets);
       }
 
       // make links in text only view clickable
