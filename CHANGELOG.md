@@ -5,6 +5,11 @@
 ### 🐛 Bug Fixes
 
 - Allow interpolated strings and function calls in `refute_email_sent/1` attributes, and support `^pin` and `_` on recipient fields @mvanhorn (#1229)
+
+## 1.29.4
+
+### 🐛 Bug Fixes
+
 - Open links, forms and image maps in the dev mailbox email preview outside of the iframe, even while it is still loading @tamwahba (#1237)
 
 ## 1.29.3
