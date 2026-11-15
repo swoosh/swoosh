@@ -89,7 +89,7 @@ if Code.ensure_loaded?(Plug) do
 
       conn
       |> put_resp_content_type("text/html")
-      |> send_resp(200, replace_inline_references(email))
+      |> send_resp(200, email |> replace_inline_references() |> default_links_to_top(email))
     end
 
     get "/:id/attachments/:index" do
@@ -206,6 +206,30 @@ if Code.ensure_loaded?(Plug) do
           nil -> html_body
         end
       end)
+    end
+
+    # The email is rendered in an iframe. A `<base target="_top">` makes links,
+    # forms and image maps without their own `target` open outside of it. It is
+    # placed inside `<head>` (not before the doctype) to keep standards mode.
+    defp default_links_to_top(body, %{html_body: nil}), do: body
+
+    defp default_links_to_top(body, _email) do
+      base = ~s(<base target="_top">)
+
+      cond do
+        match = Regex.run(~r/<head(?:\s[^>]*)?>/i, body, return: :index) ->
+          [{start, len}] = match
+          {before, rest} = String.split_at(body, start + len)
+          before <> base <> rest
+
+        match = Regex.run(~r/<html(?:\s[^>]*)?>/i, body, return: :index) ->
+          [{start, len}] = match
+          {before, rest} = String.split_at(body, start + len)
+          before <> "<head>" <> base <> "</head>" <> rest
+
+        true ->
+          base <> body
+      end
     end
 
     defp redir(conn, location) do
