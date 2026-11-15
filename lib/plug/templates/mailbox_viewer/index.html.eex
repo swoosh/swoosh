@@ -171,16 +171,6 @@
         });
       }
 
-      // set target="_top" on links to open them outside of the iframe
-      const iframe = document.querySelector("#html-mail");
-      if (iframe) {
-        Array.from(iframe.contentWindow.document.querySelectorAll("a")).forEach((link) => {
-          if (!link.hasAttribute("target")) {
-            link.setAttribute("target", "_top");
-          }
-        });
-      }
-
       // make links in text only view clickable
       const textMail = document.querySelector("#text-body-content");
       if (textMail) {

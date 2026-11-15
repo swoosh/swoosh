@@ -54,6 +54,23 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
     end
   end
 
+  defmodule BodyDriver do
+    import Swoosh.Email
+
+    def get("fragment"), do: email("<p>hi</p>")
+
+    def get("doc"),
+      do: email("<!DOCTYPE html><html><head><title>t</title></head><body>hi</body></html>")
+
+    def get("upper"),
+      do: email("<!DOCTYPE html><HTML><HEAD lang=\"en\"></HEAD><body>hi</body></HTML>")
+
+    def get("nohead"), do: email("<!DOCTYPE html><html lang=\"en\"><body>hi</body></html>")
+    def get("text"), do: new() |> text_body("plain <b>text</b>")
+
+    defp email(html), do: new() |> html_body(html)
+  end
+
   defmodule EmptyDriver do
     def all, do: []
     def get(_id), do: nil
@@ -198,6 +215,37 @@ defmodule Plug.Swoosh.MailboxPreviewTest do
       assert conn.status == 200
       assert get_resp_header(conn, "content-type") == ["text/html; charset=utf-8"]
       assert conn.resp_body =~ "Avengers Assemble! 🦸‍♂️"
+    end
+  end
+
+  describe "/:id/html" do
+    defp html_body(id) do
+      opts = MailboxPreview.init(storage_driver: BodyDriver)
+      conn = conn(:get, "/#{id}/html") |> MailboxPreview.call(opts)
+      assert conn.status == 200
+      conn.resp_body
+    end
+
+    test "adds base target to the head so links open outside the iframe" do
+      assert html_body("doc") ==
+               "<!DOCTYPE html><html><head><base target=\"_top\"><title>t</title></head><body>hi</body></html>"
+    end
+
+    test "matches the head tag case-insensitively and with attributes" do
+      assert html_body("upper") =~ ~s(<HEAD lang="en"><base target="_top"></HEAD>)
+    end
+
+    test "adds a head when there is none" do
+      assert html_body("nohead") =~
+               ~s(<!DOCTYPE html><html lang="en"><head><base target="_top"></head><body>)
+    end
+
+    test "prepends the tag to a bare fragment" do
+      assert html_body("fragment") == ~s(<base target="_top"><p>hi</p>)
+    end
+
+    test "leaves text-only emails untouched" do
+      assert html_body("text") == "plain <b>text</b>"
     end
   end
 
