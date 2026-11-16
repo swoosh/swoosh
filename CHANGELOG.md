@@ -10,6 +10,7 @@
 
 ### 🧰 Maintenance
 
+- Allow IDNA 8.x, including use with Hackney 4.11 and later.
 - Close behaviour gaps between `X.TestAssertions` and `TestAssertions` @princemaple (#1230)
 
 ## 1.29.3
