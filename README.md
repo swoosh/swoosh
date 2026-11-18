@@ -19,10 +19,11 @@ Elixir 1.16+ and Erlang OTP 26+
 ## Getting started
 
 ```elixir
-# In your config/config.exs file
+# In config/runtime.exs
 config :sample, Sample.Mailer,
   adapter: Swoosh.Adapters.Sendgrid,
-  api_key: "SG.x.x"
+  # load the API key from env
+  api_key: System.fetch_env!("SENDGRID_API_KEY")
 ```
 
 ```elixir
