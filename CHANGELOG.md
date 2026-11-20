@@ -7,6 +7,7 @@
 - Allow interpolated strings and function calls in `refute_email_sent/1` attributes, and support `^pin` and `_` on recipient fields @mvanhorn (#1229)
 - Open links, forms and image maps in the dev mailbox email preview outside of the iframe, even while it is still loading @tamwahba (#1237)
 - ZeptoMail: accept any 2xx response and send `Email.header/3` headers @obutuz (#1233)
+- SMTP: return an `{:error, reason}` tuple from `deliver/2` for malformed addresses instead of raising `MatchError` (#1247)
 
 ### 🧰 Maintenance
 
