@@ -73,7 +73,7 @@ defmodule Swoosh.Adapters.SMTPMailpitTest do
     before_count = mailpit_get("messages")["total"]
 
     for bad <- ["[foo]@bar.com", ~s("foo@bar.com)] do
-      assert {:error, _reason} = email |> to(bad) |> mailpit_deliver()
+      assert {:error, {_type, _detail}} = email |> to(bad) |> mailpit_deliver()
     end
 
     assert mailpit_get("messages")["total"] == before_count
