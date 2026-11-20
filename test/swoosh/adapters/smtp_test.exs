@@ -50,6 +50,18 @@ defmodule Swoosh.Adapters.SMTPTest do
          |> subject("test")
          |> text_body("test")
 
+  test "deliver/2 returns an error for a malformed address instead of raising" do
+    for email <- [
+          put_to(@email, "[foo]@bar.com"),
+          cc(@email, "[foo]@bar.com"),
+          reply_to(@email, "[foo]@bar.com"),
+          from(@email, "[foo]@bar.com"),
+          to(@email, ~s("foo@bar.com))
+        ] do
+      assert {:error, _} = SMTP.deliver(email, [])
+    end
+  end
+
   test "gen_smtp_config/1 with invalid ssl config" do
     assert_raise ArgumentError,
                  """
