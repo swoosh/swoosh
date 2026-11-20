@@ -46,4 +46,4 @@ jobs:
           exit 1
 
       - name: Run Mailpit tests
-        run: mix test --only mailpit --include mailpit
+        run: mix test --include mailpit test/swoosh/adapters/smtp_mailpit_test.exs test/swoosh/adapters/mua_test.exs
