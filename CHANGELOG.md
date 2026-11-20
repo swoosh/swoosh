@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Bug Fixes
+
+- SMTP: return an `{:error, reason}` tuple from `deliver/2` for malformed addresses instead of raising `MatchError` @mvanhorn (#1244, #1247)
+
 ## 1.30.0
 
 ### 🐛 Bug Fixes

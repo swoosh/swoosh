@@ -101,16 +101,29 @@ defmodule Swoosh.Adapters.SMTP do
   def deliver(%Email{} = email, config) do
     sender = Helpers.sender(email)
     recipients = all_recipients(email)
-    body = Helpers.body(email, config)
 
-    case :gen_smtp_client.send_blocking(
-           {sender, recipients, body},
-           gen_smtp_config(config)
-         ) do
-      receipt when is_binary(receipt) -> {:ok, receipt}
-      {:error, type, message} -> {:error, {type, message}}
-      {:error, reason} -> {:error, reason}
+    with {:ok, body} <- encode_body(email, config) do
+      case :gen_smtp_client.send_blocking(
+             {sender, recipients, body},
+             gen_smtp_config(config)
+           ) do
+        receipt when is_binary(receipt) -> {:ok, receipt}
+        {:error, type, message} -> {:error, {type, message}}
+        {:error, reason} -> {:error, reason}
+      end
     end
+  end
+
+  # mimemail matches `{:ok, _} = :smtp_util.parse_rfc5322_addresses/1`, so a
+  # malformed address surfaces as a MatchError carrying the parser's error.
+  defp encode_body(email, config) do
+    {:ok, Helpers.body(email, config)}
+  rescue
+    error in MatchError ->
+      case error.term do
+        {:error, _} = reason -> reason
+        _ -> reraise error, __STACKTRACE__
+      end
   end
 
   @config_transformations %{
