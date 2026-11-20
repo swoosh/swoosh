@@ -1,0 +1,49 @@
+name: Mailpit integration
+
+on: [push, pull_request]
+
+jobs:
+  mailpit:
+    runs-on: ubuntu-22.04
+
+    env:
+      MIX_ENV: test
+
+    services:
+      mailpit:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+          - 8025:8025
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup BEAM
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: '1.18'
+          otp-version: '27.x'
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mailpit-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mailpit-mix-
+
+      - run: mix deps.get
+
+      - name: Wait for Mailpit
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8025/api/v1/info && exit 0
+            sleep 1
+          done
+          echo "Mailpit did not become ready" >&2
+          exit 1
+
+      - name: Run Mailpit tests
+        run: mix test --only mailpit --include mailpit
