@@ -4,7 +4,7 @@
 
 ### 🐛 Bug Fixes
 
-- SMTP: return an `{:error, reason}` tuple from `deliver/2` for malformed addresses instead of raising `MatchError` @mvanhorn (#1244, #1247)
+- SMTP: return `{:error, {type, message}}` from `deliver/2` for malformed addresses instead of raising `MatchError`; `type` is the gen_smtp parser stage (`:smtp_rfc5322_parse` or `:smtp_rfc5322_scan`) and `message` is its raw detail @mvanhorn (#1244, #1247, #1248)
 
 ## 1.30.0
 

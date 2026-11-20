@@ -55,11 +55,12 @@ defmodule Swoosh.Adapters.SMTPTest do
           put_to(@email, "[foo]@bar.com"),
           cc(@email, "[foo]@bar.com"),
           reply_to(@email, "[foo]@bar.com"),
-          from(@email, "[foo]@bar.com"),
-          to(@email, ~s("foo@bar.com))
+          from(@email, "[foo]@bar.com")
         ] do
-      assert {:error, _} = SMTP.deliver(email, [])
+      assert {:error, {:smtp_rfc5322_parse, _}} = SMTP.deliver(email, [])
     end
+
+    assert {:error, {:smtp_rfc5322_scan, _}} = SMTP.deliver(to(@email, ~s("foo@bar.com)), [])
   end
 
   test "gen_smtp_config/1 with invalid ssl config" do

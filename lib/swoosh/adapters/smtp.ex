@@ -121,6 +121,8 @@ defmodule Swoosh.Adapters.SMTP do
   rescue
     error in MatchError ->
       case error.term do
+        # Drop the (always 1) line number so this matches {:error, {type, message}}.
+        {:error, {_line, type, message}} -> {:error, {type, message}}
         {:error, _} = reason -> reason
         _ -> reraise error, __STACKTRACE__
       end
