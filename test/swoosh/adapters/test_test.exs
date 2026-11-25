@@ -120,4 +120,52 @@ defmodule Swoosh.Adapters.TestTest do
       assert mother.subject == "Go get him googly bear"
     end
   end
+
+  describe "fail_next_delivery/2" do
+    setup do
+      email =
+        new()
+        |> from("tony.stark@example.com")
+        |> to("steve.rogers@example.com")
+        |> subject("Hello, Avengers!")
+
+      {:ok, email: email}
+    end
+
+    test "fails the next delivery, then delivers again", %{email: email} do
+      :ok = Swoosh.Adapters.Test.fail_next_delivery(:timeout)
+
+      assert {:error, :timeout} = Swoosh.Adapters.Test.deliver(email, nil)
+      refute_email_sent()
+
+      assert {:ok, %{}} = Swoosh.Adapters.Test.deliver(email, nil)
+      assert_email_sent(subject: "Hello, Avengers!")
+    end
+
+    test "fails the given number of deliveries", %{email: email} do
+      :ok = Swoosh.Adapters.Test.fail_next_delivery({500, "boom"}, 2)
+
+      assert {:error, {500, "boom"}} = Swoosh.Adapters.Test.deliver(email, nil)
+      assert {:error, {500, "boom"}} = Swoosh.Adapters.Test.deliver(email, nil)
+      assert {:ok, %{}} = Swoosh.Adapters.Test.deliver(email, nil)
+    end
+
+    test "fails deliver_many", %{email: email} do
+      :ok = Swoosh.Adapters.Test.fail_next_delivery(:timeout)
+
+      assert {:error, :timeout} = Swoosh.Adapters.Test.deliver_many([email, email], nil)
+      refute_emails_sent()
+
+      assert {:ok, [%{}, %{}]} = Swoosh.Adapters.Test.deliver_many([email, email], nil)
+    end
+
+    test "fails a delivery from a task", %{email: email} do
+      :ok = Swoosh.Adapters.Test.fail_next_delivery(:timeout)
+
+      task = Task.async(fn -> Swoosh.Adapters.Test.deliver(email, nil) end)
+
+      assert {:error, :timeout} = Task.await(task)
+      assert {:ok, %{}} = Swoosh.Adapters.Test.deliver(email, nil)
+    end
+  end
 end
