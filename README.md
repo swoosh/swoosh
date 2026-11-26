@@ -162,6 +162,7 @@ included:
 | Azure Communication Services | [Swoosh.Adapters.AzureCommunicationServices](https://hexdocs.pm/swoosh/Swoosh.Adapters.AzureCommunicationServices.html#content) |                  |
 | AhaSend                      | [Swoosh.Adapters.AhaSend](https://hexdocs.pm/swoosh/Swoosh.Adapters.AhaSend.html#content)                                       | EU               |
 | TurboSMTP                    | [Swoosh.Adapters.TurboSMTP](https://hexdocs.pm/swoosh/Swoosh.Adapters.TurboSMTP.html#content)                                   | EU               |
+| Cloudflare Email Sending     | [Swoosh.Adapters.Cloudflare](https://hexdocs.pm/swoosh/Swoosh.Adapters.Cloudflare.html#content)                                 |                  |
 | ------                       | **Below are not fully featured services**                                                                                       | ------           |
 | Loops                        | [Swoosh.Adapters.Loops](https://hexdocs.pm/swoosh/Swoosh.Adapters.Loops.html#content)                                           |                  |
 | PostUp                       | [Swoosh.Adapters.PostUp](https://hexdocs.pm/swoosh/Swoosh.Adapters.PostUp.html#content)                                         |                  |

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### ✨ Features
+
+- Add the Cloudflare Email Sending adapter ([#1222](https://github.com/swoosh/swoosh/issues/1222)).
+
 ### 🐛 Bug Fixes
 
 - SMTP: return `{:error, {type, message}}` from `deliver/2` for malformed addresses instead of raising `MatchError`; `type` is the gen_smtp parser stage (`:smtp_rfc5322_parse` or `:smtp_rfc5322_scan`) and `message` is its raw detail @mvanhorn (#1244, #1247, #1248)
