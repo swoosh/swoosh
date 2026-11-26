@@ -170,7 +170,23 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp encode_body(body) do
-    body |> Enum.sort() |> URI.encode_query()
+    body
+    |> Enum.sort()
+    |> Enum.map_join("&", fn
+      {"RawMessage.Data" = key, data} -> key <> "=" <> escape_base64(data)
+      pair -> URI.encode_query([pair])
+    end)
+  end
+
+  # Base64 only uses `+`, `/` and `=` outside the characters that
+  # `URI.encode_query/1` keeps as they are. Replacing those three gives the
+  # same result without walking a message of up to several MB one character
+  # at a time.
+  defp escape_base64(data) do
+    data
+    |> :binary.replace("+", "%2B", [:global])
+    |> :binary.replace("/", "%2F", [:global])
+    |> :binary.replace("=", "%3D", [:global])
   end
 
   defp prepare_configuration_set_name(body, %{provider_options: %{configuration_set_name: name}}) do
@@ -225,7 +241,6 @@ defmodule Swoosh.Adapters.AmazonSES do
     email
     |> SMTPHelper.body([{:keep_bcc, true} | config])
     |> Base.encode64()
-    |> URI.encode()
   end
 
   defp prepare_headers(headers, query, config, provider_options) do

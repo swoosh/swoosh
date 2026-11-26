@@ -163,6 +163,51 @@ defmodule Swoosh.Adapters.AmazonSESTest do
     assert AmazonSES.deliver(email, config) == {:ok, %{id: "messageId", request_id: "requestId"}}
   end
 
+  test "deliver/1 form-encodes the raw message like URI.encode_query/1, whatever its padding",
+       %{bypass: bypass, config: config} do
+    test_pid = self()
+
+    Bypass.expect(bypass, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      send(test_pid, {:body, body})
+      Plug.Conn.resp(conn, 200, @success_response)
+    end)
+
+    paddings =
+      for extra <- 0..5 do
+        email =
+          new()
+          |> from("guybrush.threepwood@pirates.grog")
+          |> to("elaine.marley@triisland.gov")
+          |> subject("Mighty Pirate Newsletter")
+          |> header("Date", "Thu, 26 Nov 2026 12:00:00 +0000")
+          |> header("Message-ID", "<fixed@pirates.grog>")
+          |> html_body("<p>Hëllo ~~~ ???</p>" <> String.duplicate("x", extra))
+
+        raw_message =
+          email
+          |> Swoosh.Adapters.SMTP.Helpers.body(keep_bcc: true)
+          |> Base.encode64()
+
+        assert {:ok, _} = AmazonSES.deliver(email, config)
+        assert_received {:body, body}
+
+        expected =
+          body
+          |> URI.decode_query()
+          |> Map.put("RawMessage.Data", raw_message)
+          |> Enum.sort()
+          |> URI.encode_query()
+
+        assert body == expected
+        assert String.contains?(raw_message, "+") and String.contains?(raw_message, "/")
+
+        byte_size(raw_message) - byte_size(String.trim_trailing(raw_message, "="))
+      end
+
+    assert paddings |> Enum.uniq() |> Enum.sort() == [0, 1, 2]
+  end
+
   test "deliver/1 with quotes and backslashes in address name", %{bypass: bypass, config: config} do
     email =
       new()
