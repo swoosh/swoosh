@@ -203,6 +203,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
     [type, format] = String.split(content_type, "/")
     content = Swoosh.Attachment.get_content(attachment)
     transfer_encoding = transfer_encoding_for_content_type(content_type)
+    ics_method_params = ics_method_params(content_type, content)
 
     case attachment_type do
       :attachment ->
@@ -213,7 +214,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
             {"Content-Transfer-Encoding", transfer_encoding}
             | custom_headers
           ],
-          attachment_content_params(:attachment, filename),
+          attachment_content_params(:attachment, filename, ics_method_params),
           content
         }
 
@@ -226,7 +227,7 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
             {"Content-Id", "<#{cid || filename}>"}
             | custom_headers
           ],
-          attachment_content_params(:inline, filename),
+          attachment_content_params(:inline, filename, ics_method_params),
           content
         }
     end
@@ -240,16 +241,29 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   defp transfer_encoding_for_content_type("message/" <> _), do: "7bit"
   defp transfer_encoding_for_content_type(_), do: "base64"
 
+  # methods are defined in https://www.rfc-editor.org/rfc/rfc5546#section-1.4
+  @ics_method_regex ~r/METHOD:(PUBLISH|REQUEST|REPLY|ADD|CANCEL|REFRESH|COUNTER|DECLINECOUNTER)/
+  defp ics_method_params("text/calendar", content) do
+    case Regex.run(@ics_method_regex, content) do
+      [_, method] -> [{"method", method}]
+      _ -> []
+    end
+  end
+
+  defp ics_method_params(_content_type, _content), do: []
+
   if gen_smtp_major >= 1 do
-    defp attachment_content_params(:attachment, filename) do
+    defp attachment_content_params(:attachment, filename, ics_method_params) do
       %{
+        content_type_params: ics_method_params,
         disposition: "attachment",
         disposition_params: [{"filename", filename}]
       }
     end
   else
-    defp attachment_content_params(:attachment, filename) do
+    defp attachment_content_params(:attachment, filename, ics_method_params) do
       [
+        {"content-type-params", ics_method_params},
         {"disposition", "attachment"},
         {"disposition-params", [{"filename", filename}]}
       ]
@@ -257,17 +271,17 @@ defmodule Swoosh.Adapters.SMTP.Helpers do
   end
 
   if gen_smtp_major >= 1 do
-    defp attachment_content_params(:inline, filename) do
+    defp attachment_content_params(:inline, filename, ics_method_params) do
       %{
-        content_type_params: [],
+        content_type_params: ics_method_params,
         disposition: "inline",
         disposition_params: [{"filename", filename}]
       }
     end
   else
-    defp attachment_content_params(:inline, filename) do
+    defp attachment_content_params(:inline, filename, ics_method_params) do
       [
-        {"content-type-params", []},
+        {"content-type-params", ics_method_params},
         {"disposition", "inline"},
         {"disposition-params", [{"filename", filename}]}
       ]
