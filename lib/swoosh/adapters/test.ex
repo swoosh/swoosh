@@ -89,10 +89,15 @@ defmodule Swoosh.Adapters.Test do
     end)
   end
 
+  # `:shared_test_process` may also be a registered name or `{name, node}`.
+  # Only the dictionary of a local process can be read.
+  defp get_failure({name, name_node}) when name_node == node(), do: get_failure(name)
+  # An unregistered name resolves to nil, which must not be looked up again.
+  defp get_failure(nil), do: nil
+  defp get_failure(name) when is_atom(name), do: get_failure(Process.whereis(name))
   defp get_failure(pid) when pid == self(), do: Process.get(@failure_key)
-  defp get_failure(pid) when node(pid) != node(), do: nil
 
-  defp get_failure(pid) do
+  defp get_failure(pid) when is_pid(pid) and node(pid) == node() do
     with {:dictionary, dictionary} <- Process.info(pid, :dictionary),
          {_key, failure} <- List.keyfind(dictionary, @failure_key, 0) do
       failure
@@ -100,6 +105,8 @@ defmodule Swoosh.Adapters.Test do
       _ -> nil
     end
   end
+
+  defp get_failure(_remote), do: nil
 
   # Essentially finds all of the processes that tried to send an email (in the test)
   # and sends an email to that process.
