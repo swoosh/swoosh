@@ -182,7 +182,8 @@ defmodule Swoosh.Adapters.AmazonSESTest do
           |> subject("Mighty Pirate Newsletter")
           |> header("Date", "Thu, 26 Nov 2026 12:00:00 +0000")
           |> header("Message-ID", "<fixed@pirates.grog>")
-          |> html_body("<p>Hëllo ~~~ ???</p>" <> String.duplicate("x", extra))
+          |> html_body("<p>Hëllo ~~~ ??????</p>" <> String.duplicate("x", extra))
+          |> put_provider_option(:tags, [%{name: "campaign", value: "a b+c/d=e&f"}])
 
         raw_message =
           email

@@ -179,15 +179,16 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   # Base64 only uses `+`, `/` and `=` outside the characters that
-  # `URI.encode_query/1` keeps as they are. Replacing those three gives the
-  # same result without walking a message of up to several MB one character
-  # at a time.
-  defp escape_base64(data) do
-    data
-    |> :binary.replace("+", "%2B", [:global])
-    |> :binary.replace("/", "%2F", [:global])
-    |> :binary.replace("=", "%3D", [:global])
-  end
+  # `URI.encode_query/1` keeps as they are. Escaping those three gives the
+  # same result in one pass that only appends to a binary, so the time stays
+  # the same whatever share of the message needs escaping.
+  defp escape_base64(data), do: escape_base64(data, <<>>)
+
+  defp escape_base64(<<"+", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%2B">>)
+  defp escape_base64(<<"/", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%2F">>)
+  defp escape_base64(<<"=", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%3D">>)
+  defp escape_base64(<<char, rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, char>>)
+  defp escape_base64(<<>>, acc), do: acc
 
   defp prepare_configuration_set_name(body, %{provider_options: %{configuration_set_name: name}}) do
     Map.put(body, "ConfigurationSetName", name)
