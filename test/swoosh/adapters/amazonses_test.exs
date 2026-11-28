@@ -194,9 +194,13 @@ defmodule Swoosh.Adapters.AmazonSESTest do
         assert_received {:body, body}
 
         expected =
-          body
-          |> URI.decode_query()
-          |> Map.put("RawMessage.Data", raw_message)
+          %{
+            "Action" => "SendRawEmail",
+            "RawMessage.Data" => raw_message,
+            "Tags.member.1.Name" => "campaign",
+            "Tags.member.1.Value" => "a b+c/d=e&f",
+            "Version" => "2010-12-01"
+          }
           |> Enum.sort()
           |> URI.encode_query()
 
