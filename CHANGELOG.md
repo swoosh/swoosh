@@ -5,6 +5,7 @@
 ### 🐛 Bug Fixes
 
 - SMTP: return `{:error, {type, message}}` from `deliver/2` for malformed addresses instead of raising `MatchError`; `type` is the gen_smtp parser stage (`:smtp_rfc5322_parse` or `:smtp_rfc5322_scan`) and `message` is its raw detail @mvanhorn (#1244, #1247, #1248)
+- Raise `Swoosh.AttachmentContentError` instead of `FunctionClauseError` from `Swoosh.Attachment.get_content/2` when an attachment has neither data nor a path
 
 ## 1.30.0
 

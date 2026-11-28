@@ -117,11 +117,13 @@ defmodule Swoosh.Attachment do
 
   @type content_encoding :: :raw | :base64
   @spec get_content(%__MODULE__{}, content_encoding) :: binary | no_return
-  def get_content(%__MODULE__{data: nil, path: nil}) do
+  def get_content(attachment, encoding \\ :raw)
+
+  def get_content(%__MODULE__{data: nil, path: nil}, _encoding) do
     raise Swoosh.AttachmentContentError, message: "No path or data is provided"
   end
 
-  def get_content(%__MODULE__{data: data, path: path}, encoding \\ :raw) do
+  def get_content(%__MODULE__{data: data, path: path}, encoding) do
     encode(data || File.read!(path), encoding)
   end
 

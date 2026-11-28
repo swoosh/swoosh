@@ -99,4 +99,12 @@ defmodule Swoosh.AttachmentTest do
       Attachment.get_content(%Attachment{})
     end
   end
+
+  test "get_content raises when no data or path is found and an encoding is given" do
+    for encoding <- [:raw, :base64] do
+      assert_raise Swoosh.AttachmentContentError, fn ->
+        Attachment.get_content(%Attachment{}, encoding)
+      end
+    end
+  end
 end
