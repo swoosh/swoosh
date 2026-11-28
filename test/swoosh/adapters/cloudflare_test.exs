@@ -324,6 +324,20 @@ defmodule Swoosh.Adapters.CloudflareTest do
     end
   end
 
+  for invalid <- ["test-token\n", " test-token", "test-token\0", "test-token-é"] do
+    test "rejects API token #{inspect(invalid)} without echoing it", context do
+      config = Keyword.put(context.config, :api_token, unquote(invalid))
+
+      exception =
+        assert_raise ArgumentError, ~r/expected .+api_token.+ to be set/, fn ->
+          Mailer.deliver(context.email, config)
+        end
+
+      refute Exception.message(exception) =~ "test-token"
+      refute Exception.message(exception) =~ "account_id"
+    end
+  end
+
   defp response do
     %{
       "success" => true,
@@ -387,6 +401,18 @@ defmodule Swoosh.Adapters.CloudflareClientContractTest do
     assert_received {:request_url,
                      "https://api.cloudflare.com/client/v4/accounts/" <>
                        ^account_id <> "/email/sending/send"}
+  end
+
+  for base_url <- ["", "/"] do
+    test "uses the default endpoint when base_url is #{inspect(base_url)}", context do
+      config = Keyword.put(context.config, :base_url, unquote(base_url))
+
+      expected =
+        "https://api.cloudflare.com/client/v4/accounts/#{context.account_id}/email/sending/send"
+
+      assert Swoosh.Mailer.deliver(context.email, config) == {:error, :test_transport_failure}
+      assert_received {:request_url, ^expected}
+    end
   end
 
   test "removes trailing slashes from the configured base URL", context do

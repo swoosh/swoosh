@@ -20,6 +20,10 @@ defmodule Swoosh.Adapters.Cloudflare do
         use Swoosh.Mailer, otp_app: :sample
       end
 
+  Set `:base_url` to send requests to a different host. It defaults to
+  `https://api.cloudflare.com`. Leave out the `/client/v4` path, which the adapter
+  appends.
+
   Set a subject and include a text or HTML body. Cloudflare supports a single
   reply-to address. An email with multiple reply-to addresses returns
   `{:error, :multiple_reply_to_not_supported}`.
@@ -51,6 +55,10 @@ defmodule Swoosh.Adapters.Cloudflare do
 
   An HTTP or API failure returns `{:error, {status, body}}`. The body is decoded
   when it contains valid JSON. Transport errors are returned by the API client.
+
+  A 5xx response or a transport error, such as a receive timeout, can also happen
+  after Cloudflare has accepted the email. Check the activity log before retrying
+  these too.
   """
 
   @behaviour Swoosh.Adapter
@@ -72,7 +80,7 @@ defmodule Swoosh.Adapters.Cloudflare do
       keys ->
         raise ArgumentError,
               "expected #{inspect(keys)} to be set to non-empty strings " <>
-                "(account_id may contain only ASCII letters, digits, hyphens, and underscores)"
+                "(#{Enum.map_join(keys, "; ", &config_rule/1)})"
     end
   end
 
@@ -80,7 +88,18 @@ defmodule Swoosh.Adapters.Cloudflare do
     is_binary(value) and Regex.match?(~r/\A[a-zA-Z0-9_-]+\z/, value)
   end
 
-  defp valid_config?(:api_token, value), do: is_binary(value) and value != ""
+  # HTTP clients can echo a rejected header value, token included, in their errors
+  defp valid_config?(:api_token, value) do
+    is_binary(value) and Regex.match?(~r/\A[!-~]+\z/, value)
+  end
+
+  defp config_rule(:account_id) do
+    "account_id may contain only ASCII letters, digits, hyphens, and underscores"
+  end
+
+  defp config_rule(:api_token) do
+    "api_token may contain only printable ASCII characters without whitespace"
+  end
 
   @impl true
   def deliver(%Email{reply_to: [_, _ | _]}, _config) do
@@ -89,8 +108,7 @@ defmodule Swoosh.Adapters.Cloudflare do
 
   def deliver(%Email{} = email, config) do
     with :ok <- validate_attachment_filenames(email.attachments) do
-      base_url = String.trim_trailing(config[:base_url] || @base_url, "/")
-      url = "#{base_url}/client/v4/accounts/#{config[:account_id]}/email/sending/send"
+      url = "#{base_url(config)}/client/v4/accounts/#{config[:account_id]}/email/sending/send"
 
       headers = [
         {"Accept", "application/json"},
@@ -103,6 +121,13 @@ defmodule Swoosh.Adapters.Cloudflare do
       url
       |> Swoosh.ApiClient.post(headers, body, email)
       |> handle_response()
+    end
+  end
+
+  defp base_url(config) do
+    case String.trim_trailing(config[:base_url] || "", "/") do
+      "" -> @base_url
+      base_url -> base_url
     end
   end
 
