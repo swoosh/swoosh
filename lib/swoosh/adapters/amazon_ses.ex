@@ -170,8 +170,25 @@ defmodule Swoosh.Adapters.AmazonSES do
   end
 
   defp encode_body(body) do
-    body |> Enum.sort() |> URI.encode_query()
+    body
+    |> Enum.sort()
+    |> Enum.map_join("&", fn
+      {"RawMessage.Data" = key, data} -> key <> "=" <> escape_base64(data)
+      pair -> URI.encode_query([pair])
+    end)
   end
+
+  # Base64 only uses `+`, `/` and `=` outside the characters that
+  # `URI.encode_query/1` keeps as they are. Escaping those three gives the
+  # same result in one pass that only appends to a binary, so the time stays
+  # the same whatever share of the message needs escaping.
+  defp escape_base64(data), do: escape_base64(data, <<>>)
+
+  defp escape_base64(<<"+", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%2B">>)
+  defp escape_base64(<<"/", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%2F">>)
+  defp escape_base64(<<"=", rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, "%3D">>)
+  defp escape_base64(<<char, rest::binary>>, acc), do: escape_base64(rest, <<acc::binary, char>>)
+  defp escape_base64(<<>>, acc), do: acc
 
   defp prepare_configuration_set_name(body, %{provider_options: %{configuration_set_name: name}}) do
     Map.put(body, "ConfigurationSetName", name)
@@ -225,7 +242,6 @@ defmodule Swoosh.Adapters.AmazonSES do
     email
     |> SMTPHelper.body([{:keep_bcc, true} | config])
     |> Base.encode64()
-    |> URI.encode()
   end
 
   defp prepare_headers(headers, query, config, provider_options) do
