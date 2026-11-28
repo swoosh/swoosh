@@ -202,24 +202,81 @@ defmodule Swoosh.Adapters.CloudflareTest do
     end
   end
 
-  test "returns an error for a successful HTTP status with malformed JSON", context do
+  test "reports unknown acceptance for a successful HTTP status with malformed JSON", context do
     Bypass.expect_once(context.bypass, "POST", @endpoint, &resp(&1, 200, "invalid JSON"))
 
-    assert Mailer.deliver(context.email, context.config) == {:error, {200, "invalid JSON"}}
+    assert Mailer.deliver(context.email, context.config) ==
+             {:error, {:acceptance_unknown, 200, "invalid JSON"}}
   end
 
-  test "returns an error when the success envelope lacks delivery outcomes", context do
-    body = %{response() | "result" => %{}}
-    Bypass.expect_once(context.bypass, "POST", @endpoint, &respond(&1, 200, body))
+  test "reports unknown acceptance when a 2xx body lacks an explicit success flag", context do
+    body = %{"result" => %{}}
+    Bypass.expect_once(context.bypass, "POST", @endpoint, &respond(&1, 202, body))
 
-    assert Mailer.deliver(context.email, context.config) == {:error, {200, body}}
+    assert Mailer.deliver(context.email, context.config) ==
+             {:error, {:acceptance_unknown, 202, body}}
   end
 
-  test "returns an error when a delivery outcome has the wrong type", context do
-    body = put_in(response(), ["result", "queued"], nil)
+  test "reports acceptance when the successful response has no result", context do
+    body = Map.delete(response(), "result")
     Bypass.expect_once(context.bypass, "POST", @endpoint, &respond(&1, 200, body))
 
-    assert Mailer.deliver(context.email, context.config) == {:error, {200, body}}
+    assert Mailer.deliver(context.email, context.config) ==
+             {:ok,
+              %{
+                id: nil,
+                delivered: [],
+                queued: [],
+                permanent_bounces: [],
+                suppressed_recipients: []
+              }}
+  end
+
+  test "keeps valid outcomes when other result fields are missing or invalid", context do
+    result = %{
+      "message_id" => 123,
+      "delivered" => ["recipient@example.com", nil],
+      "permanent_bounces" => "bounced@example.com",
+      "suppressed_recipients" => nil
+    }
+
+    Bypass.expect_once(
+      context.bypass,
+      "POST",
+      @endpoint,
+      &respond(&1, 200, %{response() | "result" => result})
+    )
+
+    assert Mailer.deliver(context.email, context.config) ==
+             {:ok,
+              %{
+                id: nil,
+                delivered: ["recipient@example.com"],
+                queued: [],
+                permanent_bounces: [],
+                suppressed_recipients: []
+              }}
+  end
+
+  test "returns the permanent bounce when Cloudflare accepted the request but no recipient got the email",
+       context do
+    result = %{
+      "message_id" => @message_id,
+      "delivered" => [],
+      "queued" => [],
+      "permanent_bounces" => ["recipient@example.com"],
+      "suppressed_recipients" => []
+    }
+
+    Bypass.expect_once(
+      context.bypass,
+      "POST",
+      @endpoint,
+      &respond(&1, 200, %{response() | "result" => result})
+    )
+
+    assert {:ok, %{delivered: [], queued: [], permanent_bounces: ["recipient@example.com"]}} =
+             Mailer.deliver(context.email, context.config)
   end
 
   test "returns an error when the HTTP connection fails", context do
@@ -247,6 +304,19 @@ defmodule Swoosh.Adapters.CloudflareTest do
 
       exception =
         assert_raise ArgumentError, ~r/expected .+#{key}.+ to be set/, fn ->
+          Mailer.deliver(context.email, config)
+        end
+
+      refute Exception.message(exception) =~ "test-token"
+    end
+  end
+
+  for invalid <- [@account_id <> "\n", @account_id <> "/other"] do
+    test "rejects account IDs containing #{inspect(invalid)} before sending", context do
+      config = Keyword.put(context.config, :account_id, unquote(invalid))
+
+      exception =
+        assert_raise ArgumentError, ~r/expected .+account_id.+ to be set/, fn ->
           Mailer.deliver(context.email, config)
         end
 
@@ -287,7 +357,7 @@ defmodule Swoosh.Adapters.CloudflareClientContractTest do
     end
   end
 
-  test "passes the default endpoint as a binary to a custom API client" do
+  setup do
     previous_client = Application.fetch_env!(:swoosh, :api_client)
     Application.put_env(:swoosh, :api_client, Client)
     on_exit(fn -> Application.put_env(:swoosh, :api_client, previous_client) end)
@@ -307,10 +377,25 @@ defmodule Swoosh.Adapters.CloudflareClientContractTest do
       api_token: "test-token"
     ]
 
+    {:ok, email: email, config: config, account_id: account_id}
+  end
+
+  test "passes the default endpoint as a binary to a custom API client", context do
+    %{email: email, config: config, account_id: account_id} = context
     assert Swoosh.Mailer.deliver(email, config) == {:error, :test_transport_failure}
 
     assert_received {:request_url,
                      "https://api.cloudflare.com/client/v4/accounts/" <>
                        ^account_id <> "/email/sending/send"}
+  end
+
+  test "removes trailing slashes from the configured base URL", context do
+    config = Keyword.put(context.config, :base_url, "https://cloudflare.example//")
+
+    expected =
+      "https://cloudflare.example/client/v4/accounts/#{context.account_id}/email/sending/send"
+
+    assert Swoosh.Mailer.deliver(context.email, config) == {:error, :test_transport_failure}
+    assert_received {:request_url, ^expected}
   end
 end

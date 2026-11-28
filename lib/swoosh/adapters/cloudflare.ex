@@ -24,18 +24,30 @@ defmodule Swoosh.Adapters.Cloudflare do
   reply-to address. An email with multiple reply-to addresses returns
   `{:error, :multiple_reply_to_not_supported}`.
 
+  Set From, To, Cc, Bcc, Subject, and Reply-To through their corresponding
+  `Swoosh.Email` functions. Cloudflare rejects the entire request if you set
+  any of these through `Swoosh.Email.header/3`, including an additional
+  Reply-To address. See the
+  [email header rules](https://developers.cloudflare.com/email-service/reference/headers/)
+  for permitted custom headers.
+
   Give each attachment a filename. A missing or empty filename returns
   `{:error, :attachment_filename_required}`. Cloudflare applies its
-  [email header rules](https://developers.cloudflare.com/email-service/reference/headers/)
-  and [sending limits](https://developers.cloudflare.com/email-service/platform/limits/)
+  [sending limits](https://developers.cloudflare.com/email-service/platform/limits/)
   to each request.
 
   ## Delivery results
 
-  A successful API request returns `{:ok, result}`. The result contains the
-  message ID under `:id` when Cloudflare provides one, plus the recipient lists
-  under `:delivered`, `:queued`, `:permanent_bounces`, and
-  `:suppressed_recipients`. Inspect these lists for individual delivery outcomes.
+  When Cloudflare reports acceptance, the adapter returns `{:ok, result}`.
+  Inspect `:delivered`, `:queued`, `:permanent_bounces`, and
+  `:suppressed_recipients` for individual outcomes. The result can be
+  `{:ok, result}` even if every recipient bounced or was suppressed. Fields
+  that Cloudflare omits or returns with an unexpected type default to `nil`
+  for `:id` and `[]` for recipient lists.
+
+  If a 2xx response cannot be read or has no explicit success flag, the adapter
+  returns `{:error, {:acceptance_unknown, status, body}}`. Check Cloudflare's
+  activity log before retrying because the first request may have sent the email.
 
   An HTTP or API failure returns `{:error, {status, body}}`. The body is decoded
   when it contains valid JSON. Transport errors are returned by the API client.
@@ -51,16 +63,24 @@ defmodule Swoosh.Adapters.Cloudflare do
   @impl true
   def validate_config(config) do
     invalid_keys =
-      Enum.reject([:account_id, :api_token], fn key ->
-        value = config[key]
-        is_binary(value) and value != ""
-      end)
+      Enum.reject([:account_id, :api_token], fn key -> valid_config?(key, config[key]) end)
 
     case invalid_keys do
-      [] -> :ok
-      keys -> raise ArgumentError, "expected #{inspect(keys)} to be set to non-empty strings"
+      [] ->
+        :ok
+
+      keys ->
+        raise ArgumentError,
+              "expected #{inspect(keys)} to be set to non-empty strings " <>
+                "(account_id may contain only ASCII letters, digits, hyphens, and underscores)"
     end
   end
+
+  defp valid_config?(:account_id, value) do
+    is_binary(value) and Regex.match?(~r/\A[a-zA-Z0-9_-]+\z/, value)
+  end
+
+  defp valid_config?(:api_token, value), do: is_binary(value) and value != ""
 
   @impl true
   def deliver(%Email{reply_to: [_, _ | _]}, _config) do
@@ -69,7 +89,7 @@ defmodule Swoosh.Adapters.Cloudflare do
 
   def deliver(%Email{} = email, config) do
     with :ok <- validate_attachment_filenames(email.attachments) do
-      base_url = config[:base_url] || @base_url
+      base_url = String.trim_trailing(config[:base_url] || @base_url, "/")
       url = "#{base_url}/client/v4/accounts/#{config[:account_id]}/email/sending/send"
 
       headers = [
@@ -131,31 +151,42 @@ defmodule Swoosh.Adapters.Cloudflare do
 
   defp handle_response({:ok, status, _headers, body}) do
     case Swoosh.json_library().decode(body) do
-      {:ok, decoded} -> handle_decoded_response(status, decoded)
-      {:error, _reason} -> {:error, {status, body}}
+      {:ok, %{"success" => true} = response} when status in 200..299 ->
+        {:ok, delivery_outcomes(response["result"])}
+
+      {:ok, %{"success" => false} = response} ->
+        {:error, {status, response}}
+
+      {:ok, decoded} ->
+        response_error(status, decoded)
+
+      {:error, _reason} ->
+        response_error(status, body)
     end
   end
 
   defp handle_response({:error, reason}), do: {:error, reason}
 
-  defp handle_decoded_response(status, %{"success" => true, "result" => result} = response)
-       when status in 200..299 do
-    with %{"delivered" => delivered, "queued" => queued, "permanent_bounces" => bounces}
-         when is_list(delivered) and is_list(queued) and is_list(bounces) <- result,
-         suppressed when is_list(suppressed) <- Map.get(result, "suppressed_recipients", []),
-         id when is_binary(id) or is_nil(id) <- result["message_id"] do
-      {:ok,
-       %{
-         id: id,
-         delivered: delivered,
-         queued: queued,
-         permanent_bounces: bounces,
-         suppressed_recipients: suppressed
-       }}
-    else
-      _ -> {:error, {status, response}}
-    end
+  defp response_error(status, body) when status in 200..299 do
+    {:error, {:acceptance_unknown, status, body}}
   end
 
-  defp handle_decoded_response(status, response), do: {:error, {status, response}}
+  defp response_error(status, body), do: {:error, {status, body}}
+
+  defp delivery_outcomes(result) when is_map(result) do
+    id = result["message_id"]
+
+    %{
+      id: if(is_binary(id), do: id),
+      delivered: recipient_list(result["delivered"]),
+      queued: recipient_list(result["queued"]),
+      permanent_bounces: recipient_list(result["permanent_bounces"]),
+      suppressed_recipients: recipient_list(result["suppressed_recipients"])
+    }
+  end
+
+  defp delivery_outcomes(_result), do: delivery_outcomes(%{})
+
+  defp recipient_list(value) when is_list(value), do: Enum.filter(value, &is_binary/1)
+  defp recipient_list(_value), do: []
 end
